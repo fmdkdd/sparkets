@@ -11,6 +11,8 @@ var keys = [];
 
 dir_inc = 0.1;
 max_power = 3;
+ship_speed = 0.3;
+friction_decay = 0.97;
 
 function init() {
 	var host = 'ws://192.168.1.3:12345/websocket/server.php';
@@ -22,7 +24,6 @@ function init() {
 
 	document.onkeydown = processKeyDown;
 	document.onkeyup = processKeyUp;
-	setInterval(processInputs, 20);
 
 	width = $('canvas').width;
 	height = $('canvas').height;
@@ -31,6 +32,7 @@ function init() {
 
 function Ship(color) {
 	this.pos = {x: Math.random()*width, y: Math.random()*height};
+	this.vel = {x: 0, y: 0};
 	this.dir = 0;
 	this.color = color;
 	this.fire_power = 1;
@@ -39,6 +41,7 @@ function Ship(color) {
 Ship.prototype = {
 	id : null,
 	pos : null,
+	vel : null,
 	dir : null,
 	color : null,
 
@@ -55,8 +58,12 @@ Ship.prototype = {
 	},
 
 	move : function() {
-		this.pos.x += Math.sin(this.dir) * 5;
-		this.pos.y -= Math.cos(this.dir) * 5;
+		this.pos.x += this.vel.x;
+		this.pos.y += this.vel.y;
+
+    // friction
+		this.vel.x *= friction_decay;
+		this.vel.y *= friction_decay;
 	},
 	
 	draw : function() {
@@ -195,6 +202,14 @@ Planet.prototype = {
 	}
 }
 
+function update() {
+	ship.move();
+	ship.send();
+	ship.draw();
+	
+	processInputs();
+}
+
 function processInputs() {
 	// left arrow : rotate to the left
 	if(keys[37]) {
@@ -210,7 +225,8 @@ function processInputs() {
 	}
 	// up arrow : thrust forward
 	if(keys[38]) {
-		ship.move();
+		ship.vel.x += Math.sin(ship.dir) * ship_speed;
+		ship.vel.y -= Math.cos(ship.dir) * ship_speed;
 		ship.send();
 		ship.draw();
 	}
@@ -280,6 +296,7 @@ function receive(msg) {
 		ship.id = data[1];
 		ship.draw();
 		ship.send_new();
+		setInterval(update, 20);
 		break;
 	}
 }
