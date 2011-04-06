@@ -8,9 +8,10 @@ var other_ships = [];
 var planets = [];
 
 dir_inc = 0.1;
+max_power = 3;
 
 function init() {
-	var host = 'ws://172.16.21.220:12345/websocket/server.php';
+	var host = 'ws://172.16.21.221:12345/websocket/server.php';
 
 	try{
 		socket = new WebSocket(host);
@@ -18,6 +19,7 @@ function init() {
 	} catch(ex) { log(ex); }
 
 	document.onkeydown = processInput;
+	document.onkeyup = releaseInput;
 
 	width = $('canvas').width;
 	height = $('canvas').height;
@@ -28,6 +30,7 @@ function Ship(color) {
 	this.pos = {x: Math.random()*width, y: Math.random()*height};
 	this.dir = 0;
 	this.color = color;
+	this.fire_power = 1;
 }
 
 Ship.prototype = {
@@ -67,11 +70,13 @@ Ship.prototype = {
 		ctxt.clearRect(x-15,y-15,28,28);
 
 		ctxt.strokeStyle = this.color;
+		ctxt.fillStyle = 'rgba(127, 157, 185, ' + (this.fire_power-1)/max_power + ')';
 		ctxt.beginPath();
 		ctxt.moveTo(x+points[3][0], y+points[3][1]);
 		points.every(function(p) { ctxt.lineTo(x+p[0], y+p[1]); return true; });
 		ctxt.closePath();
 		ctxt.stroke();
+		ctxt.fill();
 	},
 
 	fire : function() {
@@ -81,8 +86,9 @@ Ship.prototype = {
 
 function Bullet(x, y, angle, color, owner) {
 	this.owner = owner;
-	this.acc_x = 10*Math.sin(angle);
-	this.acc_y = -10*Math.cos(angle);
+	this.power = owner.fire_power;
+	this.acc_x = this.power*10*Math.sin(angle);
+	this.acc_y = this.power*-10*Math.cos(angle);
 	this.x = x + this.acc_x;
 	this.y = y + this.acc_y
 	this.color = color;
@@ -97,7 +103,7 @@ Bullet.prototype = {
 	owner : null,
 
 	send : function() {
-		var msg = 'b:' + this.owner.id; 
+		var msg = 'b:' + [this.owner.id, this.power].join(':');
 		log("sending: " + msg);
 		try{ socket.send(msg); } catch (ex) { log(ex); }
 	},
@@ -204,9 +210,17 @@ function processInput(event) {
 		ship.draw();
 		break;
 	case 32 :
-		ship.fire();
+		ship.fire_power = Math.min(ship.fire_power + 0.1, max_power);
 		ship.draw();
 		break;
+	}
+}
+
+function releaseInput(event) {
+	if (event.which == 32) {
+		ship.fire(true);
+		ship.fire_power = 1;
+		ship.draw();
 	}
 }
 
@@ -217,7 +231,10 @@ function receive(msg) {
 	switch (type) {
 	case 'b':
 		var id = data[1];
+		var power = parseFloat(data[2]);
+		other_ships[id].fire_power = power;
 		other_ships[id].fire();
+		other_ships[id].fire_power = 1;
 		break;
 	case 's':
 		var id = data[1];

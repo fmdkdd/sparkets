@@ -157,6 +157,7 @@ function dohandshake($user,$buffer){
 
 	// send garbage since the first message seems to be discarded.
 	send($user->socket, "hello");
+   send($user->socket, 'id:'.$user->id);
 	send_planets($user);
 
 	return true;
