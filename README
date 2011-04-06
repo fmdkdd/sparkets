@@ -1,0 +1,4 @@
+Spacewar is a crude prototype of a multiplayer version of Slingshot
+(http://slingshot.wikispot.org/) using the WebSockets protocol.
+
+The WebSocket stuff is largely borrowed from https://code.google.com/p/phpwebsocket/.
