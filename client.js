@@ -96,8 +96,9 @@ Ship.prototype = {
 			return [(p[0]*cos - p[1]*sin), (p[0]*sin + p[1]*cos)];
 		});
 
-		ctxt.strokeStyle = this.color;
-		ctxt.fillStyle = 'rgba(127, 157, 185, ' + (this.fire_power-1)/max_power + ')';
+		ctxt.strokeStyle = 'rgb(' + this.color + ')';
+		ctxt.fillStyle = 'rgba(' + this.color + ','
+			+ (this.fire_power-1)/max_power + ')';
 		ctxt.beginPath();
 		ctxt.moveTo(x+points[3][0], y+points[3][1]);
 		points.every(function(p) { ctxt.lineTo(x+p[0], y+p[1]); return true; });
@@ -140,7 +141,7 @@ Bullet.prototype = {
 	},
 
 	drawTail : function(alpha) {
-		ctxt.strokeStyle = 'rgba(127, 157, 185, ' + alpha + ')';
+		ctxt.strokeStyle = 'rgba(' + this.color + ',' + alpha + ')';
 		ctxt.beginPath();
 		var x = this.tail[0][0];
 		var y = this.tail[0][1];
@@ -155,7 +156,7 @@ Bullet.prototype = {
 	},
 
 	draw : function(nx, ny) {
-		ctxt.strokeStyle = this.color;
+		ctxt.strokeStyle = 'rgb(' + this.color + ')';
 		ctxt.beginPath();
 		ctxt.moveTo(this.x, this.y);
 		ctxt.lineTo(nx, ny);
@@ -327,7 +328,7 @@ function receive(msg) {
 	case 's':
 		var id = data[1];
 		if (other_ships[id] == undefined)
-			other_ships[id] = new Ship('#000000');
+			other_ships[id] = new Ship('0, 0, 0');
 		other_ships[id].pos.x = parseFloat(data[2]);
 		other_ships[id].pos.y = parseFloat(data[3]);
 		other_ships[id].dir = parseFloat(data[4]);
@@ -340,7 +341,7 @@ function receive(msg) {
 		p.draw();
 		break;
 	case 'ns':
-		var s = new Ship('#000000');
+		var s = new Ship('0,0,0');
 		s.id = data[1];
 		s.pos.x = parseFloat(data[2]);
 		s.pos.y = parseFloat(data[3]);
@@ -349,7 +350,7 @@ function receive(msg) {
 		ship.send();
 		break;
 	case 'id':
-		ship = new Ship('#445785');
+		ship = new Ship('127, 157, 185');
 		ship.id = data[1];
 		ship.send_new();
 		ready();
