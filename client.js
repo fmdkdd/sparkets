@@ -22,7 +22,7 @@ function init() {
 	try{
 		socket = new WebSocket(host);
 		socket.onmessage = receive;
-	} catch(ex) { log(ex); }
+	} catch(ex) { error(ex); }
 
 	width = $('canvas').width;
 	height = $('canvas').height;
@@ -54,13 +54,13 @@ Ship.prototype = {
 	send : function() {
 		var msg = 's:' + [this.id, this.pos.x, this.pos.y, this.dir].join(':');
 		log("sending: " + msg);
-		try{ socket.send(msg); } catch (ex) { log(ex); }
+		try{ socket.send(msg); } catch (ex) { error(ex); }
 	},
 
 	send_new : function() {
 		var msg = 'ns:' + [this.id, this.pos.x, this.pos.y, this.dir].join(':');
 		log("sending: " + msg);
-		try{ socket.send(msg); } catch (ex) { log(ex); }
+		try{ socket.send(msg); } catch (ex) { error(ex); }
 	},
 
 	move : function() {
@@ -129,7 +129,7 @@ Bullet.prototype = {
 	send : function() {
 		var msg = 'b:' + [this.owner.id, this.power].join(':');
 		log("sending: " + msg);
-		try{ socket.send(msg); } catch (ex) { log(ex); }
+		try{ socket.send(msg); } catch (ex) { error(ex); }
 	},
 
 	drawTail : function(alpha) {
@@ -343,9 +343,12 @@ function receive(msg) {
 }
 
 function quit() {
-	try { socket.send("STOP"); } catch (ex) { log(ex); }
+	try { socket.send("STOP"); } catch (ex) { error(ex); }
 }
 
 // Utilities
 function $(id) { return document.getElementById(id); }
-function log(msg) { console.log(msg); }
+function log(msg) { if (debug) console.log(msg); }
+function error(msg) { console.log(msg); }
+
+var debug = false;
