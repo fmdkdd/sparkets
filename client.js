@@ -68,6 +68,12 @@ Ship.prototype = {
     // friction
 		this.vel.x *= friction_decay;
 		this.vel.y *= friction_decay;
+
+		// the map is a torus
+		this.pos.x = this.pos.x < 0 ? width : this.pos.x;
+		this.pos.x = this.pos.x > width ? 0 : this.pos.x;
+		this.pos.y = this.pos.y < 0 ? height : this.pos.y;
+		this.pos.y = this.pos.y > height ? 0 : this.pos.y;
 	},
 	
 	draw : function() {
