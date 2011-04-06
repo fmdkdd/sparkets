@@ -193,10 +193,13 @@ Bullet.prototype = {
 		this.acc_y = ay;
 
 		if (this.collideWithShip(nx,ny)) {
-			log("BOOM");
+			log("You are dead.");
+			this.dead = true;
+		} else if (this.collideWithOtherShip(nx,ny)) {
+			log("BOOM SHAKALAKA!");
 			this.dead = true;
 		} else if (this.collideWithPlanet(nx,ny)) {
-			log("boom...");
+			log("miss...");
 			this.dead = true;
 		} else if (this.outOfBounds(nx,ny)) {
 			log("byebye");
@@ -207,6 +210,11 @@ Bullet.prototype = {
 	},
 
 	collideWithShip : function(x,y) {
+		if (Math.abs(x - ship.pos.x) < 10 && Math.abs(y - ship.pos.y) < 10)
+			return true;
+	},
+
+	collideWithOtherShip : function(x,y) {
 		for (var os in other_ships) {
 			var s = other_ships[os];
 			if (Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10)
