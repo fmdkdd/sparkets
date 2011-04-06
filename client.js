@@ -47,6 +47,7 @@ function Ship(color) {
 	this.dir = 0;
 	this.color = color;
 	this.fire_power = 1;
+	this.dead = false;
 }
 
 Ship.prototype = {
@@ -90,6 +91,15 @@ Ship.prototype = {
 	},
 	
 	draw : function() {
+		if (this.dead)
+			return;
+		else if (this.explo_bits != undefined)
+			this.draw_explosion();
+		else
+			this.draw_ship();
+	},
+
+	draw_ship : function() {
 		var x = this.pos.x;
 		var y = this.pos.y;
 		var cos = Math.cos(this.dir);
@@ -114,6 +124,33 @@ Ship.prototype = {
 		bullets.push(new Bullet(this.pos.x, this.pos.y, this.dir, this.color, this))
 		if (bullets.length > max_bullets)
 			bullets.shift();
+	},
+
+	explode : function() {
+		this.explo_bits = [];
+		for (var i=0; i < 200; ++i)
+			this.explo_bits.push([this.pos.x + 2*Math.random() -1,
+			                      this.pos.y + 2*Math.random() -1]);
+		this.explo_iter = 0;
+	},
+
+	draw_explosion : function() {
+		var x = this.pos.x;
+		var y = this.pos.y;
+
+		ctxt.fillStyle = color(this.color);
+		this.explo_bits.forEach(function(p, idx, array) {
+			ctxt.fillRect(p[0], p[1], 2, 2);
+			array[idx] = [p[0]+(p[0]-x)*.3 + 2*Math.random()-1,
+			              p[1]+(p[1]-y)*.25 + 2*Math.random()-1,];
+		});
+
+		++this.explo_iter;
+		if (this.explo_iter > 100) {
+			this.dead = true;
+			delete this.explo_bits;
+			delete this.explo_iter;
+		}
 	}
 }
 
@@ -214,15 +251,19 @@ Bullet.prototype = {
 	},
 
 	collideWithShip : function(x,y) {
-		if (Math.abs(x - ship.pos.x) < 10 && Math.abs(y - ship.pos.y) < 10)
+		if (Math.abs(x - ship.pos.x) < 10 && Math.abs(y - ship.pos.y) < 10) {
+			ship.explode();
 			return true;
+		}
 	},
 
 	collideWithOtherShip : function(x,y) {
 		for (var os in other_ships) {
 			var s = other_ships[os];
-			if (Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10)
+			if (Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10) {
+				s.explode();
 				return true;
+			}
 		}
 	},
 
