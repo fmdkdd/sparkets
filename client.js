@@ -32,6 +32,7 @@ function init() {
 function ready() {
 	document.onkeydown = processKeyDown;
 	document.onkeyup = processKeyUp;
+	window.onunload = function(event) { ship.send_bye(); };
 
 	setInterval(update, 20);
 }
@@ -59,6 +60,12 @@ Ship.prototype = {
 
 	send_new : function() {
 		var msg = 'ns:' + [this.id, this.pos.x, this.pos.y, this.dir].join(':');
+		log("sending: " + msg);
+		try{ socket.send(msg); } catch (ex) { error(ex); }
+	},
+
+	send_bye : function () {
+		var msg = 'bye:' + this.id;
 		log("sending: " + msg);
 		try{ socket.send(msg); } catch (ex) { error(ex); }
 	},
@@ -338,6 +345,9 @@ function receive(msg) {
 		ship.id = data[1];
 		ship.send_new();
 		ready();
+		break;
+	case 'bye':
+		delete other_ships[data[1]];
 		break;
 	}
 }
