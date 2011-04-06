@@ -16,6 +16,10 @@ max_bullets = 5;
 ship_speed = 0.3;
 friction_decay = 0.97;
 
+ship_color = '127, 185, 157';
+enemy_color = '187, 127, 135';
+planet_color = '127, 157, 185';
+
 function init() {
 	var host = 'ws://localhost:12345/websocket/server.php';
 
@@ -96,9 +100,8 @@ Ship.prototype = {
 			return [(p[0]*cos - p[1]*sin), (p[0]*sin + p[1]*cos)];
 		});
 
-		ctxt.strokeStyle = 'rgb(' + this.color + ')';
-		ctxt.fillStyle = 'rgba(' + this.color + ','
-			+ (this.fire_power-1)/max_power + ')';
+		ctxt.strokeStyle = color(this.color);
+		ctxt.fillStyle = color(this.color, (this.fire_power-1)/max_power);
 		ctxt.beginPath();
 		ctxt.moveTo(x+points[3][0], y+points[3][1]);
 		points.every(function(p) { ctxt.lineTo(x+p[0], y+p[1]); return true; });
@@ -141,7 +144,7 @@ Bullet.prototype = {
 	},
 
 	drawTail : function(alpha) {
-		ctxt.strokeStyle = 'rgba(' + this.color + ',' + alpha + ')';
+		ctxt.strokeStyle = color(this.color, alpha);
 		ctxt.beginPath();
 		var x = this.tail[0][0];
 		var y = this.tail[0][1];
@@ -156,7 +159,7 @@ Bullet.prototype = {
 	},
 
 	draw : function(nx, ny) {
-		ctxt.strokeStyle = 'rgb(' + this.color + ')';
+		ctxt.strokeStyle = color(this.color);
 		ctxt.beginPath();
 		ctxt.moveTo(this.x, this.y);
 		ctxt.lineTo(nx, ny);
@@ -246,7 +249,7 @@ Planet.prototype = {
 	force : null,
 
 	draw : function() {
-		ctxt.strokeStyle = '#7F9DB9';
+		ctxt.strokeStyle = color(planet_color);
 		ctxt.beginPath();
 		ctxt.moveTo(this.x, this.y);
 		ctxt.arc(this.x, this.y, this.force, 0, 2*Math.PI, false);
@@ -328,7 +331,7 @@ function receive(msg) {
 	case 's':
 		var id = data[1];
 		if (other_ships[id] == undefined)
-			other_ships[id] = new Ship('0, 0, 0');
+			other_ships[id] = new Ship(enemy_color);
 		other_ships[id].pos.x = parseFloat(data[2]);
 		other_ships[id].pos.y = parseFloat(data[3]);
 		other_ships[id].dir = parseFloat(data[4]);
@@ -341,7 +344,7 @@ function receive(msg) {
 		p.draw();
 		break;
 	case 'ns':
-		var s = new Ship('0,0,0');
+		var s = new Ship(enemy_color);
 		s.id = data[1];
 		s.pos.x = parseFloat(data[2]);
 		s.pos.y = parseFloat(data[3]);
@@ -350,7 +353,7 @@ function receive(msg) {
 		ship.send();
 		break;
 	case 'id':
-		ship = new Ship('127, 157, 185');
+		ship = new Ship(ship_color);
 		ship.id = data[1];
 		ship.send_new();
 		ready();
@@ -369,5 +372,11 @@ function quit() {
 function $(id) { return document.getElementById(id); }
 function log(msg) { if (debug) console.log(msg); }
 function error(msg) { console.log(msg); }
+function color(rgb, alpha) {
+	if (alpha == undefined)
+		return 'rgb(' + rgb + ')';
+	else
+		return 'rgba(' + rgb + ',' + alpha + ')';
+}
 
 var debug = false;
