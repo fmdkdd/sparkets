@@ -7,19 +7,22 @@ var ship = null;
 var other_ships = [];
 var planets = [];
 
+var keys = [];
+
 dir_inc = 0.1;
 max_power = 3;
 
 function init() {
-	var host = 'ws://172.16.21.221:12345/websocket/server.php';
+	var host = 'ws://192.168.1.3:12345/websocket/server.php';
 
 	try{
 		socket = new WebSocket(host);
 		socket.onmessage = receive;
 	} catch(ex) { log(ex); }
 
-	document.onkeydown = processInput;
-	document.onkeyup = releaseInput;
+	document.onkeydown = processKeyDown;
+	document.onkeyup = processKeyUp;
+	setInterval(processInputs, 20);
 
 	width = $('canvas').width;
 	height = $('canvas').height;
@@ -192,35 +195,45 @@ Planet.prototype = {
 	}
 }
 
-function processInput(event) {
-	switch (event.which) {
-	case 37:
+function processInputs() {
+	// left arrow : rotate to the left
+	if(keys[37]) {
 		ship.dir -= dir_inc;
 		ship.send();
 		ship.draw();
-		break;
-	case 39:
+	}
+	// right arrow : rotate to the right
+	if(keys[39]) {
 		ship.dir += dir_inc;
 		ship.send();
 		ship.draw();
-		break;
-	case 38:
+	}
+	// up arrow : thrust forward
+	if(keys[38]) {
 		ship.move();
 		ship.send();
 		ship.draw();
-		break;
-	case 32 :
+	}
+	// spacebar : charge the bullet
+	if(keys[32]) {
 		ship.fire_power = Math.min(ship.fire_power + 0.1, max_power);
 		ship.draw();
-		break;
 	}
 }
 
-function releaseInput(event) {
-	if (event.which == 32) {
+function processKeyDown() {
+	keys[event.keyCode] = true;
+}
+
+function processKeyUp() {
+	keys[event.keyCode] = false;
+
+	// fire the bullet if the spacebar is released
+	if(event.keyCode == 32)
+	{
 		ship.fire(true);
-		ship.fire_power = 1;
 		ship.draw();
+		ship.fire_power = 1;
 	}
 }
 
