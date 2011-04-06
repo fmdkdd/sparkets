@@ -22,12 +22,16 @@ function init() {
 		socket.onmessage = receive;
 	} catch(ex) { log(ex); }
 
-	document.onkeydown = processKeyDown;
-	document.onkeyup = processKeyUp;
-
 	width = $('canvas').width;
 	height = $('canvas').height;
 	ctxt = $('canvas').getContext('2d');
+}
+
+function ready() {
+	document.onkeydown = processKeyDown;
+	document.onkeyup = processKeyUp;
+
+	setInterval(update, 20);
 }
 
 function Ship(color) {
@@ -296,7 +300,7 @@ function receive(msg) {
 		ship.id = data[1];
 		ship.draw();
 		ship.send_new();
-		setInterval(update, 20);
+		ready();
 		break;
 	}
 }
@@ -308,5 +312,3 @@ function quit() {
 // Utilities
 function $(id) { return document.getElementById(id); }
 function log(msg) { console.log(msg); }
-
-
