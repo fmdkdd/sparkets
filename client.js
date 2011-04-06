@@ -4,18 +4,20 @@ var ctxt;
 var width, height;
 
 var ship = null;
-var other_ships = [];
+var other_ships = {};
 var planets = [];
+var bullets = [];
 
-var keys = [];
+var keys = {};
 
 dir_inc = 0.1;
 max_power = 3;
+max_bullets = 5;
 ship_speed = 0.3;
 friction_decay = 0.97;
 
 function init() {
-	var host = 'ws://192.168.1.3:12345/websocket/server.php';
+	var host = 'ws://localhost:12345/websocket/server.php';
 
 	try{
 		socket = new WebSocket(host);
@@ -87,8 +89,6 @@ Ship.prototype = {
 			return [(p[0]*cos - p[1]*sin), (p[0]*sin + p[1]*cos)];
 		});
 
-		ctxt.clearRect(x-15,y-15,28,28);
-
 		ctxt.strokeStyle = this.color;
 		ctxt.fillStyle = 'rgba(127, 157, 185, ' + (this.fire_power-1)/max_power + ')';
 		ctxt.beginPath();
@@ -100,7 +100,9 @@ Ship.prototype = {
 	},
 
 	fire : function() {
-		new Bullet(this.pos.x, this.pos.y, this.dir, this.color, this);
+		bullets.push(new Bullet(this.pos.x, this.pos.y, this.dir, this.color, this))
+		if (bullets.length > max_bullets)
+			bullets.shift();
 	}
 }
 
@@ -112,11 +114,13 @@ function Bullet(x, y, angle, color, owner) {
 	this.x = x + this.acc_x;
 	this.y = y + this.acc_y
 	this.color = color;
+	this.tail = [];
+	this.tail.push([this.x, this.y]);
 
 	if (owner.id == ship.id)
 		this.send();
 
-	this.step();
+	this.dead = false;
 }
 
 Bullet.prototype = {
@@ -126,6 +130,21 @@ Bullet.prototype = {
 		var msg = 'b:' + [this.owner.id, this.power].join(':');
 		log("sending: " + msg);
 		try{ socket.send(msg); } catch (ex) { log(ex); }
+	},
+
+	drawTail : function(alpha) {
+		ctxt.strokeStyle = 'rgba(127, 157, 185, ' + alpha + ')';
+		ctxt.beginPath();
+		var x = this.tail[0][0];
+		var y = this.tail[0][1];
+		ctxt.moveTo(x, y);
+		for (var i=1, len=this.tail.length; i < len; ++i) {
+			x = this.tail[i][0], y = this.tail[i][1];
+			ctxt.lineTo(x, y);
+			ctxt.moveTo(x, y);		
+		}
+		ctxt.closePath();
+		ctxt.stroke();
 	},
 
 	draw : function(nx, ny) {
@@ -138,6 +157,9 @@ Bullet.prototype = {
 	},
 
 	step : function() {
+		if (this.dead)
+			return;
+
 		var x = this.x;
 		var y = this.y;
 		
@@ -155,7 +177,7 @@ Bullet.prototype = {
 		var nx = x + ax;
 		var ny = y + ay;
 
-		this.draw(nx, ny);
+		this.tail.push([nx, ny]);
 
 		this.x = nx;
 		this.y = ny;
@@ -165,19 +187,24 @@ Bullet.prototype = {
 
 		if (this.collideWithShip(nx,ny)) {
 			log("BOOM");
+			this.dead = true;
 		} else if (this.collideWithPlanet(nx,ny)) {
 			log("boom...");
+			this.dead = true;
 		} else if (this.outOfBounds(nx,ny)) {
 			log("byebye");
+			this.dead = true;
 		} else {
-			setTimeout(function(bullet) {bullet.step();}, 20, this);
+			//setTimeout(function(bullet) {bullet.step();}, 20, this);
 		}
 	},
 
 	collideWithShip : function(x,y) {
-		return other_ships.some(function(s) {
-				return Math.abs(x - p.pos.x) < 10 && Math.abs(y - p.pos.y) < 10;
-			});
+		for (var os in other_ships) {
+			var s = other_ships[os];
+			if (Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10)
+				return true;
+		}
 	},
 
 	collideWithPlanet : function(x,y) {
@@ -215,9 +242,21 @@ Planet.prototype = {
 function update() {
 	ship.move();
 	ship.send();
-	ship.draw();
+	bullets.forEach(function(b) { b.step(); });
+	redraw();
 	
 	processInputs();
+}
+
+function redraw() {
+	ctxt.clearRect(0, 0, width, height);
+	
+	var len = bullets.length;
+	bullets.forEach(function(b, idx) { b.drawTail((idx+1)/len); });
+	planets.forEach(function(p) { p.draw(); });
+	for (var s in other_ships)
+		other_ships[s].draw();
+	ship.draw();
 }
 
 function processInputs() {
@@ -225,25 +264,21 @@ function processInputs() {
 	if(keys[37]) {
 		ship.dir -= dir_inc;
 		ship.send();
-		ship.draw();
 	}
 	// right arrow : rotate to the right
 	if(keys[39]) {
 		ship.dir += dir_inc;
 		ship.send();
-		ship.draw();
 	}
 	// up arrow : thrust forward
 	if(keys[38]) {
 		ship.vel.x += Math.sin(ship.dir) * ship_speed;
 		ship.vel.y -= Math.cos(ship.dir) * ship_speed;
 		ship.send();
-		ship.draw();
 	}
 	// spacebar : charge the bullet
 	if(keys[32]) {
 		ship.fire_power = Math.min(ship.fire_power + 0.1, max_power);
-		ship.draw();
 	}
 }
 
@@ -257,8 +292,7 @@ function processKeyUp() {
 	// fire the bullet if the spacebar is released
 	if(event.keyCode == 32)
 	{
-		ship.fire(true);
-		ship.draw();
+		ship.fire();
 		ship.fire_power = 1;
 	}
 }
@@ -282,7 +316,6 @@ function receive(msg) {
 		other_ships[id].pos.x = parseFloat(data[2]);
 		other_ships[id].pos.y = parseFloat(data[3]);
 		other_ships[id].dir = parseFloat(data[4]);
-		other_ships[id].draw();
 		break;
 	case 'p':
 		var p = new Planet(parseFloat(data[1]),
@@ -298,13 +331,11 @@ function receive(msg) {
 		s.pos.y = parseFloat(data[3]);
 		s.dir = parseFloat(data[4]);
 		other_ships[s.id] = s;
-		s.draw();
 		ship.send();
 		break;
 	case 'id':
 		ship = new Ship('#445785');
 		ship.id = data[1];
-		ship.draw();
 		ship.send_new();
 		ready();
 		break;

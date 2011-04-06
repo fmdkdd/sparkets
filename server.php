@@ -6,7 +6,7 @@ set_time_limit(0);
 ob_implicit_flush();
 
 $run = true;
-$master  = WebSocket("172.16.21.221",12345);
+$master  = WebSocket("localhost",12345);
 $sockets = array($master);
 $users   = array();
 $debug   = false;
