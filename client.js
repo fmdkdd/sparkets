@@ -88,6 +88,21 @@ Ship.prototype = {
 		this.pos.x = this.pos.x > width ? 0 : this.pos.x;
 		this.pos.y = this.pos.y < 0 ? height : this.pos.y;
 		this.pos.y = this.pos.y > height ? 0 : this.pos.y;
+
+		var os;
+		if (os = collideWithOtherShip(this.pos.x, this.pos.y)) {
+			this.explode();
+			os.explode();
+		} else if (collideWithPlanet(this.pos.x, this.pos.y)) {
+			this.explode();
+		}
+	},
+
+	update : function() {
+		if (this.dead || this.explo_bits)
+			return;
+		this.move();
+		this.send();
 	},
 	
 	draw : function() {
@@ -259,18 +274,22 @@ Bullet.prototype = {
 }
 
 function	collideWithShip(x,y) {
+	if (ship.dead || ship.explo_bits)
+		return false;
+
 	if (Math.abs(x - ship.pos.x) < 10 && Math.abs(y - ship.pos.y) < 10) {
 		ship.explode();
 		return true;
 	}
+	return false;
 }
 
 function collideWithOtherShip(x,y) {
 	for (var os in other_ships) {
 		var s = other_ships[os];
-		if (Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10) {
+		if (!s.dead && !s.explo_bits
+		    && Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10)
 			return s;
-		}
 	}
 	return false;
 }
@@ -306,8 +325,7 @@ Planet.prototype = {
 }
 
 function update() {
-	ship.move();
-	ship.send();
+	ship.update();
 	bullets.forEach(function(b) { b.step(); });
 	redraw();
 	
