@@ -233,13 +233,16 @@ Bullet.prototype = {
 		this.acc_x = ax;
 		this.acc_y = ay;
 
-		if (this.collideWithShip(nx,ny)) {
+		var os;
+		if (collideWithShip(nx,ny)) {
 			log("You are dead.");
+			ship.explode();
 			this.dead = true;
-		} else if (this.collideWithOtherShip(nx,ny)) {
+		} else if (os = collideWithOtherShip(nx,ny)) {
 			log("BOOM SHAKALAKA!");
+			os.explode();
 			this.dead = true;
-		} else if (this.collideWithPlanet(nx,ny)) {
+		} else if (collideWithPlanet(nx,ny)) {
 			log("miss...");
 			this.dead = true;
 		} else if (this.outOfBounds(nx,ny)) {
@@ -250,32 +253,35 @@ Bullet.prototype = {
 		}
 	},
 
-	collideWithShip : function(x,y) {
-		if (Math.abs(x - ship.pos.x) < 10 && Math.abs(y - ship.pos.y) < 10) {
-			ship.explode();
-			return true;
-		}
-	},
-
-	collideWithOtherShip : function(x,y) {
-		for (var os in other_ships) {
-			var s = other_ships[os];
-			if (Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10) {
-				s.explode();
-				return true;
-			}
-		}
-	},
-
-	collideWithPlanet : function(x,y) {
-		return planets.some(function(p) {
-			return Math.sqrt((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y)) < p.force;
-		});
-	},
-
 	outOfBounds : function(x,y) {
 		return x < -1000 || x > 1000 || y < -1000 || y > 1000;
 	}
+}
+
+function	collideWithShip(x,y) {
+	if (Math.abs(x - ship.pos.x) < 10 && Math.abs(y - ship.pos.y) < 10) {
+		ship.explode();
+		return true;
+	}
+}
+
+function collideWithOtherShip(x,y) {
+	for (var os in other_ships) {
+		var s = other_ships[os];
+		if (Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10) {
+			return s;
+		}
+	}
+	return false;
+}
+
+function collideWithPlanet(x,y) {
+	for (var op in planets) {
+		var p = planets[op];
+		if (Math.sqrt((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y)) < p.force)
+			return p;
+	}
+	return false;
 }
 
 function Planet(x, y, force) {
