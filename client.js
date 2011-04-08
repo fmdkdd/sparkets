@@ -28,15 +28,24 @@ function init() {
 		socket.onmessage = receive;
 	} catch(ex) { error(ex); }
 
-	width = $('canvas').width;
-	height = $('canvas').height;
-	ctxt = $('canvas').getContext('2d');
+	$(window).resize(function(event) {
+			$('#canvas').attr('width', $(window).attr('innerWidth'));
+			width = $('#canvas').attr('width');
+			$('#canvas').attr('height', $(window).attr('innerHeight'));
+			height = $('#canvas').attr('height');
+		});
+	$(window).resize();
+	
+	ctxt = $('#canvas')[0].getContext("2d");
 }
 
 function ready() {
 	document.onkeydown = processKeyDown;
 	document.onkeyup = processKeyUp;
-	window.onunload = function(event) { ship.send_bye(); };
+
+	$(window).unload(function(event) {
+			ship.send_bye();
+		});
 
 	setInterval(update, 20);
 }
@@ -440,7 +449,6 @@ function quit() {
 }
 
 // Utilities
-function $(id) { return document.getElementById(id); }
 function log(msg) { if (debug) console.log(msg); }
 function error(msg) { console.log(msg); }
 function color(rgb, alpha) {
