@@ -56,9 +56,9 @@ function broadcast_others($user, $msg) {
 
 function init_planets() {
 	$pl = array();
-	for ($i=0; $i < 4; ++$i) {
-		$pl[$i] = array('x' => rand(0, 800),
-		                'y' => rand(0, 600),
+	for ($i=0; $i < 40; ++$i) {
+		$pl[$i] = array('x' => rand(0, 2000),
+		                'y' => rand(0, 2000),
 		                'size' => rand(50, 100));
 	}
 	return $pl;

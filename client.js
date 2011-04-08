@@ -1,14 +1,15 @@
 var socket;
+
 var ctxt;
 
-var width, height;
+var screen = {w : 0, h : 0};
+var map = {w : 2000, h : 2000};
+var view = {x : 0, y : 0};
 
 var ship = null;
 var other_ships = {};
 var planets = [];
 var bullets = [];
-
-var keys = {};
 
 dir_inc = 0.1;
 max_power = 3;
@@ -20,6 +21,8 @@ ship_color = '127, 185, 157';
 enemy_color = '187, 127, 135';
 planet_color = '127, 157, 185';
 
+var keys = {};
+
 function init() {
 	var host = 'ws://localhost:12345/websocket/server.php';
 
@@ -30,9 +33,9 @@ function init() {
 
 	$(window).resize(function(event) {
 			$('#canvas').attr('width', $(window).attr('innerWidth'));
-			width = $('#canvas').attr('width');
+			screen.w = $('#canvas').attr('width');
 			$('#canvas').attr('height', $(window).attr('innerHeight'));
-			height = $('#canvas').attr('height');
+			screen.h = $('#canvas').attr('height');
 		});
 	$(window).resize();
 	
@@ -51,7 +54,7 @@ function ready() {
 }
 
 function Ship(color) {
-	this.pos = {x: Math.random()*width, y: Math.random()*height};
+	this.pos = {x: Math.random() * screen.w, y: Math.random() * screen.h};
 	this.vel = {x: 0, y: 0};
 	this.dir = 0;
 	this.color = color;
@@ -88,6 +91,10 @@ Ship.prototype = {
 		this.pos.x += this.vel.x;
 		this.pos.y += this.vel.y;
 
+		// move the view
+		view.x = this.pos.x - screen.w / 2;
+		view.y = this.pos.y - screen.h / 2;
+
     // friction
 		this.vel.x *= friction_decay;
 		this.vel.y *= friction_decay;
@@ -118,8 +125,8 @@ Ship.prototype = {
 	},
 
 	draw_ship : function() {
-		var x = this.pos.x;
-		var y = this.pos.y;
+		var x = this.pos.x - view.x;
+		var y = this.pos.y - view.y;
 		var cos = Math.cos(this.dir);
 		var sin = Math.sin(this.dir);
 
@@ -150,8 +157,8 @@ Ship.prototype = {
 
 		for (var i=0; i < 200; ++i)
 			this.explo_bits.push({
-				x: this.pos.x,
-				y: this.pos.y, 
+				x: this.pos.x - view.x,
+				y: this.pos.y - view.y, 
 				vx : .5*vel * (2*Math.random() -1),
 				vy : .5*vel * (2*Math.random() -1),
 			});
@@ -159,8 +166,8 @@ Ship.prototype = {
 	},
 
 	draw_explosion : function() {
-		var x = this.pos.x;
-		var y = this.pos.y;
+		var x = this.pos.x - view.x;
+		var y = this.pos.y - view.y;
 
 		ctxt.fillStyle = color(this.color, (50-this.explo_iter)/50);
 		this.explo_bits.forEach(function(p) {
@@ -204,14 +211,15 @@ Bullet.prototype = {
 		try{ socket.send(msg); } catch (ex) { error(ex); }
 	},
 
-	drawTail : function(alpha) {
+	draw_tail : function(alpha) {
 		ctxt.strokeStyle = color(this.color, alpha);
 		ctxt.beginPath();
-		var x = this.tail[0][0];
-		var y = this.tail[0][1];
+		var x = this.tail[0][0] - view.x;
+		var y = this.tail[0][1] - view.y;
 		ctxt.moveTo(x, y);
 		for (var i=1, len=this.tail.length; i < len; ++i) {
-			x = this.tail[i][0], y = this.tail[i][1];
+			x = this.tail[i][0] - view.x;
+			y = this.tail[i][1] - view.y;
 			ctxt.lineTo(x, y);
 			ctxt.moveTo(x, y);		
 		}
@@ -325,9 +333,9 @@ Planet.prototype = {
 
 	draw : function() {
 		ctxt.strokeStyle = color(planet_color);
-		ctxt.beginPath();
 		ctxt.moveTo(this.x, this.y);
-		ctxt.arc(this.x, this.y, this.force, 0, 2*Math.PI, false);
+		ctxt.beginPath();
+		ctxt.arc(this.x - view.x, this.y - view.y, this.force, 0, 2*Math.PI, false);
 		ctxt.closePath();
 		ctxt.stroke();
 	}
@@ -342,10 +350,10 @@ function update() {
 }
 
 function redraw() {
-	ctxt.clearRect(0, 0, width, height);
+	ctxt.clearRect(0, 0, screen.w, screen.h);
 	
 	var len = bullets.length;
-	bullets.forEach(function(b, idx) { b.drawTail((idx+1)/len); });
+	bullets.forEach(function(b, idx) { b.draw_tail((idx+1)/len); });
 	planets.forEach(function(p) { p.draw(); });
 	for (var s in other_ships)
 		other_ships[s].draw();
@@ -452,4 +460,4 @@ function color(rgb, alpha) {
 		return 'rgba(' + rgb + ',' + alpha + ')';
 }
 
-var debug = false;
+var debug = true;
