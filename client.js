@@ -342,12 +342,19 @@ Planet.prototype = {
 	force : null,
 
 	draw : function() {
-		ctxt.strokeStyle = color(planet_color);
-		ctxt.moveTo(this.x, this.y);
-		ctxt.beginPath();
-		ctxt.arc(this.x - view.x, this.y - view.y, this.force, 0, 2*Math.PI, false);
-		ctxt.closePath();
-		ctxt.stroke();
+		for(var i = -1; i <= 1; ++i)
+			for(var j = -1; j <= 1; ++j)
+			{
+				var x = this.x + j * map.w;
+				var y = this.y + i * map.h;
+
+				ctxt.strokeStyle = color(planet_color);
+				ctxt.moveTo(x, y);
+				ctxt.beginPath();
+				ctxt.arc(x - view.x, y - view.y, this.force, 0, 2*Math.PI, false);
+				ctxt.closePath();
+				ctxt.stroke();
+			}
 	}
 }
 
@@ -371,8 +378,6 @@ function redraw() {
 
 	for (var s in other_ships)
 		other_ships[s].draw();
-
-	ctxt.strokeRect(-view.x, -view.y, map.w, map.h); 
 }
 
 function processInputs() {
