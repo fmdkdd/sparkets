@@ -38,7 +38,7 @@ function init() {
 			screen.h = document.getElementById('canvas').height = window.innerHeight;
 
 			if(ship != null)
-				ship.centerView();
+				ship.center_view();
 		});
 	$(window).resize();
 }
@@ -126,8 +126,12 @@ Ship.prototype = {
 			return;
 		else if (this.explo_bits != undefined)
 			this.draw_explosion();
-		else
+		else {
 			this.draw_ship();
+
+			if(this == ship)
+				this.draw_radar();
+		}
 	},
 
 	draw_ship : function() {
@@ -149,6 +153,22 @@ Ship.prototype = {
 		ctxt.closePath();
 		ctxt.stroke();
 		ctxt.fill();
+	},
+
+	draw_radar : function() {
+		for(var os in other_ships) {
+			var dx = other_ships[os].pos.x - this.pos.x;
+			var dy = other_ships[os].pos.y - this.pos.y;
+			var d = Math.sqrt(dx*dx + dy*dy);
+			var rx = dx / d * 40;
+			var ry = dy / d * 40;
+			
+			ctxt.strokeStyle = color(planet_color);
+			ctxt.beginPath();
+			ctxt.arc(screen.w / 2 + rx, screen.h / 2 + ry, 2, 0, 2*Math.PI, false);
+			ctxt.closePath();
+			ctxt.stroke();
+		}
 	},
 
 	center_view : function() {
@@ -349,7 +369,6 @@ Planet.prototype = {
 				var y = this.y + i * map.h;
 
 				ctxt.strokeStyle = color(planet_color);
-				ctxt.moveTo(x, y);
 				ctxt.beginPath();
 				ctxt.arc(x - view.x, y - view.y, this.force, 0, 2*Math.PI, false);
 				ctxt.closePath();
