@@ -57,7 +57,7 @@ function ready() {
 function Ship(color) {
 	this.pos = {x: Math.random() * map.w, y: Math.random() * map.h};
 	this.vel = {x: 0, y: 0};
-	this.dir = 0;
+	this.dir = Math.random() * 6.28318531;
 	this.color = color;
 	this.fire_power = 1;
 	this.dead = false;
@@ -93,6 +93,11 @@ Ship.prototype = {
 	move : function() {
 		this.pos.x += this.vel.x;
 		this.pos.y += this.vel.y;
+
+		this.pos.x = this.pos.x < 0 ? map.w : this.pos.x;
+		this.pos.x = this.pos.x > map.w ? 0 : this.pos.x;
+		this.pos.y = this.pos.y < 0 ? map.h : this.pos.y;
+		this.pos.y = this.pos.y > map.h ? 0 : this.pos.y;
 
 		this.center_view();
 
@@ -189,7 +194,7 @@ Ship.prototype = {
 			delete this.explo_iter;
 		}
 	}
-}
+};
 
 function Bullet(x, y, angle, color, owner) {
 	this.owner = owner;
@@ -293,8 +298,8 @@ Bullet.prototype = {
 	outOfBounds : function(x,y) {
 		return x < 0 || x > map.w || y < 0 || y > map.h;
 	}
-}
-
+};
+	
 function	collideWithShip(x,y) {
 	if (ship.dead || ship.explo_bits)
 		return false;
@@ -362,10 +367,10 @@ function redraw() {
 
 	planets.forEach(function(p) { p.draw(); });
 
+	ship.draw();
+
 	for (var s in other_ships)
 		other_ships[s].draw();
-
-	ship.draw();
 
 	ctxt.strokeRect(-view.x, -view.y, map.w, map.h); 
 }
