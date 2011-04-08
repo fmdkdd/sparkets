@@ -30,16 +30,17 @@ function init() {
 		socket = new WebSocket(host);
 		socket.onmessage = receive;
 	} catch(ex) { error(ex); }
+	
+	ctxt = document.getElementById('canvas').getContext("2d");
 
 	$(window).resize(function(event) {
-			$('#canvas').attr('width', $(window).attr('innerWidth'));
-			screen.w = $('#canvas').attr('width');
-			$('#canvas').attr('height', $(window).attr('innerHeight'));
-			screen.h = $('#canvas').attr('height');
+			screen.w = document.getElementById('canvas').width = window.innerWidth;
+			screen.h = document.getElementById('canvas').height = window.innerHeight;
+
+			if(ship != null)
+				ship.centerView();
 		});
 	$(window).resize();
-	
-	ctxt = $('#canvas')[0].getContext("2d");
 }
 
 function ready() {
@@ -54,12 +55,14 @@ function ready() {
 }
 
 function Ship(color) {
-	this.pos = {x: Math.random() * screen.w, y: Math.random() * screen.h};
+	this.pos = {x: Math.random() * map.w, y: Math.random() * map.h};
 	this.vel = {x: 0, y: 0};
 	this.dir = 0;
 	this.color = color;
 	this.fire_power = 1;
 	this.dead = false;
+
+	this.center_view();
 }
 
 Ship.prototype = {
@@ -91,9 +94,7 @@ Ship.prototype = {
 		this.pos.x += this.vel.x;
 		this.pos.y += this.vel.y;
 
-		// move the view
-		view.x = this.pos.x - screen.w / 2;
-		view.y = this.pos.y - screen.h / 2;
+		this.center_view();
 
     // friction
 		this.vel.x *= friction_decay;
@@ -145,6 +146,11 @@ Ship.prototype = {
 		ctxt.fill();
 	},
 
+	center_view : function() {
+		view.x = this.pos.x - screen.w / 2;
+		view.y = this.pos.y - screen.h / 2;
+	},
+
 	fire : function() {
 		bullets.push(new Bullet(this.pos.x, this.pos.y, this.dir, this.color, this))
 		if (bullets.length > max_bullets)
@@ -193,8 +199,7 @@ function Bullet(x, y, angle, color, owner) {
 	this.x = x + this.acc_x;
 	this.y = y + this.acc_y
 	this.color = color;
-	this.tail = [];
-	this.tail.push([this.x, this.y]);
+	this.tail = [[this.x, this.y]];
 
 	if (owner.id == ship.id)
 		this.send();
@@ -286,7 +291,7 @@ Bullet.prototype = {
 	},
 
 	outOfBounds : function(x,y) {
-		return x < -1000 || x > 1000 || y < -1000 || y > 1000;
+		return x < 0 || x > map.w || y < 0 || y > map.h;
 	}
 }
 
@@ -354,10 +359,15 @@ function redraw() {
 	
 	var len = bullets.length;
 	bullets.forEach(function(b, idx) { b.draw_tail((idx+1)/len); });
+
 	planets.forEach(function(p) { p.draw(); });
+
 	for (var s in other_ships)
 		other_ships[s].draw();
+
 	ship.draw();
+
+	ctxt.strokeRect(-view.x, -view.y, map.w, map.h); 
 }
 
 function processInputs() {
@@ -460,4 +470,4 @@ function color(rgb, alpha) {
 		return 'rgba(' + rgb + ',' + alpha + ')';
 }
 
-var debug = true;
+var debug = false;
