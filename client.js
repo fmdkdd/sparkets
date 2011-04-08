@@ -143,9 +143,15 @@ Ship.prototype = {
 
 	explode : function() {
 		this.explo_bits = [];
+		var vel = Math.max(this.vel.x, this.vel.y);
+
 		for (var i=0; i < 200; ++i)
-			this.explo_bits.push([this.pos.x + 2*Math.random() -1,
-			                      this.pos.y + 2*Math.random() -1]);
+			this.explo_bits.push({
+				x: this.pos.x,
+				y: this.pos.y, 
+				vx : .5*vel * (2*Math.random() -1),
+				vy : .5*vel * (2*Math.random() -1),
+			});
 		this.explo_iter = 0;
 	},
 
@@ -153,15 +159,15 @@ Ship.prototype = {
 		var x = this.pos.x;
 		var y = this.pos.y;
 
-		ctxt.fillStyle = color(this.color);
-		this.explo_bits.forEach(function(p, idx, array) {
-			ctxt.fillRect(p[0], p[1], 2, 2);
-			array[idx] = [p[0]+(p[0]-x)*.3 + 2*Math.random()-1,
-			              p[1]+(p[1]-y)*.25 + 2*Math.random()-1,];
+		ctxt.fillStyle = color(this.color, (50-this.explo_iter)/50);
+		this.explo_bits.forEach(function(p) {
+			ctxt.fillRect(p.x, p.y, 2, 2);
+			p.x += p.vx + (2*Math.random() -1)/1.5;
+			p.y += p.vy + (2*Math.random() -1)/1.5;
 		});
 
 		++this.explo_iter;
-		if (this.explo_iter > 100) {
+		if (this.explo_iter > 50) {
 			this.dead = true;
 			delete this.explo_bits;
 			delete this.explo_iter;
