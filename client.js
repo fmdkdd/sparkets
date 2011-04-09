@@ -1,3 +1,5 @@
+var port = 12345;
+
 var socket;
 
 var ctxt;
@@ -24,11 +26,12 @@ planet_color = '127, 157, 185';
 var keys = {};
 
 function init() {
-	var host = 'ws://localhost:12345/websocket/server.php';
-
 	try{
-		socket = new WebSocket(host);
-		socket.onmessage = receive;
+		socket = new io.Socket(null, {port:port});
+		socket.connect();
+		socket.on('message', onMessage);
+		socket.on('connect', onConnect);
+		socket.on('disconnect', onDisconnect);
 	} catch(ex) { error(ex); }
 	
 	ctxt = document.getElementById('canvas').getContext("2d");
@@ -44,11 +47,6 @@ function init() {
 function ready() {
 	document.onkeydown = processKeyDown;
 	document.onkeyup = processKeyUp;
-
-	$(window).unload(function(event) {
-			ship.send_bye();
-		});
-
 	setInterval(update, 20);
 }
 
@@ -71,19 +69,11 @@ Ship.prototype = {
 	color : null,
 
 	send : function() {
-		var msg = 's:' + [this.id, this.pos.x, this.pos.y, this.dir].join(':');
-		log("sending: " + msg);
-		try{ socket.send(msg); } catch (ex) { error(ex); }
-	},
-
-	send_new : function() {
-		var msg = 'ns:' + [this.id, this.pos.x, this.pos.y, this.dir].join(':');
-		log("sending: " + msg);
-		try{ socket.send(msg); } catch (ex) { error(ex); }
-	},
-
-	send_bye : function () {
-		var msg = 'bye:' + this.id;
+		var msg = { type: 'ship',
+		            playerId: this.id,
+		            ship: { x: this.pos.x,
+		                    y: this.pos.y,
+		                    dir: this.dir }};
 		log("sending: " + msg);
 		try{ socket.send(msg); } catch (ex) { error(ex); }
 	},
@@ -210,7 +200,9 @@ Bullet.prototype = {
 	acc : null,
 
 	send : function() {
-		var msg = 'b:' + [this.owner.id, this.power].join(':');
+		var msg = { type: 'bullet',
+		            playerId: this.owner.id,
+		            firePower : this.power };
 		log("sending: " + msg);
 		try{ socket.send(msg); } catch (ex) { error(ex); }
 	},
@@ -431,11 +423,11 @@ function processInputs() {
 	}
 }
 
-function processKeyDown() {
+function processKeyDown(event) {
 	keys[event.keyCode] = true;
 }
 
-function processKeyUp() {
+function processKeyUp(event) {
 	keys[event.keyCode] = false;
 
 	// fire the bullet if the spacebar is released
@@ -446,50 +438,64 @@ function processKeyUp() {
 	}
 }
 
-function receive(msg) {
-	log("received: " + msg.data);
-	var data = msg.data.split(':');
-	var type = data[0];
-	switch (type) {
-	case 'b':
-		var id = data[1];
-		var power = parseFloat(data[2]);
-		other_ships[id].fire_power = power;
+function onConnect() {
+	log("Connected to server");
+}
+
+function onDisconnect() {
+	log("Aaargh! disconnected!");
+}
+
+function onMessage(msg) {
+	log("received: ");
+	log(msg);
+
+	switch (msg.type) {
+
+		// When received bullet data.
+	case 'bullet':
+		var id = msg.playerId;
+		other_ships[id].fire_power = msg.firePower;
 		other_ships[id].fire();
 		other_ships[id].fire_power = 1;
 		break;
-	case 's':
-		var id = data[1];
-		if (other_ships[id] == undefined)
-			other_ships[id] = new Ship(enemy_color);
-		other_ships[id].pos.x = parseFloat(data[2]);
-		other_ships[id].pos.y = parseFloat(data[3]);
-		other_ships[id].dir = parseFloat(data[4]);
+
+		// When received other ship data.
+	case 'ship':
+		var id = msg.playerId;
+		other_ships[id].pos.x = msg.ship.x;
+		other_ships[id].pos.y = msg.ship.y;
+		other_ships[id].dir = msg.ship.dir;
 		break;
-	case 'p':
-		var p = new Planet(parseFloat(data[1]),
-		                   parseFloat(data[2]),
-		                   parseFloat(data[3])); 
+
+		// When received planet data.
+	case 'planet':
+		var p = new Planet(msg.planet.x,
+		                   msg.planet.y,
+		                   msg.planet.size);
 		planets.push(p);
 		p.draw();
 		break;
-	case 'ns':
-		var s = new Ship(enemy_color);
-		s.id = data[1];
-		s.pos.x = parseFloat(data[2]);
-		s.pos.y = parseFloat(data[3]);
-		s.dir = parseFloat(data[4]);
-		other_ships[s.id] = s;
-		ship.send();
-		break;
-	case 'id':
+
+		// When receiving our id from the server.
+	case 'connected':
+		error("got id from server");
 		ship = new Ship(ship_color);
-		ship.id = data[1];
-		ship.send_new();
+		ship.id = msg.playerId;
 		ready();
 		break;
-	case 'bye':
-		delete other_ships[data[1]];
+
+		// When another player joins.
+	case 'player joins':
+		error("new player!");
+		var s = new Ship(enemy_color);
+		s.id = msg.playerId;
+		other_ships[s.id] = s;
+		break;
+
+		// When another player leaves.
+	case 'player quits':
+		delete other_ships[msg.playerId];
 		break;
 	}
 }
