@@ -14,6 +14,9 @@ server = http.createServer(function(req, res) {
 		// Allow only these three files.
 	case '/client.html':
 	case '/client.js':
+	case '/ship.js':
+	case '/bullet.js':
+	case '/planet.js':
 	case '/jquery-1.5.2.min.js':
 		fs.readFile(__dirname + path, function(err, data){
 			if (err) return send404(res);
