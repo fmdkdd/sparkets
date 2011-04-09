@@ -18,7 +18,6 @@ server = http.createServer(function(req, res) {
 	case '/bullet.js':
 	case '/planet.js':
 	case '/utils.js':
-	case '/jquery-1.5.2.min.js':
 		fs.readFile(__dirname + path, function(err, data){
 			if (err) return send404(res);
 			res.writeHead(200, {'Content-Type': js(path) ?
