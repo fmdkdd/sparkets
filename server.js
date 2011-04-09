@@ -103,9 +103,9 @@ function onDisconnect(player) {
 
 function initPlanets() {
 	var planets = [];
-	for (var i=0; i < 4; ++i) {
-		planets.push({ x: Math.random()*800,
-		               y: Math.random()*600,
+	for (var i=0; i < 35; ++i) {
+		planets.push({ x: Math.random()*2000,
+		               y: Math.random()*2000,
 		               size: 50+Math.random()*50 });
 	}
 	return planets;
