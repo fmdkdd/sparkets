@@ -69,6 +69,9 @@ Ship.prototype = {
 	color : null,
 
 	send : function() {
+		if (this.dead || this.explo_bits)
+			return;
+
 		var msg = { type: 'ship',
 		            playerId: this.id,
 		            ship: { x: this.pos.x,
@@ -147,14 +150,15 @@ Ship.prototype = {
 	},
 
 	fire : function() {
+		if (this.dead || this.explo_bits)
+			return;
+
 		bullets.push(new Bullet(this.pos.x, this.pos.y, this.dir, this.color, this))
 		if (bullets.length > max_bullets)
 			bullets.shift();
 	},
 
 	explode : function() {
-		this.send_dead();
-
 		this.explo_bits = [];
 		var vel = Math.max(this.vel.x, this.vel.y);
 
@@ -166,6 +170,8 @@ Ship.prototype = {
 				vy : .5*vel * (2*Math.random() -1),
 			});
 		this.explo_iter = 0;
+
+		this.send_dead();
 	},
 
 	draw_explosion : function() {
@@ -409,6 +415,9 @@ function draw_infinity() {
 }
 
 function processInputs() {
+	if (ship.dead || ship.explo_bits)
+		return;
+
 	// left arrow : rotate to the left
 	if(keys[37]) {
 		ship.dir -= dir_inc;
