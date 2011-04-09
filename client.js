@@ -126,12 +126,8 @@ Ship.prototype = {
 			return;
 		else if (this.explo_bits != undefined)
 			this.draw_explosion();
-		else {
+		else
 			this.draw_ship();
-
-			if(this == ship)
-				this.draw_radar();
-		}
 	},
 
 	draw_ship : function() {
@@ -153,22 +149,6 @@ Ship.prototype = {
 		ctxt.closePath();
 		ctxt.stroke();
 		ctxt.fill();
-	},
-
-	draw_radar : function() {
-		for(var os in other_ships) {
-			var dx = other_ships[os].pos.x - this.pos.x;
-			var dy = other_ships[os].pos.y - this.pos.y;
-			var d = Math.sqrt(dx*dx + dy*dy);
-			var rx = dx / d * 40;
-			var ry = dy / d * 40;
-			
-			ctxt.strokeStyle = color(planet_color);
-			ctxt.beginPath();
-			ctxt.arc(screen.w / 2 + rx, screen.h / 2 + ry, 2, 0, 2*Math.PI, false);
-			ctxt.closePath();
-			ctxt.stroke();
-		}
 	},
 
 	center_view : function() {
@@ -219,12 +199,10 @@ Ship.prototype = {
 function Bullet(x, y, angle, color, owner) {
 	this.owner = owner;
 	this.power = owner.fire_power;
-	this.acc_x = this.power*10*Math.sin(angle);
-	this.acc_y = this.power*-10*Math.cos(angle);
-	this.x = x + this.acc_x;
-	this.y = y + this.acc_y
+	this.acc = {x : this.power*10*Math.sin(angle), y : this.power*-10*Math.cos(angle)};
+	this.pos = {x : x, y : y};
 	this.color = color;
-	this.tail = [[this.x, this.y]];
+	this.tail = [[this.pos.x, this.pos.y]];
 
 	if (owner.id == ship.id)
 		this.send();
@@ -234,11 +212,22 @@ function Bullet(x, y, angle, color, owner) {
 
 Bullet.prototype = {
 	owner : null,
+	pos : null,
+	acc : null,
 
 	send : function() {
 		var msg = 'b:' + [this.owner.id, this.power].join(':');
 		log("sending: " + msg);
 		try{ socket.send(msg); } catch (ex) { error(ex); }
+	},
+
+	draw : function(nx, ny) {
+		ctxt.strokeStyle = color(this.color);
+		ctxt.beginPath();
+		ctxt.moveTo(this.pos.x, this.pos.y);
+		ctxt.lineTo(nx, ny);
+		ctxt.closePath();
+		ctxt.stroke();
 	},
 
 	draw_tail : function(alpha) {
@@ -257,31 +246,22 @@ Bullet.prototype = {
 		ctxt.stroke();
 	},
 
-	draw : function(nx, ny) {
-		ctxt.strokeStyle = color(this.color);
-		ctxt.beginPath();
-		ctxt.moveTo(this.x, this.y);
-		ctxt.lineTo(nx, ny);
-		ctxt.closePath();
-		ctxt.stroke();
-	},
-
 	step : function() {
 		if (this.dead)
 			return;
 
-		var x = this.x;
-		var y = this.y;
+		var x = this.pos.x;
+		var y = this.pos.y;
 		
-		var ax = this.acc_x;
-		var ay = this.acc_y;
+		var ax = this.acc.x;
+		var ay = this.acc.y;
 
 		planets.forEach(function(p) {
-			var d = (p.x-x)*(p.x-x) + (p.y-y)*(p.y-y);
+			var d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y);
 			var d2 = 200 * p.force / (d * Math.sqrt(d));
 
-			ax -= (x-p.x) * d2;
-			ay -= (y-p.y) * d2;
+			ax -= (x-p.pos.x) * d2;
+			ay -= (y-p.pos.y) * d2;
 		});
 
 		var nx = x + ax;
@@ -289,11 +269,11 @@ Bullet.prototype = {
 
 		this.tail.push([nx, ny]);
 
-		this.x = nx;
-		this.y = ny;
+		this.pos.x = nx;
+		this.pos.y = ny;
 		
-		this.acc_x = ax;
-		this.acc_y = ay;
+		this.acc.x = ax;
+		this.acc.y = ay;
 
 		var os;
 		if (collideWithShip(nx,ny)) {
@@ -310,8 +290,6 @@ Bullet.prototype = {
 		} else if (this.outOfBounds(nx,ny)) {
 			log("byebye");
 			this.dead = true;
-		} else {
-			//setTimeout(function(bullet) {bullet.step();}, 20, this);
 		}
 	},
 
@@ -344,36 +322,30 @@ function collideWithOtherShip(x,y) {
 function collideWithPlanet(x,y) {
 	for (var op in planets) {
 		var p = planets[op];
-		if (Math.sqrt((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y)) < p.force)
+		if (Math.sqrt((p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)) < p.force)
 			return p;
 	}
 	return false;
 }
 
 function Planet(x, y, force) {
-	this.x = x;
-	this.y = y;
+	this.pos = {x : x, y : y};
 	this.force = force;
 }
 
 Planet.prototype = {
-	x : null,
-	y : null,
+  pos : null,
 	force : null,
 
 	draw : function() {
-		for(var i = -1; i <= 1; ++i)
-			for(var j = -1; j <= 1; ++j)
-			{
-				var x = this.x + j * map.w;
-				var y = this.y + i * map.h;
+		var x = this.pos.x - view.x;
+		var y = this.pos.y - view.y;
 
-				ctxt.strokeStyle = color(planet_color);
-				ctxt.beginPath();
-				ctxt.arc(x - view.x, y - view.y, this.force, 0, 2*Math.PI, false);
-				ctxt.closePath();
-				ctxt.stroke();
-			}
+		ctxt.strokeStyle = color(planet_color);
+		ctxt.beginPath();
+		ctxt.arc(x, y, this.force, 0, 2*Math.PI, false);
+		ctxt.closePath();
+		ctxt.stroke();
 	}
 }
 
@@ -394,9 +366,45 @@ function redraw() {
 	planets.forEach(function(p) { p.draw(); });
 
 	ship.draw();
-
 	for (var s in other_ships)
 		other_ships[s].draw();
+
+	draw_radar();
+
+	draw_infinity();
+}
+
+function draw_radar() {
+	for(var os in other_ships) {
+		var dx = other_ships[os].pos.x - ship.pos.x;
+		var dy = other_ships[os].pos.y - ship.pos.y;
+		var d = Math.sqrt(dx*dx + dy*dy);
+		var rx = dx / d * 50;
+		var ry = dy / d * 50;
+		
+		ctxt.strokeStyle = color(planet_color);
+		ctxt.beginPath();
+		ctxt.arc(screen.w / 2 + rx, screen.h / 2 + ry, 2, 0, 2*Math.PI, false);
+		ctxt.closePath();
+		ctxt.stroke();
+	}
+}
+
+function draw_infinity() {
+	ctxt.strokeStyle = color(planet_color);
+	for(var i = -1; i <= 1; ++i)
+		for(var j = -1; j <= 1; ++j)
+			if(i != 0 || j != 0)
+				for(var p in planets)
+				{
+					var x = planets[p].pos.x + j * map.w - view.x;
+					var y = planets[p].pos.y + i * map.h - view.y;
+
+					ctxt.beginPath();
+					ctxt.arc(x, y, planets[p].force, 0, 2*Math.PI, false);
+					ctxt.closePath();
+					ctxt.stroke();
+				}
 }
 
 function processInputs() {
