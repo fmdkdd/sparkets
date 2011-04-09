@@ -3,8 +3,8 @@ var socket;
 var ctxt;
 
 var screen = {w : 0, h : 0};
-var map = {w : 2000, h : 2000};
 var view = {x : 0, y : 0};
+var map = {w : 2000, h : 2000};
 
 var ship = null;
 var other_ships = {};
@@ -36,9 +36,7 @@ function init() {
 	$(window).resize(function(event) {
 			screen.w = document.getElementById('canvas').width = window.innerWidth;
 			screen.h = document.getElementById('canvas').height = window.innerHeight;
-
-			if(ship != null)
-				ship.center_view();
+			center_view();
 		});
 	$(window).resize();
 }
@@ -62,7 +60,7 @@ function Ship(color) {
 	this.fire_power = 1;
 	this.dead = false;
 
-	this.center_view();
+	center_view();
 }
 
 Ship.prototype = {
@@ -99,7 +97,8 @@ Ship.prototype = {
 		this.pos.y = this.pos.y < 0 ? map.h : this.pos.y;
 		this.pos.y = this.pos.y > map.h ? 0 : this.pos.y;
 
-		this.center_view();
+		if(this == ship)
+			center_view();
 
     // friction
 		this.vel.x *= friction_decay;
@@ -149,11 +148,6 @@ Ship.prototype = {
 		ctxt.closePath();
 		ctxt.stroke();
 		ctxt.fill();
-	},
-
-	center_view : function() {
-		view.x = this.pos.x - screen.w / 2;
-		view.y = this.pos.y - screen.h / 2;
 	},
 
 	fire : function() {
@@ -355,6 +349,13 @@ function update() {
 	redraw();
 	
 	processInputs();
+}
+
+function center_view() {
+	if(ship != null) {
+		view.x = ship.pos.x - screen.w / 2;
+		view.y = ship.pos.y - screen.h / 2;
+	}
 }
 
 function redraw() {
