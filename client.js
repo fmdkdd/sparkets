@@ -23,19 +23,18 @@ const maxPower = 3;
 const maxBullets = 5;
 const shipSpeed = 0.3;
 const frictionDecay = 0.97;
+const maxExploFrame = 50;
 
 // Input
 var keys = {};
 
 function init() {
 	// Connect to server and set callbacks.
-	try{
-		socket = new io.Socket(null, {port:port});
-		socket.connect();
-		socket.on('message', onMessage);
-		socket.on('connect', onConnect);
-		socket.on('disconnect', onDisconnect);
-	} catch(ex) { error(ex); }
+	socket = new io.Socket(null, {port:port});
+	socket.connect();
+	socket.on('message', onMessage);
+	socket.on('connect', onConnect);
+	socket.on('disconnect', onDisconnect);
 
 	// Setup canvas
 	ctxt = document.getElementById('canvas').getContext("2d");
@@ -57,11 +56,13 @@ function ready() {
 
 // Game loop!
 function update() {
+	processInputs();
+
 	ship.update();
 	bullets.forEach(function(b) { b.step(); });
+
+	centerView();
 	redraw();
-	
-	processInputs();
 }
 
 // Clear canvas and draw everything.
@@ -71,7 +72,7 @@ function redraw() {
 	
 	// Draw all bullets with decreasing opacity.
 	var len = bullets.length;
-	bullets.forEach(function(b, idx) { b.drawTail((idx+1)/len); });
+	bullets.forEach(function(b, idx) { b.draw((idx+1)/len); });
 
 	// Draw all planets.
 	planets.forEach(function(p) { p.draw(); });
@@ -87,21 +88,22 @@ function redraw() {
 }
 	
 function	collideWithShip(x,y) {
-	if (ship.dead || ship.exploBits)
+	if (ship.isDead())
 		return false;
 
-	if (Math.abs(x - ship.pos.x) < 10 && Math.abs(y - ship.pos.y) < 10) {
-		ship.explode();
+	if (Math.abs(x - ship.pos.x) < 10
+	    && Math.abs(y - ship.pos.y) < 10)
 		return true;
-	}
+
 	return false;
 }
 
 function collideWithOtherShip(x,y) {
 	for (var os in otherShips) {
 		var s = otherShips[os];
-		if (!s.dead && !s.exploBits
-		    && Math.abs(x - s.pos.x) < 10 && Math.abs(y - s.pos.y) < 10)
+		if (!s.isDead()
+		    && Math.abs(x - s.pos.x) < 10
+		    && Math.abs(y - s.pos.y) < 10)
 			return s;
 	}
 	return false;
@@ -189,40 +191,35 @@ function processKeyUp(event) {
 	keys[event.keyCode] = false;
 
 	// fire the bullet if the spacebar is released
-	if(event.keyCode == 32)	{
+	if(event.keyCode == 32)
 		ship.fire();
-		ship.firePower = 1;
-	}
 }
 
 function onConnect() {
-	log("Connected to server");
+	info("Connected to server");
 }
 
 function onDisconnect() {
-	log("Aaargh! disconnected!");
+	info("Aaargh! disconnected!");
 }
 
 function onMessage(msg) {
-	log("received: ");
-	log(msg);
-
 	switch (msg.type) {
 
 		// When received bullet data.
 	case 'bullet':
-		var id = msg.playerId;
-		otherShips[id].firePower = msg.firePower;
-		otherShips[id].fire();
-		otherShips[id].firePower = 1;
+		var os = otherShips[msg.playerId];
+		os.firePower = msg.firePower;
+		os.fire();
 		break;
 
 		// When received other ship data.
 	case 'ship':
-		var id = msg.playerId;
-		otherShips[id].pos.x = msg.ship.x;
-		otherShips[id].pos.y = msg.ship.y;
-		otherShips[id].dir = msg.ship.dir;
+		var os = otherShips[msg.playerId];
+		os.pos.x = msg.ship.x;
+		os.pos.y = msg.ship.y;
+		os.dir = msg.ship.dir;
+		ship.checkCollisionWith(os);
 		break;
 
 		// When received planet data.
@@ -231,7 +228,6 @@ function onMessage(msg) {
 		                   msg.planet.y,
 		                   msg.planet.size);
 		planets.push(p);
-		p.draw();
 		break;
 
 		// When receiving our id from the server.
@@ -248,26 +244,14 @@ function onMessage(msg) {
 		otherShips[s.id] = s;
 		break;
 
-		// When another player leaves.
+		// When another player dies.
 	case 'player dies':
+		otherShips[msg.playerId].explode();
+		break;
+
+		// When another player leaves.
 	case 'player quits':
 		delete otherShips[msg.playerId];
 		break;
 	}
 }
-
-function quit() {
-	try { socket.send("STOP"); } catch (ex) { error(ex); }
-}
-
-// Utilities
-function log(msg) { if (debug) console.log(msg); }
-function error(msg) { console.log(msg); }
-function color(rgb, alpha) {
-	if (alpha == undefined)
-		return 'rgb(' + rgb + ')';
-	else
-		return 'rgba(' + rgb + ',' + alpha + ')';
-}
-
-var debug = false;

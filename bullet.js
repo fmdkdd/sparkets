@@ -1,10 +1,15 @@
-function Bullet(x, y, angle, color, owner) {
+function Bullet(owner) {
 	this.owner = owner;
+	this.pos = { x : owner.pos.x,
+	             y : owner.pos.y };
+
 	this.power = owner.firePower;
-	this.acc = {x : this.power*10*Math.sin(angle), y : this.power*-10*Math.cos(angle)};
-	this.pos = {x : x, y : y};
-	this.color = color;
-	this.tail = [[this.pos.x, this.pos.y]];
+
+	this.accel = { x : 10*this.power*Math.sin(owner.dir),
+	               y : -10*this.power*Math.cos(owner.dir) };
+
+	this.color = owner.color;
+	this.points = [[this.pos.x, this.pos.y]];
 
 	if (owner.id == ship.id)
 		this.send();
@@ -15,31 +20,22 @@ function Bullet(x, y, angle, color, owner) {
 Bullet.prototype = {
 
 	send : function() {
-		var msg = { type: 'bullet',
-		            playerId: this.owner.id,
-		            firePower : this.power };
-		log("sending: " + msg);
-		try{ socket.send(msg); } catch (ex) { error(ex); }
+		socket.send({ type: 'bullet',
+		              playerId: this.owner.id,
+		              firePower : this.power });
 	},
 
-	draw : function(nx, ny) {
-		ctxt.strokeStyle = color(this.color);
-		ctxt.beginPath();
-		ctxt.moveTo(this.pos.x, this.pos.y);
-		ctxt.lineTo(nx, ny);
-		ctxt.closePath();
-		ctxt.stroke();
-	},
+	draw : function(alpha) {
+		var points = this.points;
 
-	drawTail : function(alpha) {
 		ctxt.strokeStyle = color(this.color, alpha);
 		ctxt.beginPath();
-		var x = this.tail[0][0] - view.x;
-		var y = this.tail[0][1] - view.y;
+		var x = points[0][0] - view.x;
+		var y = points[0][1] - view.y;
 		ctxt.moveTo(x, y);
-		for (var i=1, len=this.tail.length; i < len; ++i) {
-			x = this.tail[i][0] - view.x;
-			y = this.tail[i][1] - view.y;
+		for (var i=1, len=points.length; i < len; ++i) {
+			x = points[i][0] - view.x;
+			y = points[i][1] - view.y;
 			ctxt.lineTo(x, y);
 			ctxt.moveTo(x, y);		
 		}
@@ -51,11 +47,13 @@ Bullet.prototype = {
 		if (this.dead)
 			return;
 
+		// Compute new position from acceleration and gravity of all
+		// planets.
 		var x = this.pos.x;
 		var y = this.pos.y;
 		
-		var ax = this.acc.x;
-		var ay = this.acc.y;
+		var ax = this.accel.x;
+		var ay = this.accel.y;
 
 		planets.forEach(function(p) {
 			var d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y);
@@ -68,33 +66,40 @@ Bullet.prototype = {
 		var nx = x + ax;
 		var ny = y + ay;
 
-		this.tail.push([nx, ny]);
+		this.points.push([nx, ny]);
 
 		this.pos.x = nx;
 		this.pos.y = ny;
 		
-		this.acc.x = ax;
-		this.acc.y = ay;
+		this.accel.x = ax;
+		this.accel.y = ay;
 
+		this.checkCollisions();
+	},
+
+	checkCollisions : function() {
+		var x = this.pos.x;
+		var y = this.pos.y;
 		var os;
-		if (collideWithShip(nx,ny)) {
-			log("You are dead.");
+		if (collideWithShip(x,y)) {
 			ship.explode();
 			this.dead = true;
-		} else if (os = collideWithOtherShip(nx,ny)) {
-			log("BOOM SHAKALAKA!");
+		}
+		else if (os = collideWithOtherShip(x,y)) {
 			os.explode();
 			this.dead = true;
-		} else if (collideWithPlanet(nx,ny)) {
-			log("miss...");
+		}
+		else if (collideWithPlanet(x,y)) {
 			this.dead = true;
-		} else if (this.outOfBounds(nx,ny)) {
-			log("byebye");
+		}
+		else if (this.outOfBounds()) {
 			this.dead = true;
 		}
 	},
 
-	outOfBounds : function(x,y) {
+	outOfBounds : function() {
+		var x = this.pos.x;
+		var y = this.pos.y;
 		return x < 0 || x > map.w || y < 0 || y > map.h;
 	}
 };
