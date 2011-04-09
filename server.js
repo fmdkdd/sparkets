@@ -79,14 +79,22 @@ function onConnect(player) {
 }
 
 function onMessage(obj, player) {
+	// Purge player from list when dead.
+	if (obj.type == 'player dies')
+		delete players[obj.playerId];
+
 	// Broadcast message.
 	player.broadcast(obj);
 }
 
 function onDisconnect(player) {
+	// Purge from list.
+	var id = player.sessionId;
+	delete players[id];
+
 	// Tell everyone.
 	player.broadcast({ type: 'player quits',
-	                   playerId: player.sessionId });
+	                   playerId: id });
 }
 
 function initPlanets() {

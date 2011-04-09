@@ -78,6 +78,12 @@ Ship.prototype = {
 		try{ socket.send(msg); } catch (ex) { error(ex); }
 	},
 
+	send_dead : function() {
+		var msg = { type: 'player dies',
+		            playerId: this.id };
+		try{ socket.send(msg); } catch (ex) { error(ex); }	
+	},
+
 	move : function() {
 		this.pos.x += this.vel.x;
 		this.pos.y += this.vel.y;
@@ -147,6 +153,8 @@ Ship.prototype = {
 	},
 
 	explode : function() {
+		this.send_dead();
+
 		this.explo_bits = [];
 		var vel = Math.max(this.vel.x, this.vel.y);
 
@@ -479,7 +487,6 @@ function onMessage(msg) {
 
 		// When receiving our id from the server.
 	case 'connected':
-		error("got id from server");
 		ship = new Ship(ship_color);
 		ship.id = msg.playerId;
 		ready();
@@ -494,6 +501,7 @@ function onMessage(msg) {
 		break;
 
 		// When another player leaves.
+	case 'player dies':
 	case 'player quits':
 		delete other_ships[msg.playerId];
 		break;
