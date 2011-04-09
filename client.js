@@ -112,7 +112,9 @@ function collideWithOtherShip(x,y) {
 function collideWithPlanet(x,y) {
 	for (var op in planets) {
 		var p = planets[op];
-		if (Math.sqrt((p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)) < p.force)
+		var px = p.pos.x;
+		var py = p.pos.y;
+		if (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force)
 			return p;
 	}
 	return false;
@@ -158,7 +160,7 @@ function drawInfinity() {
 }
 
 function processInputs() {
-	if (ship.dead || ship.exploBits)
+	if (ship.isDead())
 		return;
 
 	// left arrow : rotate to the left
