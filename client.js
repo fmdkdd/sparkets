@@ -86,7 +86,7 @@ function redraw() {
 
 	drawInfinity();
 }
-	
+
 function	collideWithShip(x,y) {
 	if (ship.isDead())
 		return false;
@@ -147,7 +147,7 @@ function drawInfinity() {
 	ctxt.strokeStyle = color(planetColor);
 	for (var i = -1; i <= 1; ++i)
 		for (var j = -1; j <= 1; ++j)
-			if (i != 0 || j != 0)
+			if (i !== 0 || j !== 0)
 				for (var p in planets) {
 					var x = planets[p].pos.x + j * map.w - view.x;
 					var y = planets[p].pos.y + i * map.h - view.y;
