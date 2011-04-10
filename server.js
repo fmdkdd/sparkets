@@ -83,7 +83,7 @@ function onConnect(player) {
 
 function onMessage(obj, player) {
 	// Purge player from list when dead.
-	if (obj.type == 'player dies')
+	if (obj.type === 'player dies')
 		delete players[obj.playerId];
 
 	// Broadcast message.

@@ -193,7 +193,7 @@ function processKeyUp(event) {
 	keys[event.keyCode] = false;
 
 	// fire the bullet if the spacebar is released
-	if(event.keyCode == 32)
+	if(event.keyCode === 32)
 		ship.fire();
 }
 

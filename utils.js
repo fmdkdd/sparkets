@@ -6,7 +6,7 @@ function error(msg) { console.error(msg); }
 
 // Neat color construction
 function color(rgb, alpha) {
-	if (alpha == undefined)
+	if (alpha === undefined)
 		return 'rgb(' + rgb + ')';
 	else
 		return 'rgba(' + rgb + ',' + alpha + ')';
