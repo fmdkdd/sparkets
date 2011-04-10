@@ -11,3 +11,8 @@ function color(rgb, alpha) {
 	else
 		return 'rgba(' + rgb + ',' + alpha + ')';
 }
+
+// Stupid % operator
+function mod(x, n) {
+	return x > 0 ? x%n : n+(x%n);
+}

@@ -51,11 +51,13 @@ function init() {
 function ready() {
 	document.onkeydown = processKeyDown;
 	document.onkeyup = processKeyUp;
-	setInterval(update, 20);
+	update();
 }
 
 // Game loop!
 function update() {
+	var start = (new Date()).getTime();
+
 	processInputs();
 
 	ship.update();
@@ -63,6 +65,9 @@ function update() {
 
 	centerView();
 	redraw();
+
+	var diff = (new Date()).getTime() - start;
+	setTimeout(update, 20-mod(diff, 20));
 }
 
 // Clear canvas and draw everything.
