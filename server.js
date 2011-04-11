@@ -11,7 +11,7 @@ var fs = require('fs');
 server = http.createServer(function(req, res) {
 	var path = url.parse(req.url).pathname;
 	switch (path) {
-		// Allow only these three files.
+		// Allow only these six files.
 	case '/client.html':
 	case '/client.js':
 	case '/ship.js':
@@ -66,15 +66,15 @@ function onConnect(player) {
 	var id = player.sessionId;
 	players[id] = id;
 
-	// Good news!
-	player.send({ type: 'connected',
-	              playerId: id });
-
 	// Send the playfield.
 	planets.forEach(function(p) {
 		player.send({ type: 'planet',
 		              planet: p });
 	});
+
+	// Good news!
+	player.send({ type: 'connected',
+	              playerId: id });
 
 	// Poke all other players.
 	player.broadcast({ type: 'player joins',
@@ -106,17 +106,6 @@ function initPlanets() {
 		planets.push({ x: Math.random()*2000,
 		               y: Math.random()*2000,
 		               size: 50+Math.random()*50 });
-	
-	// remove one planet in each inter-penetrating planets pair
-	for(var i = 0; i < planets.length; ++i)
-		for(var j = i + 1; j < planets.length; ++j)
-		{
-			var distance = Math.sqrt(Math.pow(planets[i].x - planets[j].x, 2) +
-															 Math.pow(planets[i].y - planets[j].y, 2));
-
-			if(distance < planets[i].size + planets[j].size)
-				planets.splice(j--, 1);
-		}
 
 	return planets;
 }

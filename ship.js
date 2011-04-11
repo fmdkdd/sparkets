@@ -1,6 +1,19 @@
 function Ship(color) {
-	this.pos = { x: Math.random() * map.w,
-	             y: Math.random() * map.h };
+	// Find a suitable position for the ship.
+	do
+	{
+		var x = Math.random() * map.w;
+		var y = Math.random() * map.h;
+		var isInsidePlanet = false;
+
+		for(var i = 0, len = planets.length; i < len; ++i)
+			if(distance(planets[i].pos.x, planets[i].pos.y, x, y) < planets[i].force) {
+				isInsidePlanet = true;
+				break;
+			}
+	} while(isInsidePlanet=== true);
+
+	this.pos = { x : x, y : y };
 	this.vel = { x: 0, y: 0 };
 	this.dir = Math.random() * 2*Math.PI;
 	this.color = color;

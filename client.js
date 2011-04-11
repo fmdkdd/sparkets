@@ -92,7 +92,11 @@ function redraw() {
 	drawInfinity();
 }
 
-function	collideWithShip(x,y) {
+function distance(x1, y1, x2, y2) {
+	return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+}
+
+function collideWithShip(x,y) {
 	if (ship.isDead())
 		return false;
 
