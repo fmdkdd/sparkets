@@ -11,7 +11,7 @@ function Bullet(owner) {
 	this.color = owner.color;
 	this.points = [[this.pos.x, this.pos.y]];
 
-	if (owner.id == ship.id)
+	if (owner.id === ship.id)
 		this.send();
 
 	this.dead = false;

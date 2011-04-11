@@ -30,10 +30,10 @@ Ship.prototype = {
 		var x = this.pos.x;
 		var y = this.pos.y;
 
-		this.pos.x = x < 0 ? map.w : x;
-		this.pos.x = x > map.w ? 0 : x;
-		this.pos.y = y < 0 ? map.h : y;
-		this.pos.y = y > map.h ? 0 : y;
+		this.pos.x = this.pos.x < 0 ? map.w : this.pos.x;
+		this.pos.x = this.pos.x > map.w ? 0 : this.pos.x;
+		this.pos.y = this.pos.y < 0 ? map.h : this.pos.y;
+		this.pos.y = this.pos.y > map.h ? 0 : this.pos.y;
 
 		// friction
 		this.vel.x *= frictionDecay;

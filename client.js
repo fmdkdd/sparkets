@@ -30,7 +30,7 @@ var keys = {};
 
 function init() {
 	// Connect to server and set callbacks.
-	socket = new io.Socket(null, {port:port});
+	socket = new io.Socket('127.0.0.1', {port:port});
 	socket.connect();
 	socket.on('message', onMessage);
 	socket.on('connect', onConnect);
@@ -51,11 +51,13 @@ function init() {
 function ready() {
 	document.onkeydown = processKeyDown;
 	document.onkeyup = processKeyUp;
-	setInterval(update, 20);
+	update();
 }
 
 // Game loop!
 function update() {
+	var start = (new Date()).getTime();
+
 	processInputs();
 
 	ship.update();
@@ -63,6 +65,9 @@ function update() {
 
 	centerView();
 	redraw();
+
+	var diff = (new Date()).getTime() - start;
+	setTimeout(update, 20-mod(diff, 20));
 }
 
 // Clear canvas and draw everything.
@@ -86,7 +91,7 @@ function redraw() {
 
 	drawInfinity();
 }
-	
+
 function	collideWithShip(x,y) {
 	if (ship.isDead())
 		return false;
@@ -143,17 +148,34 @@ function drawRadar() {
 	}
 }
 
+// shameful proof of concept, to be reformulated 
+// and optimized soon (maybe add an offset inside
+// ship and planet draw() methods?)
 function drawInfinity() {
 	ctxt.strokeStyle = color(planetColor);
 	for (var i = -1; i <= 1; ++i)
 		for (var j = -1; j <= 1; ++j)
-			if (i != 0 || j != 0)
+			if (i !== 0 || j !== 0)
 				for (var p in planets) {
 					var x = planets[p].pos.x + j * map.w - view.x;
 					var y = planets[p].pos.y + i * map.h - view.y;
 
 					ctxt.beginPath();
 					ctxt.arc(x, y, planets[p].force, 0, 2*Math.PI, false);
+					ctxt.closePath();
+					ctxt.stroke();
+				}
+	
+	ctxt.strokeStyle = color(enemyColor);
+	for (var i = -1; i <= 1; ++i)
+		for (var j = -1; j <= 1; ++j)
+			if (i !== 0 || j !== 0)
+				for (var os in otherShips) {
+					var x = otherShips[os].pos.x + j * map.w - view.x;
+					var y = otherShips[os].pos.y + i * map.h - view.y;
+					
+					ctxt.beginPath();
+					ctxt.arc(x, y, 10, 0, 2*Math.PI, false);
 					ctxt.closePath();
 					ctxt.stroke();
 				}
@@ -193,7 +215,7 @@ function processKeyUp(event) {
 	keys[event.keyCode] = false;
 
 	// fire the bullet if the spacebar is released
-	if(event.keyCode == 32)
+	if(event.keyCode === 32)
 		ship.fire();
 }
 

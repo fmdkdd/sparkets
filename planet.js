@@ -15,4 +15,4 @@ Planet.prototype = {
 		ctxt.closePath();
 		ctxt.stroke();
 	}
-}
+};
