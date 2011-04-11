@@ -148,37 +148,21 @@ function drawRadar() {
 	}
 }
 
-// shameful proof of concept, to be reformulated 
-// and optimized soon (maybe add an offset inside
-// ship and planet draw() methods?)
+// shameful proof of concept, to be reformulated and optimized soon
 function drawInfinity() {
-	ctxt.strokeStyle = color(planetColor);
 	for (var i = -1; i <= 1; ++i)
 		for (var j = -1; j <= 1; ++j)
 			if (i !== 0 || j !== 0)
-				for (var p in planets) {
-					var x = planets[p].pos.x + j * map.w - view.x;
-					var y = planets[p].pos.y + i * map.h - view.y;
-
-					ctxt.beginPath();
-					ctxt.arc(x, y, planets[p].force, 0, 2*Math.PI, false);
-					ctxt.closePath();
-					ctxt.stroke();
-				}
+				for (var p in planets)
+					planets[p].draw({x : j * map.w, y : i * map.h});
 	
-	ctxt.strokeStyle = color(enemyColor);
 	for (var i = -1; i <= 1; ++i)
 		for (var j = -1; j <= 1; ++j)
 			if (i !== 0 || j !== 0)
-				for (var os in otherShips) {
-					var x = otherShips[os].pos.x + j * map.w - view.x;
-					var y = otherShips[os].pos.y + i * map.h - view.y;
-					
-					ctxt.beginPath();
-					ctxt.arc(x, y, 10, 0, 2*Math.PI, false);
-					ctxt.closePath();
-					ctxt.stroke();
-				}
+				for (var os in otherShips)
+					otherShips[os].draw({x : j * map.w, y : i * map.h});
+
+	
 }
 
 function processInputs() {

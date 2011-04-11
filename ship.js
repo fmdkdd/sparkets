@@ -79,18 +79,21 @@ Ship.prototype = {
 		this.checkCollisions();
 	},
 	
-	draw : function() {
+	draw : function(offset) {
 		if (this.dead)
 			return;
 		else if (this.exploBits)
-			this.drawExplosion();
+			this.drawExplosion(offset);
 		else
-			this.drawShip();
+			this.drawShip(offset);
 	},
 
-	drawShip : function() {
-		var x = this.pos.x - view.x;
-		var y = this.pos.y - view.y;
+	drawShip : function(offset) {
+		if(offset == undefined)
+			offset = {x : 0, y : 0};
+
+		var x = this.pos.x - view.x + offset.x;
+		var y = this.pos.y - view.y + offset.y;
 		var cos = Math.cos(this.dir);
 		var sin = Math.sin(this.dir);
 

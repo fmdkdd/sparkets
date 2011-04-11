@@ -25,21 +25,19 @@ Bullet.prototype = {
 		              firePower : this.power });
 	},
 
-	draw : function(alpha) {
+	draw : function(alpha, offset) {
+		if(offset == undefined)
+			offset = {x : 0, y : 0};
+
 		var points = this.points;
 
 		ctxt.strokeStyle = color(this.color, alpha);
 		ctxt.beginPath();
-		var x = points[0][0] - view.x;
-		var y = points[0][1] - view.y;
-		ctxt.moveTo(x, y);
-		for (var i=1, len=points.length; i < len; ++i) {
-			x = points[i][0] - view.x;
-			y = points[i][1] - view.y;
-			ctxt.lineTo(x, y);
-			ctxt.moveTo(x, y);		
-		}
-		ctxt.closePath();
+
+		ctxt.moveTo(points[0][0] - view.x + offset.x, points[0][1] - view.y + offset.y);
+		for (var i=1, len=points.length; i < len; ++i)
+			ctxt.lineTo(points[i][0] - view.x + offset.x, points[i][1] - view.y + offset.y);
+
 		ctxt.stroke();
 	},
 
@@ -73,6 +71,12 @@ Bullet.prototype = {
 		
 		this.accel.x = ax;
 		this.accel.y = ay;
+
+		// warp the bullet around the map
+		this.pos.x = this.pos.x < 0 ? map.w : this.pos.x;
+		this.pos.x = this.pos.x > map.w ? 0 : this.pos.x;
+		this.pos.y = this.pos.y < 0 ? map.h : this.pos.y;
+		this.pos.y = this.pos.y > map.h ? 0 : this.pos.y;
 
 		this.checkCollisions();
 	},

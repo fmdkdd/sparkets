@@ -5,9 +5,12 @@ function Planet(x, y, force) {
 
 Planet.prototype = {
 
-	draw : function() {
-		var x = this.pos.x - view.x;
-		var y = this.pos.y - view.y;
+	draw : function(offset) {
+		if(offset == undefined)
+			offset = {x : 0, y : 0};
+
+		var x = this.pos.x - view.x + offset.x;
+		var y = this.pos.y - view.y + offset.y;
 
 		ctxt.strokeStyle = color(planetColor);
 		ctxt.beginPath();
