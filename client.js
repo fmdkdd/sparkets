@@ -148,21 +148,34 @@ function drawRadar() {
 	}
 }
 
-// shameful proof of concept, to be reformulated and optimized soon
 function drawInfinity() {
-	for (var i = -1; i <= 1; ++i)
-		for (var j = -1; j <= 1; ++j)
-			if (i !== 0 || j !== 0)
-				for (var p in planets)
-					planets[p].draw({x : j * map.w, y : i * map.h});
-	
-	for (var i = -1; i <= 1; ++i)
-		for (var j = -1; j <= 1; ++j)
-			if (i !== 0 || j !== 0)
-				for (var os in otherShips)
-					otherShips[os].draw({x : j * map.w, y : i * map.h});
+	// can the player see the left, right, top and bottom voids?
+	var left = view.x < 0;
+	var right = view.x > map.w - screen.w;
+	var top = view.y < 0;
+	var bottom = view.y > map.h - screen.h;
 
+	var visibility = [[left && top, top, right && top],
+										[left, false, right],
+										[left && bottom, bottom, right && bottom]];
+
+	for (var i = 0; i < 3; ++i)
+		for (var j = 0; j < 3; ++j)
+			if (visibility[i][j])
+				for (var p in planets)
+					planets[p].draw({x : (j-1) * map.w, y : (i-1) * map.h});
 	
+	for (var i = 0; i < 3; ++i)
+		for (var j = 0; j < 3; ++j)
+			if (visibility[i][j])
+				for (var os in otherShips)
+					otherShips[os].draw({x : (j-1) * map.w, y : (i-1) * map.h});
+
+/*	for (var i = 0; i < 3; ++i)
+		for (var j = 0; j < 3; ++j)
+			if (visibility[i][j])
+				for (var b in bullets)
+				bullets[b].draw(255, {x : (j-1) * map.w, y : (i-1) * map.h});*/
 }
 
 function processInputs() {
