@@ -102,11 +102,22 @@ function onDisconnect(player) {
 
 function initPlanets() {
 	var planets = [];
-	for (var i=0; i < 35; ++i) {
+	for (var i=0; i < 35; ++i)
 		planets.push({ x: Math.random()*2000,
 		               y: Math.random()*2000,
 		               size: 50+Math.random()*50 });
-	}
+	
+	// remove one planet in each inter-penetrating planets pair
+	for(var i = 0; i < planets.length; ++i)
+		for(var j = i + 1; j < planets.length; ++j)
+		{
+			var distance = Math.sqrt(Math.pow(planets[i].x - planets[j].x, 2) +
+															 Math.pow(planets[i].y - planets[j].y, 2));
+
+			if(distance < planets[i].size + planets[j].size)
+				planets.splice(j--, 1);
+		}
+
 	return planets;
 }
 
