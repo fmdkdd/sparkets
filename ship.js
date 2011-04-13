@@ -134,29 +134,33 @@ Ship.prototype = {
 	},
 
 	explode : function() {
-		this.sendDead();
+		if (this === ship)
+			this.sendDead();
 
 		this.exploBits = [];
 		var vel = Math.max(this.vel.x, this.vel.y);
 
 		for (var i=0; i < 200; ++i)
 			this.exploBits.push({
-				x: this.pos.x - view.x,
-				y: this.pos.y - view.y, 
+				x: this.pos.x,
+				y: this.pos.y,
 				vx : .5*vel * (2*Math.random() -1),
 				vy : .5*vel * (2*Math.random() -1),
 			});
 		this.exploFrame = 0;
 	},
 
-	drawExplosion : function() {
-		var x = this.pos.x - view.x;
-		var y = this.pos.y - view.y;
+	drawExplosion : function(offset) {
+		if(offset == undefined)
+			offset = {x : 0, y : 0};
+
+		var ox = -view.x + offset.x;
+		var oy = -view.y + offset.y;
 
 		ctxt.fillStyle = color(this.color,
 		                       (maxExploFrame-this.exploFrame)/maxExploFrame);
 		this.exploBits.forEach(function(p) {
-			ctxt.fillRect(p.x, p.y, 4, 4);
+			ctxt.fillRect(p.x + ox, p.y + oy, 4, 4);
 			p.x += p.vx + (2*Math.random() -1)/1.5;
 			p.y += p.vy + (2*Math.random() -1)/1.5;
 		});
