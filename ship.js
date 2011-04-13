@@ -156,7 +156,7 @@ Ship.prototype = {
 		ctxt.fillStyle = color(this.color,
 		                       (maxExploFrame-this.exploFrame)/maxExploFrame);
 		this.exploBits.forEach(function(p) {
-			ctxt.fillRect(p.x, p.y, 2, 2);
+			ctxt.fillRect(p.x, p.y, 4, 4);
 			p.x += p.vx + (2*Math.random() -1)/1.5;
 			p.y += p.vy + (2*Math.random() -1)/1.5;
 		});
