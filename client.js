@@ -74,6 +74,8 @@ function update() {
 // Not efficient, but we don't have that many objects.
 function redraw() {
 	ctxt.clearRect(0, 0, screen.w, screen.h);
+	ctxt.lineWidth = 4;
+	ctxt.lineJoin = 'round';
 	
 	// Draw all bullets with decreasing opacity.
 	var len = bullets.length;
