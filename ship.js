@@ -59,11 +59,9 @@ Ship.prototype = {
 		var os;
 		if (os = collideWithOtherShip(x,y)) {
 			this.explode();
-			this.sendDead();
 			os.explode();
 		} else if (collideWithPlanet(x, y)) {
 			this.explode();
-			this.sendDead();
 		}
 	},
 
@@ -74,7 +72,6 @@ Ship.prototype = {
 		if (Math.abs(this.pos.x - os.pos.x) < 10
 		    && Math.abs(this.pos.y - os.pos.y) < 10) {
 			this.explode();
-			this.sendDead();
 			os.explode();
 		}
 	},
@@ -137,6 +134,8 @@ Ship.prototype = {
 	},
 
 	explode : function() {
+		this.sendDead();
+
 		this.exploBits = [];
 		var vel = Math.max(this.vel.x, this.vel.y);
 
@@ -165,6 +164,7 @@ Ship.prototype = {
 		++this.exploFrame;
 		if (this.exploFrame > maxExploFrame) {
 			this.dead = true;
+			delete otherShips[this.id];
 			delete this.exploBits;
 			delete this.exploFrame;
 		}
