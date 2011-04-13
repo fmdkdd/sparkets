@@ -5,11 +5,11 @@ function Bullet(owner) {
 
 	this.power = owner.firePower;
 
-	this.accel = { x : 10*this.power*Math.sin(owner.dir),
-	               y : -10*this.power*Math.cos(owner.dir) };
+	this.accel = { x : owner.vel.x + 10*this.power*Math.sin(owner.dir),
+	               y : owner.vel.y + -10*this.power*Math.cos(owner.dir) };
 
 	this.color = owner.color;
-	this.points = [[this.pos.x, this.pos.y]];
+	this.points = [];
 
 	if (owner.id === ship.id)
 		this.send();
