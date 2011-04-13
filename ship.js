@@ -17,7 +17,7 @@ function Ship(color) {
 	this.vel = { x: 0, y: 0 };
 	this.dir = Math.random() * 2*Math.PI;
 	this.color = color;
-	this.firePower = 1;
+	this.firePower = 1.2;
 	this.dead = false;
 }
 
@@ -130,7 +130,7 @@ Ship.prototype = {
 		if (bullets.length > maxBullets)
 			bullets.shift();
 
-		this.firePower = 1;
+		this.firePower = 1.2;
 	},
 
 	explode : function() {
