@@ -1,6 +1,6 @@
-function Planet(x, y, force) {
-	this.pos = {x : x, y : y};
-	this.force = force;
+function Planet(planet) {
+	this.pos = planet.pos;
+	this.force = planet.force;
 }
 
 Planet.prototype = {
