@@ -16,16 +16,16 @@ Ship.prototype = {
 	},
 
 	
-	draw : function(offset) {
+	draw : function(ctxt, offset) {
 		if (this.dead)
 			return;
 		else if (this.exploBits)
-			this.drawExplosion(offset);
+			this.drawExplosion(ctxt, offset);
 		else
-			this.drawShip(offset);
+			this.drawShip(ctxt, offset);
 	},
 
-	drawShip : function(offset) {
+	drawShip : function(ctxt, offset) {
 		if(offset == undefined)
 			offset = {x : 0, y : 0};
 
@@ -43,7 +43,8 @@ Ship.prototype = {
 		ctxt.fillStyle = color(this.color, (this.firePower-1)/maxPower);
 		ctxt.beginPath();
 		ctxt.moveTo(x+points[3][0], y+points[3][1]);
-		points.forEach(function(p) { ctxt.lineTo(x+p[0], y+p[1]); });
+		for (var p in points)
+			ctxt.lineTo(x+points[p][0], y+points[p][1]);
 		ctxt.closePath();
 		ctxt.stroke();
 		ctxt.fill();
@@ -63,7 +64,7 @@ Ship.prototype = {
 		this.exploFrame = 0;
 	},
 
-	drawExplosion : function(offset) {
+	drawExplosion : function(ctxt, offset) {
 		if(offset == undefined)
 			offset = {x : 0, y : 0};
 

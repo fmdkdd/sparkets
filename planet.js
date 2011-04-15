@@ -5,16 +5,26 @@ function Planet(planet) {
 
 Planet.prototype = {
 
-	draw : function(offset) {
+	draw : function(ctxt, offset) {
 		if(offset == undefined)
 			offset = {x : 0, y : 0};
 
-		var x = this.pos.x - view.x + offset.x;
-		var y = this.pos.y - view.y + offset.y;
+		var px = this.pos.x + offset.x;
+		var py = this.pos.y + offset.y;
+		var f = this.force;
+
+		if (!inView(px + f, py + f)
+		    && !inView(px + f, py - f)
+		    && !inView(px - f, py + f)
+		    && !inView(px - f, py - f))
+			return;
+
+		var x = px - view.x;
+		var y = py - view.y;
 
 		ctxt.strokeStyle = color(planetColor);
 		ctxt.beginPath();
-		ctxt.arc(x, y, this.force, 0, 2*Math.PI, false);
+		ctxt.arc(x, y, f, 0, 2*Math.PI, false);
 		ctxt.stroke();
 	}
 };
