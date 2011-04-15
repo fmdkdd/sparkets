@@ -1,15 +1,15 @@
 # Server
 port = 12345
 
-interp_factor = .03
-lastUpdate = 0
-
 # Graphics
-screen = w: 0, h: 0
-map = w: 2000, h: 2000
-view = x: 0, y: 0
+screen = {w: 0, h: 0}
+map = {w: 2000, h: 2000}
+view = {x: 0, y: 0}
 
 planetColor = '127, 157, 185'
+
+interp_factor = .03
+lastUpdate = 0
 
 # Game logic
 maxPower = 3
@@ -22,7 +22,7 @@ bullets = []
 
 init = () ->
 	# Connect to server and set callbacks.
-	socket = new io.Socket null port:port
+	socket = new io.Socket null, {port: port}
 	socket.connect()
 	socket.on 'message', onMessage
 	socket.on 'connect', onConnect
@@ -39,20 +39,16 @@ init = () ->
 	$(window).resize()
 
 # Setup input callbacks and launch game loop.
-ready: () ->
+ready = () ->
 	document.onkeydown (event) =>
-		socket.send type:'key down'
-		            playerId:id
-		            key: event.keyCode
+		socket.send {type: 'key down', playerId: id, key: event.keyCode}
 
 	document.onkeyup (event) =>
-		socket.send type:'key up'
-		            playerId:id
-		            key:event.keyCode
+		socket.send {type: 'key up', playerId: id, key: event.keyCode}
 
 	update()
 
-interpolate: (time) ->
+interpolate = (time) ->
 	info time if time*interp_factor > 1
 
 	for id, s of serverShips
@@ -94,7 +90,7 @@ interpolate: (time) ->
 		ship.exploFrame = shadow.exploFrame
 
 # Game loop!
-update: () ->
+update = () ->
 	start = (new Date).getTime()
 
 	interpolate((new Date).getTime() - lastUpdate)
@@ -109,7 +105,7 @@ inView: (x, y) ->
 
 # Clear canvas and draw everything.
 # Not efficient, but we don't have that many objects.
-redraw: (ctxt) ->
+redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, screen.w, screen.h)
 	ctxt.lineWidth = 4
 	ctxt.lineJoin = 'round'
@@ -130,7 +126,7 @@ redraw: (ctxt) ->
 
 	drawInfinity ctxt
 
-centerView: () ->
+centerView = () ->
 	if ships[id]?
 		view.x = ships[id].pos.x - screen.w / 2
 		view.y = ships[id].pos.y - screen.h / 2
@@ -149,7 +145,7 @@ drawRadar: (ctxt) ->
 			ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, 2, 0, 2*Math.PI, false)
 			ctxt.stroke()
 
-drawInfinity: (ctxt) ->
+drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
 	left = view.x < 0;
 	right = view.x > map.w - screen.w;
@@ -178,13 +174,13 @@ drawInfinity: (ctxt) ->
 				for b in bullets
 					b.draw(ctxt, 255, x: (j-1)*map.w, y: (i-1)*map.h)
 
-onConnect: () ->
+onConnect = () ->
 	info "Connected to server"
 
-onDisconnect: () ->
+onDisconnect = () ->
 	info "Aaargh! disconnected!"
 
-onMessage: (msg) ->
+onMessage = (msg) ->
 	switch msg.type
 
 		# When received bullet data.
@@ -200,7 +196,7 @@ onMessage: (msg) ->
 				serverShips[s] = new Ship(s)
 			lastUpdate = (new Date).getTime()
 			for s in ships
-				delete s if typeof serverShips[s] === 'undefined'
+				delete s if not serverShips[s]?
 			ships = {};
 
 		# When received planet data.
@@ -216,10 +212,12 @@ onMessage: (msg) ->
 
 		# When another player joins.
 		when 'player joins'
-
+			console.info 'player joins'
 
 		# When another player dies.
 		when 'player dies'
+			console.info 'player dies'
 
-		// When another player leaves.
+		# When another player leaves.
 		when 'player quits'
+			console.info 'player quits'

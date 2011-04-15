@@ -1,18 +1,29 @@
-// Console output shortcuts.
-function log(msg) { console.log(msg); }
-function info(msg) { console.info(msg); }
-function warn(msg) { console.warn(msg); }
-function error(msg) { console.error(msg); }
-
-// Neat color construction
-function color(rgb, alpha) {
-	if (alpha === undefined)
-		return 'rgb(' + rgb + ')';
-	else
-		return 'rgba(' + rgb + ',' + alpha + ')';
-}
-
-// Stupid % operator
-function mod(x, n) {
-	return x > 0 ? x%n : n+(x%n);
-}
+(function() {
+  var color, info, log, mod, warn;
+  log = function(msg) {
+    return console.log(msg);
+  };
+  info = function(msg) {
+    return console.info(msg);
+  };
+  warn = function(msg) {
+    return console.warn(msg);
+  };
+  log = function(msg) {
+    return console.error(msg);
+  };
+  color = function(rgb, alpha) {
+    if (!(alpha != null)) {
+      return 'rgb(' + rgb + ')';
+    } else {
+      return 'rgba(' + rgb + ',' + alpha + ')';
+    }
+  };
+  mod = function(x, n) {
+    if (x > 0) {
+      return x % n;
+    } else {
+      return n + (x % n);
+    }
+  };
+}).call(this);
