@@ -6,13 +6,13 @@ url = require 'url'
 fs = require 'fs'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# HTTP server setup
+# HTTP server setupl
 #
 
 server = http.createServer (req, res) ->
 	path = url.parse(req.url).pathname
 	switch path
-		when '/client.html', '/client.js', '/ship.js', '/bullet.js', '/planet.js', '/utils.js'
+		when '/client.html', '/cplient.js', '/ship.js', '/bullet.js', '/planet.js', '/utils.js'
 			fs.readFile __dirname + path, (err, data) ->
 				return send404(res) if err?
 				res.writeHead 200, 'Content-Type': if js path then 'text/javascript' else 'text/html'
@@ -61,8 +61,8 @@ io.on 'clientConnect', (player) ->
 
 io.on 'clientMessage', (msg, player) ->
 	switch msg.type
- 		when 'key down' then processKeyDown msg.playerId, msg.key
-		when 'key up' then processKeyUp msg.playerId, msg.key
+		when 'key down' then alert 'x'
+		when 'key up' then alert 'y'
 
 io.on 'clientDisconnect', (player) ->
 	# Purge from list.
@@ -79,24 +79,6 @@ console.log "Server started"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Game server handling
 #
-
-dirInc = 0.1
-maxPower = 3
-minFirepower = 1.3
-cannonCooldown = 20
-maxBullets = 5
-shipSpeed = 0.3
-frictionDecay = 0.97
-maxExploFrame = 50
-
-map = w: 2000, h: 2000
-
-players = {}
-ships = {}
-bullets = []
-planets = initPlanets()
-
-update()
 
 processKeyDown = (id, key) ->
 	players[id].keys[key] = on
@@ -159,7 +141,7 @@ updateBullets = () ->
 
 initPlanets = () ->
 	planets = []
-	for i in [0..35]
+	for [0..35]
 		planets.push new Planet Math.random()*2000,
 		                        Math.random()*2000,
 		                        50+Math.random()*50
@@ -234,7 +216,7 @@ class Ship
 	isDead: () ->
 		return @dead or @exploBits?
 
-	update: () ->
+	 () ->
 		return if @dead
 
 		if @exploBits?
@@ -344,8 +326,7 @@ class Bullet
 
 class Planet
 	constructor: (x, y, @force) ->
-		@pos = x: x
-					 y: y
+		@pos = x: x, y: y
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Utilities
@@ -373,3 +354,22 @@ distance = (x1, y1, x2, y2) ->
 
 randomColor = () ->
 	return Math.round(70 + Math.random()*150) + ',' + Math.round(70 + Math.random()*150) + ',' + Math.round(70 + Math.random()*150)
+
+# Launch the game loop once everything is defined.
+dirInc = 0.1
+maxPower = 3
+minFirepower = 1.3
+cannonCooldown = 20
+maxBullets = 5
+shipSpeed = 0.3
+frictionDecay = 0.97
+maxExploFrame = 50
+
+map = w: 2000, h: 2000
+
+players = {}
+ships = {}
+bullets = []
+planets = initPlanets()
+
+update()

@@ -22,7 +22,7 @@ serverShips = {}
 planets = []
 bullets = []
 
-$(document).ready (event) =>
+$(document).ready (event) ->
 	# Connect to server and set callbacks.
 	socket = new io.Socket null, {port: port}
 	socket.connect()
