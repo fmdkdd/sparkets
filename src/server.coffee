@@ -188,10 +188,6 @@ class Ship
 		@cannonHeat = 0
 		@dead = false
 
-	update: () ->
-		@move()
-		--@coolDown
-
 	move: () ->
 		@pos.x += @vel.x
 		@pos.y += @vel.y
@@ -206,16 +202,16 @@ class Ship
 		@vel.y *= frictionDecay
 
 	collides: () ->
-		return @collidesWithOtherShip or
-			@collidesWithPlanet() or
-			@collidesWithBullet()
+		return @collidesWithOtherShip() or
+			@collidesWithBullet() or
+			@collidesWithPlanet()
 
 	collidesWithOtherShip: () ->
 		x = @pos.x
 		y = @pos.y
 
 		for s in ships
-			if @ isnt s and
+			if @id isnt s.id and
 				Math.abs(x - ship.pos.x) < 10 and
 			  Math.abs(y - ship.pos.y) < 10
 				return true
@@ -225,9 +221,12 @@ class Ship
 		x = @pos.x
 		y = @pos.y
 
-		return planets.some (p) =>
-			px = p.pos.x py = p.pos.y
-			return (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force)
+		for p in planets
+			px = p.pos.x
+			py = p.pos.y
+			if (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force) then return true
+
+		return false
 
 	collidesWithBullet: () ->
 		x = @pos.x
@@ -245,7 +244,7 @@ class Ship
 	isDead: () ->
 		return @dead or @exploBits?
 
-	 () ->
+	update: () ->
 		return if @dead
 
 		if @exploBits?
@@ -253,7 +252,7 @@ class Ship
 		else
 			--@cannonHeat
 			@move()
-			@explode if @collides()
+			@explode() if @collides()
 	
 	fire : () ->
 		return if @isDead() or @cannonHeat > 0
@@ -270,15 +269,16 @@ class Ship
 		vel = Math.max @vel.x, @vel.y
 
 		for [0..200]
-			@exploBits.push x: @pos.x,
-											y: @pos.y,
-											vx : .5*vel * (2*Math.random() -1),
-											vy : .5*vel * (2*Math.random() -1)
+			@exploBits.push
+				x: @pos.x
+				y: @pos.y
+				vx : .5*vel * (-1 + 2*Math.random())
+				vy : .5*vel * (-1 + 2*Math.random())
 
 	updateExplosion : () ->
 		for b in @exploBits
-			b.x += b.vx + (2*Math.random() -1)/1.5
-			b.y += b.vy + (2*Math.random() -1)/1.5
+			b.x += b.vx + (-1 + 2*Math.random())/1.5
+			b.y += b.vy + (-1 + 2*Math.random())/1.5
 
 		++@exploFrame
 
