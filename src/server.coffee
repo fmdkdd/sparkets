@@ -6,13 +6,35 @@ url = require 'url'
 fs = require 'fs'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# HTTP server setupl
+# Utilities
+#
+
+log = (msg) ->
+	console.log msg
+
+error = (msg) ->
+	console.error msg
+
+js = (path) ->
+	 return path.match(/js$/)
+
+mod = (x, n) ->
+	if x > 0 then return x%n else return n+(x%n)
+
+distance = (x1, y1, x2, y2) ->
+	return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
+
+randomColor = () ->
+	return Math.round(70 + Math.random()*150) + ',' + Math.round(70 + Math.random()*150) + ',' + Math.round(70 + Math.random()*150)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# HTTP server setup
 #
 
 server = http.createServer (req, res) ->
 	path = url.parse(req.url).pathname
 	switch path
-		when '/client.html', '/cplient.js', '/ship.js', '/bullet.js', '/planet.js', '/utils.js'
+		when '/client.html', '/client.js'
 			fs.readFile __dirname + path, (err, data) ->
 				return send404(res) if err?
 				res.writeHead 200, 'Content-Type': if js path then 'text/javascript' else 'text/html'
@@ -328,34 +350,10 @@ class Planet
 	constructor: (x, y, @force) ->
 		@pos = x: x, y: y
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Utilities
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Launch the game loop once everything is defined.
 #
 
-# Console output shortcuts.
-log = (msg) ->
-	console.log msg
-
-info = (msg) ->
-	console.info msg
-
-warn = (msg) ->
-	console.warn msg
-
-log = (msg) ->
-	console.error msg
-
-# Stupid % operator.
-mod = (x, n) ->
-	if x > 0 then return x%n else return n+(x%n)
-
-distance = (x1, y1, x2, y2) ->
-	return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
-
-randomColor = () ->
-	return Math.round(70 + Math.random()*150) + ',' + Math.round(70 + Math.random()*150) + ',' + Math.round(70 + Math.random()*150)
-
-# Launch the game loop once everything is defined.
 dirInc = 0.1
 maxPower = 3
 minFirepower = 1.3
