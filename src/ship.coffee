@@ -1,5 +1,6 @@
 class Ship
 	constructor: (ship) ->
+		if Math.random() < 0.1 then console.log ship.dir
 		@pos = ship.pos
 		@dir = ship.dir
 		@vel = ship.vel
@@ -29,8 +30,8 @@ class Ship
 		sin = Math.sin @dir
 
 		points = [[-7,10], [0,-10], [7,10], [0,6]]
-		for p in points
-			p = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
+		for i, p of points
+			points[i] = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
 
 		ctxt.strokeStyle = color @color
 		ctxt.fillStyle = color @color, (@firePower-1)/maxPower
