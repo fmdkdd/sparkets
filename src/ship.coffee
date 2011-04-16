@@ -28,7 +28,7 @@ class Ship
 		cos = Math.cos @dir
 		sin = Math.sin @dir
 
-		points = [[-7,10] [0,-10] [7,10] [0,6]]
+		points = [[-7,10], [0,-10], [7,10], [0,6]]
 		for p in points
 			p = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
 

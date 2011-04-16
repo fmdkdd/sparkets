@@ -93,8 +93,9 @@ io.on 'clientDisconnect', (player) ->
 	delete ships[id]
 
 	# Tell everyone.
-	player.broadcast type: 'player quits',
-	                 playerId: id
+	player.broadcast
+		type: 'player quits'
+		playerId : id
 
 console.log "Server started"
 
@@ -115,8 +116,8 @@ processKeyUp = (id, key) ->
 processInputs = (id) ->
 	keys = players[id].keys
 	ship = ships[id]
-	
-	return if not ship? or ship.isDead
+
+	if not ship? or ship.isDead() then return
 
 	# left arrow : rotate to the left
 	if keys[37] is on
@@ -148,18 +149,20 @@ update = () ->
 	setTimeout(update, 20-mod(diff, 20))
 
 updateShips = () ->
-	for s in ships
+	for i, s of ships
 		s.update()
 
-	io.broadcast type: 'ships',
-	             ships: ships
+	io.broadcast
+		type: 'ships'
+		ships: ships
 
 updateBullets = () ->
 	for b in bullets
 		b.step()
-
-	io.broadcast type: 'bullets',
-	             bullets: bullets
+	#console.log bullets.length + ' bullets'
+	io.broadcast
+		type: 'bullet'
+		bullets: bullets
 
 initPlanets = () ->
 	planets = []
@@ -184,6 +187,10 @@ class Ship
 		@firePower = minFirepower
 		@cannonHeat = 0
 		@dead = false
+
+	update: () ->
+		@move()
+		--@coolDown
 
 	move: () ->
 		@pos.x += @vel.x
@@ -287,10 +294,12 @@ class Ship
 
 class Bullet
 	constructor: (@owner) ->
-		@pos = x: @owner.pos.x
-					 y: @owner.pos.y
-		@accel = x: @owner.vel.x + 10*@power*Math.sin(owner.dir)
-	           y: @owner.vel.y + -10*@power*Math.cos(owner.dir)
+		@pos =
+			x: @owner.pos.x
+			y: @owner.pos.y
+		@accel =
+			x: @owner.vel.x + 10*@power*Math.sin(owner.dir)
+			y: @owner.vel.y + -10*@power*Math.cos(owner.dir)
 		@power = @owner.firePower
 		@dead = false
 		
@@ -339,7 +348,8 @@ class Bullet
 		y = @pos.y
 
 		return planets.some (p) ->
-			px = p.pos.x py = p.pos.y
+			px = p.pos.x
+			py = p.pos.y
 			return (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -10,9 +10,6 @@ view = {x: 0, y: 0}
 
 planetColor = '127, 157, 185'
 
-interp_factor = .03
-lastUpdate = 0
-
 # Game logic
 maxPower = 3
 maxExploFrame = 50
@@ -22,6 +19,9 @@ ships = {}
 serverShips = {}
 planets = []
 bullets = []
+
+interp_factor = .03
+lastUpdate = 0
 
 # Entry point
 $(document).ready (event) ->
@@ -35,32 +35,39 @@ $(document).ready (event) ->
 	# Setup canvas.
 	ctxt = document.getElementById('canvas').getContext('2d')
 
+	# Setup window resizing event.
 	$(window).resize (event) =>
 		screen.w = document.getElementById('canvas').width = window.innerWidth
 		screen.h = document.getElementById('canvas').height = window.innerHeight
 		centerView()
-
 	$(window).resize()
 
 # Setup input callbacks and launch game loop.
-ready = () ->
-	$(document).keydown (event) =>
-		socket.send {type: 'key down', playerId: id, key: event.keyCode}
+go = (clientId) ->
+	id = clientId
 
-	$(document).keyup (event) =>
-		socket.send {type: 'key up', playerId: id, key: event.keyCode}
+	$(document).keydown (event) ->
+		socket.send
+			type: 'key down'
+			playerId: id
+			key: event.keyCode
+
+	$(document).keyup (event) ->
+		socket.send 
+			type: 'key up'
+			playerId: id
+			key: event.keyCode
 
 	update()
 
 interpolate = (time) ->
 	#info time if time*interp_factor > 1
 
-	for id, s of serverShips
-		ship = ships[id]
-		shadow = serverShips[id]
+	for i, ship of serverShips
+		shadow = serverShips[i]
 
 		if not ship?
-			ships[id] = shadow
+			ships[i] = shadow
 			continue
 
 		# X interpolation
@@ -86,7 +93,6 @@ interpolate = (time) ->
 
 		# Everything else
 		ship.vel = shadow.vel
-		ship.dir = shadow.dir
 		ship.color = shadow.color
 		ship.firePower = shadow.firePower
 		ship.dead = shadow.dead
@@ -116,7 +122,7 @@ redraw = (ctxt) ->
 
 	# Draw all bullets with decreasing opacity.
 	len = bullets.length
-	for b, i of bullets
+	for i, b of bullets
 		b.draw(ctxt, (i+1)/len);
 
 	# Draw all planets.
@@ -124,10 +130,12 @@ redraw = (ctxt) ->
 		p.draw(ctxt)
 
 	# Draw all ships.
-	for s in ships
+	for i, s of ships
 		s.draw ctxt
-		drawRadar ctxt if !ships[id]?.isDead()
 
+	#drawRadar ctxt if !ships[id].isDead()
+	
+	# Draw outside of the map bounds.
 	drawInfinity ctxt
 
 centerView = () ->
@@ -136,10 +144,10 @@ centerView = () ->
 		view.y = ships[id].pos.y - screen.h / 2
 
 drawRadar: (ctxt) ->
-	for i,s in ships
+	for i, s of ships
 		if (i isnt id)
-			dx = ships[s].pos.x - ships[id].pos.x
-			dy = ships[s].pos.y - ships[id].pos.y
+			dx = ships[i].pos.x - ships[id].pos.x
+			dy = ships[i].pos.y - ships[id].pos.y
 			d = Math.sqrt(dx*dx + dy*dy)
 			rx = dx / d * 50;
 			ry = dy / d * 50;
@@ -182,7 +190,7 @@ onConnect = () ->
 	info "Connected to server"
 
 onDisconnect = () ->
-	info "Aaargh! disconnected!"
+	info "Aaargh! Disconnected!"
 
 onMessage = (msg) ->
 	switch msg.type
@@ -195,13 +203,13 @@ onMessage = (msg) ->
 
 		# When received other ship data.
 		when 'ships'
-			serverShips = {}
-			for s in msg.ships
-				serverShips[s] = new Ship s
+			serverShips = ships = {}
+
+			for i, s of msg.ships
+				serverShips[i] = new Ship s
+				ships[i] = new Ship s
+
 			lastUpdate = (new Date).getTime()
-			for s in ships
-				delete s if not serverShips[s]?
-			ships = {}
 
 		# When received planet data.
 		when 'planets'
@@ -211,15 +219,16 @@ onMessage = (msg) ->
 
 		# When receiving our id from the server.
 		when 'connected'
-			id = msg.playerId
-			ready()
-###
+			go(msg.playerId)
+
 		# When another player joins.
 		when 'player joins'
+			console.info 'new payer joins'
 
 		# When another player dies.
 		when 'player dies'
+			console.info 'player dies'
 
 		# When another player leaves.
 		when 'player quits'
-###
+			console.info 'player quits'
