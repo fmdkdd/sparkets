@@ -1,6 +1,5 @@
 class Ship
 	constructor: (ship) ->
-		if Math.random() < 0.1 then console.log ship.dir
 		@pos = ship.pos
 		@dir = ship.dir
 		@vel = ship.vel

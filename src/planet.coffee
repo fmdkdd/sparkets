@@ -8,10 +8,7 @@ class Planet
 		py = @pos.y + offset.y
 		f = @force;
 
-		return if not inView px+f, py+f and
-			not inView px+f, py-f and
-			not inView px-f, py+f and
-			not inView px-f, py-f
+		#if not inView px+f, py and not inView px-f, py and not inView px, py+f and not inView px, py-f then return
 
 		x = px - view.x
 		y = py - view.y

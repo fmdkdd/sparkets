@@ -103,7 +103,7 @@ interpolate = (time) ->
 update = () ->
 	start = (new Date).getTime()
 
-	#interpolate((new Date).getTime() - lastUpdate)
+	interpolate((new Date).getTime() - lastUpdate)
 	centerView()
 	redraw(ctxt)
 

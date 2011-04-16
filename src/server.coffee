@@ -151,7 +151,6 @@ update = () ->
 updateShips = () ->
 	for i, s of ships
 		s.update()
-		console.log s.dir
 
 	io.broadcast
 		type: 'ships'
