@@ -1,7 +1,41 @@
 (function() {
-  var bullets, centerView, drawInfinity, init, interp_factor, interpolate, lastUpdate, map, maxExploFrame, maxPower, onConnect, onDisconnect, onMessage, planetColor, planets, port, ready, redraw, screen, serverShips, ships, update, view;
+  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, drawInfinity, id, inView, info, init, interp_factor, interpolate, lastUpdate, log, map, maxExploFrame, maxPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, ready, redraw, screen, serverShips, ships, update, view, warn;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  Bullet = (function() {
+    function Bullet(bullet) {
+      this.owner = bullet.owner;
+      this.pos = bullet.pos;
+      this.accel = bullet.accel;
+      this.power = bullet.power;
+      this.dead = bullet.dead;
+      this.color = bullet.color;
+      this.points = bullets.points;
+    }
+    Bullet.prototype.draw = function(ctxt, alpha, offset) {
+      var point, x, y, _i, _len;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      ctxt.strokeStyle = color(this.color, alpha);
+      ctxt.beginPath();
+      x = this.points[0][0] - view.x + offset.x;
+      y = this.points[0][1] - view.y + offset.y;
+      ctxt.moveTo(x, y);
+      for (_i = 0, _len = points.length; _i < _len; _i++) {
+        point = points[_i];
+        x = p[0] - view.x + offset.x;
+        y = p[1] - view.y + offset.y;
+        ctxt.lineTo(x, y);
+      }
+      return ctxt.stroke();
+    };
+    return Bullet;
+  })();
   port = 12345;
+  ctxt = null;
   screen = {
     w: 0,
     h: 0
@@ -19,12 +53,13 @@
   lastUpdate = 0;
   maxPower = 3;
   maxExploFrame = 50;
+  id = null;
   ships = {};
   serverShips = {};
   planets = [];
   bullets = [];
   init = function() {
-    var ctxt, socket;
+    var socket;
     socket = new io.Socket(null, {
       port: port
     });
@@ -40,15 +75,18 @@
     }, this));
     return $(window).resize();
   };
+  $(document).ready(__bind(function() {
+    return init();
+  }, this));
   ready = function() {
-    document.onkeydown(__bind(function(event) {
+    $(document).keydown(__bind(function(event) {
       return socket.send({
         type: 'key down',
         playerId: id,
         key: event.keyCode
       });
     }, this));
-    document.onkeyup(__bind(function(event) {
+    $(document).keyup(__bind(function(event) {
       return socket.send({
         type: 'key up',
         playerId: id,
@@ -108,11 +146,9 @@
     diff = (new Date).getTime() - start;
     return setTimeout(update, 20 - mod(diff, 20));
   };
-  ({
-    inView: function(x, y) {
-      return x >= view.x && x <= view.x + screen.w && y >= view.y && y <= view.y + screen.h;
-    }
-  });
+  inView = function(x, y) {
+    return x >= view.x && x <= view.x + screen.w && y >= view.y && y <= view.y + screen.h;
+  };
   redraw = function(ctxt) {
     var b, i, len, p, s, _i, _j, _len, _len2, _ref;
     ctxt.clearRect(0, 0, screen.w, screen.h);
@@ -219,7 +255,7 @@
     return info("Aaargh! disconnected!");
   };
   onMessage = function(msg) {
-    var b, id, p, s, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _results, _results2;
+    var b, p, s, _i, _j, _k, _l, _len, _len2, _len3, _len4, _ref, _ref2, _ref3, _results, _results2;
     switch (msg.type) {
       case 'bullets':
         bullets = [];
@@ -265,6 +301,148 @@
         return console.info('player dies');
       case 'player quits':
         return console.info('player quits');
+    }
+  };
+  Planet = (function() {
+    function Planet(planet) {
+      this.pos = planet.pos;
+      this.force = planet.force;
+    }
+    Planet.prototype.draw = function(ctxt, offset) {
+      var f, px, py, x, y;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      px = this.pos.x + offset.x;
+      py = this.pos.y + offset.y;
+      f = this.force;
+      if (!inView(px + f, py + f && !inView(px + f, py - f && !inView(px - f, py + f && !inView(px - f, py - f))))) {
+        return;
+      }
+      x = px - view.x;
+      y = py - view.y;
+      ctxt.strokeStyle = color(planetColor);
+      ctxt.beginPath();
+      ctxt.arc(x, y, f, 0, 2 * Math.PI, false);
+      return ctxt.stroke();
+    };
+    return Planet;
+  })();
+  Ship = (function() {
+    function Ship(ship) {
+      this.pos = ship.pos;
+      this.dir = ship.dir;
+      this.vel = ship.vel;
+      this.firePower = ship.firePower;
+      this.dead = ship.dead;
+      this.exploBits = ship.exploBits;
+      this.exploFrame = ship.exploFrame;
+      this.color = ship.color;
+    }
+    Ship.prototype.isDead = function() {
+      return this.dead === true || (this.exploBits != null);
+    };
+    Ship.prototype.draw = function(ctxt, offset) {
+      if (this.dead === true) {
+        ;
+      } else if (this.exploBits != null) {
+        return this.drawExplosion(ctxt, offset);
+      } else {
+        return this.drawShip(ctxt, offset);
+      }
+    };
+    Ship.prototype.drawShip = function(ctxt, offset) {
+      var cos, i, p, points, sin, x, y, _i, _len;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      x = this.pos.x - view.x + offset.x;
+      y = this.pos.y - view.y + offset.y;
+      cos = Math.cos(this.dir);
+      sin = Math.sin(this.dir);
+      points = [[-7, 10]([0, -10]([7, 10]([0, 6])))];
+      for (_i = 0, _len = points.length; _i < _len; _i++) {
+        p = points[_i];
+        p = [p[0] * cos - p[1] * sin, p[0] * sin + p[1] * cos];
+      }
+      ctxt.strokeStyle = color(this.color);
+      ctxt.fillStyle = color(this.color, (this.firePower - 1) / maxPower);
+      ctxt.beginPath();
+      ctxt.moveTo(x + points[3][0], y + points[3][1]);
+      for (i = 0; i <= 3; i++) {
+        ctxt.lineTo(x + points[i][0], y + points[i][1]);
+      }
+      ctxt.closePath();
+      ctxt.stroke();
+      return ctxt.fill();
+    };
+    Ship.prototype.explode = function() {
+      var i, vel, _results;
+      this.exploBits = [];
+      this.exploFrame = 0;
+      vel = Math.max(this.vel.x, this.vel.y);
+      _results = [];
+      for (i = 0; i <= 200; i++) {
+        _results.push(this.exploBits.push({
+          x: this.pos.x,
+          y: this.pos.y,
+          vx: .5 * vel * (2 * Math.random() - 1),
+          vy: .5 * vel * (2 * Math.random() - 1)
+        }));
+      }
+      return _results;
+    };
+    Ship.prototype.drawExplosion = function(ctxt, offset) {
+      var b, ox, oy, _i, _len, _ref, _results;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      ox = -view.x + offset.x;
+      oy = -view.y + offset.y;
+      ctxt.fillStyle = color(this.color, (maxExploFrame - this.exploFrame) / maxExploFrame);
+      _ref = this.exploBits;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        b = _ref[_i];
+        _results.push(ctxt.fillRect(b.x + ox, b.y + oy, 4, 4));
+      }
+      return _results;
+    };
+    return Ship;
+  })();
+  log = function(msg) {
+    return console.log(msg);
+  };
+  info = function(msg) {
+    return console.info(msg);
+  };
+  warn = function(msg) {
+    return console.warn(msg);
+  };
+  log = function(msg) {
+    return console.error(msg);
+  };
+  color = function(rgb, alpha) {
+    if (!(alpha != null)) {
+      return 'rgb(' + rgb + ')';
+    } else {
+      return 'rgba(' + rgb + ',' + alpha + ')';
+    }
+  };
+  mod = function(x, n) {
+    if (x > 0) {
+      return x % n;
+    } else {
+      return n + (x % n);
     }
   };
 }).call(this);
