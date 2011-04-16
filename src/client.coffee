@@ -20,7 +20,7 @@ serverShips = {}
 planets = []
 bullets = []
 
-init = () ->
+$(document).ready (event) =>
 	# Connect to server and set callbacks.
 	socket = new io.Socket null, {port: port}
 	socket.connect()
@@ -187,23 +187,23 @@ onMessage = (msg) ->
 		when 'bullets'
 			bullets = []
 			for b in msg.bullets
-				bullets.push(new Bullet b)
+				bullets.push new Bullet b
 
 		# When received other ship data.
 		when 'ships'
 			serverShips = {}
 			for s in msg.ships
-				serverShips[s] = new Ship(s)
+				serverShips[s] = new Ship s
 			lastUpdate = (new Date).getTime()
 			for s in ships
 				delete s if not serverShips[s]?
-			ships = {};
+			ships = {}
 
 		# When received planet data.
 		when 'planets'
 			planets = []
 			for p in msg.planets
-				planets.push(new Planet p)
+				planets.push new Planet p
 
 		# When receiving our id from the server.
 		when 'connected'
@@ -212,7 +212,7 @@ onMessage = (msg) ->
 
 		# When another player joins.
 		when 'player joins'
-			console.info 'player joins'
+			console.info msg.playerId + ' joins'
 
 		# When another player dies.
 		when 'player dies'
