@@ -122,6 +122,7 @@ redraw = (ctxt) ->
 
 	# Draw all bullets with decreasing opacity.
 	len = bullets.length
+	console.log len
 	for i, b of bullets
 		b.draw(ctxt, (i+1)/len);
 
@@ -200,6 +201,7 @@ onMessage = (msg) ->
 			bullets = []
 			for b in msg.bullets
 				bullets.push new Bullet b
+			console.log bullets.length
 
 		# When received other ship data.
 		when 'ships'

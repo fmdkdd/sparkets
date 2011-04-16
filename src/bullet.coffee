@@ -9,17 +9,17 @@ class Bullet
 		@dead = bullet.dead
 
 		@color = bullet.color
-		@points = bullets.points
+		@points = bullet.points
 
 	draw: (ctxt, alpha, offset = {x: 0, y: 0}) ->
 		ctxt.strokeStyle = color @color, alpha
 		ctxt.beginPath()
 
-		x = @points[0][0] - view.x + offset.x
-		y = @points[0][1] - view.y + offset.y
-		ctxt.moveTo x, y
+		#x = @points[0][0] - view.x + offset.x
+		#y = @points[0][1] - view.y + offset.y
+		#ctxt.moveTo x, y
 
-		for point in points
+		for p in @points
 			x = p[0] - view.x + offset.x
 			y = p[1] - view.y + offset.y
 			ctxt.lineTo x, y

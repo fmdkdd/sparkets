@@ -159,10 +159,12 @@ updateShips = () ->
 updateBullets = () ->
 	for b in bullets
 		b.step()
-	#console.log bullets.length + ' bullets'
-	io.broadcast
-		type: 'bullet'
-		bullets: bullets
+	console.log bullets.length + ' bullets'
+	
+	if bullets.length > 0
+		io.broadcast
+			type: 'bullets'
+			bullets: bullets
 
 initPlanets = () ->
 	planets = []
@@ -180,8 +182,12 @@ initPlanets = () ->
 class Ship
 	constructor: (id) ->
 		@id = id
-		@pos = x: Math.random()*map.w, y: Math.random()*map.h
-		@vel = x: 0, y: 0
+		@pos =
+			x: Math.random()*map.w
+			y: Math.random()*map.h
+		@vel =
+			x: 0
+			y: 0
 		@dir = Math.random() * 2*Math.PI
 		@color = randomColor()
 		@firePower = minFirepower
