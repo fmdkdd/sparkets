@@ -2,6 +2,7 @@
 port = 12345
 
 # Graphics
+ctxt = null
 screen = {w: 0, h: 0}
 map = {w: 2000, h: 2000}
 view = {x: 0, y: 0}
@@ -15,6 +16,7 @@ lastUpdate = 0
 maxPower = 3
 maxExploFrame = 50
 
+id = null
 ships = {}
 serverShips = {}
 planets = []
@@ -38,12 +40,15 @@ init = () ->
 
 	$(window).resize()
 
+# Entry point
+$(document).ready () => init()
+
 # Setup input callbacks and launch game loop.
 ready = () ->
-	document.onkeydown (event) =>
+	$(document).keydown (event) =>
 		socket.send {type: 'key down', playerId: id, key: event.keyCode}
 
-	document.onkeyup (event) =>
+	$(document).keyup (event) =>
 		socket.send {type: 'key up', playerId: id, key: event.keyCode}
 
 	update()
@@ -100,7 +105,7 @@ update = () ->
 	diff = (new Date).getTime() - start
 	setTimeout(update, 20-mod(diff, 20))
 
-inView: (x, y) ->
+inView = (x, y) ->
 	return x >= view.x && x <= view.x + screen.w && y >= view.y && y <= view.y + screen.h
 
 # Clear canvas and draw everything.
@@ -109,7 +114,7 @@ redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, screen.w, screen.h)
 	ctxt.lineWidth = 4
 	ctxt.lineJoin = 'round'
-	
+
 	# Draw all bullets with decreasing opacity.
 	len = bullets.length
 	for b, i of bullets
@@ -161,7 +166,7 @@ drawInfinity = (ctxt) ->
 			if visibility[i][j] is on
 				for p in planets
 					p.draw(ctxt, x: (j-1)*map.w, y: (i-1)*map.h)
-	
+
 	for i in [0..3]
 		for j in [0..3]
 			if visibility[i][j] is on
