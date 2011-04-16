@@ -83,8 +83,8 @@ io.on 'clientConnect', (player) ->
 
 io.on 'clientMessage', (msg, player) ->
 	switch msg.type
-		when 'key down' then alert 'x'
-		when 'key up' then alert 'y'
+		when 'key down' then processKeyDown msg.playerId, msg.key
+		when 'key up' then processKeyUp msg.playerId, msg.key
 
 io.on 'clientDisconnect', (player) ->
 	# Purge from list.
@@ -177,8 +177,8 @@ initPlanets = () ->
 class Ship
 	constructor: (id) ->
 		@id = id
-		@pos = { x: x, y: y }
-		@vel = { x: 0, y: 0 }
+		@pos = x: Math.random()*map.w, y: Math.random()*map.h
+		@vel = x: 0, y: 0
 		@dir = Math.random() * 2*Math.PI
 		@color = randomColor()
 		@firePower = minFirepower

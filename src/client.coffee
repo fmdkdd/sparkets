@@ -1,5 +1,6 @@
 # Server
 port = 12345
+socket = {}
 
 # Graphics
 ctxt = null
@@ -22,6 +23,7 @@ serverShips = {}
 planets = []
 bullets = []
 
+# Entry point
 $(document).ready (event) ->
 	# Connect to server and set callbacks.
 	socket = new io.Socket null, {port: port}
@@ -40,9 +42,6 @@ $(document).ready (event) ->
 
 	$(window).resize()
 
-# Entry point
-$(document).ready () => init()
-
 # Setup input callbacks and launch game loop.
 ready = () ->
 	$(document).keydown (event) =>
@@ -54,7 +53,7 @@ ready = () ->
 	update()
 
 interpolate = (time) ->
-	info time if time*interp_factor > 1
+	#info time if time*interp_factor > 1
 
 	for id, s of serverShips
 		ship = ships[id]
@@ -152,29 +151,29 @@ drawRadar: (ctxt) ->
 
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
-	left = view.x < 0;
-	right = view.x > map.w - screen.w;
-	top = view.y < 0;
-	bottom = view.y > map.h - screen.h;
+	left = view.x < 0
+	right = view.x > map.w - screen.w
+	top = view.y < 0
+	bottom = view.y > map.h - screen.h
 
-	visibility = [[left && top,    top,    right && top]
-	              [left,           false,  right],
-	              [left && bottom, bottom, right && bottom]]
+	visibility = [[left and top,    top,    right and top]
+	              [left,           	false,  right],
+	              [left and bottom, bottom, right and bottom]]
 
-	for i in [0..3]
-		for j in [0..3]
+	for i in [0..2]
+		for j in [0..2]
 			if visibility[i][j] is on
 				for p in planets
 					p.draw(ctxt, x: (j-1)*map.w, y: (i-1)*map.h)
 
-	for i in [0..3]
-		for j in [0..3]
+	for i in [0..2]
+		for j in [0..2]
 			if visibility[i][j] is on
 				for s in ships
 					s.draw(ctxt, x: (j-1)*map.w, y: (i-1)*map.h)
 
-	for i in [0..3]
-		for j in [0..3]
+	for i in [0..2]
+		for j in [0..2]
 			if visibility[i][j] is on
 				for b in bullets
 					b.draw(ctxt, 255, x: (j-1)*map.w, y: (i-1)*map.h)
@@ -214,15 +213,13 @@ onMessage = (msg) ->
 		when 'connected'
 			id = msg.playerId
 			ready()
-
+###
 		# When another player joins.
 		when 'player joins'
-			console.info msg.playerId + ' joins'
 
 		# When another player dies.
 		when 'player dies'
-			console.info 'player dies'
 
 		# When another player leaves.
 		when 'player quits'
-			console.info 'player quits'
+###
