@@ -148,7 +148,7 @@ centerView = () ->
 
 drawRadar = (ctxt) ->
 	for i, s of ships
-		if (i isnt id)
+		if i isnt id and not s.isDead() and not s.isExploding()
 			dx = s.pos.x - ships[id].pos.x
 			dy = s.pos.y - ships[id].pos.y
 			margin = 20

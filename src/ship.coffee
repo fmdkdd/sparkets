@@ -11,13 +11,16 @@ class Ship
 
 		@color = ship.color
 
+	isExploding: () ->
+		return @exploBits?
+
 	isDead: () ->
-		return @dead is on or @exploBits?
+		return @dead
 	
 	draw: (ctxt, offset) ->
-		if @dead is on
+		if @isDead()
 			return
-		else if @exploBits?
+		else if @isExploding()
 			@drawExplosion ctxt, offset
 		else
 			@drawShip ctxt, offset
