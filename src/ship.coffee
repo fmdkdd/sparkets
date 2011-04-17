@@ -62,6 +62,7 @@ class Ship
 				y: @pos.y
 				vx: .5*vel*(2*Math.random()-1)
 				vy: .5*vel*(2*Math.random()-1)
+				s: Math.random() * 10
 
 	updateExplosion: () ->
 		for b in explosions[@id]
@@ -74,4 +75,4 @@ class Ship
 
 		ctxt.fillStyle = color @color, (maxExploFrame-@exploFrame)/maxExploFrame
 		for b in explosions[@id]
-			ctxt.fillRect b.x+ox, b.y+oy, 4, 4
+			ctxt.fillRect b.x+ox, b.y+oy, b.s, b.s
