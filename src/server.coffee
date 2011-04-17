@@ -159,9 +159,9 @@ updateShips = () ->
 updateBullets = () ->
 	for b in bullets
 		b.step()
-	console.log bullets.length + ' bullets'
 	
 	if bullets.length > 0
+		console.log 'send'
 		io.broadcast
 			type: 'bullets'
 			bullets: bullets
@@ -264,7 +264,7 @@ class Ship
 		return if @isDead() or @cannonHeat > 0
 
 		bullets.push new Bullet @
-		bullets.shift if bullets.length > maxBullets
+		bullets.shift() if bullets.length > maxBullets
 
 		@firePower = minFirepower
 		@cannonHeat = cannonCooldown
@@ -300,18 +300,20 @@ class Ship
 
 class Bullet
 	constructor: (@owner) ->
-		@pos =
-			x: @owner.pos.x
-			y: @owner.pos.y
-		@accel =
-			x: @owner.vel.x + 10*@power*Math.sin(owner.dir)
-			y: @owner.vel.y + -10*@power*Math.cos(owner.dir)
+		xdir = 10*Math.sin(@owner.dir)
+		ydir = -10*Math.cos(@owner.dir)
+
 		@power = @owner.firePower
+		@pos =
+			x: @owner.pos.x + xdir
+			y: @owner.pos.y + ydir
+		@accel =
+			x: @owner.vel.x + @power*xdir
+			y: @owner.vel.y + @power*ydir
 		@dead = false
-		
+
 		@color = owner.color
-		@points = [[@pos.x + 10*Math.sin(owner.dir),
-	              @pos.y - 10*Math.cos(owner.dir)]]
+		@points = [[@pos.x, @pos.y]]
 
 	step: () ->
 		return if @dead
@@ -353,10 +355,12 @@ class Bullet
 		x = @pos.x
 		y = @pos.y
 
-		return planets.some (p) ->
+		for p in planets
 			px = p.pos.x
 			py = p.pos.y
-			return (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force)
+			if (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force) then return true
+
+		return false
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Planet

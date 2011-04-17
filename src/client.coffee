@@ -122,7 +122,6 @@ redraw = (ctxt) ->
 
 	# Draw all bullets with decreasing opacity.
 	len = bullets.length
-	console.log len
 	for i, b of bullets
 		b.draw(ctxt, (i+1)/len);
 
@@ -137,7 +136,7 @@ redraw = (ctxt) ->
 	#drawRadar ctxt if !ships[id].isDead()
 	
 	# Draw outside of the map bounds.
-	drawInfinity ctxt
+	#drawInfinity ctxt
 
 centerView = () ->
 	if ships[id]?
@@ -201,7 +200,6 @@ onMessage = (msg) ->
 			bullets = []
 			for b in msg.bullets
 				bullets.push new Bullet b
-			console.log bullets.length
 
 		# When received other ship data.
 		when 'ships'
@@ -225,12 +223,12 @@ onMessage = (msg) ->
 
 		# When another player joins.
 		when 'player joins'
-			console.info 'new payer joins'
+			console.info 'player [#{msg.playerId}] joins'
 
 		# When another player dies.
 		when 'player dies'
-			console.info 'player dies'
+			console.info 'player [#{msg.playerId}] dies'
 
 		# When another player leaves.
 		when 'player quits'
-			console.info 'player quits'
+			console.info 'player [#{msg.playerId}] quits'

@@ -15,9 +15,9 @@ class Bullet
 		ctxt.strokeStyle = color @color, alpha
 		ctxt.beginPath()
 
-		#x = @points[0][0] - view.x + offset.x
-		#y = @points[0][1] - view.y + offset.y
-		#ctxt.moveTo x, y
+		x = @points[0][0] - view.x + offset.x
+		y = @points[0][1] - view.y + offset.y
+		ctxt.moveTo x, y
 
 		for p in @points
 			x = p[0] - view.x + offset.x
