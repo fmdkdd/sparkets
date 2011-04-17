@@ -111,7 +111,10 @@ update = () ->
 	setTimeout(update, 20-mod(diff, 20))
 
 inView = (x, y) ->
-	return x >= view.x && x <= view.x + screen.w && y >= view.y && y <= view.y + screen.h
+	return x >= view.x and
+		x <= view.x + screen.w and
+		y >= view.y and
+		y <= view.y + screen.h
 
 # Clear canvas and draw everything.
 # Not efficient, but we don't have that many objects.
@@ -169,26 +172,35 @@ drawInfinity = (ctxt) ->
 	bottom = view.y > map.h - screen.h
 
 	visibility = [[left and top,    top,    right and top]
-	              [left,           	false,  right],
+	              [left,           	off,  right],
 	              [left and bottom, bottom, right and bottom]]
 
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
 				for p in planets
-					p.draw(ctxt, x: (j-1)*map.w, y: (i-1)*map.h)
+					offset =
+						x: (j-1)*map.w
+						y: (i-1)*map.h
+					p.draw ctxt, offset
 
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
-				for s in ships
-					s.draw(ctxt, x: (j-1)*map.w, y: (i-1)*map.h)
+				for id, s of ships
+					offset =
+						x: (j-1)*map.w
+						y: (i-1)*map.h
+					s.draw ctxt, offset
 
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
 				for b in bullets
-					b.draw(ctxt, 255, x: (j-1)*map.w, y: (i-1)*map.h)
+					offset =
+						x: (j-1)*map.w
+						y: (i-1)*map.h
+					b.draw ctxt, 255, offset
 
 onConnect = () ->
 	info "Connected to server"
