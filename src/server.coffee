@@ -34,7 +34,7 @@ randomColor = () ->
 server = http.createServer (req, res) ->
 	path = url.parse(req.url).pathname
 	switch path
-		when '/client.html', '/client.js'
+		when '/client.html', '/client.js', '/jquery.js'
 			fs.readFile __dirname + path, (err, data) ->
 				return send404(res) if err?
 				res.writeHead 200, 'Content-Type': if js path then 'text/javascript' else 'text/html'

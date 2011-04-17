@@ -133,7 +133,7 @@ redraw = (ctxt) ->
 	for i, s of ships
 		s.draw ctxt
 
-	drawRadar ctxt if !ships[id].isDead()
+	drawRadar ctxt if !ships[id]?.isDead()
 	
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
@@ -146,16 +146,20 @@ centerView = () ->
 drawRadar = (ctxt) ->
 	for i, s of ships
 		if (i isnt id)
-			dx = ships[i].pos.x - ships[id].pos.x
-			dy = ships[i].pos.y - ships[id].pos.y
-			d = Math.sqrt(dx*dx + dy*dy)
-			rx = dx / d * 50;
-			ry = dy / d * 50;
+			dx = s.pos.x - ships[id].pos.x
+			dy = s.pos.y - ships[id].pos.y
+			margin = 20
 
-			ctxt.strokeStyle = color planetColor
-			ctxt.beginPath()
-			ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, 2, 0, 2*Math.PI, false)
-			ctxt.stroke()
+			if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2 
+				rx = Math.max -screen.w/2 + margin, dx 
+				rx = Math.min screen.w/2 - margin, rx
+				ry = Math.max -screen.h/2 + margin, dy
+				ry = Math.min screen.h/2 - margin, ry
+	
+				ctxt.fillStyle = color s.color
+				ctxt.beginPath()
+				ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, 10, 0, 2*Math.PI, false)
+				ctxt.fill()
 
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
