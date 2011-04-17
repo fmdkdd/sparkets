@@ -109,30 +109,33 @@ processKeyDown = (id, key) ->
 processKeyUp = (id, key) ->
 	players[id].keys[key] = off
 
-	# fire the bullet if the spacebar is released
+	# Fire the bullet or respawn if the spacebar is released.
 	if key is 32
-		ships[id].fire()
+		if ships[id].isDead()
+			ships[id].spawn()
+		else
+			ships[id].fire()
 
 processInputs = (id) ->
 	keys = players[id].keys
 	ship = ships[id]
 
-	if not ship? or ship.isDead() then return
+	if not ship? then return
 
-	# left arrow : rotate to the left
+	# Left arrow : rotate to the left.
 	if keys[37] is on
 		ship.dir -= dirInc
 
-	# right arrow : rotate to the right
+	# Right arrow : rotate to the right.
 	if keys[39] is on
 		ship.dir += dirInc
 
-	# up arrow : thrust forward
+	# Up arrow : thrust forward.
 	if keys[38] is on
 		ship.vel.x += Math.sin(ship.dir) * shipSpeed
 		ship.vel.y -= Math.cos(ship.dir) * shipSpeed
 
-	# spacebar : charge the bullet
+	# Spacebar : charge the bullet.
 	if keys[32] is on
 		ship.firePower = Math.min(ship.firePower + 0.1, maxPower)
 
@@ -179,8 +182,12 @@ initPlanets = () ->
 #
 
 class Ship
-	constructor: (id) ->
-		@id = id
+	constructor: (playerId) ->
+		@id = playerId
+		@color = randomColor()
+		@spawn()	
+
+	spawn: () ->
 		@pos =
 			x: Math.random()*map.w
 			y: Math.random()*map.h
@@ -188,10 +195,10 @@ class Ship
 			x: 0
 			y: 0
 		@dir = Math.random() * 2*Math.PI
-		@color = randomColor()
 		@firePower = minFirepower
 		@cannonHeat = 0
 		@dead = false
+		@exploBits = null
 
 	move: () ->
 		@pos.x += @vel.x
@@ -244,21 +251,24 @@ class Ship
 
 		return false
 
+	isExploding: () ->
+		return @exploBits?
+
 	isDead: () ->
-		return @dead or @exploBits?
+		return @dead
 
 	update: () ->
-		return if @dead
+		return if @isDead() is on
 
-		if @exploBits?
+		if @isExploding()
 			@updateExplosion()
 		else
-			--@cannonHeat
+			--@cannonHeat if @cannonHeat > 0
 			@move()
 			@explode() if @collides()
 	
 	fire : () ->
-		return if @isDead() or @cannonHeat > 0
+		return if @isDead() or @isExploding() or @cannonHeat > 0
 
 		bullets.push new Bullet @
 		bullets.shift() if bullets.length > maxBullets
@@ -287,9 +297,6 @@ class Ship
 
 		if @exploFrame > maxExploFrame
 			@dead = true
-			delete ships[@id]
-			delete @exploBits
-			delete @exploFrame
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Bullet
