@@ -199,6 +199,9 @@ class Ship
 		@cannonHeat = 0
 		@dead = false
 		@exploBits = null
+		@exploFrame = null
+
+		@spawn() until not @collidesWithPlanet()
 
 	move: () ->
 		@pos.x += @vel.x
@@ -220,7 +223,7 @@ class Ship
 
 	collidesWithOtherShip: () ->
 		for i, s of ships
-			if @id isnt s.id and
+			if @id isnt s.id and not s.isDead() and not s.isExploding() and
 				Math.abs(@pos.x - s.pos.x) < 10 and
 			  Math.abs(@pos.y - s.pos.y) < 10
 				return true
@@ -234,7 +237,8 @@ class Ship
 		for p in planets
 			px = p.pos.x
 			py = p.pos.y
-			if (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force) then return true
+			if (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force)
+				return true
 
 		return false
 
@@ -297,6 +301,8 @@ class Ship
 
 		if @exploFrame > maxExploFrame
 			@dead = true
+			@exploBits = null
+			@exploFrame = null
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Bullet

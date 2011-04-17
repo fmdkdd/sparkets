@@ -51,11 +51,11 @@ class Ship
 
 		vel = Math.max @vel.x, @vel.y
 		for i in [0..200]
-			@exploBits.push({
-				x: @pos.x,
-				y: @pos.y,
-				vx: .5*vel * (2*Math.random()-1),
-				vy: .5*vel * (2*Math.random()-1)})
+			@exploBits.push
+				x: @pos.x
+				y: @pos.y
+				vx: .5*vel * (2*Math.random()-1)
+				vy: .5*vel * (2*Math.random()-1)
 
 	drawExplosion: (ctxt, offset = {x: 0, y: 0}) ->
 		ox = -view.x + offset.x
