@@ -133,17 +133,17 @@ redraw = (ctxt) ->
 	for i, s of ships
 		s.draw ctxt
 
-	#drawRadar ctxt if !ships[id].isDead()
+	drawRadar ctxt if !ships[id].isDead()
 	
 	# Draw outside of the map bounds.
-	#drawInfinity ctxt
+	drawInfinity ctxt
 
 centerView = () ->
 	if ships[id]?
 		view.x = ships[id].pos.x - screen.w / 2
 		view.y = ships[id].pos.y - screen.h / 2
 
-drawRadar: (ctxt) ->
+drawRadar = (ctxt) ->
 	for i, s of ships
 		if (i isnt id)
 			dx = ships[i].pos.x - ships[id].pos.x

@@ -161,7 +161,6 @@ updateBullets = () ->
 		b.step()
 	
 	if bullets.length > 0
-		console.log 'send'
 		io.broadcast
 			type: 'bullets'
 			bullets: bullets
@@ -213,14 +212,12 @@ class Ship
 			@collidesWithPlanet()
 
 	collidesWithOtherShip: () ->
-		x = @pos.x
-		y = @pos.y
-
-		for s in ships
+		for i, s of ships
 			if @id isnt s.id and
-				Math.abs(x - ship.pos.x) < 10 and
-			  Math.abs(y - ship.pos.y) < 10
+				Math.abs(@pos.x - s.pos.x) < 10 and
+			  Math.abs(@pos.y - s.pos.y) < 10
 				return true
+
 		return false
 
 	collidesWithPlanet: () ->
