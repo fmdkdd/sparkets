@@ -70,9 +70,6 @@ class Ship
 			b.x += b.vx + (-1 + 2*Math.random())/1.5
 			b.y += b.vy + (-1 + 2*Math.random())/1.5
 
-		if @exploFrame > maxExploFrame
-			ser
-
 	drawExplosion: (ctxt, offset = {x: 0, y: 0}) ->
 		ox = -view.x + offset.x
 		oy = -view.y + offset.y
