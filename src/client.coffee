@@ -136,7 +136,7 @@ redraw = (ctxt) ->
 	for i, s of ships
 		s.draw ctxt
 
-	drawRadar ctxt if !ships[id]?.isDead()
+	drawRadar ctxt if not ships[id].isDead() and not ships[id].isExploding()
 	
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
