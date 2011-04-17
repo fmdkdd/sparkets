@@ -320,7 +320,7 @@ class Bullet
 		@points = [[@pos.x, @pos.y]]
 
 	step: () ->
-		return if @dead
+		return if @dead is on
 
 		# Compute new position from acceleration and gravity of all planets.
 		x = @pos.x
@@ -334,21 +334,22 @@ class Bullet
 			ax -= (x-p.pos.x) * d2
 			ay -= (y-p.pos.y) * d2
 
-		nx = x + ax
-		ny = y + ay
-
-		@points.push [nx, ny]
-
-		@pos.x = nx
-		@pos.y = ny
+		@pos.x = x + ax
+		@pos.y = y + ay
 		@accel.x = ax
 		@accel.y = ay
 
+		@points.push [@pos.x, @pos.y]
+
 		# Warp the bullet around the map.
-		@pos.x = if @pos.x < 0 then map.w else @pos.x
-		@pos.x = if @pos.x > map.w then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then map.h else @pos.y
-		@pos.y = if @pos.y > map.h then 0 else @pos.y
+		warp = off
+		if @pos.x < 0 then @pos.x += map.w and warp = on
+		if @pos.x > map.w then @pos.x += -map.w and warp = on
+		if @pos.y < 0 then @pos.y += map.h and warp = on
+		if @pos.y > map.h then @pos.y += -map.h and warp = on
+
+		# Append the warped point again so that the line remains continuous.
+		@points.push [@pos.x, @pos.y] if warp is on
 
 		@dead = true if @collides()
 

@@ -125,8 +125,8 @@ redraw = (ctxt) ->
 
 	# Draw all bullets with decreasing opacity.
 	len = bullets.length
-	for i, b of bullets
-		b.draw(ctxt, (i+1)/len);
+	for i in [0...bullets.length]
+		bullets[i].draw ctxt, (i+1)/len
 
 	# Draw all planets.
 	for p in planets
@@ -193,14 +193,15 @@ drawInfinity = (ctxt) ->
 						y: (i-1)*map.h
 					s.draw ctxt, offset
 
+	len = bullets.length
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
-				for b in bullets
+				for b in [0...bullets.length]
 					offset =
 						x: (j-1)*map.w
 						y: (i-1)*map.h
-					b.draw ctxt, 255, offset
+					bullets[b].draw ctxt, (b+1)/len, offset
 
 onConnect = () ->
 	info "Connected to server"
