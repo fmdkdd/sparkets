@@ -17,6 +17,7 @@ maxExploFrame = 50
 id = null
 ships = {}
 serverShips = {}
+explosions = {}
 planets = []
 bullets = []
 
@@ -240,12 +241,12 @@ onMessage = (msg) ->
 
 		# When another player joins.
 		when 'player joins'
-			console.info 'player [#{msg.playerId}] joins'
+			console.info 'player '+msg.playerId+' joins'
 
 		# When another player dies.
 		when 'player dies'
-			console.info 'player [#{msg.playerId}] dies'
+			console.info 'player '+msg.playerId+' dies'
 
 		# When another player leaves.
 		when 'player quits'
-			console.info 'player [#{msg.playerId}] quits'
+			console.info 'player '+msg.playerId+' quits'

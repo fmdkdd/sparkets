@@ -182,8 +182,8 @@ initPlanets = () ->
 #
 
 class Ship
-	constructor: (playerId) ->
-		@id = playerId
+	constructor: (id) ->
+		@id = id
 		@color = randomColor()
 		@spawn()	
 
@@ -256,13 +256,13 @@ class Ship
 		return false
 
 	isExploding: () ->
-		return @exploBits?
+		return @exploding
 
 	isDead: () ->
 		return @dead
 
 	update: () ->
-		return if @isDead() is on
+		if @isDead() then return
 
 		if @isExploding()
 			@updateExplosion()
@@ -281,27 +281,15 @@ class Ship
 		@cannonHeat = cannonCooldown
 
 	explode : () ->
-		@exploBits = []
+		@exploding = on
 		@exploFrame = 0
-		vel = Math.max @vel.x, @vel.y
 
-		for [0..200]
-			@exploBits.push
-				x: @pos.x
-				y: @pos.y
-				vx : .5*vel * (-1 + 2*Math.random())
-				vy : .5*vel * (-1 + 2*Math.random())
-
-	updateExplosion : () ->
-		for b in @exploBits
-			b.x += b.vx + (-1 + 2*Math.random())/1.5
-			b.y += b.vy + (-1 + 2*Math.random())/1.5
-
+	updateExplosion : () ->		
 		++@exploFrame
 
 		if @exploFrame > maxExploFrame
-			@dead = true
-			@exploBits = null
+			@exploding = off
+			@dead = on
 			@exploFrame = null
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
