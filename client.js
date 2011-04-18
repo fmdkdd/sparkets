@@ -419,7 +419,7 @@
       d = Math.sqrt(dx * dx + dy * dy);
       ndx = px + dx / d * f;
       ndy = py + dy / d * f;
-      if (!inView(ndx, ndy)) {
+      if (!inView(px + f, py + f) && !inView(px + f, py - f) && !inView(px - f, py + f) && !inView(px - f, py - f)) {
         return;
       }
       x = px - view.x;

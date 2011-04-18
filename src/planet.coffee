@@ -16,7 +16,11 @@ class Planet
 		ndy = py + dy / d * f
 
 		# Check the planet really needs to be drawn.
-		if not inView ndx, ndy then return
+		if not inView(px+f, py+f) and
+				not inView(px+f, py-f) and
+				not inView(px-f, py+f) and
+				not inView(px-f, py-f)
+			return
 
 		x = px - view.x
 		y = py - view.y
