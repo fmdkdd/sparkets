@@ -2,7 +2,7 @@ class Planet
 	constructor: (planet) ->
 		@pos = planet.pos
 		@force = planet.force
-	
+
 	draw: (ctxt, offset = {x: 0, y: 0}) ->
 		px = @pos.x + offset.x
 		py = @pos.y + offset.y

@@ -12,12 +12,9 @@ log = (msg) ->
 	console.error msg
 
 # Neat color construction.
-color = (rgb, alpha) ->
-	if not alpha?
-		return 'rgb(' + rgb + ')'
-	else
-		return 'rgba(' + rgb + ',' + alpha + ')'
+color = (rgb, alpha = 1.0) ->
+	'rgba(' + rgb + ',' + alpha + ')'
 
 # Stupid % operator.
 mod = (x, n) ->
-	if x > 0 then return x%n else return n+(x%n)
+	if x > 0 then x%n else mod(x+n, n)

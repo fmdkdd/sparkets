@@ -54,7 +54,7 @@ go = (clientId) ->
 			key: event.keyCode
 
 	$(document).keyup (event) ->
-		socket.send 
+		socket.send
 			type: 'key up'
 			playerId: id
 			key: event.keyCode
@@ -73,21 +73,21 @@ interpolate = (time) ->
 
 		# X interpolation
 		dx = shadow.pos.x - ship.pos.x
-		if Math.abs dx < .1 and Math.abs dx > 100
+		if -.1 < dx < .1 or dx > 100 or dx < -100
 			ship.pos.x = shadow.pos.x
 		else
 			ship.pos.x += dx * time * interp_factor
 
 		# Y interpolation
 		dy = shadow.pos.y - ship.pos.y
-		if Math.abs dy < .1  and Math.abs dy > 100
+		if -.1 < dy < .1 or dy > 100 or dy < -100
 			ship.pos.y = shadow.pos.y
 		else
 			ship.pos.y += dy * time * interp_factor
 
 		# Dir interpolation
 		ddir = shadow.dir - ship.dir
-		if Math.abs ddir < .01
+		if -.01 < ddir < .01
 			ship.dir = shadow.dir
 		else
 			ship.dir += ddir * time * interp_factor
@@ -112,10 +112,8 @@ update = () ->
 	setTimeout(update, 20-mod(diff, 20))
 
 inView = (x, y) ->
-	return x >= view.x and
-		x <= view.x + screen.w and
-		y >= view.y and
-		y <= view.y + screen.h
+	view.x <= x <= view.x + screen.w and
+	view.y <= y <= view.y + screen.h
 
 # Clear canvas and draw everything.
 # Not efficient, but we don't have that many objects.
@@ -126,26 +124,23 @@ redraw = (ctxt) ->
 
 	# Draw all bullets with decreasing opacity.
 	len = bullets.length
-	for i in [0...bullets.length]
-		bullets[i].draw ctxt, (i+1)/len
+	b.draw ctxt, (i+1)/len for b,i in bullets
 
 	# Draw all planets.
-	for p in planets
-		p.draw(ctxt)
+	p.draw ctxt for p in planets
 
 	# Draw all ships.
-	for i, s of ships
-		s.draw ctxt
+	s.draw ctxt	for i, s of ships
 
 	drawRadar ctxt if not ships[id].isDead() and not ships[id].isExploding()
-	
+
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
 
 centerView = () ->
 	if ships[id]?
-		view.x = ships[id].pos.x - screen.w / 2
-		view.y = ships[id].pos.y - screen.h / 2
+		view.x = ships[id].pos.x - screen.w/2
+		view.y = ships[id].pos.y - screen.h/2
 
 drawRadar = (ctxt) ->
 	for i, s of ships
@@ -154,16 +149,18 @@ drawRadar = (ctxt) ->
 			dy = s.pos.y - ships[id].pos.y
 			margin = 20
 
-			if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2 
-				rx = Math.max -screen.w/2 + margin, dx 
+			if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
+				rx = Math.max -screen.w/2 + margin, dx
 				rx = Math.min screen.w/2 - margin, rx
 				ry = Math.max -screen.h/2 + margin, dy
 				ry = Math.min screen.h/2 - margin, ry
-	
+
 				ctxt.fillStyle = color s.color
 				ctxt.beginPath()
 				ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, 10, 0, 2*Math.PI, false)
 				ctxt.fill()
+
+	return true
 
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
@@ -203,6 +200,8 @@ drawInfinity = (ctxt) ->
 						x: (j-1)*map.w
 						y: (i-1)*map.h
 					bullets[b].draw ctxt, (b+1)/len, offset
+
+	return true
 
 onConnect = () ->
 	info "Connected to server"
@@ -250,3 +249,5 @@ onMessage = (msg) ->
 		# When another player leaves.
 		when 'player quits'
 			console.info 'player '+msg.playerId+' quits'
+
+	return true

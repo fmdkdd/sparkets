@@ -22,14 +22,15 @@ class Bullet
 		for i in [1...p.length]
 			x = p[i][0] + ox
 			y = p[i][1] + oy
-			
+
 			# Check for a bullet warping.
-			if Math.abs(p[i-1][0] - p[i][0]) < 50 and Math.abs(p[i-1][1] - p[i][1]) < 50
+			if -50  < p[i-1][0] - p[i][0] < 50 and
+					-50 < p[i-1][1] - p[i][1] < 50
 				ctxt.lineTo x, y
 			else
 				# Start the new path on the other side of the map.
 				ctxt.stroke()
 				ctxt.beginPath()
-				ctxt.moveTo x, y				
+				ctxt.moveTo x, y
 
 		ctxt.stroke()

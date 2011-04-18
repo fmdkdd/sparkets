@@ -16,16 +16,18 @@ error = (msg) ->
 	console.error msg
 
 js = (path) ->
-	 return path.match(/js$/)
+	 path.match(/js$/)
 
 mod = (x, n) ->
-	if x > 0 then return x%n else return n+(x%n)
+	if x > 0 then x%n else mod x+n, n
 
 distance = (x1, y1, x2, y2) ->
-	return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
+	Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
 
 randomColor = () ->
-	return Math.round(70 + Math.random()*150) + ',' + Math.round(70 + Math.random()*150) + ',' + Math.round(70 + Math.random()*150)
+	Math.round(70 + Math.random()*150) +
+		',' + Math.round(70 + Math.random()*150) +
+		',' + Math.round(70 + Math.random()*150)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # HTTP server setup
@@ -37,13 +39,14 @@ server = http.createServer (req, res) ->
 		when '/client.html', '/client.js', '/jquery.js'
 			fs.readFile __dirname + path, (err, data) ->
 				return send404(res) if err?
-				res.writeHead 200, 'Content-Type': if js path then 'text/javascript' else 'text/html'
+				res.writeHead 200,
+					'Content-Type': if js path then 'text/javascript' else 'text/html'
 				res.write data, 'utf8'
 				res.end()
 		else send404(res)
 
 send404 = (res) ->
-	res.writeHead 404, {'Content-Type':'text/html'}
+	res.writeHead 404, 'Content-Type': 'text/html'
 	res.end '<h1>Nothing to see here, move along</h1>'
 
 server.listen port
@@ -57,29 +60,38 @@ io = io.listen server
 io.on 'clientConnect', (player) ->
 	# Send list of connected players.
 	for id of players
-		player.send type: 'player list',
-								playerId: id
+		player.send
+			type: 'player list'
+			playerId: id
 
 	# Add new player to player list.
 	id = player.sessionId
-	players[id] = {}
-	players[id].id = id
-	players[id].keys = {}
+	players[id] =
+		id: id
+		keys: {}
 
 	# Create ship.
 	ships[id] = new Ship id
 
 	# Send the playfield.
-	player.send type: 'planets', planets: planets
+	player.send
+		type: 'planets'
+		planets: planets
 
 	# Send ships.
-	player.send type: 'ships', ships: ships
+	player.send
+		type: 'ships'
+		ships: ships
 
 	# Good news!
-	player.send type: 'connected', playerId: id
+	player.send
+		type: 'connected'
+		playerId: id
 
 	# Poke all other players.
-	player.broadcast type: 'player joins', playerId: id
+	player.broadcast
+		type: 'player joins'
+		playerId: id
 
 io.on 'clientMessage', (msg, player) ->
 	switch msg.type
@@ -142,8 +154,7 @@ processInputs = (id) ->
 update = () ->
 	start = (new Date).getTime()
 
-	for id of players
-		processInputs id
+	processInputs id for id of players
 
 	updateBullets()
 	updateShips()
@@ -152,40 +163,33 @@ update = () ->
 	setTimeout(update, 20-mod(diff, 20))
 
 updateShips = () ->
-	for i, s of ships
-		s.update()
+	ship.update() for id, ship of ships
 
 	io.broadcast
 		type: 'ships'
 		ships: ships
 
 updateBullets = () ->
-	for b in bullets
-		b.step()
-	
+	b.step()	for b in bullets
+
 	if bullets.length > 0
 		io.broadcast
 			type: 'bullets'
 			bullets: bullets
 
 initPlanets = () ->
-	planets = []
-	for [0..35]
-		planets.push new Planet Math.random()*2000,
-		                        Math.random()*2000,
-		                        50+Math.random()*50
-
-	return planets
+	(new Planet Math.random()*2000,
+		Math.random()*2000,
+		50+Math.random()*50) for [0..35]
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Ship
 #
 
 class Ship
-	constructor: (id) ->
-		@id = id
+	constructor: (@id) ->
 		@color = randomColor()
-		@spawn()	
+		@spawn()
 
 	spawn: () ->
 		@pos =
@@ -201,7 +205,7 @@ class Ship
 		@exploBits = null
 		@exploFrame = null
 
-		@spawn() until not @collidesWithPlanet()
+		@spawn() if @collidesWithPlanet()
 
 	move: () ->
 		@pos.x += @vel.x
@@ -217,15 +221,17 @@ class Ship
 		@vel.y *= frictionDecay
 
 	collides: () ->
-		return @collidesWithOtherShip() or
+		@collidesWithOtherShip() or
 			@collidesWithBullet() or
 			@collidesWithPlanet()
 
 	collidesWithOtherShip: () ->
-		for i, s of ships
-			if @id isnt s.id and not s.isDead() and not s.isExploding() and
-				Math.abs(@pos.x - s.pos.x) < 10 and
-			  Math.abs(@pos.y - s.pos.y) < 10
+		for id, ship of ships
+			if @id isnt ship.id and
+					not ship.isDead() and
+					not ship.isExploding() and
+					-10 < @pos.x - ship.pos.x < 10 and
+					-10 < @pos.y - ship.pos.y < 10
 				return true
 
 		return false
@@ -237,8 +243,7 @@ class Ship
 		for p in planets
 			px = p.pos.x
 			py = p.pos.y
-			if (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force)
-				return true
+			return true if distance(px, py, x, y) < p.force
 
 		return false
 
@@ -248,21 +253,21 @@ class Ship
 
 		for b in bullets
 			if not b.dead and
-				Math.abs(x - b.pos.x) < 10 and
-			  Math.abs(y - b.pos.y) < 10
+					-10 < x - b.pos.x < 10 and
+					-10 < y - b.pos.y < 10
 				b.dead = true
 				return true
 
 		return false
 
 	isExploding: () ->
-		return @exploding
+		@exploding
 
 	isDead: () ->
-		return @dead
+		@dead
 
 	update: () ->
-		if @isDead() then return
+		return if @isDead()
 
 		if @isExploding()
 			@updateExplosion()
@@ -270,7 +275,7 @@ class Ship
 			--@cannonHeat if @cannonHeat > 0
 			@move()
 			@explode() if @collides()
-	
+
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
@@ -281,15 +286,15 @@ class Ship
 		@cannonHeat = cannonCooldown
 
 	explode : () ->
-		@exploding = on
+		@exploding = true
 		@exploFrame = 0
 
-	updateExplosion : () ->		
+	updateExplosion : () ->
 		++@exploFrame
 
 		if @exploFrame > maxExploFrame
-			@exploding = off
-			@dead = on
+			@exploding = false
+			@dead = true
 			@exploFrame = null
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -314,7 +319,7 @@ class Bullet
 		@points = [[@pos.x, @pos.y]]
 
 	step: () ->
-		return if @dead is on
+		return if @dead
 
 		# Compute new position from acceleration and gravity of all planets.
 		x = @pos.x
@@ -343,12 +348,12 @@ class Bullet
 		if @pos.y > map.h then @pos.y += -map.h and warp = on
 
 		# Append the warped point again so that the line remains continuous.
-		@points.push [@pos.x, @pos.y] if warp is on
+		@points.push [@pos.x, @pos.y] if warp
 
-		@dead = true if @collides()
+		@dead = @collides()
 
 	collides : () ->
-		return @collidesWithPlanet()
+		@collidesWithPlanet()
 
 	collidesWithPlanet : () ->
 		x = @pos.x
@@ -357,7 +362,7 @@ class Bullet
 		for p in planets
 			px = p.pos.x
 			py = p.pos.y
-			if (Math.sqrt((px-x)*(px-x) + (py-y)*(py-y)) < p.force) then return true
+			return true if distance(px, py, x, y) < p.force
 
 		return false
 
