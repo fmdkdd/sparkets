@@ -1,5 +1,5 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, cannonCooldown, color, dirInc, distance, frictionDecay, fs, http, info, initPlanets, io, js, launch, log, map, maxBullets, maxExploFrame, maxPower, minFirepower, mod, planets, players, port, processInputs, processKeyDown, processKeyUp, randomColor, send404, server, shipSpeed, ships, update, updateBullets, updateShips, url, warn;
+  var Bullet, Planet, Ship, bullets, cannonCooldown, color, dirInc, distance, frictionDecay, fs, http, info, initPlanets, io, isEmptyObject, js, launch, log, map, maxBullets, maxExploFrame, maxPower, minFirepower, mod, planets, players, port, processInputs, processKeyDown, processKeyUp, randomColor, send404, server, shipSpeed, ships, update, updateBullets, updateShips, url, warn;
   Bullet = (function() {
     function Bullet(owner) {
       var xdir, ydir;
@@ -243,14 +243,16 @@
       ship = ships[id];
       ship.update();
       shipChanges = ship.changes();
-      if (shipChanges !== {}) {
+      if (!isEmptyObject(shipChanges)) {
         changes[id] = shipChanges;
       }
     }
-    return io.broadcast({
-      type: 'update',
-      update: changes
-    });
+    if (!isEmptyObject(changes)) {
+      return io.broadcast({
+        type: 'update',
+        update: changes
+      });
+    }
   };
   updateBullets = function() {
     var b, _i, _len;
@@ -323,7 +325,7 @@
       this.pos.y = this.pos.y > map.h ? 0 : this.pos.y;
       this.vel.x *= frictionDecay;
       this.vel.y *= frictionDecay;
-      if (this.pos.x !== x || this.pos.y !== y) {
+      if (Math.abs(this.pos.x - x) > .05 || Math.abs(this.pos.y - y) > .05) {
         this.dirtyFields.pos = true;
         return this.dirtyFields.vel = true;
       }
@@ -460,6 +462,13 @@
   };
   distance = function(x1, y1, x2, y2) {
     return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+  };
+  isEmptyObject = function(obj) {
+    var p;
+    for (p in obj) {
+      return false;
+    }
+    return true;
   };
   mod = function(x, n) {
     if (x > 0) {

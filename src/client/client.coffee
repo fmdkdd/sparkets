@@ -22,6 +22,7 @@ explosions = {}
 planets = []
 bullets = []
 
+enableInterpolation = false
 interp_factor = .03
 lastUpdate = 0
 keys = {}
@@ -69,11 +70,19 @@ go = (clientId) ->
 interpolate = (time) ->
 	#info time if time*interp_factor > 1
 
-	for i, ship of serverShips
-		shadow = serverShips[i]
+	for i, shadow of serverShips
+		ship = ships[i]
 
 		if not ship?
-			ships[i] = shadow
+			ships[i] = new Ship shadow
+			continue
+
+		if time * interp_factor > 1
+			ship = shadow
+			continue
+
+		if ship.isDead() and not shadow.isDead()
+			ships[i] = new Ship shadow
 			continue
 
 		# X interpolation
@@ -99,17 +108,16 @@ interpolate = (time) ->
 
 		# Everything else
 		ship.vel = shadow.vel
-		ship.color = shadow.color
 		ship.firePower = shadow.firePower
 		ship.dead = shadow.dead
-		ship.exploBits = shadow.exploBits
+		ship.exploding = shadow.exploding
 		ship.exploFrame = shadow.exploFrame
 
 # Game loop!
 update = () ->
 	start = (new Date).getTime()
 
-	interpolate((new Date).getTime() - lastUpdate)
+	interpolate(start - lastUpdate) if enableInterpolation
 	centerView()
 	redraw(ctxt)
 
@@ -245,16 +253,20 @@ onMessage = (msg) ->
 		# When received other ship data.
 		when 'ships'
 			for i, s of msg.ships
-				serverShips[i] = new Ship s
-				ships[i] = new Ship s
+				if enableInterpolation
+					serverShips[i] = new Ship s
+				else
+					ships[i] = new Ship s
 
 			lastUpdate = (new Date).getTime()
 
 		# When received world update.
 		when 'update'
 			for i, s of msg.update
-				serverShips[i].update(s)
-				ships[i].update(s)
+				if enableInterpolation
+					serverShips[i].update(s)
+				else
+					ships[i].update(s)
 
 			lastUpdate = (new Date).getTime()
 
