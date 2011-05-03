@@ -1,32 +1,97 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, cannonCooldown, dirInc, distance, error, frictionDecay, fs, http, initPlanets, io, js, log, map, maxBullets, maxExploFrame, maxPower, minFirepower, mod, planets, players, port, processInputs, processKeyDown, processKeyUp, randomColor, send404, server, shipSpeed, ships, update, updateBullets, updateShips, url;
+  var Bullet, Planet, Ship, bullets, cannonCooldown, dirInc, distance, error, frictionDecay, fs, http, initPlanets, io, js, launch, log, map, maxBullets, maxExploFrame, maxPower, minFirepower, mod, planets, players, port, processInputs, processKeyDown, processKeyUp, randomColor, send404, server, shipSpeed, ships, update, updateBullets, updateShips, url;
+  Bullet = (function() {
+    function Bullet(owner) {
+      var xdir, ydir;
+      this.owner = owner;
+      xdir = 10 * Math.sin(this.owner.dir);
+      ydir = -10 * Math.cos(this.owner.dir);
+      this.power = this.owner.firePower;
+      this.pos = {
+        x: this.owner.pos.x + xdir,
+        y: this.owner.pos.y + ydir
+      };
+      this.accel = {
+        x: this.owner.vel.x + this.power * xdir,
+        y: this.owner.vel.y + this.power * ydir
+      };
+      this.dead = false;
+      this.color = owner.color;
+      this.points = [[this.pos.x, this.pos.y]];
+    }
+    Bullet.prototype.step = function() {
+      var ax, ay, d, d2, p, warp, x, y, _i, _len;
+      if (this.dead) {
+        return;
+      }
+      x = this.pos.x;
+      y = this.pos.y;
+      ax = this.accel.x;
+      ay = this.accel.y;
+      for (_i = 0, _len = planets.length; _i < _len; _i++) {
+        p = planets[_i];
+        d = (p.pos.x - x) * (p.pos.x - x) + (p.pos.y - y) * (p.pos.y - y);
+        d2 = 200 * p.force / (d * Math.sqrt(d));
+        ax -= (x - p.pos.x) * d2;
+        ay -= (y - p.pos.y) * d2;
+      }
+      this.pos.x = x + ax;
+      this.pos.y = y + ay;
+      this.accel.x = ax;
+      this.accel.y = ay;
+      this.points.push([this.pos.x, this.pos.y]);
+      warp = false;
+      if (this.pos.x < 0) {
+        this.pos.x += map.w && (warp = true);
+      }
+      if (this.pos.x > map.w) {
+        this.pos.x += -map.w && (warp = true);
+      }
+      if (this.pos.y < 0) {
+        this.pos.y += map.h && (warp = true);
+      }
+      if (this.pos.y > map.h) {
+        this.pos.y += -map.h && (warp = true);
+      }
+      if (warp) {
+        this.points.push([this.pos.x, this.pos.y]);
+      }
+      return this.dead = this.collides();
+    };
+    Bullet.prototype.collides = function() {
+      return this.collidesWithPlanet();
+    };
+    Bullet.prototype.collidesWithPlanet = function() {
+      var p, px, py, x, y, _i, _len;
+      x = this.pos.x;
+      y = this.pos.y;
+      for (_i = 0, _len = planets.length; _i < _len; _i++) {
+        p = planets[_i];
+        px = p.pos.x;
+        py = p.pos.y;
+        if (distance(px, py, x, y) < p.force) {
+          return true;
+        }
+      }
+      return false;
+    };
+    return Bullet;
+  })();
+  Planet = (function() {
+    function Planet(x, y, force) {
+      this.force = force;
+      this.pos = {
+        x: x,
+        y: y
+      };
+    }
+    return Planet;
+  })();
   port = 12345;
   http = require('http');
   io = require('socket.io');
   url = require('url');
   fs = require('fs');
-  log = function(msg) {
-    return console.log(msg);
-  };
-  error = function(msg) {
-    return console.error(msg);
-  };
-  js = function(path) {
-    return path.match(/js$/);
-  };
-  mod = function(x, n) {
-    if (x > 0) {
-      return x % n;
-    } else {
-      return mod(x + n, n);
-    }
-  };
-  distance = function(x1, y1, x2, y2) {
-    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-  };
-  randomColor = function() {
-    return Math.round(70 + Math.random() * 150) + ',' + Math.round(70 + Math.random() * 150) + ',' + Math.round(70 + Math.random() * 150);
-  };
   server = http.createServer(function(req, res) {
     var path;
     path = url.parse(req.url).pathname;
@@ -106,6 +171,22 @@
     });
   });
   console.log("Server started");
+  dirInc = 0.1;
+  maxPower = 3;
+  minFirepower = 1.3;
+  cannonCooldown = 20;
+  maxBullets = 5;
+  shipSpeed = 0.3;
+  frictionDecay = 0.97;
+  maxExploFrame = 50;
+  map = {
+    w: 2000,
+    h: 2000
+  };
+  players = {};
+  ships = {};
+  bullets = [];
+  planets = [];
   processKeyDown = function(id, key) {
     return players[id].keys[key] = true;
   };
@@ -182,6 +263,10 @@
       _results.push(new Planet(Math.random() * 2000, Math.random() * 2000, 50 + Math.random() * 50));
     }
     return _results;
+  };
+  launch = function() {
+    planets = initPlanets();
+    return update();
   };
   Ship = (function() {
     function Ship(id) {
@@ -305,108 +390,27 @@
     };
     return Ship;
   })();
-  Bullet = (function() {
-    function Bullet(owner) {
-      var xdir, ydir;
-      this.owner = owner;
-      xdir = 10 * Math.sin(this.owner.dir);
-      ydir = -10 * Math.cos(this.owner.dir);
-      this.power = this.owner.firePower;
-      this.pos = {
-        x: this.owner.pos.x + xdir,
-        y: this.owner.pos.y + ydir
-      };
-      this.accel = {
-        x: this.owner.vel.x + this.power * xdir,
-        y: this.owner.vel.y + this.power * ydir
-      };
-      this.dead = false;
-      this.color = owner.color;
-      this.points = [[this.pos.x, this.pos.y]];
-    }
-    Bullet.prototype.step = function() {
-      var ax, ay, d, d2, p, warp, x, y, _i, _len;
-      if (this.dead) {
-        return;
-      }
-      x = this.pos.x;
-      y = this.pos.y;
-      ax = this.accel.x;
-      ay = this.accel.y;
-      for (_i = 0, _len = planets.length; _i < _len; _i++) {
-        p = planets[_i];
-        d = (p.pos.x - x) * (p.pos.x - x) + (p.pos.y - y) * (p.pos.y - y);
-        d2 = 200 * p.force / (d * Math.sqrt(d));
-        ax -= (x - p.pos.x) * d2;
-        ay -= (y - p.pos.y) * d2;
-      }
-      this.pos.x = x + ax;
-      this.pos.y = y + ay;
-      this.accel.x = ax;
-      this.accel.y = ay;
-      this.points.push([this.pos.x, this.pos.y]);
-      warp = false;
-      if (this.pos.x < 0) {
-        this.pos.x += map.w && (warp = true);
-      }
-      if (this.pos.x > map.w) {
-        this.pos.x += -map.w && (warp = true);
-      }
-      if (this.pos.y < 0) {
-        this.pos.y += map.h && (warp = true);
-      }
-      if (this.pos.y > map.h) {
-        this.pos.y += -map.h && (warp = true);
-      }
-      if (warp) {
-        this.points.push([this.pos.x, this.pos.y]);
-      }
-      return this.dead = this.collides();
-    };
-    Bullet.prototype.collides = function() {
-      return this.collidesWithPlanet();
-    };
-    Bullet.prototype.collidesWithPlanet = function() {
-      var p, px, py, x, y, _i, _len;
-      x = this.pos.x;
-      y = this.pos.y;
-      for (_i = 0, _len = planets.length; _i < _len; _i++) {
-        p = planets[_i];
-        px = p.pos.x;
-        py = p.pos.y;
-        if (distance(px, py, x, y) < p.force) {
-          return true;
-        }
-      }
-      return false;
-    };
-    return Bullet;
-  })();
-  Planet = (function() {
-    function Planet(x, y, force) {
-      this.force = force;
-      this.pos = {
-        x: x,
-        y: y
-      };
-    }
-    return Planet;
-  })();
-  dirInc = 0.1;
-  maxPower = 3;
-  minFirepower = 1.3;
-  cannonCooldown = 20;
-  maxBullets = 5;
-  shipSpeed = 0.3;
-  frictionDecay = 0.97;
-  maxExploFrame = 50;
-  map = {
-    w: 2000,
-    h: 2000
+  log = function(msg) {
+    return console.log(msg);
   };
-  players = {};
-  ships = {};
-  bullets = [];
-  planets = initPlanets();
-  update();
+  error = function(msg) {
+    return console.error(msg);
+  };
+  js = function(path) {
+    return path.match(/js$/);
+  };
+  mod = function(x, n) {
+    if (x > 0) {
+      return x % n;
+    } else {
+      return mod(x + n, n);
+    }
+  };
+  distance = function(x1, y1, x2, y2) {
+    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+  };
+  randomColor = function() {
+    return Math.round(70 + Math.random() * 150) + ',' + Math.round(70 + Math.random() * 150) + ',' + Math.round(70 + Math.random() * 150);
+  };
+  launch();
 }).call(this);

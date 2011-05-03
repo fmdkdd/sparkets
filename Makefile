@@ -1,5 +1,5 @@
-CLIENT_FILES := src/client.coffee src/utils.coffee src/ship.coffee src/planet.coffee src/bullet.coffee
-SERVER_FILES := src/server.coffee
+CLIENT_FILES := $(wildcard src/client/*.coffee)
+SERVER_FILES := $(wildcard src/server/*.coffee) launch-server.js
 
 all: client.js server.js
 

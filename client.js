@@ -1,6 +1,47 @@
 (function() {
   var Bullet, Planet, Ship, bullets, centerView, color, ctxt, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, lastUpdate, log, map, maxExploFrame, maxPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, redraw, screen, serverShips, ships, socket, update, view, warn;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  Bullet = (function() {
+    function Bullet(bullet) {
+      this.owner = bullet.owner;
+      this.pos = bullet.pos;
+      this.accel = bullet.accel;
+      this.power = bullet.power;
+      this.dead = bullet.dead;
+      this.color = bullet.color;
+      this.points = bullet.points;
+    }
+    Bullet.prototype.draw = function(ctxt, alpha, offset) {
+      var i, ox, oy, p, x, y, _ref, _ref2, _ref3;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      p = this.points;
+      ox = -view.x + offset.x;
+      oy = -view.y + offset.y;
+      x = p[0][0] + ox;
+      y = p[0][1] + oy;
+      ctxt.strokeStyle = color(this.color, alpha);
+      ctxt.beginPath();
+      ctxt.moveTo(x, y);
+      for (i = 1, _ref = p.length; 1 <= _ref ? i < _ref : i > _ref; 1 <= _ref ? i++ : i--) {
+        x = p[i][0] + ox;
+        y = p[i][1] + oy;
+        if ((-50 < (_ref2 = p[i - 1][0] - p[i][0]) && _ref2 < 50) && (-50 < (_ref3 = p[i - 1][1] - p[i][1]) && _ref3 < 50)) {
+          ctxt.lineTo(x, y);
+        } else {
+          ctxt.stroke();
+          ctxt.beginPath();
+          ctxt.moveTo(x, y);
+        }
+      }
+      return ctxt.stroke();
+    };
+    return Bullet;
+  })();
   port = 12345;
   socket = {};
   ctxt = null;
@@ -261,31 +302,39 @@
     }
     return true;
   };
-  log = function(msg) {
-    return console.log(msg);
-  };
-  info = function(msg) {
-    return console.info(msg);
-  };
-  warn = function(msg) {
-    return console.warn(msg);
-  };
-  log = function(msg) {
-    return console.error(msg);
-  };
-  color = function(rgb, alpha) {
-    if (alpha == null) {
-      alpha = 1.0;
+  Planet = (function() {
+    function Planet(planet) {
+      this.pos = planet.pos;
+      this.force = planet.force;
     }
-    return 'rgba(' + rgb + ',' + alpha + ')';
-  };
-  mod = function(x, n) {
-    if (x > 0) {
-      return x % n;
-    } else {
-      return mod(x + n, n);
-    }
-  };
+    Planet.prototype.draw = function(ctxt, offset) {
+      var d, dx, dy, f, ndx, ndy, px, py, x, y;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      px = this.pos.x + offset.x;
+      py = this.pos.y + offset.y;
+      f = this.force;
+      dx = ships[id].pos.x - px;
+      dy = ships[id].pos.y - py;
+      d = Math.sqrt(dx * dx + dy * dy);
+      ndx = px + dx / d * f;
+      ndy = py + dy / d * f;
+      if (!inView(px + f, py + f) && !inView(px + f, py - f) && !inView(px - f, py + f) && !inView(px - f, py - f)) {
+        return;
+      }
+      x = px - view.x;
+      y = py - view.y;
+      ctxt.strokeStyle = color(planetColor);
+      ctxt.beginPath();
+      ctxt.arc(x, y, f, 0, 2 * Math.PI, false);
+      return ctxt.stroke();
+    };
+    return Planet;
+  })();
   Ship = (function() {
     function Ship(ship) {
       this.id = ship.id;
@@ -398,78 +447,29 @@
     };
     return Ship;
   })();
-  Planet = (function() {
-    function Planet(planet) {
-      this.pos = planet.pos;
-      this.force = planet.force;
+  log = function(msg) {
+    return console.log(msg);
+  };
+  info = function(msg) {
+    return console.info(msg);
+  };
+  warn = function(msg) {
+    return console.warn(msg);
+  };
+  log = function(msg) {
+    return console.error(msg);
+  };
+  color = function(rgb, alpha) {
+    if (alpha == null) {
+      alpha = 1.0;
     }
-    Planet.prototype.draw = function(ctxt, offset) {
-      var d, dx, dy, f, ndx, ndy, px, py, x, y;
-      if (offset == null) {
-        offset = {
-          x: 0,
-          y: 0
-        };
-      }
-      px = this.pos.x + offset.x;
-      py = this.pos.y + offset.y;
-      f = this.force;
-      dx = ships[id].pos.x - px;
-      dy = ships[id].pos.y - py;
-      d = Math.sqrt(dx * dx + dy * dy);
-      ndx = px + dx / d * f;
-      ndy = py + dy / d * f;
-      if (!inView(px + f, py + f) && !inView(px + f, py - f) && !inView(px - f, py + f) && !inView(px - f, py - f)) {
-        return;
-      }
-      x = px - view.x;
-      y = py - view.y;
-      ctxt.strokeStyle = color(planetColor);
-      ctxt.beginPath();
-      ctxt.arc(x, y, f, 0, 2 * Math.PI, false);
-      return ctxt.stroke();
-    };
-    return Planet;
-  })();
-  Bullet = (function() {
-    function Bullet(bullet) {
-      this.owner = bullet.owner;
-      this.pos = bullet.pos;
-      this.accel = bullet.accel;
-      this.power = bullet.power;
-      this.dead = bullet.dead;
-      this.color = bullet.color;
-      this.points = bullet.points;
+    return 'rgba(' + rgb + ',' + alpha + ')';
+  };
+  mod = function(x, n) {
+    if (x > 0) {
+      return x % n;
+    } else {
+      return mod(x + n, n);
     }
-    Bullet.prototype.draw = function(ctxt, alpha, offset) {
-      var i, ox, oy, p, x, y, _ref, _ref2, _ref3;
-      if (offset == null) {
-        offset = {
-          x: 0,
-          y: 0
-        };
-      }
-      p = this.points;
-      ox = -view.x + offset.x;
-      oy = -view.y + offset.y;
-      x = p[0][0] + ox;
-      y = p[0][1] + oy;
-      ctxt.strokeStyle = color(this.color, alpha);
-      ctxt.beginPath();
-      ctxt.moveTo(x, y);
-      for (i = 1, _ref = p.length; 1 <= _ref ? i < _ref : i > _ref; 1 <= _ref ? i++ : i--) {
-        x = p[i][0] + ox;
-        y = p[i][1] + oy;
-        if ((-50 < (_ref2 = p[i - 1][0] - p[i][0]) && _ref2 < 50) && (-50 < (_ref3 = p[i - 1][1] - p[i][1]) && _ref3 < 50)) {
-          ctxt.lineTo(x, y);
-        } else {
-          ctxt.stroke();
-          ctxt.beginPath();
-          ctxt.moveTo(x, y);
-        }
-      }
-      return ctxt.stroke();
-    };
-    return Bullet;
-  })();
+  };
 }).call(this);
