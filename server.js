@@ -281,10 +281,6 @@
       this.id = id;
       this.color = randomColor();
       this.spawn();
-      this.__defineSetter__('pos', function(val) {
-        log(val);
-        return this.pos = val;
-      });
     }
     Ship.prototype.spawn = function() {
       this.pos = {

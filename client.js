@@ -1,47 +1,6 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, lastUpdate, log, map, maxExploFrame, maxPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, redraw, screen, serverShips, ships, socket, update, view, warn;
+  var Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, lastUpdate, log, map, maxExploFrame, maxPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, redraw, screen, serverShips, ships, socket, update, view, warn;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-  Bullet = (function() {
-    function Bullet(bullet) {
-      this.owner = bullet.owner;
-      this.pos = bullet.pos;
-      this.accel = bullet.accel;
-      this.power = bullet.power;
-      this.dead = bullet.dead;
-      this.color = bullet.color;
-      this.points = bullet.points;
-    }
-    Bullet.prototype.draw = function(ctxt, alpha, offset) {
-      var i, ox, oy, p, x, y, _ref, _ref2, _ref3;
-      if (offset == null) {
-        offset = {
-          x: 0,
-          y: 0
-        };
-      }
-      p = this.points;
-      ox = -view.x + offset.x;
-      oy = -view.y + offset.y;
-      x = p[0][0] + ox;
-      y = p[0][1] + oy;
-      ctxt.strokeStyle = color(this.color, alpha);
-      ctxt.beginPath();
-      ctxt.moveTo(x, y);
-      for (i = 1, _ref = p.length; 1 <= _ref ? i < _ref : i > _ref; 1 <= _ref ? i++ : i--) {
-        x = p[i][0] + ox;
-        y = p[i][1] + oy;
-        if ((-50 < (_ref2 = p[i - 1][0] - p[i][0]) && _ref2 < 50) && (-50 < (_ref3 = p[i - 1][1] - p[i][1]) && _ref3 < 50)) {
-          ctxt.lineTo(x, y);
-        } else {
-          ctxt.stroke();
-          ctxt.beginPath();
-          ctxt.moveTo(x, y);
-        }
-      }
-      return ctxt.stroke();
-    };
-    return Bullet;
-  })();
   port = 12345;
   socket = {};
   ctxt = null;
@@ -181,17 +140,32 @@
     }
   };
   drawRadar = function(ctxt) {
-    var dx, dy, i, margin, rx, ry, s;
+    var bestDistance, bestPos, d, dx, dy, i, j, k, margin, rx, ry, s, x, y, _ref, _ref2;
     for (i in ships) {
       s = ships[i];
       if (i !== id && !s.isDead() && !s.isExploding()) {
         dx = s.pos.x - ships[id].pos.x;
         dy = s.pos.y - ships[id].pos.y;
-        margin = 20;
         if (Math.abs(dx) > screen.w / 2 || Math.abs(dy) > screen.h / 2) {
-          rx = Math.max(-screen.w / 2 + margin, dx);
+          bestDistance = 999999;
+          for (j = _ref = -1; _ref <= 1 ? j <= 1 : j >= 1; _ref <= 1 ? j++ : j--) {
+            for (k = _ref2 = -1; _ref2 <= 1 ? k <= 1 : k >= 1; _ref2 <= 1 ? k++ : k--) {
+              x = s.pos.x + j * map.w;
+              y = s.pos.y + k * map.h;
+              d = distance(ships[id].pos.x, ships[id].pos.y, x, y);
+              if (d < bestDistance) {
+                bestDistance = d;
+                bestPos = {
+                  x: x,
+                  y: y
+                };
+              }
+            }
+          }
+          margin = 20;
+          rx = Math.max(-screen.w / 2 + margin, bestPos.x - ships[id].pos.x);
           rx = Math.min(screen.w / 2 - margin, rx);
-          ry = Math.max(-screen.h / 2 + margin, dy);
+          ry = Math.max(-screen.h / 2 + margin, bestPos.y - ships[id].pos.y);
           ry = Math.min(screen.h / 2 - margin, ry);
           ctxt.fillStyle = color(s.color);
           ctxt.beginPath();
@@ -271,7 +245,6 @@
         }
         break;
       case 'ships':
-        serverShips = {};
         _ref2 = msg.ships;
         for (i in _ref2) {
           s = _ref2[i];
@@ -323,7 +296,7 @@
       this.force = planet.force;
     }
     Planet.prototype.draw = function(ctxt, offset) {
-      var d, dx, dy, f, ndx, ndy, px, py, x, y;
+      var f, px, py, x, y;
       if (offset == null) {
         offset = {
           x: 0,
@@ -333,11 +306,6 @@
       px = this.pos.x + offset.x;
       py = this.pos.y + offset.y;
       f = this.force;
-      dx = ships[id].pos.x - px;
-      dy = ships[id].pos.y - py;
-      d = Math.sqrt(dx * dx + dy * dy);
-      ndx = px + dx / d * f;
-      ndy = py + dy / d * f;
       if (!inView(px + f, py + f) && !inView(px + f, py - f) && !inView(px - f, py + f) && !inView(px - f, py - f)) {
         return;
       }
@@ -486,6 +454,59 @@
       alpha = 1.0;
     }
     return 'rgba(' + rgb + ',' + alpha + ')';
+  };
+  distance = function(x1, y1, x2, y2) {
+    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+  };
+  mod = function(x, n) {
+    if (x > 0) {
+      return x % n;
+    } else {
+      return mod(x + n, n);
+    }
+  };
+}).call(this);
+plosion = function(ctxt, offset) {
+      var b, ox, oy, _i, _len, _ref, _results;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      ox = -view.x + offset.x;
+      oy = -view.y + offset.y;
+      ctxt.fillStyle = color(this.color, (maxExploFrame - this.exploFrame) / maxExploFrame);
+      _ref = explosions[this.id];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        b = _ref[_i];
+        _results.push(ctxt.fillRect(b.x + ox, b.y + oy, b.s, b.s));
+      }
+      return _results;
+    };
+    return Ship;
+  })();
+  log = function(msg) {
+    return console.log(msg);
+  };
+  info = function(msg) {
+    return console.info(msg);
+  };
+  warn = function(msg) {
+    return console.warn(msg);
+  };
+  log = function(msg) {
+    return console.error(msg);
+  };
+  color = function(rgb, alpha) {
+    if (alpha == null) {
+      alpha = 1.0;
+    }
+    return 'rgba(' + rgb + ',' + alpha + ')';
+  };
+  distance = function(x1, y1, x2, y2) {
+    return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
   };
   mod = function(x, n) {
     if (x > 0) {
