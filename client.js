@@ -1,5 +1,5 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, js, keys, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, randomColor, redraw, screen, serverShips, ships, socket, update, view, warn;
+  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, enableInterpolation, explosions, go, id, inView, info, interp_factor, interpolate, isEmptyObject, js, keys, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, randomColor, redraw, screen, serverShips, ships, socket, update, view, warn;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Bullet = (function() {
     function Bullet(bullet) {
@@ -67,6 +67,7 @@
   explosions = {};
   planets = [];
   bullets = [];
+  enableInterpolation = true;
   interp_factor = .03;
   lastUpdate = 0;
   keys = {};
@@ -112,10 +113,18 @@
     var ddir, dx, dy, i, shadow, ship, _results;
     _results = [];
     for (i in serverShips) {
-      ship = serverShips[i];
       shadow = serverShips[i];
+      ship = ships[i];
       if (!(ship != null)) {
-        ships[i] = shadow;
+        ships[i] = new Ship(shadow);
+        continue;
+      }
+      if (time * interp_factor > 1) {
+        ship = shadow;
+        continue;
+      }
+      if (ship.isDead() && !shadow.isDead()) {
+        ships[i] = new Ship(shadow);
         continue;
       }
       dx = shadow.pos.x - ship.pos.x;
@@ -137,10 +146,9 @@
         ship.dir += ddir * time * interp_factor;
       }
       ship.vel = shadow.vel;
-      ship.color = shadow.color;
       ship.firePower = shadow.firePower;
       ship.dead = shadow.dead;
-      ship.exploBits = shadow.exploBits;
+      ship.exploding = shadow.exploding;
       _results.push(ship.exploFrame = shadow.exploFrame);
     }
     return _results;
@@ -148,7 +156,9 @@
   update = function() {
     var diff, start;
     start = (new Date).getTime();
-    interpolate((new Date).getTime() - lastUpdate);
+    if (enableInterpolation) {
+      interpolate(start - lastUpdate);
+    }
     centerView();
     redraw(ctxt);
     diff = (new Date).getTime() - start;
@@ -295,8 +305,11 @@
         _ref2 = msg.ships;
         for (i in _ref2) {
           s = _ref2[i];
-          serverShips[i] = new Ship(s);
-          ships[i] = new Ship(s);
+          if (enableInterpolation) {
+            serverShips[i] = new Ship(s);
+          } else {
+            ships[i] = new Ship(s);
+          }
         }
         lastUpdate = (new Date).getTime();
         break;
@@ -304,8 +317,11 @@
         _ref3 = msg.update;
         for (i in _ref3) {
           s = _ref3[i];
-          serverShips[i].update(s);
-          ships[i].update(s);
+          if (enableInterpolation) {
+            serverShips[i].update(s);
+          } else {
+            ships[i].update(s);
+          }
         }
         lastUpdate = (new Date).getTime();
         break;
@@ -507,6 +523,13 @@
   };
   distance = function(x1, y1, x2, y2) {
     return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+  };
+  isEmptyObject = function(obj) {
+    var p;
+    for (p in obj) {
+      return false;
+    }
+    return true;
   };
   mod = function(x, n) {
     if (x > 0) {
