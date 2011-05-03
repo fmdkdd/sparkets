@@ -298,7 +298,7 @@
       this.firePower = minFirepower;
       this.cannonHeat = 0;
       this.dead = false;
-      this.exploFrame = null;
+      this.exploFrame = 0;
       this.dirtyFields = {
         pos: true,
         vel: true,
@@ -431,7 +431,7 @@
       if (this.exploFrame > maxExploFrame) {
         this.exploding = false;
         this.dead = true;
-        this.exploFrame = null;
+        this.exploFrame = 0;
         this.dirtyFields.exploding = true;
         this.dirtyFields.dead = true;
       }

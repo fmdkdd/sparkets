@@ -67,7 +67,7 @@
   explosions = {};
   planets = [];
   bullets = [];
-  enableInterpolation = true;
+  enableInterpolation = false;
   interp_factor = .03;
   lastUpdate = 0;
   keys = {};
@@ -185,7 +185,7 @@
       s = ships[i];
       s.draw(ctxt);
     }
-    if (!ships[id].isDead() && !ships[id].isExploding()) {
+    if (!ships[id].isDead()) {
       drawRadar(ctxt);
     }
     return drawInfinity(ctxt);
@@ -197,7 +197,7 @@
     }
   };
   drawRadar = function(ctxt) {
-    var alpha, animRatio, bestDistance, bestPos, d, dx, dy, i, j, k, margin, radius, rx, ry, s, x, y, _ref, _ref2;
+    var alpha, animRatio, bestDistance, bestPos, d, dx, dy, dying, i, j, k, margin, radius, rx, ry, s, x, y, _ref, _ref2;
     for (i in ships) {
       s = ships[i];
       if (i !== id && !s.isDead()) {
@@ -224,13 +224,18 @@
           rx = Math.min(screen.w / 2 - margin, rx);
           ry = Math.max(-screen.h / 2 + margin, dy);
           ry = Math.min(screen.h / 2 - margin, ry);
-          animRatio = s.exploFrame / maxExploFrame;
-          radius = 10;
-          if (s.isExploding()) {
-            radius -= animRatio * 10;
+          if (s.isExploding() && ships[id].isExploding()) {
+            dying = s.exploFrame > ships[id].exploFrame ? s : ships[id];
+          } else if (s.isExploding()) {
+            dying = s;
+          } else if (ships[id].isExploding()) {
+            dying = ships[id];
           }
+          radius = 10;
           alpha = 1;
-          if (s.isExploding()) {
+          if (dying != null) {
+            animRatio = dying.exploFrame / maxExploFrame;
+            radius -= animRatio * 10;
             alpha -= animRatio;
           }
           ctxt.fillStyle = color(s.color, alpha);

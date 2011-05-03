@@ -14,7 +14,7 @@ class Ship
 		@firePower = minFirepower
 		@cannonHeat = 0
 		@dead = false
-		@exploFrame = null
+		@exploFrame = 0
 
 		@dirtyFields =
 			pos: yes
@@ -141,7 +141,7 @@ class Ship
 		if @exploFrame > maxExploFrame
 			@exploding = false
 			@dead = true
-			@exploFrame = null
+			@exploFrame = 0
 
 			@dirtyFields.exploding = yes
 			@dirtyFields.dead = yes

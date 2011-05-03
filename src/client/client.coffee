@@ -145,7 +145,7 @@ redraw = (ctxt) ->
 	# Draw all ships.
 	s.draw ctxt	for i, s of ships
 
-	drawRadar ctxt if not ships[id].isDead() and not ships[id].isExploding()
+	drawRadar ctxt if not ships[id].isDead()
 
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
@@ -181,11 +181,22 @@ drawRadar = (ctxt) ->
 				ry = Math.max -screen.h/2 + margin, dy
 				ry = Math.min screen.h/2 - margin, ry
 
-				animRatio = s.exploFrame / maxExploFrame
+				# Choose on which ship we should base the animation. If the two
+				# of them are exploding, focus on the first to die.
+				if s.isExploding() and ships[id].isExploding()
+					dying = if s.exploFrame > ships[id].exploFrame then s else ships[id]
+				else if s.isExploding()
+					dying = s
+				else if ships[id].isExploding()
+					dying = ships[id]
+
 				radius = 10
-				radius -= animRatio * 10 if s.isExploding()
 				alpha = 1
-				alpha -= animRatio if s.isExploding()
+
+				if dying?
+					animRatio = dying.exploFrame / maxExploFrame
+					radius -= animRatio * 10
+					alpha -= animRatio
 
 				ctxt.fillStyle = color(s.color, alpha)
 				ctxt.beginPath()
