@@ -220,11 +220,17 @@ onMessage = (msg) ->
 
 		# When received other ship data.
 		when 'ships'
-			serverShips = ships = {}
-
 			for i, s of msg.ships
 				serverShips[i] = new Ship s
 				ships[i] = new Ship s
+
+			lastUpdate = (new Date).getTime()
+
+		# When received world update.
+		when 'update'
+			for i, s of msg.update
+				serverShips[i].update(s)
+				ships[i].update(s)
 
 			lastUpdate = (new Date).getTime()
 
@@ -240,14 +246,20 @@ onMessage = (msg) ->
 
 		# When another player joins.
 		when 'player joins'
+			serverShips[msg.playerId] = new Ship msg.ship
+			ships[msg.playerId] = new Ship msg.ship
 			console.info 'player '+msg.playerId+' joins'
 
 		# When another player dies.
 		when 'player dies'
+			delete serverShips[msg.playerId]
+			delete ships[msg.playerId]
 			console.info 'player '+msg.playerId+' dies'
 
 		# When another player leaves.
 		when 'player quits'
+			delete serverShips[msg.playerId]
+			delete ships[msg.playerId]
 			console.info 'player '+msg.playerId+' quits'
 
 	return true

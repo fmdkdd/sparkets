@@ -14,12 +14,24 @@ class Ship
 		@firePower = minFirepower
 		@cannonHeat = 0
 		@dead = false
-		@exploBits = null
 		@exploFrame = null
+
+		@dirtyFields =
+			pos: yes
+			vel: yes
+			dir: yes
+			firePower: yes
+			cannonHeat: yes
+			dead: yes
+			exploding: yes
+			exploFrame: yes
 
 		@spawn() if @collidesWithPlanet()
 
 	move: () ->
+		x = @pos.x
+		y = @pos.y
+
 		@pos.x += @vel.x
 		@pos.y += @vel.y
 
@@ -31,6 +43,10 @@ class Ship
 
 		@vel.x *= frictionDecay
 		@vel.y *= frictionDecay
+
+		if @pos.x != x or @pos.y != y
+			@dirtyFields.pos = yes
+			@dirtyFields.vel = yes
 
 	collides: () ->
 		@collidesWithOtherShip() or
@@ -84,9 +100,19 @@ class Ship
 		if @isExploding()
 			@updateExplosion()
 		else
-			--@cannonHeat if @cannonHeat > 0
+			if @cannonHeat > 0
+				--@cannonHeat
+				@dirtyFields.cannonHeat = yes
 			@move()
 			@explode() if @collides()
+
+	changes: () ->
+		changes = {}
+		for field, isDirty of @dirtyFields
+			if isDirty
+				changes[field] = this[field]
+				@dirtyFields[field] = no
+		return changes
 
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
@@ -97,9 +123,15 @@ class Ship
 		@firePower = minFirepower
 		@cannonHeat = cannonCooldown
 
+		@dirtyFields.firePower = yes
+		@dirtyFields.cannonHeat = yes
+
 	explode : () ->
 		@exploding = true
 		@exploFrame = 0
+
+		@dirtyFields.exploding = yes
+		@dirtyFields.exploFrame = yes
 
 	updateExplosion : () ->
 		++@exploFrame
@@ -108,3 +140,8 @@ class Ship
 			@exploding = false
 			@dead = true
 			@exploFrame = null
+
+			@dirtyFields.exploding = yes
+			@dirtyFields.dead = yes
+
+		@dirtyFields.exploFrame = yes

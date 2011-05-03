@@ -149,7 +149,8 @@
     });
     return player.broadcast({
       type: 'player joins',
-      playerId: id
+      playerId: id,
+      ship: ships[id]
     });
   });
   io.on('clientMessage', function(msg, player) {
@@ -209,9 +210,11 @@
     }
     if (keys[37] === true) {
       ship.dir -= dirInc;
+      ship.dirtyFields.dir = true;
     }
     if (keys[39] === true) {
       ship.dir += dirInc;
+      ship.dirtyFields.dir = true;
     }
     if (keys[38] === true) {
       ship.vel.x += Math.sin(ship.dir) * shipSpeed;
@@ -233,14 +236,19 @@
     return setTimeout(update, 20 - mod(diff, 20));
   };
   updateShips = function() {
-    var id, ship;
+    var changes, id, ship, shipChanges;
+    changes = {};
     for (id in ships) {
       ship = ships[id];
       ship.update();
+      shipChanges = ship.changes();
+      if (shipChanges !== {}) {
+        changes[id] = shipChanges;
+      }
     }
     return io.broadcast({
-      type: 'ships',
-      ships: ships
+      type: 'update',
+      update: changes
     });
   };
   updateBullets = function() {
@@ -273,6 +281,10 @@
       this.id = id;
       this.color = randomColor();
       this.spawn();
+      this.__defineSetter__('pos', function(val) {
+        log(val);
+        return this.pos = val;
+      });
     }
     Ship.prototype.spawn = function() {
       this.pos = {
@@ -287,13 +299,25 @@
       this.firePower = minFirepower;
       this.cannonHeat = 0;
       this.dead = false;
-      this.exploBits = null;
       this.exploFrame = null;
+      this.dirtyFields = {
+        pos: true,
+        vel: true,
+        dir: true,
+        firePower: true,
+        cannonHeat: true,
+        dead: true,
+        exploding: true,
+        exploFrame: true
+      };
       if (this.collidesWithPlanet()) {
         return this.spawn();
       }
     };
     Ship.prototype.move = function() {
+      var x, y;
+      x = this.pos.x;
+      y = this.pos.y;
       this.pos.x += this.vel.x;
       this.pos.y += this.vel.y;
       this.pos.x = this.pos.x < 0 ? map.w : this.pos.x;
@@ -301,7 +325,11 @@
       this.pos.y = this.pos.y < 0 ? map.h : this.pos.y;
       this.pos.y = this.pos.y > map.h ? 0 : this.pos.y;
       this.vel.x *= frictionDecay;
-      return this.vel.y *= frictionDecay;
+      this.vel.y *= frictionDecay;
+      if (this.pos.x !== x || this.pos.y !== y) {
+        this.dirtyFields.pos = true;
+        return this.dirtyFields.vel = true;
+      }
     };
     Ship.prototype.collides = function() {
       return this.collidesWithOtherShip() || this.collidesWithBullet() || this.collidesWithPlanet();
@@ -358,12 +386,26 @@
       } else {
         if (this.cannonHeat > 0) {
           --this.cannonHeat;
+          this.dirtyFields.cannonHeat = true;
         }
         this.move();
         if (this.collides()) {
           return this.explode();
         }
       }
+    };
+    Ship.prototype.changes = function() {
+      var changes, field, isDirty, _ref;
+      changes = {};
+      _ref = this.dirtyFields;
+      for (field in _ref) {
+        isDirty = _ref[field];
+        if (isDirty) {
+          changes[field] = this[field];
+          this.dirtyFields[field] = false;
+        }
+      }
+      return changes;
     };
     Ship.prototype.fire = function() {
       if (this.isDead() || this.isExploding() || this.cannonHeat > 0) {
@@ -374,19 +416,26 @@
         bullets.shift();
       }
       this.firePower = minFirepower;
-      return this.cannonHeat = cannonCooldown;
+      this.cannonHeat = cannonCooldown;
+      this.dirtyFields.firePower = true;
+      return this.dirtyFields.cannonHeat = true;
     };
     Ship.prototype.explode = function() {
       this.exploding = true;
-      return this.exploFrame = 0;
+      this.exploFrame = 0;
+      this.dirtyFields.exploding = true;
+      return this.dirtyFields.exploFrame = true;
     };
     Ship.prototype.updateExplosion = function() {
       ++this.exploFrame;
       if (this.exploFrame > maxExploFrame) {
         this.exploding = false;
         this.dead = true;
-        return this.exploFrame = null;
+        this.exploFrame = null;
+        this.dirtyFields.exploding = true;
+        this.dirtyFields.dead = true;
       }
+      return this.dirtyFields.exploFrame = true;
     };
     return Ship;
   })();

@@ -10,20 +10,24 @@ class Ship
 		@exploding = ship.exploding
 		@exploFrame = ship.exploFrame
 
+		@color = ship.color
+
+	update: (msg) ->
+		for field, val of msg
+			this[field] = val
+
 		if @isExploding()
 			@explode() if not explosions[@id]?
 			@updateExplosion()
 		else if @isDead() and explosions[@id]?
 			delete explosions[@id]
 
-		@color = ship.color
-
 	isExploding: () ->
 		return @exploding
 
 	isDead: () ->
 		return @dead
-	
+
 	draw: (ctxt, offset) ->
 		if @isDead()
 			return

@@ -260,7 +260,7 @@
     return info("Aaargh! Disconnected!");
   };
   onMessage = function(msg) {
-    var b, i, p, s, _i, _j, _len, _len2, _ref, _ref2, _ref3;
+    var b, i, p, s, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
     switch (msg.type) {
       case 'bullets':
         bullets = [];
@@ -271,7 +271,7 @@
         }
         break;
       case 'ships':
-        serverShips = ships = {};
+        serverShips = {};
         _ref2 = msg.ships;
         for (i in _ref2) {
           s = _ref2[i];
@@ -280,11 +280,20 @@
         }
         lastUpdate = (new Date).getTime();
         break;
+      case 'update':
+        _ref3 = msg.update;
+        for (i in _ref3) {
+          s = _ref3[i];
+          serverShips[i].update(s);
+          ships[i].update(s);
+        }
+        lastUpdate = (new Date).getTime();
+        break;
       case 'planets':
         planets = [];
-        _ref3 = msg.planets;
-        for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
-          p = _ref3[_j];
+        _ref4 = msg.planets;
+        for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
+          p = _ref4[_j];
           planets.push(new Planet(p));
         }
         break;
@@ -292,12 +301,18 @@
         go(msg.playerId);
         break;
       case 'player joins':
+        serverShips[msg.playerId] = new Ship(msg.ship);
+        ships[msg.playerId] = new Ship(msg.ship);
         console.info('player ' + msg.playerId + ' joins');
         break;
       case 'player dies':
+        delete serverShips[msg.playerId];
+        delete ships[msg.playerId];
         console.info('player ' + msg.playerId + ' dies');
         break;
       case 'player quits':
+        delete serverShips[msg.playerId];
+        delete ships[msg.playerId];
         console.info('player ' + msg.playerId + ' quits');
     }
     return true;
@@ -345,16 +360,23 @@
       this.dead = ship.dead;
       this.exploding = ship.exploding;
       this.exploFrame = ship.exploFrame;
+      this.color = ship.color;
+    }
+    Ship.prototype.update = function(msg) {
+      var field, val;
+      for (field in msg) {
+        val = msg[field];
+        this[field] = val;
+      }
       if (this.isExploding()) {
         if (!(explosions[this.id] != null)) {
           this.explode();
         }
-        this.updateExplosion();
+        return this.updateExplosion();
       } else if (this.isDead() && (explosions[this.id] != null)) {
-        delete explosions[this.id];
+        return delete explosions[this.id];
       }
-      this.color = ship.color;
-    }
+    };
     Ship.prototype.isExploding = function() {
       return this.exploding;
     };

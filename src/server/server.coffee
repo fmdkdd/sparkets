@@ -68,6 +68,7 @@ io.on 'clientConnect', (player) ->
 	player.broadcast
 		type: 'player joins'
 		playerId: id
+		ship: ships[id]
 
 io.on 'clientMessage', (msg, player) ->
 	switch msg.type
@@ -131,10 +132,12 @@ processInputs = (id) ->
 	# Left arrow : rotate to the left.
 	if keys[37] is on
 		ship.dir -= dirInc
+		ship.dirtyFields.dir = yes
 
 	# Right arrow : rotate to the right.
 	if keys[39] is on
 		ship.dir += dirInc
+		ship.dirtyFields.dir = yes
 
 	# Up arrow : thrust forward.
 	if keys[38] is on
@@ -157,11 +160,16 @@ update = () ->
 	setTimeout(update, 20-mod(diff, 20))
 
 updateShips = () ->
-	ship.update() for id, ship of ships
+	changes = {}
+	for id, ship of ships
+		ship.update()
+		shipChanges = ship.changes()
+		if shipChanges != {}
+			changes[id] = shipChanges
 
 	io.broadcast
-		type: 'ships'
-		ships: ships
+		type: 'update'
+		update: changes
 
 updateBullets = () ->
 	b.step()	for b in bullets
