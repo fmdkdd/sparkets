@@ -1,5 +1,5 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, keys, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, redraw, screen, serverShips, ships, socket, update, view, warn;
+  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, js, keys, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, randomColor, redraw, screen, serverShips, ships, socket, update, view, warn;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Bullet = (function() {
     function Bullet(bullet) {
@@ -496,6 +496,9 @@
   log = function(msg) {
     return console.error(msg);
   };
+  js = function(path) {
+    return path.match(/js$/);
+  };
   color = function(rgb, alpha) {
     if (alpha == null) {
       alpha = 1.0;
@@ -511,5 +514,8 @@
     } else {
       return mod(x + n, n);
     }
+  };
+  randomColor = function() {
+    return Math.round(70 + Math.random() * 150) + ',' + Math.round(70 + Math.random() * 150) + ',' + Math.round(70 + Math.random() * 150);
   };
 }).call(this);

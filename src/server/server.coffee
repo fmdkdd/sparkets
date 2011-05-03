@@ -117,7 +117,7 @@ processKeyUp = (id, key) ->
 	players[id].keys[key] = off
 
 	# Fire the bullet or respawn if the spacebar is released.
-	if key is 32
+	if key is 32 or key is 65
 		if ships[id].isDead()
 			ships[id].spawn()
 		else
@@ -145,7 +145,7 @@ processInputs = (id) ->
 		ship.vel.y -= Math.cos(ship.dir) * shipSpeed
 
 	# Spacebar : charge the bullet.
-	if keys[32] is on
+	if keys[32] or keys[65]
 		ship.firePower = Math.min(ship.firePower + 0.1, maxPower)
 		ship.dirtyFields.firePower = yes
 
