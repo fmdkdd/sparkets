@@ -146,26 +146,27 @@ drawRadar = (ctxt) ->
 	for i, s of ships
 		if i isnt id and not s.isDead() and not s.isExploding()
 
-			dx = s.pos.x - ships[id].pos.x
-			dy = s.pos.y - ships[id].pos.y
+			# Select the closest ship among the real one and its ghosts.
+			bestDistance = 999999
+			for j in [-1..1]
+				for k in [-1..1]
+					x = s.pos.x + j * map.w
+					y = s.pos.y + k * map.h
+					d = distance(ships[id].pos.x, ships[id].pos.y, x, y)
+
+					if d < bestDistance
+						bestDistance = d
+						bestPos = {x: x, y: y}
+
+			dx = bestPos.x - ships[id].pos.x
+			dy = bestPos.y - ships[id].pos.y
 
 			if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
-				# Select the closest ship among the real one and its ghosts.
-				bestDistance = 999999
-				for j in [-1..1]
-					for k in [-1..1]
-						x = s.pos.x + j * map.w
-						y = s.pos.y + k * map.h
-						d = distance(ships[id].pos.x, ships[id].pos.y, x, y)
-
-						if d < bestDistance
-							bestDistance = d
-							bestPos = {x: x, y: y}
 
 				margin = 20
-				rx = Math.max -screen.w/2 + margin, bestPos.x - ships[id].pos.x
+				rx = Math.max -screen.w/2 + margin, dx
 				rx = Math.min screen.w/2 - margin, rx
-				ry = Math.max -screen.h/2 + margin, bestPos.y - ships[id].pos.y
+				ry = Math.max -screen.h/2 + margin, dy
 				ry = Math.min screen.h/2 - margin, ry
 
 				ctxt.fillStyle = color s.color
