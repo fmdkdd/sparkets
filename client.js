@@ -200,7 +200,7 @@
     for (i = 0; i <= 2; i++) {
       for (j = 0; j <= 2; j++) {
         if (visibility[i][j] === true) {
-          for (b = 0, _ref = bullets.length; (0 <= _ref ? b < _ref : b > _ref); (0 <= _ref ? b += 1 : b -= 1)) {
+          for (b = 0, _ref = bullets.length; 0 <= _ref ? b < _ref : b > _ref; 0 <= _ref ? b++ : b--) {
             offset = {
               x: (j - 1) * map.w,
               y: (i - 1) * map.h
@@ -457,7 +457,7 @@
       ctxt.strokeStyle = color(this.color, alpha);
       ctxt.beginPath();
       ctxt.moveTo(x, y);
-      for (i = 1, _ref = p.length; (1 <= _ref ? i < _ref : i > _ref); (1 <= _ref ? i += 1 : i -= 1)) {
+      for (i = 1, _ref = p.length; 1 <= _ref ? i < _ref : i > _ref; 1 <= _ref ? i++ : i--) {
         x = p[i][0] + ox;
         y = p[i][1] + oy;
         if ((-50 < (_ref2 = p[i - 1][0] - p[i][0]) && _ref2 < 50) && (-50 < (_ref3 = p[i - 1][1] - p[i][1]) && _ref3 < 50)) {

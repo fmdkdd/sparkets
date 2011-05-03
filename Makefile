@@ -4,12 +4,10 @@ SERVER_FILES := src/server.coffee
 all: client.js server.js
 
 client.js: $(CLIENT_FILES)
-	coffee -jc $(CLIENT_FILES)
-	mv concatenation.js client.js
+	coffee -cj client.js $(CLIENT_FILES)
 
 server.js: $(SERVER_FILES)
-	coffee -jc $(SERVER_FILES)
-	mv concatenation.js server.js
+	coffee -cj server.js $(SERVER_FILES)
 
 clean:
 	rm -f client.js server.js
