@@ -165,12 +165,13 @@ updateShips = () ->
 	for id, ship of ships
 		ship.update()
 		shipChanges = ship.changes()
-		if shipChanges != {}
+		if not isEmptyObject(shipChanges)
 			changes[id] = shipChanges
 
-	io.broadcast
-		type: 'update'
-		update: changes
+	if not isEmptyObject(changes)
+		io.broadcast
+			type: 'update'
+			update: changes
 
 updateBullets = () ->
 	b.step()	for b in bullets

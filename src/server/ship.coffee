@@ -44,7 +44,8 @@ class Ship
 		@vel.x *= frictionDecay
 		@vel.y *= frictionDecay
 
-		if @pos.x != x or @pos.y != y
+		if Math.abs(@pos.x-x) > .05 or
+				Math.abs(@pos.y-y) > .05
 			@dirtyFields.pos = yes
 			@dirtyFields.vel = yes
 
