@@ -1,5 +1,5 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, redraw, screen, serverShips, ships, socket, update, view, warn;
+  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, keys, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, redraw, screen, serverShips, ships, socket, update, view, warn;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Bullet = (function() {
     function Bullet(bullet) {
@@ -69,6 +69,7 @@
   bullets = [];
   interp_factor = .03;
   lastUpdate = 0;
+  keys = {};
   $(document).ready(function(event) {
     socket = new io.Socket(null, {
       port: port
@@ -88,13 +89,17 @@
   go = function(clientId) {
     id = clientId;
     $(document).keydown(function(event) {
-      return socket.send({
-        type: 'key down',
-        playerId: id,
-        key: event.keyCode
-      });
+      if (!(keys[event.keyCode] != null) || keys[event.keyCode] === false) {
+        keys[event.keyCode] = true;
+        return socket.send({
+          type: 'key down',
+          playerId: id,
+          key: event.keyCode
+        });
+      }
     });
     $(document).keyup(function(event) {
+      keys[event.keyCode] = false;
       return socket.send({
         type: 'key up',
         playerId: id,

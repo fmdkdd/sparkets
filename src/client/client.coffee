@@ -24,6 +24,7 @@ bullets = []
 
 interp_factor = .03
 lastUpdate = 0
+keys = {}
 
 # Entry point
 $(document).ready (event) ->
@@ -49,12 +50,15 @@ go = (clientId) ->
 	id = clientId
 
 	$(document).keydown (event) ->
-		socket.send
-			type: 'key down'
-			playerId: id
-			key: event.keyCode
+		if not keys[event.keyCode]? or keys[event.keyCode] is off
+			keys[event.keyCode] = on
+			socket.send
+				type: 'key down'
+				playerId: id
+				key: event.keyCode
 
 	$(document).keyup (event) ->
+		keys[event.keyCode] = off
 		socket.send
 			type: 'key up'
 			playerId: id
