@@ -60,6 +60,7 @@ class Ship
 					not ship.isExploding() and
 					-10 < @pos.x - ship.pos.x < 10 and
 					-10 < @pos.y - ship.pos.y < 10
+				ship.explode()
 				return true
 
 		return false

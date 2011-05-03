@@ -336,6 +336,7 @@
       for (id in ships) {
         ship = ships[id];
         if (this.id !== ship.id && !ship.isDead() && !ship.isExploding() && (-10 < (_ref = this.pos.x - ship.pos.x) && _ref < 10) && (-10 < (_ref2 = this.pos.y - ship.pos.y) && _ref2 < 10)) {
+          ship.explode();
           return true;
         }
       }

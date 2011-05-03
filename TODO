@@ -1,5 +1,3 @@
-o [fmdkdd] Fix ship-ship collisions leaving one ship intact.
-
 o [merwan] Display engine fire trail when a ship is moving.
    Or rather, display engine fires in a vector drawing fashion.
 
