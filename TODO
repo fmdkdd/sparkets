@@ -1,1 +1,24 @@
-* Display engine fire trail when a ship is moving.
+o [fmdkdd] Fix ship-ship collisions leaving one ship intact.
+
+o [merwan] Display engine fire trail when a ship is moving.
+   Or rather, display engine fires in a vector drawing fashion.
+
+* Animate radar when ship explodes.
+   Idea: reduce radar radius and fade out. Try linear animation first,
+   but quadratic/expo might be subtler.
+   
+* Animate weapon cooldown.
+   Fade out the ship fill color when cooling down.
+
+* Add afterburner.
+   Instant speed-up to escape pursuers, harder to control. Comes with a
+   cool graphic effect of course.
+   
+* Add other weapons (static bombs, machine gun, etc.).
+   - Bombs
+      Stationary bombs left behind to disrupt pursuers or setup
+      traps. Supply is limited.
+   - Machine gun
+      Rapid-fire weapon but takes longer to kill ships.
+
+* Get rid of evil global variables.
