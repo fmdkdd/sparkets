@@ -149,8 +149,7 @@ centerView = () ->
 
 drawRadar = (ctxt) ->
 	for i, s of ships
-		if i isnt id and not s.isDead() and not s.isExploding()
-
+		if i isnt id and not s.isDead()
 			# Select the closest ship among the real one and its ghosts.
 			bestDistance = 999999
 			for j in [-1..1]
@@ -174,9 +173,15 @@ drawRadar = (ctxt) ->
 				ry = Math.max -screen.h/2 + margin, dy
 				ry = Math.min screen.h/2 - margin, ry
 
-				ctxt.fillStyle = color s.color
+				animRatio = s.exploFrame / maxExploFrame
+				radius = 10
+				radius -= animRatio * 10 if s.isExploding()
+				alpha = 1
+				alpha -= animRatio if s.isExploding()
+
+				ctxt.fillStyle = color(s.color, alpha)
 				ctxt.beginPath()
-				ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, 10, 0, 2*Math.PI, false)
+				ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, radius, 0, 2*Math.PI, false)
 				ctxt.fill()
 
 	return true

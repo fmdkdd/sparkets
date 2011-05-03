@@ -1,10 +1,6 @@
 o [merwan] Display engine fire trail when a ship is moving.
    Or rather, display engine fires in a vector drawing fashion.
 
-* Animate radar when ship explodes.
-   Idea: reduce radar radius and fade out. Try linear animation first,
-   but quadratic/expo might be subtler.
-   
 * Animate weapon cooldown.
    Fade out the ship fill color when cooling down.
 

@@ -187,10 +187,10 @@
     }
   };
   drawRadar = function(ctxt) {
-    var bestDistance, bestPos, d, dx, dy, i, j, k, margin, rx, ry, s, x, y, _ref, _ref2;
+    var alpha, animRatio, bestDistance, bestPos, d, dx, dy, i, j, k, margin, radius, rx, ry, s, x, y, _ref, _ref2;
     for (i in ships) {
       s = ships[i];
-      if (i !== id && !s.isDead() && !s.isExploding()) {
+      if (i !== id && !s.isDead()) {
         bestDistance = 999999;
         for (j = _ref = -1; _ref <= 1 ? j <= 1 : j >= 1; _ref <= 1 ? j++ : j--) {
           for (k = _ref2 = -1; _ref2 <= 1 ? k <= 1 : k >= 1; _ref2 <= 1 ? k++ : k--) {
@@ -214,9 +214,18 @@
           rx = Math.min(screen.w / 2 - margin, rx);
           ry = Math.max(-screen.h / 2 + margin, dy);
           ry = Math.min(screen.h / 2 - margin, ry);
-          ctxt.fillStyle = color(s.color);
+          animRatio = s.exploFrame / maxExploFrame;
+          radius = 10;
+          if (s.isExploding()) {
+            radius -= animRatio * 10;
+          }
+          alpha = 1;
+          if (s.isExploding()) {
+            alpha -= animRatio;
+          }
+          ctxt.fillStyle = color(s.color, alpha);
           ctxt.beginPath();
-          ctxt.arc(screen.w / 2 + rx, screen.h / 2 + ry, 10, 0, 2 * Math.PI, false);
+          ctxt.arc(screen.w / 2 + rx, screen.h / 2 + ry, radius, 0, 2 * Math.PI, false);
           ctxt.fill();
         }
       }
