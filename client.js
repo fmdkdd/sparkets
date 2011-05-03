@@ -1,5 +1,5 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, lastUpdate, log, map, maxExploFrame, maxPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, redraw, screen, serverShips, ships, socket, update, view, warn;
+  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, explosions, go, id, inView, info, interp_factor, interpolate, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, redraw, screen, serverShips, ships, socket, update, view, warn;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Bullet = (function() {
     function Bullet(bullet) {
@@ -58,6 +58,7 @@
     y: 0
   };
   planetColor = '127, 157, 185';
+  minPower = 1.3;
   maxPower = 3;
   maxExploFrame = 50;
   id = null;
@@ -419,7 +420,7 @@
         points[i] = [p[0] * cos - p[1] * sin, p[0] * sin + p[1] * cos];
       }
       ctxt.strokeStyle = color(this.color);
-      ctxt.fillStyle = color(this.color, (this.firePower - 1) / maxPower);
+      ctxt.fillStyle = color(this.color, (this.firePower - minPower) / (maxPower - minPower));
       ctxt.beginPath();
       ctxt.moveTo(x + points[3][0], y + points[3][1]);
       for (i = 0; i <= 3; i++) {

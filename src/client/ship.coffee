@@ -47,7 +47,7 @@ class Ship
 			points[i] = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
 
 		ctxt.strokeStyle = color @color
-		ctxt.fillStyle = color @color, (@firePower-1)/maxPower
+		ctxt.fillStyle = color @color, (@firePower-minPower)/(maxPower-minPower)
 		ctxt.beginPath()
 		ctxt.moveTo x+points[3][0], y+points[3][1]
 		for i in [0..3]

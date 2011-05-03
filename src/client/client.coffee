@@ -11,6 +11,7 @@ view = {x: 0, y: 0}
 planetColor = '127, 157, 185'
 
 # Game logic
+minPower = 1.3
 maxPower = 3
 maxExploFrame = 50
 

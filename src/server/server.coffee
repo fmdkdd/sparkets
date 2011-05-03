@@ -147,6 +147,7 @@ processInputs = (id) ->
 	# Spacebar : charge the bullet.
 	if keys[32] is on
 		ship.firePower = Math.min(ship.firePower + 0.1, maxPower)
+		ship.dirtyFields.firePower = yes
 
 update = () ->
 	start = (new Date).getTime()

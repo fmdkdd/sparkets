@@ -221,7 +221,8 @@
       ship.vel.y -= Math.cos(ship.dir) * shipSpeed;
     }
     if (keys[32] === true) {
-      return ship.firePower = Math.min(ship.firePower + 0.1, maxPower);
+      ship.firePower = Math.min(ship.firePower + 0.1, maxPower);
+      return ship.dirtyFields.firePower = true;
     }
   };
   update = function() {
