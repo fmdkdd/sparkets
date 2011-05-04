@@ -76,7 +76,7 @@ class Ship extends ChangingObject.ChangingObject
 		{x, y} = @pos
 
 		for p in globals.planets
-			{px, py} = p.pos
+			{x: px, y: py} = p.pos
 			return true if utils.distance(px, py, x, y) < p.force
 
 		return false
