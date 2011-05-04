@@ -21,9 +21,13 @@ class Mine
 		y = @pos.y + offset.y
 
 		ctxt.fillStyle = color @color
-		ctxt.beginPath()
-		ctxt.arc(x, y, 10, 0, 2*Math.PI, false)
-		ctxt.fill()
+		div = 10
+
+		for i in [0...div]
+			ctxt.beginPath()
+			ctxt.rotate(Math.PI*0.5/div)
+			ctxt.fillRect(x-15, y-15, 30, 30)
+			ctxt.fill()
 
 	drawExplosion: (ctxt, offset) ->
 		x = @pos.x + offset.x
