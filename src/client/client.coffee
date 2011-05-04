@@ -14,13 +14,14 @@ planetColor = '127, 157, 185'
 minPower = 1.3
 maxPower = 3
 maxExploFrame = 50
+maxBullets = 5
 
 id = null
 ships = {}
 serverShips = {}
 explosions = {}
 planets = []
-bullets = []
+bullets = {}
 
 enableInterpolation = false
 interp_factor = .03
@@ -136,8 +137,10 @@ redraw = (ctxt) ->
 	ctxt.lineJoin = 'round'
 
 	# Draw all bullets with decreasing opacity.
-	len = bullets.length
-	b.draw ctxt, (i+1)/len for b,i in bullets
+	len = Object.keys(bullets).length
+	i = 1
+	for idx, b of bullets
+		b.draw ctxt, (i++)/len
 
 	# Draw all planets.
 	p.draw ctxt for p in planets
@@ -234,15 +237,16 @@ drawInfinity = (ctxt) ->
 						y: (i-1)*map.h
 					s.draw ctxt, offset
 
-	len = bullets.length
+	len = Object.keys(bullets).length
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
-				for b in [0...bullets.length]
+				bi = 1
+				for idx, b of bullets
 					offset =
 						x: (j-1)*map.w
 						y: (i-1)*map.h
-					bullets[b].draw ctxt, (b+1)/len, offset
+					b.draw ctxt, (bi++)/len, offset
 
 	return true
 
@@ -256,10 +260,15 @@ onMessage = (msg) ->
 	switch msg.type
 
 		# When received bullet data.
-		when 'bullets'
-			bullets = []
-			for b in msg.bullets
-				bullets.push new Bullet b
+		when 'bullet update'
+			for i, bullet of msg.update
+				if not bullets[i]?
+					keys = Object.keys(bullets)
+					if keys.length > maxBullets
+						delete bullets[ keys[0] ] # delete oldest bullet
+					bullets[i] = new Bullet(bullet)
+
+				bullets[i].update(bullet.lastPoint)
 
 		# When received other ship data.
 		when 'ships'
@@ -272,7 +281,7 @@ onMessage = (msg) ->
 			lastUpdate = (new Date).getTime()
 
 		# When received world update.
-		when 'update'
+		when 'ship update'
 			for i, s of msg.update
 				if enableInterpolation
 					serverShips[i].update(s)

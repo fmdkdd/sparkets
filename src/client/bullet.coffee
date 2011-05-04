@@ -1,12 +1,10 @@
 class Bullet
 	constructor: (bullet) ->
-		@owner = bullet.owner
-		@pos = bullet.pos
-		@accel = bullet.accel
-		@power = bullet.power
-		@dead = bullet.dead
 		@color = bullet.color
 		@points = bullet.points
+
+	update: (point) ->
+		@points.push(point)
 
 	draw: (ctxt, alpha, offset = {x: 0, y: 0}) ->
 		p = @points
