@@ -1,13 +1,16 @@
 CLIENT_FILES := $(wildcard src/client/*.coffee) src/utils.coffee
-SERVER_FILES := $(wildcard src/server/*.coffee) src/utils.coffee
+SERVER_COFFEE := $(wildcard src/server/*.coffee) src/utils.coffee
+SERVER_JS := $(subst src, build, $(patsubst %.coffee, %.js, $(SERVER_COFFEE)))
 
-all: client.js server.js
+all: client.js $(SERVER_JS)
 
 client.js: $(CLIENT_FILES)
 	coffee -cj client.js $(CLIENT_FILES)
 
-server.js: $(SERVER_FILES)
-	coffee -cj server.js $(SERVER_FILES) src/server/launch-server.js
+build/%.js: src/%.coffee
+	coffee -o $(dir $@) -c $<
 
 clean:
-	rm -f client.js server.js
+	rm -f client.js
+	rm -f build/*.js
+	rm -f build/server/*.js

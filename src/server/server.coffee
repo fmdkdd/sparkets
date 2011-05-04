@@ -9,11 +9,14 @@ fs = require 'fs'
 # HTTP server setup
 #
 
+js = (path) ->
+	path.match(/js$/)
+
 server = http.createServer (req, res) ->
 	path = url.parse(req.url).pathname
 	switch path
 		when '/client.html', '/client.js', '/jquery.js'
-			fs.readFile __dirname + path, (err, data) ->
+			fs.readFile __dirname + '/../..' + path, (err, data) ->
 				return send404(res) if err?
 				res.writeHead 200,
 					'Content-Type': if js path then 'text/javascript' else 'text/html'
@@ -29,7 +32,11 @@ server.listen port
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Socket.IO setup
-#
+
+Ship = require './ship'
+Bullet = require './bullet'
+Planet = require './planet'
+utils = require '../utils'
 
 io = io.listen server
 
@@ -47,7 +54,7 @@ io.on 'clientConnect', (player) ->
 		keys: {}
 
 	# Create ship.
-	ships[id] = new Ship id
+	ships[id] = new Ship.Ship id
 
 	# Send the playfield.
 	player.send
@@ -108,7 +115,10 @@ map = w: 2000, h: 2000
 players = {}
 ships = {}
 bullets = []
+bulletCount = 0
 planets = []
+
+# Input processing
 
 processKeyDown = (id, key) ->
 	players[id].keys[key] = on
@@ -132,12 +142,10 @@ processInputs = (id) ->
 	# Left arrow : rotate to the left.
 	if keys[37] is on
 		ship.dir -= dirInc
-		ship.dirtyFields.dir = yes
 
 	# Right arrow : rotate to the right.
 	if keys[39] is on
 		ship.dir += dirInc
-		ship.dirtyFields.dir = yes
 
 	# Up arrow : thrust forward.
 	if keys[38] is on
@@ -147,7 +155,6 @@ processInputs = (id) ->
 	# Spacebar : charge the bullet.
 	if keys[32] or keys[65]
 		ship.firePower = Math.min(ship.firePower + 0.1, maxPower)
-		ship.dirtyFields.firePower = yes
 
 update = () ->
 	start = (new Date).getTime()
@@ -158,31 +165,38 @@ update = () ->
 	updateShips()
 
 	diff = (new Date).getTime() - start
-	setTimeout(update, 20-mod(diff, 20))
+	setTimeout(update, 20 - utils.mod(diff, 20))
 
 updateShips = () ->
 	changes = {}
 	for id, ship of ships
 		ship.update()
 		shipChanges = ship.changes()
-		if not isEmptyObject(shipChanges)
+		if not utils.isEmptyObject shipChanges
 			changes[id] = shipChanges
+			ship.resetChanges()
 
-	if not isEmptyObject(changes)
+	if not utils.isEmptyObject changes
 		io.broadcast
-			type: 'update'
+			type: 'ship update'
 			update: changes
 
 updateBullets = () ->
-	b.step()	for b in bullets
+	changes = {}
+	for bullet in bullets
+		bullet.step()
+		bulletChanges = bullet.changes()
+		if not utils.isEmptyObject bulletChanges
+			changes[bullet.id] = bulletChanges
+			bullet.resetChanges()
 
-	if bullets.length > 0
+	if not utils.isEmptyObject changes
 		io.broadcast
-			type: 'bullets'
-			bullets: bullets
+			type: 'bullet update'
+			update: changes
 
 initPlanets = () ->
-	(new Planet Math.random()*2000,
+	(new Planet.Planet Math.random()*2000,
 		Math.random()*2000,
 		50+Math.random()*50) for [0..35]
 
@@ -191,4 +205,25 @@ initPlanets = () ->
 
 launch = () ->
 	planets = initPlanets()
+
+	# Exports
+
+	exports.dirInc = dirInc
+	exports.maxPower = maxPower
+	exports.minFirepower = minFirepower
+	exports.cannonCooldown = cannonCooldown
+	exports.maxBullets = maxBullets
+	exports.shipSpeed = shipSpeed
+	exports.frictionDecay = frictionDecay
+	exports.maxExploFrame = maxExploFrame
+
+	exports.map = map
+
+	exports.ships = ships
+	exports.bullets = bullets
+	exports.bulletCount = bulletCount
+	exports.planets = planets
+
 	update()
+
+launch()

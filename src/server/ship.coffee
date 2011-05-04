@@ -1,30 +1,36 @@
-class Ship
+ChangingObject = require './changingObject'
+globals = require './server'
+utils = require '../utils'
+Bullet = require './bullet'
+
+class Ship extends ChangingObject.ChangingObject
 	constructor: (@id) ->
-		@color = randomColor()
+		super()
+
+		@color = utils.randomColor()
 		@spawn()
 
 	spawn: () ->
+		@watchChanges 'pos'
+		@watchChanges 'vel'
+		@watchChanges 'dir'
+		@watchChanges 'firePower'
+		@watchChanges 'cannonHeat'
+		@watchChanges 'dead'
+		@watchChanges 'exploding'
+		@watchChanges 'exploFrame'
+
 		@pos =
-			x: Math.random()*map.w
-			y: Math.random()*map.h
+			x: Math.random() * globals.map.w
+			y: Math.random() * globals.map.h
 		@vel =
 			x: 0
 			y: 0
 		@dir = Math.random() * 2*Math.PI
-		@firePower = minFirepower
+		@firePower = globals.minFirepower
 		@cannonHeat = 0
 		@dead = false
 		@exploFrame = 0
-
-		@dirtyFields =
-			pos: yes
-			vel: yes
-			dir: yes
-			firePower: yes
-			cannonHeat: yes
-			dead: yes
-			exploding: yes
-			exploFrame: yes
 
 		@spawn() if @collidesWithPlanet()
 
@@ -36,18 +42,18 @@ class Ship
 		@pos.y += @vel.y
 
 		# Warp the ship around the map
-		@pos.x = if @pos.x < 0 then map.w else @pos.x
-		@pos.x = if @pos.x > map.w then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then map.h else @pos.y
-		@pos.y = if @pos.y > map.h then 0 else @pos.y
+		@pos.x = if @pos.x < 0 then globals.map.w else @pos.x
+		@pos.x = if @pos.x > globals.map.w then 0 else @pos.x
+		@pos.y = if @pos.y < 0 then globals.map.h else @pos.y
+		@pos.y = if @pos.y > globals.map.h then 0 else @pos.y
 
-		@vel.x *= frictionDecay
-		@vel.y *= frictionDecay
+		@vel.x *= globals.frictionDecay
+		@vel.y *= globals.frictionDecay
 
 		if Math.abs(@pos.x-x) > .05 or
 				Math.abs(@pos.y-y) > .05
-			@dirtyFields.pos = yes
-			@dirtyFields.vel = yes
+			@changed 'pos'
+			@changed 'vel'
 
 	collides: () ->
 		@collidesWithOtherShip() or
@@ -55,7 +61,7 @@ class Ship
 			@collidesWithPlanet()
 
 	collidesWithOtherShip: () ->
-		for id, ship of ships
+		for id, ship of globals.ships
 			if @id isnt ship.id and
 					not ship.isDead() and
 					not ship.isExploding() and
@@ -70,10 +76,10 @@ class Ship
 		x = @pos.x
 		y = @pos.y
 
-		for p in planets
+		for p in globals.planets
 			px = p.pos.x
 			py = p.pos.y
-			return true if distance(px, py, x, y) < p.force
+			return true if utils.distance(px, py, x, y) < p.force
 
 		return false
 
@@ -81,7 +87,7 @@ class Ship
 		x = @pos.x
 		y = @pos.y
 
-		for b in bullets
+		for b in globals.bullets
 			if not b.dead and
 					-10 < x - b.pos.x < 10 and
 					-10 < y - b.pos.y < 10
@@ -102,48 +108,29 @@ class Ship
 		if @isExploding()
 			@updateExplosion()
 		else
-			if @cannonHeat > 0
-				--@cannonHeat
-				@dirtyFields.cannonHeat = yes
+			--@cannonHeat if @cannonHeat > 0
 			@move()
 			@explode() if @collides()
-
-	changes: () ->
-		changes = {}
-		for field, isDirty of @dirtyFields
-			if isDirty
-				changes[field] = this[field]
-				@dirtyFields[field] = no
-		return changes
 
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
-		bullets.push new Bullet @
-		bullets.shift() if bullets.length > maxBullets
+		globals.bullets.push( new Bullet.Bullet( @, globals.bulletCount++ ))
+		globals.bullets.shift() if globals.bullets.length > globals.maxBullets
 
-		@firePower = minFirepower
-		@cannonHeat = cannonCooldown
-
-		@dirtyFields.firePower = yes
-		@dirtyFields.cannonHeat = yes
+		@firePower = globals.minFirepower
+		@cannonHeat = globals.cannonCooldown
 
 	explode : () ->
 		@exploding = true
 		@exploFrame = 0
 
-		@dirtyFields.exploding = yes
-		@dirtyFields.exploFrame = yes
-
 	updateExplosion : () ->
 		++@exploFrame
 
-		if @exploFrame > maxExploFrame
+		if @exploFrame > globals.maxExploFrame
 			@exploding = false
 			@dead = true
 			@exploFrame = 0
 
-			@dirtyFields.exploding = yes
-			@dirtyFields.dead = yes
-
-		@dirtyFields.exploFrame = yes
+exports.Ship = Ship

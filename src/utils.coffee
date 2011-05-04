@@ -1,37 +1,38 @@
+exports ?= window
+
 # Console output shortcuts.
-log = (msg) ->
+exports.log = (msg) ->
 	console.log msg
 
-info = (msg) ->
+exports.info = (msg) ->
 	console.info msg
 
-warn = (msg) ->
+exports.warn = (msg) ->
 	console.warn msg
 
-log = (msg) ->
+exports.log = (msg) ->
 	console.error msg
 
-js = (path) ->
-	path.match(/js$/)
-
 # Neat color construction.
-color = (rgb, alpha = 1.0) ->
+exports.color = (rgb, alpha = 1.0) ->
 	'rgba(' + rgb + ',' + alpha + ')'
 
-distance = (x1, y1, x2, y2) ->
+# Euclidean distance between two points.
+exports.distance = (x1, y1, x2, y2) ->
 	Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
 
 # From jQuery
-isEmptyObject = (obj) ->
+exports.isEmptyObject = (obj) ->
 	for p of obj
 		return false
 	return true
 
 # Stupid % operator.
-mod = (x, n) ->
-	if x > 0 then x%n else mod(x+n, n)
+exports.mod = (x, n) ->
+	if x > 0 then x%n else exports.mod(x+n, n)
 
-randomColor = () ->
+# Returns nice random colors.
+exports.randomColor = () ->
 	Math.round(70 + Math.random()*150) +
 		',' + Math.round(70 + Math.random()*150) +
 		',' + Math.round(70 + Math.random()*150)
