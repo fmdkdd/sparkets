@@ -109,6 +109,7 @@ maxBullets = 10
 shipSpeed = 0.3
 frictionDecay = 0.97
 maxExploFrame = 50
+enableShipGravity = false
 
 map = w: 2000, h: 2000
 
@@ -216,6 +217,7 @@ launch = () ->
 	exports.shipSpeed = shipSpeed
 	exports.frictionDecay = frictionDecay
 	exports.maxExploFrame = maxExploFrame
+	exports.enableShipGravity = enableShipGravity
 
 	exports.map = map
 

@@ -23,3 +23,5 @@ o [merwan] Display engine fire trail when a ship is moving.
 * Add scores ... someday?
    Not sure it is necessary right now. The gratuitous space combat is
    satisfying enough.
+
+* Prevent planets from spawning in planets.

@@ -38,8 +38,23 @@ class Ship extends ChangingObject.ChangingObject
 	move: () ->
 		{x, y} = @pos
 
-		@pos.x += @vel.x
-		@pos.y += @vel.y
+		if globals.enableShipGravity
+			{x: ax, y: ay} = @vel
+
+			for p in globals.planets
+				d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
+				d2 = 20 * p.force / (d * Math.sqrt(d))
+				ax -= (x-p.pos.x) * d2
+				ay -= (y-p.pos.y) * d2
+
+			@pos.x = x + ax
+			@pos.y = y + ay
+			@vel.x = ax
+			@vel.y = ay
+
+		else
+			@pos.x += @vel.x
+			@pos.y += @vel.y
 
 		# Warp the ship around the map
 		@pos.x = if @pos.x < 0 then globals.map.w else @pos.x
