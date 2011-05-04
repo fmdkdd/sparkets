@@ -1,59 +1,54 @@
 class Mine
-	constructor: () ->
-		@state = null
-
-		@playerId = null
-		@pos = null
-		@color = null
-		@explosionRadius = null		
-
-		@countdown = null
-		@lastUpdate = null
-
-	spawn: (ship) ->
+	constructor: (ship) ->
 		@state = 0
+
 		@playerId = ship.id
 		@pos =
 			x: ship.pos.x
 			y: ship.pos.y
 		@color = ship.color
+		@radius = 10
+		@explosionRadius = null
 
 		@countdown = 1000
-		@lastUpdate = now
-
+		@lastUpdate = (new Date).getTime()
+		
 	activate: () ->
 		@state = 1
 
 	explode: () ->
 		@state = 2
 
+		@countdown = 1000
 		@explosionRadius = 0
 
 	die: () ->
 		@state = 3
 
 	update: () ->
-		diff = now - @lastUpdate
+		now = (new Date).getTime()
+		diff =  now - @lastUpdate
 
 		# The mine is not yet activated.
 		if @state == 0
 			@countdown -= diff
-			@activate if @countdown <= 0
+			@activate() if @countdown <= 0
 
 		# The mine is ready.
-    else if @state == 1
+		else if @state == 1
+
 			for id, ship of ships
 				if not ship.isDead() and
 						not ship.isExploding() and
 						-10 < @pos.x - ship.pos.x < 10 and
 						-10 < @pos.y - ship.pos.y < 10
-					@explode()			
+					@explode()
 
 		# The mine is exploding.
 		else if @state == 2
-			
+
 			@countdown -= diff
-			@explosionRadius++
+			++@explosionRadius
 
 			@die() if @countdown <= 0
 

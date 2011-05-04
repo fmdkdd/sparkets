@@ -1,5 +1,5 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, enableInterpolation, explosions, go, id, inView, info, interp_factor, interpolate, isEmptyObject, js, keys, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, randomColor, redraw, screen, serverShips, ships, socket, update, view, warn;
+  var Bullet, Mine, Planet, Ship, bullets, centerView, color, ctxt, distance, drawInfinity, drawRadar, enableInterpolation, explosions, go, id, inView, info, interp_factor, interpolate, isEmptyObject, js, keys, lastUpdate, log, map, maxExploFrame, maxPower, minPower, mines, mod, onConnect, onDisconnect, onMessage, planetColor, planets, port, randomColor, redraw, screen, serverShips, ships, socket, update, view, warn;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   Bullet = (function() {
     function Bullet(bullet) {
@@ -67,6 +67,7 @@
   explosions = {};
   planets = [];
   bullets = [];
+  mines = [];
   enableInterpolation = false;
   interp_factor = .03;
   lastUpdate = 0;
@@ -168,7 +169,7 @@
     return (view.x <= x && x <= view.x + screen.w) && (view.y <= y && y <= view.y + screen.h);
   };
   redraw = function(ctxt) {
-    var b, i, len, p, s, _i, _len, _len2;
+    var b, i, len, m, p, s, _i, _j, _len, _len2, _len3;
     ctxt.clearRect(0, 0, screen.w, screen.h);
     ctxt.lineWidth = 4;
     ctxt.lineJoin = 'round';
@@ -177,8 +178,12 @@
       b = bullets[i];
       b.draw(ctxt, (i + 1) / len);
     }
-    for (_i = 0, _len2 = planets.length; _i < _len2; _i++) {
-      p = planets[_i];
+    for (_i = 0, _len2 = mines.length; _i < _len2; _i++) {
+      m = mines[_i];
+      m.draw(ctxt);
+    }
+    for (_j = 0, _len3 = planets.length; _j < _len3; _j++) {
+      p = planets[_j];
       p.draw(ctxt);
     }
     for (i in ships) {
@@ -248,7 +253,7 @@
     return true;
   };
   drawInfinity = function(ctxt) {
-    var b, bottom, i, id, j, left, len, offset, p, right, s, top, visibility, _i, _len, _ref;
+    var b, bottom, i, id, j, left, len, m, offset, p, right, s, top, visibility, _i, _len, _ref, _ref2;
     left = view.x < 0;
     right = view.x > map.w - screen.w;
     top = view.y < 0;
@@ -296,6 +301,19 @@
         }
       }
     }
+    for (i = 0; i <= 2; i++) {
+      for (j = 0; j <= 2; j++) {
+        if (visibility[i][j] === true) {
+          for (m = 0, _ref2 = mines.length; 0 <= _ref2 ? m < _ref2 : m > _ref2; 0 <= _ref2 ? m++ : m--) {
+            offset = {
+              x: (j - 1) * map.w,
+              y: (i - 1) * map.h
+            };
+            mines[m].draw(ctxt, offset);
+          }
+        }
+      }
+    }
     return true;
   };
   onConnect = function() {
@@ -305,7 +323,7 @@
     return info("Aaargh! Disconnected!");
   };
   onMessage = function(msg) {
-    var b, i, p, s, _i, _j, _len, _len2, _ref, _ref2, _ref3, _ref4;
+    var b, i, m, p, s, _i, _j, _k, _len, _len2, _len3, _ref, _ref2, _ref3, _ref4, _ref5;
     switch (msg.type) {
       case 'bullets':
         bullets = [];
@@ -315,10 +333,18 @@
           bullets.push(new Bullet(b));
         }
         break;
+      case 'mines':
+        mines = [];
+        _ref2 = msg.mines;
+        for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+          m = _ref2[_j];
+          mines.push(new Mine(m));
+        }
+        break;
       case 'ships':
-        _ref2 = msg.ships;
-        for (i in _ref2) {
-          s = _ref2[i];
+        _ref3 = msg.ships;
+        for (i in _ref3) {
+          s = _ref3[i];
           if (enableInterpolation) {
             serverShips[i] = new Ship(s);
           } else {
@@ -328,9 +354,9 @@
         lastUpdate = (new Date).getTime();
         break;
       case 'update':
-        _ref3 = msg.update;
-        for (i in _ref3) {
-          s = _ref3[i];
+        _ref4 = msg.update;
+        for (i in _ref4) {
+          s = _ref4[i];
           if (enableInterpolation) {
             serverShips[i].update(s);
           } else {
@@ -341,9 +367,9 @@
         break;
       case 'planets':
         planets = [];
-        _ref4 = msg.planets;
-        for (_j = 0, _len2 = _ref4.length; _j < _len2; _j++) {
-          p = _ref4[_j];
+        _ref5 = msg.planets;
+        for (_k = 0, _len3 = _ref5.length; _k < _len3; _k++) {
+          p = _ref5[_k];
           planets.push(new Planet(p));
         }
         break;
@@ -367,6 +393,67 @@
     }
     return true;
   };
+  Mine = (function() {
+    function Mine(mine) {
+      this.state = mine.state;
+      this.playerId = mine.playerId;
+      this.pos = mine.pos;
+      this.color = mine.color;
+      this.radius = mine.radius;
+      this.explosionRadius = mine.explosionRadius;
+      this.countdown = mine.countdown;
+      this.lastUpdate = mine.lastUpdate;
+    }
+    Mine.prototype.draw = function(ctxt, offset) {
+      if (this.state === 0 || this.state === 1) {
+        return this.drawMine(ctxt, offset);
+      } else if (this.state === 2) {
+        return this.drawExplosion(ctxt, offset);
+      }
+    };
+    Mine.prototype.drawMine = function(ctxt, offset) {
+      var div, i, r, x, y;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      x = this.pos.x - view.x + offset.x;
+      y = this.pos.y - view.y + offset.y;
+      r = this.radius;
+      ctxt.fillStyle = color(this.color);
+      div = 3;
+      if (this.state === 0) {
+        r *= this.countDown / 1000;
+      }
+      ctxt.save();
+      ctxt.translate(x, y);
+      for (i = 0; 0 <= div ? i < div : i > div; 0 <= div ? i++ : i--) {
+        ctxt.beginPath();
+        ctxt.rotate(Math.PI * 0.5 / div);
+        ctxt.fillRect(-r, -r, r * 2, r * 2);
+        ctxt.fill();
+      }
+      return ctxt.restore();
+    };
+    Mine.prototype.drawExplosion = function(ctxt, offset) {
+      var x, y;
+      if (offset == null) {
+        offset = {
+          x: 0,
+          y: 0
+        };
+      }
+      x = this.pos.x - view.x + offset.x;
+      y = this.pos.y - view.y + offset.y;
+      ctxt.strokeStyle = color(this.color);
+      ctxt.beginPath();
+      ctxt.arc(x, y, this.radius, 0, 2 * Math.PI, false);
+      return ctxt.stroke();
+    };
+    return Mine;
+  })();
   Planet = (function() {
     function Planet(planet) {
       this.pos = planet.pos;

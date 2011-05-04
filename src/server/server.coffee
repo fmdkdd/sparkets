@@ -124,6 +124,10 @@ processKeyUp = (id, key) ->
 		else
 			ships[id].fire()
 
+	# Z : drop a mine.
+	if key is 90
+		ships[id].dropMine()
+
 processInputs = (id) ->
 	keys = players[id].keys
 	ship = ships[id]
@@ -149,10 +153,6 @@ processInputs = (id) ->
 	if keys[32] or keys[65]
 		ship.firePower = Math.min(ship.firePower + 0.1, maxPower)
 		ship.dirtyFields.firePower = yes
-
-	# Z : drop a mine.
-	if keys[90]
-		ship.dropMine()
 
 update = () ->
 	start = (new Date).getTime()
@@ -192,7 +192,7 @@ updateMines = () ->
 
 	if mines.length > 0
 		io.broadcast
-			type: 'mine'
+			type: 'mines'
 			mines: mines
 
 initPlanets = () ->

@@ -1,5 +1,5 @@
 (function() {
-  var Bullet, Planet, Ship, bullets, cannonCooldown, color, dirInc, distance, frictionDecay, fs, http, info, initPlanets, io, isEmptyObject, js, launch, log, map, maxBullets, maxExploFrame, maxPower, minFirepower, mod, planets, players, port, processInputs, processKeyDown, processKeyUp, randomColor, send404, server, shipSpeed, ships, update, updateBullets, updateShips, url, warn;
+  var Bullet, Mine, Planet, Ship, bullets, cannonCooldown, color, dirInc, distance, frictionDecay, fs, http, info, initPlanets, io, isEmptyObject, js, launch, log, map, maxBullets, maxExploFrame, maxPower, minFirepower, mines, mod, planets, players, port, processInputs, processKeyDown, processKeyUp, randomColor, send404, server, shipSpeed, ships, update, updateBullets, updateMines, updateShips, url, warn;
   Bullet = (function() {
     function Bullet(owner) {
       var xdir, ydir;
@@ -76,6 +76,58 @@
       return false;
     };
     return Bullet;
+  })();
+  Mine = (function() {
+    function Mine(ship) {
+      this.state = 0;
+      this.playerId = ship.id;
+      this.pos = {
+        x: ship.pos.x,
+        y: ship.pos.y
+      };
+      this.color = ship.color;
+      this.radius = 10;
+      this.explosionRadius = null;
+      this.countdown = 1000;
+      this.lastUpdate = (new Date).getTime();
+    }
+    Mine.prototype.activate = function() {
+      return this.state = 1;
+    };
+    Mine.prototype.explode = function() {
+      this.state = 2;
+      this.countdown = 1000;
+      return this.explosionRadius = 0;
+    };
+    Mine.prototype.die = function() {
+      return this.state = 3;
+    };
+    Mine.prototype.update = function() {
+      var diff, id, now, ship, _ref, _ref2;
+      now = (new Date).getTime();
+      diff = now - this.lastUpdate;
+      if (this.state === 0) {
+        this.countdown -= diff;
+        if (this.countdown <= 0) {
+          this.activate();
+        }
+      } else if (this.state === 1) {
+        for (id in ships) {
+          ship = ships[id];
+          if (!ship.isDead() && !ship.isExploding() && (-10 < (_ref = this.pos.x - ship.pos.x) && _ref < 10) && (-10 < (_ref2 = this.pos.y - ship.pos.y) && _ref2 < 10)) {
+            this.explode();
+          }
+        }
+      } else if (this.state === 2) {
+        this.countdown -= diff;
+        ++this.explosionRadius;
+        if (this.countdown <= 0) {
+          this.die();
+        }
+      }
+      return this.lastUpdate = now;
+    };
+    return Mine;
   })();
   Planet = (function() {
     function Planet(x, y, force) {
@@ -187,6 +239,7 @@
   players = {};
   ships = {};
   bullets = [];
+  mines = [];
   planets = [];
   processKeyDown = function(id, key) {
     return players[id].keys[key] = true;
@@ -195,10 +248,13 @@
     players[id].keys[key] = false;
     if (key === 32 || key === 65) {
       if (ships[id].isDead()) {
-        return ships[id].spawn();
+        ships[id].spawn();
       } else {
-        return ships[id].fire();
+        ships[id].fire();
       }
+    }
+    if (key === 90) {
+      return ships[id].dropMine();
     }
   };
   processInputs = function(id) {
@@ -232,6 +288,7 @@
       processInputs(id);
     }
     updateBullets();
+    updateMines();
     updateShips();
     diff = (new Date).getTime() - start;
     return setTimeout(update, 20 - mod(diff, 20));
@@ -264,6 +321,19 @@
       return io.broadcast({
         type: 'bullets',
         bullets: bullets
+      });
+    }
+  };
+  updateMines = function() {
+    var m, _i, _len;
+    for (_i = 0, _len = mines.length; _i < _len; _i++) {
+      m = mines[_i];
+      m.update();
+    }
+    if (mines.length > 0) {
+      return io.broadcast({
+        type: 'mines',
+        mines: mines
       });
     }
   };
@@ -419,6 +489,12 @@
       this.cannonHeat = cannonCooldown;
       this.dirtyFields.firePower = true;
       return this.dirtyFields.cannonHeat = true;
+    };
+    Ship.prototype.dropMine = function() {
+      if (this.isDead() || this.isExploding()) {
+        return;
+      }
+      return mines.push(new Mine(this));
     };
     Ship.prototype.explode = function() {
       this.exploding = true;

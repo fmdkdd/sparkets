@@ -140,8 +140,8 @@ redraw = (ctxt) ->
 	len = bullets.length
 	b.draw ctxt, (i+1)/len for b,i in bullets
 
-  # Draw all mines.
-  m.draw(ctxt) for m in mines
+	# Draw all mines.
+	m.draw(ctxt) for m in mines
 
 	# Draw all planets.
 	p.draw ctxt for p in planets

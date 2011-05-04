@@ -131,7 +131,7 @@ class Ship
 	dropMine: () ->
 		return if @isDead() or @isExploding()
 
-		mines.push new Mine @
+		mines.push(new Mine(@))
 
 	explode : () ->
 		@exploding = true
