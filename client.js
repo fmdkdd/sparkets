@@ -422,23 +422,23 @@
       x = this.pos.x - view.x + offset.x;
       y = this.pos.y - view.y + offset.y;
       r = this.radius;
-      ctxt.fillStyle = color(this.color);
       div = 3;
       if (this.state === 0) {
-        r *= this.countDown / 1000;
+        r -= r * this.countdown / 1000;
       }
+      ctxt.fillStyle = color(this.color);
       ctxt.save();
       ctxt.translate(x, y);
       for (i = 0; 0 <= div ? i < div : i > div; 0 <= div ? i++ : i--) {
         ctxt.beginPath();
-        ctxt.rotate(Math.PI * 0.5 / div);
+        ctxt.rotate(Math.PI / 2 / div);
         ctxt.fillRect(-r, -r, r * 2, r * 2);
         ctxt.fill();
       }
       return ctxt.restore();
     };
     Mine.prototype.drawExplosion = function(ctxt, offset) {
-      var x, y;
+      var r, x, y;
       if (offset == null) {
         offset = {
           x: 0,
@@ -447,9 +447,10 @@
       }
       x = this.pos.x - view.x + offset.x;
       y = this.pos.y - view.y + offset.y;
+      r = this.explosionRadius;
       ctxt.strokeStyle = color(this.color);
       ctxt.beginPath();
-      ctxt.arc(x, y, this.radius, 0, 2 * Math.PI, false);
+      ctxt.arc(x, y, r, 0, 2 * Math.PI, false);
       return ctxt.stroke();
     };
     return Mine;

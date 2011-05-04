@@ -12,19 +12,21 @@ class Mine
 		@lastUpdate = mine.lastUpdate
 
 	draw: (ctxt, offset) ->
-		if @state == 0 or @state == 1
+		if @state is 0 or @state is 1
 			@drawMine(ctxt, offset)
-		else if @state == 2
+		else if @state is 2
 			@drawExplosion(ctxt, offset)
 
 	drawMine: (ctxt, offset = {x:0, y:0}) ->
 		x = @pos.x - view.x + offset.x
 		y = @pos.y - view.y + offset.y
 		r = @radius
-
-		ctxt.fillStyle = color @color
 		div = 3
 
+		# Make the mine grow during the activation process.
+		r -= r * @countdown / 1000 if @state is 0
+
+		ctxt.fillStyle = color @color
 		ctxt.save()
 		ctxt.translate(x, y)
 		for i in [0...div]
@@ -37,8 +39,9 @@ class Mine
 	drawExplosion: (ctxt, offset = {x:0, y:0}) ->
 		x = @pos.x - view.x + offset.x
 		y = @pos.y - view.y + offset.y
+		r = @explosionRadius
 
 		ctxt.strokeStyle = color @color
 		ctxt.beginPath()
-		ctxt.arc(x, y, @radius, 0, 2*Math.PI, false)
+		ctxt.arc(x, y, r, 0, 2*Math.PI, false)
 		ctxt.stroke()

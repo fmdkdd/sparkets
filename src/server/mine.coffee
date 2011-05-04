@@ -8,7 +8,7 @@ class Mine
 			y: ship.pos.y
 		@color = ship.color
 		@radius = 10
-		@explosionRadius = null
+		@explosionRadius = 60
 
 		@countdown = 1000
 		@lastUpdate = (new Date).getTime()
@@ -20,13 +20,12 @@ class Mine
 		@state = 2
 
 		@countdown = 1000
-		@explosionRadius = 0
 
 	die: () ->
 		@state = 3
 
 	update: () ->
-		now = (new Date).getTime()
+		now = (new Date).getTime() # (globalization of 'now' would be nice)
 		diff =  now - @lastUpdate
 
 		# The mine is not yet activated.
@@ -48,7 +47,6 @@ class Mine
 		else if @state == 2
 
 			@countdown -= diff
-			++@explosionRadius
 
 			@die() if @countdown <= 0
 

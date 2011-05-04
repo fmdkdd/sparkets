@@ -87,7 +87,7 @@
       };
       this.color = ship.color;
       this.radius = 10;
-      this.explosionRadius = null;
+      this.explosionRadius = 60;
       this.countdown = 1000;
       this.lastUpdate = (new Date).getTime();
     }
@@ -96,8 +96,7 @@
     };
     Mine.prototype.explode = function() {
       this.state = 2;
-      this.countdown = 1000;
-      return this.explosionRadius = 0;
+      return this.countdown = 1000;
     };
     Mine.prototype.die = function() {
       return this.state = 3;
@@ -120,7 +119,6 @@
         }
       } else if (this.state === 2) {
         this.countdown -= diff;
-        ++this.explosionRadius;
         if (this.countdown <= 0) {
           this.die();
         }
