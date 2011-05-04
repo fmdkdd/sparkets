@@ -11,14 +11,15 @@ class Ship extends ChangingObject.ChangingObject
 		@spawn()
 
 	spawn: () ->
-		@watchChanges 'pos'
-		@watchChanges 'vel'
-		@watchChanges 'dir'
-		@watchChanges 'firePower'
-		@watchChanges 'cannonHeat'
-		@watchChanges 'dead'
-		@watchChanges 'exploding'
-		@watchChanges 'exploFrame'
+		@watchChanges(
+			'pos',
+			'vel',
+			'dir',
+			'firePower',
+			'cannonHeat',
+			'dead',
+			'exploding',
+			'exploFrame' )
 
 		@pos =
 			x: Math.random() * globals.map.w
