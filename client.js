@@ -438,7 +438,7 @@
       return ctxt.restore();
     };
     Mine.prototype.drawExplosion = function(ctxt, offset) {
-      var r, x, y;
+      var a, animRatio, r, x, y;
       if (offset == null) {
         offset = {
           x: 0,
@@ -447,8 +447,10 @@
       }
       x = this.pos.x - view.x + offset.x;
       y = this.pos.y - view.y + offset.y;
-      r = this.explosionRadius;
-      ctxt.strokeStyle = color(this.color);
+      animRatio = 1 - this.countdown / 1000;
+      r = this.explosionRadius * animRatio;
+      a = 1 - animRatio;
+      ctxt.strokeStyle = color(this.color, a);
       ctxt.beginPath();
       ctxt.arc(x, y, r, 0, 2 * Math.PI, false);
       return ctxt.stroke();

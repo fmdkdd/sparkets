@@ -39,9 +39,11 @@ class Mine
 	drawExplosion: (ctxt, offset = {x:0, y:0}) ->
 		x = @pos.x - view.x + offset.x
 		y = @pos.y - view.y + offset.y
-		r = @explosionRadius
+		animRatio = 1 - @countdown / 1000
+		r = @explosionRadius * animRatio
+		a = 1 - animRatio
 
-		ctxt.strokeStyle = color @color
+		ctxt.strokeStyle = color(@color, a)
 		ctxt.beginPath()
 		ctxt.arc(x, y, r, 0, 2*Math.PI, false)
 		ctxt.stroke()

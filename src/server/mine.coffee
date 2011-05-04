@@ -10,7 +10,7 @@ class Mine
 		@radius = 10
 		@explosionRadius = 60
 
-		@countdown = 1000
+		@countdown = 500
 		@lastUpdate = (new Date).getTime()
 		
 	activate: () ->
@@ -19,7 +19,7 @@ class Mine
 	explode: () ->
 		@state = 2
 
-		@countdown = 1000
+		@countdown = 500
 
 	die: () ->
 		@state = 3
@@ -29,12 +29,12 @@ class Mine
 		diff =  now - @lastUpdate
 
 		# The mine is not yet activated.
-		if @state == 0
+		if @state is 0
 			@countdown -= diff
 			@activate() if @countdown <= 0
 
 		# The mine is ready.
-		else if @state == 1
+		else if @state is 1
 
 			for id, ship of ships
 				if not ship.isDead() and
@@ -44,7 +44,7 @@ class Mine
 					@explode()
 
 		# The mine is exploding.
-		else if @state == 2
+		else if @state is 2
 
 			@countdown -= diff
 

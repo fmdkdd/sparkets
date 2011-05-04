@@ -88,7 +88,7 @@
       this.color = ship.color;
       this.radius = 10;
       this.explosionRadius = 60;
-      this.countdown = 1000;
+      this.countdown = 500;
       this.lastUpdate = (new Date).getTime();
     }
     Mine.prototype.activate = function() {
@@ -96,7 +96,7 @@
     };
     Mine.prototype.explode = function() {
       this.state = 2;
-      return this.countdown = 1000;
+      return this.countdown = 500;
     };
     Mine.prototype.die = function() {
       return this.state = 3;
