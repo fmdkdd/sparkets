@@ -16,3 +16,10 @@ o [merwan] Display engine fire trail when a ship is moving.
       Rapid-fire weapon but takes longer to kill ships.
 
 * Get rid of evil global variables.
+
+* Check if object is in view before drawing it on canvas.
+   Could save some more cycles.
+
+* Add scores ... someday?
+   Not sure it is necessary right now. The gratuitous space combat is
+   satisfying enough.

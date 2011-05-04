@@ -14,7 +14,8 @@ planetColor = '127, 157, 185'
 minPower = 1.3
 maxPower = 3
 maxExploFrame = 50
-maxBullets = 5
+maxBullets = 10
+bulletFrameStay = 4
 
 id = null
 ships = {}
@@ -139,8 +140,7 @@ redraw = (ctxt) ->
 	# Draw all bullets with decreasing opacity.
 	len = Object.keys(bullets).length
 	i = 1
-	for idx, b of bullets
-		b.draw ctxt, (i++)/len
+	b.draw ctxt, (i++)/len for idx, b of bullets
 
 	# Draw all planets.
 	p.draw ctxt for p in planets
