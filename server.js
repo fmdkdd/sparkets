@@ -102,7 +102,7 @@
       return this.state = 3;
     };
     Mine.prototype.update = function() {
-      var diff, id, now, ship, _ref, _ref2;
+      var diff, id, now, ship, _ref, _ref2, _ref3, _ref4;
       now = (new Date).getTime();
       diff = now - this.lastUpdate;
       if (this.state === 0) {
@@ -121,6 +121,12 @@
         this.countdown -= diff;
         if (this.countdown <= 0) {
           this.die();
+        }
+        for (id in ships) {
+          ship = ships[id];
+          if (!ship.isDead() && !ship.isExploding() && (-this.explosionRadius < (_ref3 = this.pos.x - ship.pos.x) && _ref3 < this.explosionRadius) && (-this.explosionRadius < (_ref4 = this.pos.y - ship.pos.y) && _ref4 < this.explosionRadius)) {
+            ship.explode();
+          }
         }
       }
       return this.lastUpdate = now;

@@ -45,9 +45,15 @@ class Mine
 
 		# The mine is exploding.
 		else if @state is 2
-
 			@countdown -= diff
 
 			@die() if @countdown <= 0
+
+			for id, ship of ships
+				if not ship.isDead() and
+						not ship.isExploding() and
+						-@explosionRadius < @pos.x - ship.pos.x < @explosionRadius and
+						-@explosionRadius < @pos.y - ship.pos.y < @explosionRadius
+					ship.explode()
 
 		@lastUpdate = now
