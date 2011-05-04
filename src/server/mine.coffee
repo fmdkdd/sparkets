@@ -1,6 +1,6 @@
 class Mine
 	constructor: () ->
-		@state = 0
+		@state = null
 
 		@playerId = null
 		@pos = null
@@ -26,6 +26,7 @@ class Mine
 
 	explode: () ->
 		@state = 2
+
 		@explosionRadius = 0
 
 	die: () ->

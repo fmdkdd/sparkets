@@ -108,6 +108,7 @@ map = w: 2000, h: 2000
 players = {}
 ships = {}
 bullets = []
+mines = []
 planets = []
 
 processKeyDown = (id, key) ->
@@ -149,12 +150,17 @@ processInputs = (id) ->
 		ship.firePower = Math.min(ship.firePower + 0.1, maxPower)
 		ship.dirtyFields.firePower = yes
 
+	# Z : drop a mine.
+	if keys[90]
+		ship.dropMine()
+
 update = () ->
 	start = (new Date).getTime()
 
 	processInputs id for id of players
 
 	updateBullets()
+	updateMines()
 	updateShips()
 
 	diff = (new Date).getTime() - start
@@ -180,6 +186,14 @@ updateBullets = () ->
 		io.broadcast
 			type: 'bullets'
 			bullets: bullets
+
+updateMines = () ->
+	m.update() for m in mines
+
+	if mines.length > 0
+		io.broadcast
+			type: 'mine'
+			mines: mines
 
 initPlanets = () ->
 	(new Planet Math.random()*2000,

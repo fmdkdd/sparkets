@@ -128,6 +128,11 @@ class Ship
 		@dirtyFields.firePower = yes
 		@dirtyFields.cannonHeat = yes
 
+	dropMine: () ->
+		return if @isDead() or @isExploding()
+
+		mines.push new Mine @
+
 	explode : () ->
 		@exploding = true
 		@exploFrame = 0
