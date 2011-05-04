@@ -51,20 +51,20 @@ $(document).ready (event) ->
 go = (clientId) ->
 	id = clientId
 
-	$(document).keydown (event) ->
-		if not keys[event.keyCode]? or keys[event.keyCode] is off
-			keys[event.keyCode] = on
+	$(document).keydown ({keyCode}) ->
+		if not keys[keyCode]? or keys[keyCode] is off
+			keys[keyCode] = on
 			socket.send
 				type: 'key down'
 				playerId: id
-				key: event.keyCode
+				key: keyCode
 
-	$(document).keyup (event) ->
-		keys[event.keyCode] = off
+	$(document).keyup ({keyCode}) ->
+		keys[keyCode] = off
 		socket.send
 			type: 'key up'
 			playerId: id
-			key: event.keyCode
+			key: keyCode
 
 	update()
 

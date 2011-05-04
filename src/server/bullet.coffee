@@ -30,10 +30,8 @@ class Bullet extends ChangingObject.ChangingObject
 		return if @dead
 
 		# Compute new position from acceleration and gravity of all planets.
-		x = @pos.x
-		y = @pos.y
-		ax = @accel.x
-		ay = @accel.y
+		{x, y} = @pos
+		{x: ax, y: ay} = @accel
 
 		for p in globals.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
@@ -65,8 +63,7 @@ class Bullet extends ChangingObject.ChangingObject
 		@collidesWithPlanet()
 
 	collidesWithPlanet : () ->
-		x = @pos.x
-		y = @pos.y
+		{x, y} = @pos
 
 		for p in globals.planets
 			px = p.pos.x

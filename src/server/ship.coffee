@@ -36,8 +36,7 @@ class Ship extends ChangingObject.ChangingObject
 		@spawn() if @collidesWithPlanet()
 
 	move: () ->
-		x = @pos.x
-		y = @pos.y
+		{x, y} = @pos
 
 		@pos.x += @vel.x
 		@pos.y += @vel.y
@@ -74,19 +73,16 @@ class Ship extends ChangingObject.ChangingObject
 		return false
 
 	collidesWithPlanet: () ->
-		x = @pos.x
-		y = @pos.y
+		{x, y} = @pos
 
 		for p in globals.planets
-			px = p.pos.x
-			py = p.pos.y
+			{px, py} = p.pos
 			return true if utils.distance(px, py, x, y) < p.force
 
 		return false
 
 	collidesWithBullet: () ->
-		x = @pos.x
-		y = @pos.y
+		{x, y} = @pos
 
 		for b in globals.bullets
 			if not b.dead and
