@@ -20,7 +20,7 @@ class Mine
 		div = 3
 
 		# Make the mine grow during the activation process.
-		r -= r * @countdown / 1000 if @state is 0
+		r -= r * @countdown / 1000 if @state is 'inactive'
 
 		ctxt.fillStyle = color @color
 		ctxt.save()
