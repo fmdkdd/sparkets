@@ -3,8 +3,15 @@ globals = require './server'
 utils = require '../utils'
 
 class Mine extends ChangingObject.ChangingObject
-	constructor: (ship) ->
+	constructor: (ship, @id) ->
 		super()
+
+		@watchChanges 'state'
+		@watchChanges 'color'
+		@watchChanges 'radius'
+		@watchChanges 'explosionRadius'
+		@watchChanges 'countdown'
+		@changed 'pos'
 
 		@state = 'inactive'
 		@playerId = ship.id
@@ -14,7 +21,6 @@ class Mine extends ChangingObject.ChangingObject
 		@color = ship.color
 		@radius = globals.mineRadius
 		@explosionRadius = globals.mineExplosionRadius
-
 		@countdown = globals.mineStates[@state].countdown
 		
 	nextState: () ->
@@ -54,5 +60,9 @@ class Mine extends ChangingObject.ChangingObject
 						-@explosionRadius < @pos.x - ship.pos.x < @explosionRadius and
 						-@explosionRadius < @pos.y - ship.pos.y < @explosionRadius
 					ship.explode()
+
+		# The explosion is over.
+		else if @state is 'dead'
+			delete globals.mines[@id]
 
 exports.Mine = Mine

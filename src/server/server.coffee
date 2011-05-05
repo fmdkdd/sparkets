@@ -136,7 +136,8 @@ players = {}
 ships = {}
 bullets = []
 bulletCount = 0
-mines = []
+mines = {}
+mineCount = 0
 planets = []
 
 # Input processing
@@ -209,6 +210,7 @@ updateShips = () ->
 
 updateBullets = () ->
 	changes = {}
+
 	for bullet in bullets
 		bullet.step()
 		bulletChanges = bullet.changes()
@@ -222,11 +224,18 @@ updateBullets = () ->
 			update: changes
 
 updateMines = () ->
-	m.update() for m in mines
+	changes = {}
 
-	if mines.length > 0
+	for i, mine of mines
+		mine.update()
+		mineChanges = mine.changes()
+		if not utils.isEmptyObject mineChanges
+			changes[mine.id] = mineChanges
+			mine.resetChanges()
+
+	if not utils.isEmptyObject changes
 		io.broadcast
-			type: 'mines'
+			type: 'mine update'
 			mines: mines
 
 initPlanets = () ->
@@ -264,6 +273,7 @@ launch = () ->
 	exports.bullets = bullets
 	exports.bulletCount = bulletCount
 	exports.mines = mines
+	exports.mineCount = mineCount
 	exports.planets = planets
 
 	update()

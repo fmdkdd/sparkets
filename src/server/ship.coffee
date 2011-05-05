@@ -137,7 +137,8 @@ class Ship extends ChangingObject.ChangingObject
 	dropMine: () ->
 		return if @isDead() or @isExploding()
 
-		globals.mines.push(new Mine.Mine(@))
+		id = globals.mineCount++
+		globals.mines[id] = new Mine.Mine(@, id)
 
 	explode : () ->
 		@exploding = true

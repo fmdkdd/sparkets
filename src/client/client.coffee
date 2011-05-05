@@ -284,9 +284,9 @@ onMessage = (msg) ->
 				bullets[i].update(bullet.lastPoint)
 
 		# When received mine data.
-		when 'mines'
+		when 'mine update'
 			mines = []
-			for m in msg.mines
+			for i, m of msg.mines
 				mines.push new Mine m
 
 		# When received other ship data.
