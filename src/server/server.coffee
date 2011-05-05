@@ -67,6 +67,11 @@ io.on 'clientConnect', (player) ->
 		type: 'ships'
 		ships: ships
 
+	# Send existing mines.
+	player.send
+		type: 'mine update'
+		mines: mines
+
 	# Good news!
 	player.send
 		type: 'connected'
