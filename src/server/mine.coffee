@@ -9,7 +9,8 @@ class Mine extends ChangingObject.ChangingObject
 
 		@watchChanges 'state'
 		@watchChanges 'color'
-		@watchChanges 'radius'
+		@watchChanges 'modelRadius'
+		@watchChanges 'detectionRadius'
 		@watchChanges 'explosionRadius'
 		@watchChanges 'countdown'
 		@changed 'pos'
@@ -20,7 +21,8 @@ class Mine extends ChangingObject.ChangingObject
 			x: ship.pos.x
 			y: ship.pos.y
 		@color = ship.color
-		@radius = prefs.mine.radius
+		@modelRadius = prefs.mine.modelRadius
+		@detectionRadius = prefs.mine.detectionRadius
 		@explosionRadius = prefs.mine.explosionRadius
 		@countdown = prefs.mine.states[@state].countdown
 
@@ -37,29 +39,32 @@ class Mine extends ChangingObject.ChangingObject
 
 		# The mine is ready.
 		else if @state is 'active'
+			r = @detectionRadius
 
 			for id, ship of globals.ships
 				if not ship.isDead() and
 						not ship.isExploding() and
-						-@radius < @pos.x - ship.pos.x < @radius and
-						-@radius < @pos.y - ship.pos.y < @radius
+						-r < @pos.x - ship.pos.x < r and
+						-r < @pos.y - ship.pos.y < r
 					@nextState()
 
 			for b in globals.bullets
 				if not b.dead and
-						-@radius < @pos.x - b.pos.x < @radius and
-						-@radius < @pos.y - b.pos.y < @radius
+						-r < @pos.x - b.pos.x < r and
+						-r < @pos.y - b.pos.y < r
 					@nextState()
 
 		# The mine is exploding.
 		else if @state is 'exploding'
 			@nextState() if @countdown <= 0
 
+			r = @explosionRadius
+
 			for id, ship of globals.ships
 				if not ship.isDead() and
 						not ship.isExploding() and
-						-@explosionRadius < @pos.x - ship.pos.x < @explosionRadius and
-						-@explosionRadius < @pos.y - ship.pos.y < @explosionRadius
+						-r < @pos.x - ship.pos.x < r and
+						-r < @pos.y - ship.pos.y < r
 					ship.explode()
 
 		# The explosion is over.

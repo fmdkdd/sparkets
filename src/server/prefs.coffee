@@ -21,8 +21,8 @@ exports.server =
 
 
 exports.mine =
-	radius: 10						  # Sensibility radius
-		                          # (and drawing size on client).
+	modelRadius: 5						# Drawing size on client.
+	detectionRadius: 50				# Sensibility radius.
 	explosionRadius: 80			  # Detonation radius.
 	states:
 		'inactive':
