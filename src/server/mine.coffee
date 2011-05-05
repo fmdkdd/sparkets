@@ -6,8 +6,7 @@ class Mine extends ChangingObject.ChangingObject
 	constructor: (ship) ->
 		super()
 
-		@state = 0
-
+		@state = 'inactive'
 		@playerId = ship.id
 		@pos =
 			x: ship.pos.x
@@ -16,44 +15,37 @@ class Mine extends ChangingObject.ChangingObject
 		@radius = globals.mineRadius
 		@explosionRadius = globals.mineExplosionRadius
 
-		@countdown = 500
+		@countdown = globals.mineStates[@state].countdown
 		@lastUpdate = (new Date).getTime()
 		
-	activate: () ->
-		@state = 1
-
-	explode: () ->
-		@state = 2
-
-		@countdown = 500
-
-	die: () ->
-		@state = 3
+	nextState: () ->
+		@state = globals.mineStates[@state].next
+		@countdown = globals.mineStates[@state].countdown
 
 	update: () ->
+		console.log @state
 		now = (new Date).getTime() # (globalization of 'now' would be nice)
 		diff =  now - @lastUpdate
 
 		# The mine is not yet activated.
-		if @state is 0
+		if @state is 'inactive'
 			@countdown -= diff
-			@activate() if @countdown <= 0
+			@nextState() if @countdown <= 0
 
 		# The mine is ready.
-		else if @state is 1
+		else if @state is 'active'
 
 			for id, ship of globals.ships
 				if not ship.isDead() and
 						not ship.isExploding() and
 						-@radius < @pos.x - ship.pos.x < @radius and
 						-@radius < @pos.y - ship.pos.y < @radius
-					@explode()
+					@nextState()
 
 		# The mine is exploding.
-		else if @state is 2
+		else if @state is 'exploding'
 			@countdown -= diff
-
-			@die() if @countdown <= 0
+			@nextState() if @countdown <= 0
 
 			for id, ship of globals.ships
 				if not ship.isDead() and

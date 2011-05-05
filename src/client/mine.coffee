@@ -1,20 +1,18 @@
 class Mine
 	constructor: (mine) ->
 		@state = mine.state
-
 		@playerId = mine.playerId
 		@pos = mine.pos
 		@color = mine.color
 		@radius = mine.radius
 		@explosionRadius = mine.explosionRadius
-
 		@countdown = mine.countdown
 		@lastUpdate = mine.lastUpdate
 
 	draw: (ctxt, offset) ->
-		if @state is 0 or @state is 1
+		if @state is 'inactive' or @state is 'active'
 			@drawMine(ctxt, offset)
-		else if @state is 2
+		else if @state is 'exploding'
 			@drawExplosion(ctxt, offset)
 
 	drawMine: (ctxt, offset = {x:0, y:0}) ->

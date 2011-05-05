@@ -113,6 +113,20 @@ enableShipGravity = false
 
 mineRadius = 10
 mineExplosionRadius = 80
+mineStates =
+	'inactive':
+		countdown: 500
+		next: 'active'
+	'active':
+		countdown: null
+		next: 'exploding'
+	'exploding':
+		countdown: 500
+		next: 'dead'
+	'dead':
+		countdown: null
+		next: null
+		
 
 map = w: 2000, h: 2000
 
@@ -238,7 +252,7 @@ launch = () ->
 
 	exports.mineRadius = mineRadius
 	exports.mineExplosionRadius = mineExplosionRadius
-
+	exports.mineStates = mineStates
 	exports.map = map
 
 	exports.ships = ships
