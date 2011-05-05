@@ -16,20 +16,16 @@ class Mine extends ChangingObject.ChangingObject
 		@explosionRadius = globals.mineExplosionRadius
 
 		@countdown = globals.mineStates[@state].countdown
-		@lastUpdate = (new Date).getTime()
 		
 	nextState: () ->
 		@state = globals.mineStates[@state].next
 		@countdown = globals.mineStates[@state].countdown
 
 	update: () ->
-		console.log @state
-		now = (new Date).getTime() # (globalization of 'now' would be nice)
-		diff =  now - @lastUpdate
+		@countdown -= globals.timestep if @countdown?
 
 		# The mine is not yet activated.
 		if @state is 'inactive'
-			@countdown -= diff
 			@nextState() if @countdown <= 0
 
 		# The mine is ready.
@@ -50,7 +46,6 @@ class Mine extends ChangingObject.ChangingObject
 
 		# The mine is exploding.
 		else if @state is 'exploding'
-			@countdown -= diff
 			@nextState() if @countdown <= 0
 
 			for id, ship of globals.ships
@@ -59,7 +54,5 @@ class Mine extends ChangingObject.ChangingObject
 						-@explosionRadius < @pos.x - ship.pos.x < @explosionRadius and
 						-@explosionRadius < @pos.y - ship.pos.y < @explosionRadius
 					ship.explode()
-
-		@lastUpdate = now
 
 exports.Mine = Mine

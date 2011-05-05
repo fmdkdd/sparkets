@@ -101,6 +101,9 @@ console.log "Server started"
 
 # Globals
 
+now = 0
+timestep = 20
+
 dirInc = 0.1
 maxPower = 3
 minFirepower = 1.3
@@ -127,7 +130,6 @@ mineStates =
 		countdown: null
 		next: null
 		
-
 map = w: 2000, h: 2000
 
 players = {}
@@ -180,7 +182,7 @@ processInputs = (id) ->
 		ship.firePower = Math.min(ship.firePower + 0.1, maxPower)
 
 update = () ->
-	start = (new Date).getTime()
+	start = now = (new Date).getTime()
 
 	processInputs id for id of players
 
@@ -189,7 +191,7 @@ update = () ->
 	updateShips()
 
 	diff = (new Date).getTime() - start
-	setTimeout(update, 20 - utils.mod(diff, 20))
+	setTimeout(update, timestep - utils.mod(diff, 20))
 
 updateShips = () ->
 	changes = {}
@@ -239,6 +241,9 @@ launch = () ->
 	planets = initPlanets()
 
 	# Exports
+
+	exports.now = now
+	exports.timestep = timestep
 
 	exports.dirInc = dirInc
 	exports.maxPower = maxPower
