@@ -62,12 +62,16 @@ class Ship
 
 		vel = Math.max @vel.x, @vel.y
 		for i in [0..200]
-			explosions[@id].push
+			particle =
 				x: @pos.x
 				y: @pos.y
 				vx: .5*vel*(2*Math.random()-1)
 				vy: .5*vel*(2*Math.random()-1)
-				s: Math.random() * 10
+				size: Math.random() * 10
+			angle = Math.atan2(particle.vy, particle.vx)
+			particle.vx *= Math.abs(Math.cos angle)
+			particle.vy *= Math.abs(Math.sin angle)
+			explosions[@id].push particle
 
 	updateExplosion: () ->
 		for b in explosions[@id]
@@ -80,4 +84,4 @@ class Ship
 
 		ctxt.fillStyle = color @color, (maxExploFrame-@exploFrame)/maxExploFrame
 		for b in explosions[@id]
-			ctxt.fillRect b.x+ox, b.y+oy, b.s, b.s
+			ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
