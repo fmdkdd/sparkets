@@ -30,6 +30,10 @@ class Mine extends ChangingObject.ChangingObject
 		@state = prefs.mine.states[@state].next
 		@countdown = prefs.mine.states[@state].countdown
 
+	explode: () ->
+		@state = 'exploding'
+		@countdown = prefs.mine.states[@state].countdown
+		
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?
 
@@ -66,6 +70,12 @@ class Mine extends ChangingObject.ChangingObject
 						-r < @pos.x - ship.pos.x < r and
 						-r < @pos.y - ship.pos.y < r
 					ship.explode()
+
+			for id, mine of globals.mines
+				if mine.id isnt @id and mine.state is 'active'
+					radii = @explosionRadius + mine.detectionRadius
+					dist = utils.distance(@pos.x, @pos.y, mine.pos.x, mine.pos.y)
+					mine.explode() if dist < radii
 
 		# The explosion is over.
 		else if @state is 'dead'
