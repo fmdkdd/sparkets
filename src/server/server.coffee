@@ -117,6 +117,7 @@ players = {}
 ships = {}
 bullets = []
 bulletCount = 0
+mines = []
 planets = []
 
 # Input processing
@@ -133,6 +134,10 @@ processKeyUp = (id, key) ->
 			ships[id].spawn()
 		else
 			ships[id].fire()
+
+	# Z : drop a mine.
+	if key is 90
+		ships[id].dropMine()
 
 processInputs = (id) ->
 	keys = players[id].keys
@@ -163,6 +168,7 @@ update = () ->
 	processInputs id for id of players
 
 	updateBullets()
+	updateMines()
 	updateShips()
 
 	diff = (new Date).getTime() - start
@@ -196,6 +202,14 @@ updateBullets = () ->
 			type: 'bullet update'
 			update: changes
 
+updateMines = () ->
+	m.update() for m in mines
+
+	if mines.length > 0
+		io.broadcast
+			type: 'mines'
+			mines: mines
+
 initPlanets = () ->
 	(new Planet.Planet Math.random()*2000,
 		Math.random()*2000,
@@ -224,6 +238,7 @@ launch = () ->
 	exports.ships = ships
 	exports.bullets = bullets
 	exports.bulletCount = bulletCount
+	exports.mines = mines
 	exports.planets = planets
 
 	update()

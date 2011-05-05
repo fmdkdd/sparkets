@@ -2,6 +2,7 @@ ChangingObject = require './changingObject'
 globals = require './server'
 utils = require '../utils'
 Bullet = require './bullet'
+Mine = require './mine'
 
 class Ship extends ChangingObject.ChangingObject
 	constructor: (@id) ->
@@ -132,6 +133,11 @@ class Ship extends ChangingObject.ChangingObject
 
 		@firePower = globals.minFirepower
 		@cannonHeat = globals.cannonCooldown
+
+	dropMine: () ->
+		return if @isDead() or @isExploding()
+
+		globals.mines.push(new Mine.Mine(@))
 
 	explode : () ->
 		@exploding = true

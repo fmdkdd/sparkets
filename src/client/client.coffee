@@ -23,6 +23,7 @@ serverShips = {}
 explosions = {}
 planets = []
 bullets = {}
+mines = []
 
 enableInterpolation = false
 interp_factor = .03
@@ -142,6 +143,9 @@ redraw = (ctxt) ->
 	i = 1
 	b.draw ctxt, (i++)/len for idx, b of bullets
 
+	# Draw all mines.
+	m.draw(ctxt) for m in mines
+
 	# Draw all planets.
 	p.draw ctxt for p in planets
 
@@ -248,6 +252,15 @@ drawInfinity = (ctxt) ->
 						y: (i-1)*map.h
 					b.draw ctxt, (bi++)/len, offset
 
+	for i in [0..2]
+		for j in [0..2]
+			if visibility[i][j] is on
+				for m in [0...mines.length]
+					offset =
+						x: (j-1)*map.w
+						y: (i-1)*map.h
+					mines[m].draw(ctxt, offset)
+
 	return true
 
 onConnect = () ->
@@ -269,6 +282,12 @@ onMessage = (msg) ->
 					bullets[i] = new Bullet(bullet)
 
 				bullets[i].update(bullet.lastPoint)
+
+		# When received mine data.
+		when 'mines'
+			mines = []
+			for m in msg.mines
+				mines.push new Mine m
 
 		# When received other ship data.
 		when 'ships'
