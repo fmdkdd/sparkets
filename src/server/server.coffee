@@ -111,6 +111,9 @@ frictionDecay = 0.97
 maxExploFrame = 50
 enableShipGravity = false
 
+mineRadius = 10
+mineExplosionRadius = 80
+
 map = w: 2000, h: 2000
 
 players = {}
@@ -232,6 +235,9 @@ launch = () ->
 	exports.frictionDecay = frictionDecay
 	exports.maxExploFrame = maxExploFrame
 	exports.enableShipGravity = enableShipGravity
+
+	exports.mineRadius = mineRadius
+	exports.mineExplosionRadius = mineExplosionRadius
 
 	exports.map = map
 

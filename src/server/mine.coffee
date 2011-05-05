@@ -13,8 +13,8 @@ class Mine extends ChangingObject.ChangingObject
 			x: ship.pos.x
 			y: ship.pos.y
 		@color = ship.color
-		@radius = 10
-		@explosionRadius = 60
+		@radius = globals.mineRadius
+		@explosionRadius = globals.mineExplosionRadius
 
 		@countdown = 500
 		@lastUpdate = (new Date).getTime()
@@ -45,8 +45,8 @@ class Mine extends ChangingObject.ChangingObject
 			for id, ship of globals.ships
 				if not ship.isDead() and
 						not ship.isExploding() and
-						-10 < @pos.x - ship.pos.x < 10 and
-						-10 < @pos.y - ship.pos.y < 10
+						-@radius < @pos.x - ship.pos.x < @radius and
+						-@radius < @pos.y - ship.pos.y < @radius
 					@explode()
 
 		# The mine is exploding.
