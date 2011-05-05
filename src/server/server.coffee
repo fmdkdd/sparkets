@@ -216,9 +216,31 @@ updateMines = () ->
 			mines: mines
 
 initPlanets = () ->
-	(new Planet.Planet Math.random()*2000,
-		Math.random()*2000,
-		50+Math.random()*50) for [0..prefs.server.maxPlanets]
+	_planets = []
+
+	collides = (p1, p2) ->
+		(utils.distance(p1.pos.x, p1.pos.y,
+			p2.pos.x, p2.pos.y) < p1.force + p2.force)
+
+	# If a planet is overlapping the map, it will appear to be
+	# colliding with its ghosts in drawInfinity.
+	nearBorder = ({pos: {x, y}, force}) ->
+		(x - force < 0 or x + force > prefs.server.mapSize.w or
+			y - force < 0 or y + force > prefs.server.mapSize.h)
+
+	# Spawn planets randomly.
+	for [0...prefs.server.planetsCount]
+		colliding = yes
+		while colliding			  # Ensure none are colliding
+			rock = new Planet.Planet(Math.random()*2000,
+				Math.random()*2000,
+				50+Math.random()*50)
+			colliding = no
+			for p in _planets
+				colliding = yes if nearBorder(rock) or collides(p,rock)
+		_planets.push rock
+
+	return _planets
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch the game loop once everything is defined.

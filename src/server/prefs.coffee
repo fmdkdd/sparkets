@@ -17,7 +17,7 @@ exports.server =
 	mapSize:							  # Size of the real map (duh).
 		w: 2000
 		h: 2000
-	maxPlanets: 35					  # Number of planets on the map.
+	planetsCount: 30				  # Number of planets on the map.
 
 
 exports.mine =
