@@ -42,6 +42,12 @@ class Mine extends ChangingObject.ChangingObject
 						-@radius < @pos.y - ship.pos.y < @radius
 					@nextState()
 
+			for b in globals.bullets
+				if not b.dead and
+						-@radius < @pos.x - b.pos.x < @radius and
+						-@radius < @pos.y - b.pos.y < @radius
+					@nextState()
+
 		# The mine is exploding.
 		else if @state is 'exploding'
 			@countdown -= diff
