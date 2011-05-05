@@ -1,5 +1,6 @@
 ChangingObject = require './changingObject'
 globals = require './server'
+prefs = require './prefs'
 utils = require '../utils'
 
 class Mine extends ChangingObject.ChangingObject
@@ -19,16 +20,16 @@ class Mine extends ChangingObject.ChangingObject
 			x: ship.pos.x
 			y: ship.pos.y
 		@color = ship.color
-		@radius = globals.mineRadius
-		@explosionRadius = globals.mineExplosionRadius
-		@countdown = globals.mineStates[@state].countdown
-		
+		@radius = prefs.mine.radius
+		@explosionRadius = prefs.mine.explosionRadius
+		@countdown = prefs.mine.states[@state].countdown
+
 	nextState: () ->
-		@state = globals.mineStates[@state].next
-		@countdown = globals.mineStates[@state].countdown
+		@state = prefs.mine.states[@state].next
+		@countdown = prefs.mine.states[@state].countdown
 
 	update: () ->
-		@countdown -= globals.timestep if @countdown?
+		@countdown -= prefs.server.timestep if @countdown?
 
 		# The mine is not yet activated.
 		if @state is 'inactive'

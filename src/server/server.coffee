@@ -33,6 +33,7 @@ server.listen port
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Socket.IO setup
 
+prefs = require './prefs'
 Ship = require './ship'
 Bullet = require './bullet'
 Planet = require './planet'
@@ -102,35 +103,6 @@ console.log "Server started"
 # Globals
 
 now = 0
-timestep = 20
-
-dirInc = 0.1
-maxPower = 3
-minFirepower = 1.3
-cannonCooldown = 20
-maxBullets = 10
-shipSpeed = 0.3
-frictionDecay = 0.97
-maxExploFrame = 50
-enableShipGravity = false
-
-mineRadius = 10
-mineExplosionRadius = 80
-mineStates =
-	'inactive':
-		countdown: 500
-		next: 'active'
-	'active':
-		countdown: null
-		next: 'exploding'
-	'exploding':
-		countdown: 500
-		next: 'dead'
-	'dead':
-		countdown: null
-		next: null
-		
-map = w: 2000, h: 2000
 
 players = {}
 ships = {}
@@ -167,20 +139,20 @@ processInputs = (id) ->
 
 	# Left arrow : rotate to the left.
 	if keys[37] is on
-		ship.dir -= dirInc
+		ship.dir -= prefs.ship.dirInc
 
 	# Right arrow : rotate to the right.
 	if keys[39] is on
-		ship.dir += dirInc
+		ship.dir += prefs.ship.dirInc
 
 	# Up arrow : thrust forward.
 	if keys[38] is on
-		ship.vel.x += Math.sin(ship.dir) * shipSpeed
-		ship.vel.y -= Math.cos(ship.dir) * shipSpeed
+		ship.vel.x += Math.sin(ship.dir) * prefs.ship.speed
+		ship.vel.y -= Math.cos(ship.dir) * prefs.ship.speed
 
 	# Spacebar : charge the bullet.
 	if keys[32] or keys[65]
-		ship.firePower = Math.min(ship.firePower + 0.1, maxPower)
+		ship.firePower = Math.min(ship.firePower + 0.1, prefs.ship.maxFirepower)
 
 update = () ->
 	start = now = (new Date).getTime()
@@ -192,7 +164,7 @@ update = () ->
 	updateShips()
 
 	diff = (new Date).getTime() - start
-	setTimeout(update, timestep - utils.mod(diff, 20))
+	setTimeout(update, prefs.server.timestep - utils.mod(diff, 20))
 
 updateShips = () ->
 	changes = {}
@@ -241,7 +213,7 @@ updateMines = () ->
 initPlanets = () ->
 	(new Planet.Planet Math.random()*2000,
 		Math.random()*2000,
-		50+Math.random()*50) for [0..35]
+		50+Math.random()*50) for [0..prefs.server.maxPlanets]
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch the game loop once everything is defined.
@@ -252,22 +224,6 @@ launch = () ->
 	# Exports
 
 	exports.now = now
-	exports.timestep = timestep
-
-	exports.dirInc = dirInc
-	exports.maxPower = maxPower
-	exports.minFirepower = minFirepower
-	exports.cannonCooldown = cannonCooldown
-	exports.maxBullets = maxBullets
-	exports.shipSpeed = shipSpeed
-	exports.frictionDecay = frictionDecay
-	exports.maxExploFrame = maxExploFrame
-	exports.enableShipGravity = enableShipGravity
-
-	exports.mineRadius = mineRadius
-	exports.mineExplosionRadius = mineExplosionRadius
-	exports.mineStates = mineStates
-	exports.map = map
 
 	exports.ships = ships
 	exports.bullets = bullets

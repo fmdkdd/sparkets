@@ -1,5 +1,6 @@
 ChangingObject = require './changingObject'
 globals = require './server'
+prefs = require './prefs'
 utils = require '../utils'
 
 class Bullet extends ChangingObject.ChangingObject
@@ -48,11 +49,12 @@ class Bullet extends ChangingObject.ChangingObject
 		@lastPoint = [@pos.x, @pos.y]
 
 		# Warp the bullet around the map.
+		{w, h} = prefs.server.mapSize
 		warp = off
-		if @pos.x < 0 then @pos.x += globals.map.w and warp = on
-		if @pos.x > globals.map.w then @pos.x += -globals.map.w and warp = on
-		if @pos.y < 0 then @pos.y += globals.map.h and warp = on
-		if @pos.y > globals.map.h then @pos.y += -globals.map.h and warp = on
+		if @pos.x < 0 then @pos.x += w and warp = on
+		if @pos.x > w then @pos.x -= w and warp = on
+		if @pos.y < 0 then @pos.y += h and warp = on
+		if @pos.y > h then @pos.y -= h and warp = on
 
 		# Append the warped point again so that the line remains continuous.
 		@points.push [@pos.x, @pos.y] if warp
