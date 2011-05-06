@@ -7,6 +7,7 @@ class Mine extends ChangingObject.ChangingObject
 	constructor: (ship, @id) ->
 		super()
 
+		@watchChanges 'type'
 		@watchChanges 'pos'
 		@watchChanges 'state'
 		@watchChanges 'color'
@@ -15,6 +16,7 @@ class Mine extends ChangingObject.ChangingObject
 		@watchChanges 'explosionRadius'
 		@watchChanges 'countdown'
 
+		@type = 'mine'
 		@state = 'inactive'
 		@playerId = ship.id
 		@pos =
@@ -52,10 +54,10 @@ class Mine extends ChangingObject.ChangingObject
 						-r < @pos.y - ship.pos.y < r
 					@nextState()
 
-			for b in globals.bullets
-				if not b.dead and
-						-r < @pos.x - b.pos.x < r and
-						-r < @pos.y - b.pos.y < r
+			for id, bullet of globals.bullets
+				if not bullet.dead and
+						-r < @pos.x - bullet.pos.x < r and
+						-r < @pos.y - bullet.pos.y < r
 					@nextState()
 
 		# The mine is exploding.

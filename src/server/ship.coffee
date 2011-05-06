@@ -10,6 +10,8 @@ class Ship extends ChangingObject.ChangingObject
 		super()
 
 		@watchChanges(
+			'type',
+			'color',
 			'pos',
 			'vel',
 			'dir',
@@ -20,6 +22,7 @@ class Ship extends ChangingObject.ChangingObject
 			'exploding',
 			'exploFrame' )
 
+		@type = 'ship'
 		@color = utils.randomColor()
 		@spawn()
 
@@ -95,7 +98,7 @@ class Ship extends ChangingObject.ChangingObject
 	collidesWithPlanet: () ->
 		{x, y} = @pos
 
-		for p in globals.planets
+		for id, p of globals.planets
 			{x: px, y: py} = p.pos
 			return true if utils.distance(px, py, x, y) < p.force
 
@@ -104,11 +107,11 @@ class Ship extends ChangingObject.ChangingObject
 	collidesWithBullet: () ->
 		{x, y} = @pos
 
-		for b in globals.bullets
-			if not b.dead and
-					-10 < x - b.pos.x < 10 and
-					-10 < y - b.pos.y < 10
-				b.dead = true
+		for id, bullet of globals.bullets
+			if not bullet.dead and
+					-10 < x - bullet.pos.x < 10 and
+					-10 < y - bullet.pos.y < 10
+				bullet.dead = true
 				return true
 
 		return false
@@ -132,8 +135,8 @@ class Ship extends ChangingObject.ChangingObject
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
-		globals.bullets.push( new Bullet.Bullet( @, globals.bulletCount++ ))
-		globals.bullets.shift() if globals.bullets.length > prefs.server.maxBullets
+		id = globals.gameObjectCount++
+		globals.gameObjects[id] = globals.bullets[id] = new Bullet.Bullet(@, id)
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown
@@ -141,8 +144,8 @@ class Ship extends ChangingObject.ChangingObject
 	dropMine: () ->
 		return if @isDead() or @isExploding()
 
-		id = globals.mineCount++
-		globals.mines[id] = new Mine.Mine(@, id)
+		id = globals.gameObjectCount++
+		globals.gameObjects[id] = globals.mines[id] = new Mine.Mine(@, id)
 
 	explode : () ->
 		@exploding = true

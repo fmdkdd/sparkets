@@ -1,5 +1,6 @@
 class Planet
 	constructor: (x, y, @force) ->
-		@pos = x: x, y: y
+		@type = 'planet'
+		@pos = {x, y}
 
 exports.Planet = Planet

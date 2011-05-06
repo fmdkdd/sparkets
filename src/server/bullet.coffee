@@ -7,9 +7,12 @@ class Bullet extends ChangingObject.ChangingObject
 	constructor: (@owner, @id) ->
 		super()
 
+		@watchChanges 'type'
 		@watchChanges 'color'
 		@watchChanges 'points'
 		@watchChanges 'lastPoint'
+
+		@type = 'bullet'
 
 		xdir = 10*Math.sin(@owner.dir)
 		ydir = -10*Math.cos(@owner.dir)
@@ -34,7 +37,7 @@ class Bullet extends ChangingObject.ChangingObject
 		{x, y} = @pos
 		{x: ax, y: ay} = @accel
 
-		for p in globals.planets
+		for id, p of globals.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 			d2 = 200 * p.force / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
@@ -75,7 +78,7 @@ class Bullet extends ChangingObject.ChangingObject
 	collidesWithPlanet : () ->
 		{x, y} = @pos
 
-		for p in globals.planets
+		for id, p of globals.planets
 			px = p.pos.x
 			py = p.pos.y
 			return true if utils.distance(px, py, x, y) < p.force

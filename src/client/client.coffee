@@ -20,9 +20,8 @@ bulletFrameStay = 4
 id = null
 ships = {}
 explosions = {}
-planets = []
-bullets = {}
-mines = {}
+
+gameObjects = {}
 
 keys = {}
 
@@ -87,31 +86,22 @@ redraw = (ctxt) ->
 	ctxt.lineWidth = 4
 	ctxt.lineJoin = 'round'
 
-	# Draw all bullets with decreasing opacity.
-	len = Object.keys(bullets).length
-	i = 1
-	b.draw ctxt, (i++)/len for idx, b of bullets
+	# Draw all objects.
+	obj.draw(ctxt)	for idx, obj of gameObjects
 
-	# Draw all mines.
-	m.draw(ctxt) for i,m of mines
-
-	# Draw all planets.
-	p.draw ctxt for p in planets
-
-	# Draw all ships.
-	s.draw ctxt	for i, s of ships
-
-	drawRadar ctxt if not ships[id].isDead()
+	drawRadar ctxt if ships[id]? and not ships[id].isDead()
 
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
 
 centerView = () ->
-	if ships[id]?
-		view.x = ships[id].pos.x - screen.w/2
-		view.y = ships[id].pos.y - screen.h/2
+	if gameObjects[id]?
+		view.x = gameObjects[id].pos.x - screen.w/2
+		view.y = gameObjects[id].pos.y - screen.h/2
 
 drawRadar = (ctxt) ->
+	ship = ships[id]
+
 	for i, s of ships
 		if i isnt id and not s.isDead()
 			# Select the closest ship among the real one and its ghosts.
@@ -120,14 +110,14 @@ drawRadar = (ctxt) ->
 				for k in [-1..1]
 					x = s.pos.x + j * map.w
 					y = s.pos.y + k * map.h
-					d = distance(ships[id].pos.x, ships[id].pos.y, x, y)
+					d = distance(ship.pos.x, ship.pos.y, x, y)
 
 					if d < bestDistance
 						bestDistance = d
-						bestPos = {x: x, y: y}
+						bestPos = {x, y}
 
-			dx = bestPos.x - ships[id].pos.x
-			dy = bestPos.y - ships[id].pos.y
+			dx = bestPos.x - ship.pos.x
+			dy = bestPos.y - ship.pos.y
 
 			if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
 
@@ -139,12 +129,12 @@ drawRadar = (ctxt) ->
 
 				# Choose on which ship we should base the animation. If the two
 				# of them are exploding, focus on the first to die.
-				if s.isExploding() and ships[id].isExploding()
-					dying = if s.exploFrame > ships[id].exploFrame then s else ships[id]
+				if s.isExploding() and ship.isExploding()
+					dying = if s.exploFrame > ship.exploFrame then s else ship
 				else if s.isExploding()
 					dying = s
-				else if ships[id].isExploding()
-					dying = ships[id]
+				else if ship.isExploding()
+					dying = ship
 
 				radius = 10
 				alpha = 1
@@ -175,40 +165,11 @@ drawInfinity = (ctxt) ->
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
-				for p in planets
+				for idx, obj of gameObjects
 					offset =
 						x: (j-1)*map.w
 						y: (i-1)*map.h
-					p.draw ctxt, offset
-
-	for i in [0..2]
-		for j in [0..2]
-			if visibility[i][j] is on
-				for id, s of ships
-					offset =
-						x: (j-1)*map.w
-						y: (i-1)*map.h
-					s.draw ctxt, offset
-
-	len = Object.keys(bullets).length
-	for i in [0..2]
-		for j in [0..2]
-			if visibility[i][j] is on
-				bi = 1
-				for idx, b of bullets
-					offset =
-						x: (j-1)*map.w
-						y: (i-1)*map.h
-					b.draw ctxt, (bi++)/len, offset
-
-	for i in [0..2]
-		for j in [0..2]
-			if visibility[i][j] is on
-				for idx, m of mines
-					offset =
-						x: (j-1)*map.w
-						y: (i-1)*map.h
-					m.draw(ctxt, offset)
+					obj.draw(ctxt, offset)
 
 	return true
 
@@ -218,70 +179,36 @@ onConnect = () ->
 onDisconnect = () ->
 	info "Aaargh! Disconnected!"
 
+newObject = (i, type, obj) ->
+	switch type
+		when 'ship'
+			ships[i] = new Ship(obj)
+		when 'bullet'
+			new Bullet(obj)
+		when 'mine'
+			new Mine(obj)
+		when 'planet'
+			new Planet(obj)
+
 onMessage = (msg) ->
 	switch msg.type
 
-		# When received bullet data.
-		when 'bullets update'
-			for i, bullet of msg.update
-				if not bullets[i]?
-					keys = Object.keys(bullets)
-					if keys.length > maxBullets
-						delete bullets[ keys[0] ] # delete oldest bullet
-					bullets[i] = new Bullet(bullet)
-
-				bullets[i].update(bullet.lastPoint)
-
-		# When received mine data.
-		when 'mines update'
-			for i, mine of msg.update
-				if not mines[i]?
-					mines[i] = new Mine(mine)
-				mines[i].update(mine)
-
-		# When received other ship data.
-		when 'ships'
-			for i, s of msg.ships
-				if enableInterpolation
-					serverShips[i] = new Ship s
+		# When receiving world update data.
+		when 'objects update'
+			for i, obj of msg.objects
+				if not gameObjects[i]?
+					gameObjects[i] = newObject(i, obj.type, obj)
 				else
-					ships[i] = new Ship s
-
-			lastUpdate = (new Date).getTime()
-
-		# When received world update.
-		when 'ships update'
-			for i, s of msg.update
-				if enableInterpolation
-					serverShips[i].update(s)
-				else
-					ships[i].update(s)
-
-			lastUpdate = (new Date).getTime()
-
-		# When received planet data.
-		when 'planets'
-			planets = []
-			for p in msg.planets
-				planets.push new Planet p
+					gameObjects[i].update(obj)
 
 		# When receiving our id from the server.
 		when 'connected'
 			go(msg.playerId)
 
-		# When another player joins.
-		when 'player joins'
-			ships[msg.playerId] = new Ship msg.ship
-			console.info 'player '+msg.playerId+' joins'
-
-		# When another player dies.
-		when 'player dies'
-			delete ships[msg.playerId]
-			console.info 'player '+msg.playerId+' dies'
-
 		# When another player leaves.
 		when 'player quits'
 			delete ships[msg.playerId]
+			delete gameObjects[msg.playerId]
 			console.info 'player '+msg.playerId+' quits'
 
 	return true

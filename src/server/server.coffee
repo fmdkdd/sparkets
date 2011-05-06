@@ -59,34 +59,21 @@ io.on 'clientConnect', (player) ->
 
 	# Send the playfield.
 	player.send
-		type: 'planets'
-		planets: planets
+		type: 'objects update'
+		objects: planets
 
-	# Send ships.
+	# Send other game objects.
 	player.send
-		type: 'ships'
-		ships: ships
+		type: 'objects update'
+		objects: gameObjects
 
-	# Send existing mines.
-	player.send
-		type: 'mines update'
-		mines: mines
-
-	# Send existing bullets.
-	player.send
-		type: 'bullets update'
-		update: bullets
+	# Add ship to game objects.
+	gameObjects[id] = ships[id]
 
 	# Good news!
 	player.send
 		type: 'connected'
 		playerId: id
-
-	# Poke all other players.
-	player.broadcast
-		type: 'player joins'
-		playerId: id
-		ship: ships[id]
 
 io.on 'clientMessage', (msg, player) ->
 	switch msg.type
@@ -98,6 +85,7 @@ io.on 'clientDisconnect', (player) ->
 	id = player.sessionId
 	delete players[id]
 	delete ships[id]
+	delete gameObjects[id]
 
 	# Tell everyone.
 	player.broadcast
@@ -115,12 +103,14 @@ console.log "Server started"
 now = 0
 
 players = {}
+
 ships = {}
-bullets = []
-bulletCount = 0
+bullets = {}
 mines = {}
-mineCount = 0
-planets = []
+planets = {}
+
+gameObjects = {}
+gameObjectCount = 0
 
 # Input processing
 
@@ -168,30 +158,36 @@ processInputs = (id) ->
 	if keys[32] or keys[65]
 		ship.firePower = Math.min(ship.firePower + 0.1, prefs.ship.maxFirepower)
 
+# Game loop
 update = () ->
 	start = now = (new Date).getTime()
 
 	processInputs id for id of players
 
-	for name, objects of {bullets, mines, ships}
-		updateObjects(name, objects)
+	updateObjects(gameObjects)
 
 	diff = (new Date).getTime() - start
 	setTimeout(update, prefs.server.timestep - utils.mod(diff, 20))
 
-updateObjects = (name, objects) ->
+collectChanges = (objects, reset = no) ->
 	allChanges = {}
 	for id, obj of objects
-		obj.update()
 		changes = obj.changes()
 		if not utils.isEmptyObject changes
 			allChanges[id] = changes
-			obj.resetChanges()
+			obj.resetChanges() if reset
 
-	if not utils.isEmptyObject allChanges
+	return allChanges
+
+updateObjects = (objects) ->
+	obj.update() for id, obj of objects
+
+	changes = collectChanges(objects, yes)
+
+	if not utils.isEmptyObject changes
 		io.broadcast
-			type: "#{name} update"
-			update: allChanges
+			type: 'objects update'
+			objects: changes
 
 initPlanets = () ->
 	_planets = []
@@ -224,7 +220,9 @@ initPlanets = () ->
 # Launch the game loop once everything is defined.
 
 launch = () ->
-	planets = initPlanets()
+	for p in initPlanets()
+		id = gameObjectCount++
+		planets[id] = p
 
 	# Exports
 
@@ -232,10 +230,10 @@ launch = () ->
 
 	exports.ships = ships
 	exports.bullets = bullets
-	exports.bulletCount = bulletCount
 	exports.mines = mines
-	exports.mineCount = mineCount
 	exports.planets = planets
+	exports.gameObjects = gameObjects
+	exports.gameObjectCount = gameObjectCount
 
 	update()
 
