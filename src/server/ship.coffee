@@ -9,10 +9,6 @@ class Ship extends ChangingObject.ChangingObject
 	constructor: (@id) ->
 		super()
 
-		@color = utils.randomColor()
-		@spawn()
-
-	spawn: () ->
 		@watchChanges(
 			'pos',
 			'vel',
@@ -24,6 +20,10 @@ class Ship extends ChangingObject.ChangingObject
 			'exploding',
 			'exploFrame' )
 
+		@color = utils.randomColor()
+		@spawn()
+
+	spawn: () ->
 		@pos =
 			x: Math.random() * prefs.server.mapSize.w
 			y: Math.random() * prefs.server.mapSize.h
