@@ -1,14 +1,14 @@
 class Bullet
 	constructor: (bullet) ->
-		@color = bullet.color
-		@points = bullet.points
+		@update(bullet)
 
 		@frameSinceShift = 0
 
-	update: (point) ->
-		if not @points?
-			@points = []
-		@points.push(point)
+	update: (bullet) ->
+		for field, val of bullet
+			@[field] = val
+
+		@points.push @lastPoint
 
 	draw: (ctxt, alpha, offset = {x: 0, y: 0}) ->
 		return if @points.length is 0

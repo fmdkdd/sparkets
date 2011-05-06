@@ -1,21 +1,10 @@
 class Ship
 	constructor: (ship) ->
-		@id = ship.id
-		@pos = ship.pos
-		@dir = ship.dir
-		@thrust = ship.thrust
-		@vel = ship.vel
-		@firePower = ship.firePower
+		@update(ship)
 
-		@dead = ship.dead
-		@exploding = ship.exploding
-		@exploFrame = ship.exploFrame
-
-		@color = ship.color
-
-	update: (msg) ->
-		for field, val of msg
-			this[field] = val
+	update: (ship) ->
+		for field, val of ship
+			@[field] = val
 
 		if @isExploding()
 			@explode() if not explosions[@id]?
