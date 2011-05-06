@@ -37,11 +37,9 @@ class Mine
 		ctxt.fillStyle = color @color
 		ctxt.save()
 		ctxt.translate(x, y)
-		for i in [0...2]
-			ctxt.beginPath()
-			ctxt.rotate(Math.PI/4)
-			ctxt.fillRect(-r, -r, r*2, r*2)
-			ctxt.fill()
+		ctxt.fillRect(-r, -r, r*2, r*2)
+		ctxt.rotate(Math.PI/4)
+		ctxt.fillRect(-r, -r, r*2, r*2)
 		ctxt.restore()
 
 		# Draw the sensor waves when the mine is active.

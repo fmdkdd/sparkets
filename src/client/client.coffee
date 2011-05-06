@@ -185,6 +185,8 @@ newObject = (i, type, obj) ->
 			new Bullet(obj)
 		when 'mine'
 			new Mine(obj)
+		when 'bonus'
+			new Bonus(obj)
 		when 'planet'
 			new Planet(obj)
 

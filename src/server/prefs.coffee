@@ -37,3 +37,16 @@ exports.mine =
 		'dead':
 			countdown: null
 			next: null
+
+exports.bonus =
+	modelSize: 20							# Drawing size on client.
+	states:
+		'incoming':
+			countdown: 5000
+			next: 'active'
+		'active':
+			countdown: null
+			next: null
+		'dead':
+			countdown: null
+			next: null

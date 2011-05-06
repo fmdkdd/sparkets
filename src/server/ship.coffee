@@ -24,6 +24,7 @@ class Ship extends ChangingObject.ChangingObject
 
 		@type = 'ship'
 		@color = utils.randomColor()
+
 		@spawn()
 
 	spawn: () ->
@@ -37,6 +38,7 @@ class Ship extends ChangingObject.ChangingObject
 		@thrust = false
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = 0
+		@mines = 0
 		@dead = false
 		@exploFrame = 0
 
@@ -146,6 +148,8 @@ class Ship extends ChangingObject.ChangingObject
 
 		id = globals.gameObjectCount++
 		globals.gameObjects[id] = globals.mines[id] = new Mine.Mine(@, id)
+
+		--@mines
 
 	explode : () ->
 		@exploding = true

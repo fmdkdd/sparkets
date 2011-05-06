@@ -36,6 +36,7 @@ server.listen port
 prefs = require './prefs'
 Ship = require './ship'
 Bullet = require './bullet'
+Bonus = require './bonus'
 Planet = require './planet'
 utils = require '../utils'
 
@@ -107,6 +108,7 @@ players = {}
 ships = {}
 bullets = {}
 mines = {}
+bonuses = {}
 planets = {}
 
 gameObjects = {}
@@ -131,7 +133,7 @@ processKeyUp = (id, key) ->
 		ships[id].thrust = false
 
 	# Z : drop a mine.
-	if key is 90
+	if key is 90 and ships[id].mines > 0
 		ships[id].dropMine()
 
 processInputs = (id) ->
@@ -214,7 +216,15 @@ initPlanets = () ->
 				colliding = yes if nearBorder(rock) or collides(p,rock)
 		_planets.push rock
 
+	for i in [0..10]
+		spawnBonus()
+
 	return _planets
+
+spawnBonus = () ->
+	id = gameObjectCount++
+	gameObjects[id] = bonuses[id] = new Bonus.Bonus(id)
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch the game loop once everything is defined.
@@ -231,6 +241,7 @@ launch = () ->
 	exports.ships = ships
 	exports.bullets = bullets
 	exports.mines = mines
+	exports.bonuses = bonuses
 	exports.planets = planets
 	exports.gameObjects = gameObjects
 	exports.gameObjectCount = gameObjectCount
