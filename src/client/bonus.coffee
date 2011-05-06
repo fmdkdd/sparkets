@@ -23,8 +23,8 @@ class Bonus
 		x -= view.x
 		y -= view.y
 
-		ctxt.fillStyle = color planetColor
-		ctxt.strokeStyle = color planetColor
+		ctxt.fillStyle = color @color
+		ctxt.strokeStyle = color @color
 		ctxt.lineWidth = 2
 		ctxt.save()
 		ctxt.translate(x, y)
@@ -61,10 +61,7 @@ class Bonus
 			ry = Math.max -screen.h/2 + margin, dy
 			ry = Math.min screen.h/2 - margin, ry
 
-			radius = 10
-			alpha = 1
-
-			ctxt.fillStyle = color(localShip.color, alpha)
+			ctxt.fillStyle = color @color
 			ctxt.save()
 			ctxt.translate(screen.w/2 + rx, screen.h/2 + ry)
 			ctxt.rotate(Math.PI/4)

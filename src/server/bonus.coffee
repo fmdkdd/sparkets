@@ -1,6 +1,7 @@
 ChangingObject = require './changingObject'
 globals = require './server'
 prefs = require './prefs'
+utils = require '../utils'
 
 class Bonus extends ChangingObject.ChangingObject
 	constructor: (@id) ->
@@ -8,6 +9,7 @@ class Bonus extends ChangingObject.ChangingObject
 
 		@watchChanges 'type'
 		@watchChanges 'state'
+		@watchChanges 'color'
 		@watchChanges 'modelSize'
 		@changed 'pos'
 
@@ -16,6 +18,7 @@ class Bonus extends ChangingObject.ChangingObject
 		@pos =
 			x: Math.random()*prefs.server.mapSize.w
 			y: Math.random()*prefs.server.mapSize.h
+		@color = utils.randomColor()
 		@modelSize = prefs.bonus.modelSize
 
 	update: () ->
