@@ -19,15 +19,11 @@ bulletFrameStay = 4
 
 id = null
 ships = {}
-serverShips = {}
 explosions = {}
 planets = []
 bullets = {}
 mines = {}
 
-enableInterpolation = false
-interp_factor = .03
-lastUpdate = 0
 keys = {}
 
 # Entry point
@@ -70,57 +66,10 @@ go = (clientId) ->
 
 	update()
 
-interpolate = (time) ->
-	#info time if time*interp_factor > 1
-
-	for i, shadow of serverShips
-		ship = ships[i]
-
-		if not ship?
-			ships[i] = new Ship shadow
-			continue
-
-		if time * interp_factor > 1
-			ship = shadow
-			continue
-
-		if ship.isDead() and not shadow.isDead()
-			ships[i] = new Ship shadow
-			continue
-
-		# X interpolation
-		dx = shadow.pos.x - ship.pos.x
-		if -.1 < dx < .1 or dx > 100 or dx < -100
-			ship.pos.x = shadow.pos.x
-		else
-			ship.pos.x += dx * time * interp_factor
-
-		# Y interpolation
-		dy = shadow.pos.y - ship.pos.y
-		if -.1 < dy < .1 or dy > 100 or dy < -100
-			ship.pos.y = shadow.pos.y
-		else
-			ship.pos.y += dy * time * interp_factor
-
-		# Dir interpolation
-		ddir = shadow.dir - ship.dir
-		if -.01 < ddir < .01
-			ship.dir = shadow.dir
-		else
-			ship.dir += ddir * time * interp_factor
-
-		# Everything else
-		ship.vel = shadow.vel
-		ship.firePower = shadow.firePower
-		ship.dead = shadow.dead
-		ship.exploding = shadow.exploding
-		ship.exploFrame = shadow.exploFrame
-
 # Game loop!
 update = () ->
 	start = (new Date).getTime()
 
-	interpolate(start - lastUpdate) if enableInterpolation
 	centerView()
 	redraw(ctxt)
 
@@ -322,19 +271,16 @@ onMessage = (msg) ->
 
 		# When another player joins.
 		when 'player joins'
-			serverShips[msg.playerId] = new Ship msg.ship
 			ships[msg.playerId] = new Ship msg.ship
 			console.info 'player '+msg.playerId+' joins'
 
 		# When another player dies.
 		when 'player dies'
-			delete serverShips[msg.playerId]
 			delete ships[msg.playerId]
 			console.info 'player '+msg.playerId+' dies'
 
 		# When another player leaves.
 		when 'player quits'
-			delete serverShips[msg.playerId]
 			delete ships[msg.playerId]
 			console.info 'player '+msg.playerId+' quits'
 
