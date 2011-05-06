@@ -14,7 +14,9 @@ o [merwan] Display engine fire trail when a ship is moving.
       traps. Supply is limited.
    - Machine gun
       Rapid-fire weapon but takes longer to kill ships.
-
+   - Portable black hole
+      Gravity affects bullets and ships?
+      
 * Get rid of evil global variables.
 
 * Check if object is in view before drawing it on canvas.

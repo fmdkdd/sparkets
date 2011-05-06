@@ -137,6 +137,9 @@ processKeyUp = (id, key) ->
 		else
 			ships[id].fire()
 
+	if key is 38
+		ships[id].thrust = false
+
 	# Z : drop a mine.
 	if key is 90
 		ships[id].dropMine()
@@ -159,6 +162,7 @@ processInputs = (id) ->
 	if keys[38] is on
 		ship.vel.x += Math.sin(ship.dir) * prefs.ship.speed
 		ship.vel.y -= Math.cos(ship.dir) * prefs.ship.speed
+		ship.thrust = true
 
 	# Spacebar : charge the bullet.
 	if keys[32] or keys[65]

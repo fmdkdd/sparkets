@@ -3,6 +3,7 @@ class Ship
 		@id = ship.id
 		@pos = ship.pos
 		@dir = ship.dir
+		@thrust = ship.thrust
 		@vel = ship.vel
 		@firePower = ship.firePower
 
@@ -42,6 +43,8 @@ class Ship
 		cos = Math.cos @dir
 		sin = Math.sin @dir
 
+		# Draw hull.
+
 		points = [[-7,10], [0,-10], [7,10], [0,6]]
 		for i, p of points
 			points[i] = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
@@ -55,6 +58,19 @@ class Ship
 		ctxt.closePath()
 		ctxt.stroke()
 		ctxt.fill()
+
+		# Draw engine fire.
+		if @thrust
+			ctxt.lineWidth = 2
+			enginePoints = [ [0,18], [-5,8], [5,8], [0,18] ]
+			for i, p of enginePoints
+				enginePoints[i] = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
+			ctxt.beginPath()
+			ctxt.moveTo x+enginePoints[0][0], y+enginePoints[0][1]
+			for p in enginePoints
+				ctxt.lineTo x+p[0], y+p[1]
+			ctxt.stroke()
+			ctxt.lineWidth = 4
 
 	explode: () ->
 		@exploding = on

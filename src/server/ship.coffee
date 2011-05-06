@@ -17,6 +17,7 @@ class Ship extends ChangingObject.ChangingObject
 			'pos',
 			'vel',
 			'dir',
+			'thrust',
 			'firePower',
 			'cannonHeat',
 			'dead',
@@ -30,6 +31,7 @@ class Ship extends ChangingObject.ChangingObject
 			x: 0
 			y: 0
 		@dir = Math.random() * 2*Math.PI
+		@thrust = false
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = 0
 		@dead = false
