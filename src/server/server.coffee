@@ -72,6 +72,11 @@ io.on 'clientConnect', (player) ->
 		type: 'mine update'
 		mines: mines
 
+	# Send existing bullets.
+	player.send
+		type: 'bullet update'
+		update: bullets
+
 	# Good news!
 	player.send
 		type: 'connected'

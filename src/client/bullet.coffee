@@ -6,6 +6,8 @@ class Bullet
 		@frameSinceShift = 0
 
 	update: (point) ->
+		if not @points?
+			@points = []
 		@points.push(point)
 
 	draw: (ctxt, alpha, offset = {x: 0, y: 0}) ->
