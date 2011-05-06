@@ -31,7 +31,10 @@ class Bullet extends ChangingObject.ChangingObject
 		@lastPoint = [@pos.x, @pos.y]
 
 	update: () ->
-		return if @dead
+		if @dead
+			delete globals.bullets[@id]
+			delete globals.gameObjects[@id]
+			return
 
 		# Compute new position from acceleration and gravity of all planets.
 		{x, y} = @pos
