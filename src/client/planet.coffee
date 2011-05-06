@@ -19,6 +19,7 @@ class Planet
 		y = py - view.y
 
 		ctxt.strokeStyle = color planetColor
+		ctxt.lineWidth = 4
 		ctxt.beginPath()
 		ctxt.arc x, y, f, 0, 2*Math.PI, false
 		ctxt.stroke()

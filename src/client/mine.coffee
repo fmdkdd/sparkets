@@ -2,6 +2,8 @@ class Mine
 	constructor: (mine) ->
 		@update(mine)
 
+		@waves = [0, -@detectionRadius/3, -2*@detectionRadius/3]
+
 	update: (mine) ->
 		for field, val of mine
 			this[field] = val
@@ -17,7 +19,6 @@ class Mine
 		y = @pos.y + offset.y
 		r = @modelRadius
 		dr = @detectionRadius
-		div = 2
 
 		if not inView(x+dr, y+dr) and
 				not inView(x+dr, y-dr) and
@@ -29,31 +30,33 @@ class Mine
 		y -= view.y
 
 		# Make the mine grow during the activation process.
-		r -= r * @countdown / 1000 if @state is 'inactive'
+		if @state is 'inactive'
+			r -= r * @countdown / 1000
 
 		# Draw the body of the mine.
 		ctxt.fillStyle = color @color
 		ctxt.save()
 		ctxt.translate(x, y)
-		for i in [0...div]
+		for i in [0...2]
 			ctxt.beginPath()
-			ctxt.rotate(Math.PI/2/div)
+			ctxt.rotate(Math.PI/4)
 			ctxt.fillRect(-r, -r, r*2, r*2)
 			ctxt.fill()
 		ctxt.restore()
 
 		# Draw the sensor waves when the mine is active.
 		if @state is 'active'
-			t = (new Date).getTime()
-			ctxt.save()
 			ctxt.lineWidth = 2
-			for i in [0..2]
-				animRatio = ((t-i*3333) % 10000) / 10000
-				ctxt.strokeStyle = color(@color, 1 - animRatio)
-				ctxt.beginPath()
-				ctxt.arc(x, y, animRatio * dr, 0, 2*Math.PI, false)
-				ctxt.stroke()
-			ctxt.restore()
+			for i in [0..@waves.length]
+				if @waves[i] > 0
+					ctxt.strokeStyle = color(@color, 1-@waves[i]/@detectionRadius)
+					ctxt.beginPath()
+					ctxt.arc(x, y, @waves[i], 0, 2*Math.PI, false)
+					ctxt.stroke()
+
+				# Step the wave.
+				@waves[i] += 0.3
+				@waves[i] = 0 if @waves[i] > @detectionRadius
 
 	drawExplosion: (ctxt, offset = {x:0, y:0}) ->
 		x = @pos.x + offset.x

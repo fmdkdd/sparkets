@@ -83,7 +83,6 @@ inView = (x, y) ->
 # Not efficient, but we don't have that many objects.
 redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, screen.w, screen.h)
-	ctxt.lineWidth = 4
 	ctxt.lineJoin = 'round'
 
 	# Draw all objects.

@@ -40,6 +40,7 @@ class Ship
 
 		ctxt.strokeStyle = color @color
 		ctxt.fillStyle = color @color, (@firePower-minPower)/(maxPower-minPower)
+		ctxt.lineWidth = 4
 		ctxt.beginPath()
 		ctxt.moveTo x+points[3][0], y+points[3][1]
 		for i in [0..3]
