@@ -51,10 +51,18 @@ class Bullet extends ChangingObject.ChangingObject
 		# Warp the bullet around the map.
 		{w, h} = prefs.server.mapSize
 		warp = off
-		if @pos.x < 0 then @pos.x += w and warp = on
-		if @pos.x > w then @pos.x -= w and warp = on
-		if @pos.y < 0 then @pos.y += h and warp = on
-		if @pos.y > h then @pos.y -= h and warp = on
+		if @pos.x < 0
+			@pos.x += w
+			warp = on
+		if @pos.x > w
+			@pos.x -= w
+			warp = on
+		if @pos.y < 0
+			@pos.y += h
+			warp = on
+		if @pos.y > h
+			@pos.y -= h
+			warp = on
 
 		# Append the warped point again so that the line remains continuous.
 		@points.push [@pos.x, @pos.y] if warp
