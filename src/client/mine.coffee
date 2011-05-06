@@ -1,12 +1,6 @@
 class Mine
 	constructor: (mine) ->
-		@state = mine.state
-		@pos = mine.pos
-		@color = mine.color
-		@modelRadius = mine.modelRadius
-		@detectionRadius = mine.detectionRadius
-		@explosionRadius = mine.explosionRadius
-		@countdown = mine.countdown
+		@update(mine)
 
 	update: (mine) ->
 		for field, val of mine
