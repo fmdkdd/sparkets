@@ -27,7 +27,7 @@ class Bullet extends ChangingObject.ChangingObject
 		@points = [ [@pos.x, @pos.y] ]
 		@lastPoint = [@pos.x, @pos.y]
 
-	step: () ->
+	update: () ->
 		return if @dead
 
 		# Compute new position from acceleration and gravity of all planets.

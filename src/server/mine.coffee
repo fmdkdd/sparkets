@@ -7,13 +7,13 @@ class Mine extends ChangingObject.ChangingObject
 	constructor: (ship, @id) ->
 		super()
 
+		@watchChanges 'pos'
 		@watchChanges 'state'
 		@watchChanges 'color'
 		@watchChanges 'modelRadius'
 		@watchChanges 'detectionRadius'
 		@watchChanges 'explosionRadius'
 		@watchChanges 'countdown'
-		@changed 'pos'
 
 		@state = 'inactive'
 		@playerId = ship.id
@@ -33,7 +33,7 @@ class Mine extends ChangingObject.ChangingObject
 	explode: () ->
 		@state = 'exploding'
 		@countdown = prefs.mine.states[@state].countdown
-		
+
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?
 

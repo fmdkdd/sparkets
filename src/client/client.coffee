@@ -23,7 +23,7 @@ serverShips = {}
 explosions = {}
 planets = []
 bullets = {}
-mines = []
+mines = {}
 
 enableInterpolation = false
 interp_factor = .03
@@ -144,7 +144,7 @@ redraw = (ctxt) ->
 	b.draw ctxt, (i++)/len for idx, b of bullets
 
 	# Draw all mines.
-	m.draw(ctxt) for m in mines
+	m.draw(ctxt) for i,m of mines
 
 	# Draw all planets.
 	p.draw ctxt for p in planets
@@ -255,11 +255,11 @@ drawInfinity = (ctxt) ->
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
-				for m in [0...mines.length]
+				for idx, m of mines
 					offset =
 						x: (j-1)*map.w
 						y: (i-1)*map.h
-					mines[m].draw(ctxt, offset)
+					m.draw(ctxt, offset)
 
 	return true
 
@@ -273,7 +273,7 @@ onMessage = (msg) ->
 	switch msg.type
 
 		# When received bullet data.
-		when 'bullet update'
+		when 'bullets update'
 			for i, bullet of msg.update
 				if not bullets[i]?
 					keys = Object.keys(bullets)
@@ -284,10 +284,11 @@ onMessage = (msg) ->
 				bullets[i].update(bullet.lastPoint)
 
 		# When received mine data.
-		when 'mine update'
-			mines = []
-			for i, m of msg.mines
-				mines.push new Mine m
+		when 'mines update'
+			for i, mine of msg.update
+				if not mines[i]?
+					mines[i] = new Mine(mine)
+				mines[i].update(mine)
 
 		# When received other ship data.
 		when 'ships'
@@ -300,7 +301,7 @@ onMessage = (msg) ->
 			lastUpdate = (new Date).getTime()
 
 		# When received world update.
-		when 'ship update'
+		when 'ships update'
 			for i, s of msg.update
 				if enableInterpolation
 					serverShips[i].update(s)

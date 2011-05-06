@@ -69,12 +69,12 @@ io.on 'clientConnect', (player) ->
 
 	# Send existing mines.
 	player.send
-		type: 'mine update'
+		type: 'mines update'
 		mines: mines
 
 	# Send existing bullets.
 	player.send
-		type: 'bullet update'
+		type: 'bullets update'
 		update: bullets
 
 	# Good news!
@@ -173,56 +173,25 @@ update = () ->
 
 	processInputs id for id of players
 
-	updateBullets()
-	updateMines()
-	updateShips()
+	for name, objects of {bullets, mines, ships}
+		updateObjects(name, objects)
 
 	diff = (new Date).getTime() - start
 	setTimeout(update, prefs.server.timestep - utils.mod(diff, 20))
 
-updateShips = () ->
-	changes = {}
-	for id, ship of ships
-		ship.update()
-		shipChanges = ship.changes()
-		if not utils.isEmptyObject shipChanges
-			changes[id] = shipChanges
-			ship.resetChanges()
+updateObjects = (name, objects) ->
+	allChanges = {}
+	for id, obj of objects
+		obj.update()
+		changes = obj.changes()
+		if not utils.isEmptyObject changes
+			allChanges[id] = changes
+			obj.resetChanges()
 
-	if not utils.isEmptyObject changes
+	if not utils.isEmptyObject allChanges
 		io.broadcast
-			type: 'ship update'
-			update: changes
-
-updateBullets = () ->
-	changes = {}
-
-	for bullet in bullets
-		bullet.step()
-		bulletChanges = bullet.changes()
-		if not utils.isEmptyObject bulletChanges
-			changes[bullet.id] = bulletChanges
-			bullet.resetChanges()
-
-	if not utils.isEmptyObject changes
-		io.broadcast
-			type: 'bullet update'
-			update: changes
-
-updateMines = () ->
-	changes = {}
-
-	for i, mine of mines
-		mine.update()
-		mineChanges = mine.changes()
-		if not utils.isEmptyObject mineChanges
-			changes[mine.id] = mineChanges
-			mine.resetChanges()
-
-	if not utils.isEmptyObject changes
-		io.broadcast
-			type: 'mine update'
-			mines: mines
+			type: "#{name} update"
+			update: allChanges
 
 initPlanets = () ->
 	_planets = []

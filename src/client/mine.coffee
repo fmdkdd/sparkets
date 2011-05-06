@@ -8,6 +8,10 @@ class Mine
 		@explosionRadius = mine.explosionRadius
 		@countdown = mine.countdown
 
+	update: (mine) ->
+		for field, val of mine
+			this[field] = val
+
 	draw: (ctxt, offset) ->
 		if @state is 'inactive' or @state is 'active'
 			@drawMine(ctxt, offset)
