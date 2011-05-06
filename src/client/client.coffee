@@ -98,56 +98,10 @@ centerView = () ->
 		view.y = gameObjects[id].pos.y - screen.h/2
 
 drawRadar = (ctxt) ->
-	ship = ships[id]
-
 	for i, s of ships
 		if i isnt id and not s.isDead()
-			# Select the closest ship among the real one and its ghosts.
-			bestDistance = Infinity
-			for j in [-1..1]
-				for k in [-1..1]
-					x = s.pos.x + j * map.w
-					y = s.pos.y + k * map.h
-					d = distance(ship.pos.x, ship.pos.y, x, y)
-
-					if d < bestDistance
-						bestDistance = d
-						bestPos = {x, y}
-
-			dx = bestPos.x - ship.pos.x
-			dy = bestPos.y - ship.pos.y
-
-			if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
-
-				margin = 20
-				rx = Math.max -screen.w/2 + margin, dx
-				rx = Math.min screen.w/2 - margin, rx
-				ry = Math.max -screen.h/2 + margin, dy
-				ry = Math.min screen.h/2 - margin, ry
-
-				# Choose on which ship we should base the animation. If the two
-				# of them are exploding, focus on the first to die.
-				if s.isExploding() and ship.isExploding()
-					dying = if s.exploFrame > ship.exploFrame then s else ship
-				else if s.isExploding()
-					dying = s
-				else if ship.isExploding()
-					dying = ship
-
-				radius = 10
-				alpha = 1
-
-				if dying?
-					animRatio = dying.exploFrame / maxExploFrame
-					radius -= animRatio * 10
-					alpha -= animRatio
-
-				ctxt.fillStyle = color(s.color, alpha)
-				ctxt.beginPath()
-				ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, radius, 0, 2*Math.PI, false)
-				ctxt.fill()
-
-	return true
+			s.drawOnRadar(ctxt)
+			
 
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?

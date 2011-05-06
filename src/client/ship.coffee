@@ -16,6 +16,9 @@ class Ship
 		else if not @exploding and @explosionBits?
 			delete @explosionBits
 
+	isExploding: () ->
+		return @exploding
+
 	isDead: () ->
 		return @dead
 
@@ -91,3 +94,54 @@ class Ship
 		ctxt.fillStyle = color @color, (maxExploFrame-@exploFrame)/maxExploFrame
 		for b in @explosionBits
 			ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
+
+	drawOnRadar: (ctxt) ->
+		localShip = ships[id]
+
+		# Select the closest ship among the real one and its ghosts.
+		bestDistance = Infinity
+		for j in [-1..1]
+			for k in [-1..1]
+				x = @pos.x + j * map.w
+				y = @pos.y + k * map.h
+				d = distance(localShip.pos.x, localShip.pos.y, x, y)
+
+				if d < bestDistance
+					bestDistance = d
+					bestPos = {x, y}
+
+		dx = bestPos.x - localShip.pos.x
+		dy = bestPos.y - localShip.pos.y
+
+		# Draw the radar if the ship is outside of the screen bounds.
+		if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
+
+			margin = 20
+			rx = Math.max -screen.w/2 + margin, dx
+			rx = Math.min screen.w/2 - margin, rx
+			ry = Math.max -screen.h/2 + margin, dy
+			ry = Math.min screen.h/2 - margin, ry
+
+			# Choose on which ship we should base the animation. If the two
+			# of them are exploding, focus on the first to die.
+			if @isExploding() and localShip.isExploding()
+				dying = if @exploFrame > localShip.exploFrame then @ else localShip
+			else if @isExploding()
+				dying = @
+			else if localShip.isExploding()
+				dying = localShip
+
+			radius = 10
+			alpha = 1
+
+			if dying?
+				animRatio = dying.exploFrame / maxExploFrame
+				radius -= animRatio * 10
+				alpha -= animRatio
+
+			ctxt.fillStyle = color(@color, alpha)
+			ctxt.beginPath()
+			ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, radius, 0, 2*Math.PI, false)
+			ctxt.fill()
+
+		return true
