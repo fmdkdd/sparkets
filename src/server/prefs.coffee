@@ -42,11 +42,11 @@ exports.bonus =
 	modelSize: 20							# Drawing size on client.
 	states:
 		'incoming':
-			countdown: 5000
+			countdown: 10000
 			next: 'active'
 		'active':
 			countdown: null
-			next: null
+			next: 'dead'
 		'dead':
 			countdown: null
 			next: null

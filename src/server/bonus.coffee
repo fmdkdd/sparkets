@@ -9,23 +9,41 @@ class Bonus extends ChangingObject.ChangingObject
 
 		@watchChanges 'type'
 		@watchChanges 'state'
+		@watchChanges 'countdown'
 		@watchChanges 'color'
 		@watchChanges 'modelSize'
 		@changed 'pos'
 
 		@type = 'bonus'
-		@state = 'incoming'
-		@pos =
-			x: Math.random()*prefs.server.mapSize.w
-			y: Math.random()*prefs.server.mapSize.h
-		@color = utils.randomColor()
 		@modelSize = prefs.bonus.modelSize
 
-	update: () ->
-		s = @modelSize
+		@spawn()
 
-		# Check if a ship is touching the bonus.
-		if @state isnt 'dead'
+	spawn: () ->
+		@state = 'incoming'
+		@countdown = prefs.bonus.states[@state].countdown
+
+		@pos =
+			x: Math.random() * prefs.server.mapSize.w
+			y: Math.random() * prefs.server.mapSize.h
+		@color = utils.randomColor()
+
+	nextState: () ->
+		@state = prefs.bonus.states[@state].next
+		@countdown = prefs.bonus.states[@state].countdown
+
+	update: () ->
+		@countdown -= prefs.server.timestep if @countdown?
+
+		# The bonus arrival is imminent!
+		if @state is 'incoming'		
+			@nextState() if @countdown <= 0
+
+		# The bonus is available.
+		else if @state is 'active'
+			
+			# Check if a ship is touching the bonus.
+			s = @modelSize
 			for id, ship of globals.ships
 				if not ship.isDead() and
 						not ship.isExploding() and

@@ -7,7 +7,7 @@ class Bonus
 			@[field] = val
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
-		return if @state is 'dead'
+		return if @state is 'incoming' or @state is 'dead'
 
 		x = @pos.x + offset.x
 		y = @pos.y + offset.y
@@ -51,23 +51,38 @@ class Bonus
 
 		dx = bestPos.x - localShip.pos.x
 		dy = bestPos.y - localShip.pos.y
+		margin = 20
 
-		# Draw the radar if the bonus is outside of the screen bounds.
+		# Draw the radar on the edges of the screen if the bonus is too far.
 		if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
-
-			margin = 20
 			rx = Math.max -screen.w/2 + margin, dx
 			rx = Math.min screen.w/2 - margin, rx
 			ry = Math.max -screen.h/2 + margin, dy
 			ry = Math.min screen.h/2 - margin, ry
 
-			ctxt.fillStyle = color @color
-			ctxt.save()
-			ctxt.translate(screen.w/2 + rx, screen.h/2 + ry)
-			ctxt.rotate(Math.PI/4)
-			ctxt.fillRect(-4, -10, 8, 20)
-			ctxt.rotate(Math.PI/2)
-			ctxt.fillRect(-4, -10, 8, 20)
-			ctxt.restore()
+			# The radar is blinking when the bonus is incoming.
+			if @state is 'active' or
+					@state is 'incoming' and @countdown % 500 < 250
+				@drawRadarSymbol(screen.w/2 + rx, screen.h/2 + ry)
+
+		# Draw the radar on the future bonus position if it is in the screen
+		# bounds and incoming.
+		else if @state is 'incoming' and @countdown % 500 < 250
+			rx = -screen.w/2 + bestPos.x - view.x
+			ry = -screen.h/2 + bestPos.y - view.y
+
+			@drawRadarSymbol(screen.w/2 + rx, screen.h/2 + ry)
+
+		return true
+
+	drawRadarSymbol: (x, y) ->
+		ctxt.fillStyle = color @color
+		ctxt.save()
+		ctxt.translate(x, y)
+		ctxt.rotate(Math.PI/4)
+		ctxt.fillRect(-4, -10, 8, 20)
+		ctxt.rotate(Math.PI/2)
+		ctxt.fillRect(-4, -10, 8, 20)
+		ctxt.restore()
 
 		return true
