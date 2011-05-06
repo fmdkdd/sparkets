@@ -216,7 +216,7 @@ initPlanets = () ->
 				colliding = yes if nearBorder(rock) or collides(p,rock)
 		_planets.push rock
 
-	for i in [0..10]
+	for i in [0..0]
 		spawnBonus()
 
 	return _planets

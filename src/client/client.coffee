@@ -19,6 +19,7 @@ bulletFrameStay = 4
 
 id = null
 ships = {}
+bonuses = {}
 
 gameObjects = {}
 
@@ -101,7 +102,10 @@ drawRadar = (ctxt) ->
 	for i, s of ships
 		if i isnt id and not s.isDead()
 			s.drawOnRadar(ctxt)
-			
+
+	for i, b of bonuses
+		if b.state isnt 'dead'
+			b.drawOnRadar(ctxt)
 
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
@@ -140,7 +144,7 @@ newObject = (i, type, obj) ->
 		when 'mine'
 			new Mine(obj)
 		when 'bonus'
-			new Bonus(obj)
+			bonuses[i] = new Bonus(obj)
 		when 'planet'
 			new Planet(obj)
 
