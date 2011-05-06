@@ -10,7 +10,7 @@ class Bullet
 
 		@points.push @lastPoint
 
-	draw: (ctxt, alpha, offset = {x: 0, y: 0}) ->
+	draw: (ctxt, offset = {x: 0, y: 0}) ->
 		return if @points.length is 0
 
 		p = @points
