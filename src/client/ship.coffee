@@ -2,29 +2,30 @@ class Ship
 	constructor: (ship) ->
 		@update(ship)
 
+		@explosionBits = null
+
 	update: (ship) ->
 		for field, val of ship
 			@[field] = val
 
-		if @isExploding()
-			@explode() if not explosions[@id]?
-			@updateExplosion()
-		else if @isDead() and explosions[@id]?
-			delete explosions[@id]
-
-	isExploding: () ->
-		return @exploding
+		# Start the explosion animation if the ship just exploded.
+		if @exploding
+			@explode() if not @explosionBits?
+			@stepExplosion()
+		# Reset the explosion bits if the ship respawned.
+		else if not @exploding and @explosionBits?
+			delete @explosionBits
 
 	isDead: () ->
 		return @dead
 
 	draw: (ctxt, offset) ->
-		if @isDead()
+		if @dead
 			return
-		else if @isExploding()
-			@drawExplosion ctxt, offset
+		else if @exploding
+			@drawExplosion(ctxt, offset)
 		else
-			@drawShip ctxt, offset
+			@drawShip(ctxt, offset)
 
 	drawShip: (ctxt, offset = {x: 0, y: 0}) ->
 		x = @pos.x - view.x + offset.x
@@ -63,8 +64,7 @@ class Ship
 			ctxt.lineWidth = 4
 
 	explode: () ->
-		@exploding = on
-		explosions[@id] = []
+		@explosionBits = []
 
 		vel = Math.max @vel.x, @vel.y
 		for i in [0..200]
@@ -77,10 +77,10 @@ class Ship
 			angle = Math.atan2(particle.vy, particle.vx)
 			particle.vx *= Math.abs(Math.cos angle)
 			particle.vy *= Math.abs(Math.sin angle)
-			explosions[@id].push particle
+			@explosionBits.push particle
 
-	updateExplosion: () ->
-		for b in explosions[@id]
+	stepExplosion: () ->
+		for b in @explosionBits
 			b.x += b.vx + (-1 + 2*Math.random())/1.5
 			b.y += b.vy + (-1 + 2*Math.random())/1.5
 
@@ -89,5 +89,5 @@ class Ship
 		oy = -view.y + offset.y
 
 		ctxt.fillStyle = color @color, (maxExploFrame-@exploFrame)/maxExploFrame
-		for b in explosions[@id]
+		for b in @explosionBits
 			ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size

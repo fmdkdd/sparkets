@@ -19,7 +19,6 @@ bulletFrameStay = 4
 
 id = null
 ships = {}
-explosions = {}
 
 gameObjects = {}
 
