@@ -115,7 +115,7 @@ drawRadar = (ctxt) ->
 	for i, s of ships
 		if i isnt id and not s.isDead()
 			# Select the closest ship among the real one and its ghosts.
-			bestDistance = 999999
+			bestDistance = Infinity
 			for j in [-1..1]
 				for k in [-1..1]
 					x = s.pos.x + j * map.w
