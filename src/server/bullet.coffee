@@ -77,7 +77,7 @@ class Bullet extends ChangingObject.ChangingObject
 		if warp
 			@points.push [@pos.x, @pos.y]
 			@lastPoints.push  [@pos.x, @pos.y]
-	
+
 	update: () ->
 		switch @state
 			# Seek and destroy.
@@ -104,7 +104,7 @@ class Bullet extends ChangingObject.ChangingObject
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
 		# Check collisions on the line between the two latest points.
 		[Ax, Ay] = @points[@points.length-2]
-		[Bx, By] = @lastPoint
+		[Bx, By] = @points[@points.length-1]
 
 		[ABx, ABy] = [Bx-Ax, By-Ay]
 		steps = utils.distance(Ax, Ay, Bx, By) / prefs.bullet.checkWidth
