@@ -3,7 +3,6 @@ o [merwan] Display engine fire trail when a ship is moving.
 
 * Animate weapon cooldown.
    Fade out the ship fill color when cooling down.
-
 * Add afterburner.
    Instant speed-up to escape pursuers, harder to control. Comes with a
    cool graphic effect of course.

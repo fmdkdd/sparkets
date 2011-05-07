@@ -48,8 +48,13 @@ class Ship
 			strokeCircle(ctxt, x, y, @hitRadius)
 
 		ctxt.strokeStyle = color @color
-		ctxt.fillStyle = color @color, (@firePower-minPower)/(maxPower-minPower)
+		
+		if @cannonHeat > 0
+			fillAlpha = @cannonHeat/cannonCooldown
+		else if @firePower > 0
+			fillAlpha = (@firePower-minPower)/(maxPower-minPower)
 
+		ctxt.fillStyle = color(@color, fillAlpha)
 		ctxt.lineWidth = 4
 		ctxt.beginPath()
 		ctxt.moveTo x+points[3][0], y+points[3][1]

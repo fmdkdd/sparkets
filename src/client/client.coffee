@@ -16,6 +16,7 @@ minPower = 1.3
 maxPower = 3
 maxExploFrame = 50
 maxBullets = 10
+cannonCooldown = 20
 
 id = null
 ships = {}
