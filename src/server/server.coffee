@@ -44,29 +44,29 @@ io = io.listen server
 
 io.on 'clientConnect', (player) ->
 	# Send list of connected players.
-	for id of players
+	for id of exports.players
 		player.send
 			type: 'player list'
 			playerId: id
 
 	# Add new player to player list.
 	id = player.sessionId
-	players[id] =
+	exports.players[id] =
 		id: id
 		keys: {}
 
 	# Create ship.
-	gameObjects[id] = ships[id] = new Ship.Ship id
+	exports.gameObjects[id] = exports.ships[id] = new Ship.Ship id
 
 	# Send the playfield.
 	player.send
 		type: 'objects update'
-		objects: planets
+		objects: exports.planets
 
 	# Send other game objects.
 	player.send
 		type: 'objects update'
-		objects: gameObjects
+		objects: exports.gameObjects
 
 	# Good news!
 	player.send
@@ -81,8 +81,8 @@ io.on 'clientMessage', (msg, player) ->
 io.on 'clientDisconnect', (player) ->
 	# Purge from list.
 	id = player.sessionId
-	delete players[id]
-	deleteObject(id, ships[id])
+	delete exports.players[id]
+	deleteObject(id, exports.ships[id])
 
 	# Tell everyone.
 	player.broadcast
@@ -97,44 +97,44 @@ console.log "Server started"
 
 # Globals
 
-now = 0
+exports.now = 0
 
-players = {}
+exports.players = {}
 
-ships = {}
-bullets = {}
-mines = {}
-bonuses = {}
-planets = {}
+exports.ships = {}
+exports.bullets = {}
+exports.mines = {}
+exports.bonuses = {}
+exports.planets = {}
 
-gameObjects = {}
-gameObjectCount = 0
+exports.gameObjects = {}
+exports.gameObjectCount = 0
 
 # Input processing
 
 processKeyDown = (id, key) ->
-	players[id].keys[key] = on
+	exports.players[id].keys[key] = on
 
 processKeyUp = (id, key) ->
-	players[id].keys[key] = off
+	exports.players[id].keys[key] = off
 
 	# Fire the bullet or respawn if the spacebar is released.
 	if key is 32 or key is 65
-		if ships[id].isDead()
-			ships[id].spawn()
+		if exports.ships[id].isDead()
+			exports.ships[id].spawn()
 		else
-			ships[id].fire()
+			exports.ships[id].fire()
 
 	if key is 38
-		ships[id].thrust = false
+		exports.ships[id].thrust = false
 
 	# Z : drop a mine.
-	if key is 90 and ships[id].mines > 0
-		ships[id].dropMine()
+	if key is 90 and exports.ships[id].mines > 0
+		exports.ships[id].dropMine()
 
 processInputs = (id) ->
-	keys = players[id].keys
-	ship = ships[id]
+	keys = exports.players[id].keys
+	ship = exports.ships[id]
 
 	if not ship? then return
 
@@ -160,9 +160,9 @@ processInputs = (id) ->
 update = () ->
 	start = now = (new Date).getTime()
 
-	processInputs id for id of players
+	processInputs id for id of exports.players
 
-	updateObjects(gameObjects)
+	updateObjects(exports.gameObjects)
 
 	diff = (new Date).getTime() - start
 	setTimeout(update, prefs.server.timestep - utils.mod(diff, 20))
@@ -172,7 +172,7 @@ updateObjects = (objects) ->
 	obj.move() for id, obj of objects
 
 	# Check collisions with planets
-	for i, planet of planets
+	for i, planet of exports.planets
 		for j, obj of objects
 			if obj.collidesWith(planet)
 				obj.collisions.push(planet)
@@ -211,19 +211,19 @@ updateObjects = (objects) ->
 deleteObject = (id, obj) ->
 	switch obj.type
 		when 'bonus'
-			delete bonuses[id]
+			delete exports.bonuses[id]
 		when 'bullet'
-			delete bullets[id]
+			delete exports.bullets[id]
 		when 'mine'
-			delete mines[id]
+			delete exports.mines[id]
 		when 'planet'
-			delete planets[id]
+			delete exports.planets[id]
 		when 'ship'
-			delete ships[id]
-	delete gameObjects[id]
+			delete exports.ships[id]
+	delete exports.gameObjects[id]
 
 initPlanets = () ->
-	_planets = []
+	planets = []
 
 	collides = (p1, p2) ->
 		(utils.distance(p1.pos.x, p1.pos.y,
@@ -243,38 +243,26 @@ initPlanets = () ->
 				Math.random()*2000,
 				50+Math.random()*50)
 			colliding = no
-			for p in _planets
+			for p in planets
 				colliding = yes if nearBorder(rock) or collides(p,rock)
-		_planets.push rock
+		planets.push rock
 
-	return _planets
+	return planets
 
 spawnBonus = () ->
 	id = exports.gameObjectCount++
-	gameObjects[id] = bonuses[id] = new Bonus.Bonus(id)
+	exports.gameObjects[id] = exports.bonuses[id] = new Bonus.Bonus(id)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch the game loop once everything is defined.
 
 launch = () ->
 	for p in initPlanets()
-		id = gameObjectCount++
-		planets[id] = p
+		id = exports.gameObjectCount++
+		exports.planets[id] = p
 
 	spawnBonus()
 	setInterval(spawnBonus, prefs.server.bonusWait)
-
-	# Exports
-
-	exports.now = now
-
-	exports.ships = ships
-	exports.bullets = bullets
-	exports.mines = mines
-	exports.bonuses = bonuses
-	exports.planets = planets
-	exports.gameObjects = gameObjects
-	exports.gameObjectCount = gameObjectCount
 
 	update()
 
