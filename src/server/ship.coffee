@@ -95,9 +95,6 @@ class Ship extends ChangingObject.ChangingObject
 		not @dead and not @exploding and
 			utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
-	collided: () ->
-		@collidedWith 'ship', 'planet', 'bullet', 'mine'
-
 	isExploding: () ->
 		@exploding
 
@@ -111,7 +108,7 @@ class Ship extends ChangingObject.ChangingObject
 			@updateExplosion()
 		else
 			--@cannonHeat if @cannonHeat > 0
-			@explode() if @collided()
+			@explode() if @collidedWith 'ship', 'planet', 'bullet', 'mine'
 			++@mines if @collidedWith 'bonus'
 
 	fire : () ->

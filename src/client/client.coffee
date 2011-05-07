@@ -9,13 +9,13 @@ map = {w: 2000, h: 2000}
 view = {x: 0, y: 0}
 
 planetColor = '127, 157, 185'
+maxBulletLength = 15
 
 # Game logic
 minPower = 1.3
 maxPower = 3
 maxExploFrame = 50
 maxBullets = 10
-bulletFrameStay = 4
 
 id = null
 ships = {}

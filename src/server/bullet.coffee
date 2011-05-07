@@ -12,6 +12,7 @@ class Bullet extends ChangingObject.ChangingObject
 		@watchChanges 'hitRadius'
 		@watchChanges 'points'
 		@watchChanges 'lastPoint'
+		@watchChanges 'tailTrim'
 
 		@type = 'bullet'
 
@@ -25,8 +26,8 @@ class Bullet extends ChangingObject.ChangingObject
 		@accel =
 			x: @owner.vel.x + @power*xdir
 			y: @owner.vel.y + @power*ydir
-		@dead = false
 
+		@state = 'active'
 		@hitRadius = prefs.bullet.hitRadius
 		@collisions = []
 
@@ -35,6 +36,8 @@ class Bullet extends ChangingObject.ChangingObject
 		@lastPoint = [@pos.x, @pos.y]
 
 	move: () ->
+		return if @state isnt 'active'
+
 		# Compute new position from acceleration and gravity of all planets.
 		{x, y} = @pos
 		{x: ax, y: ay} = @accel
@@ -74,12 +77,17 @@ class Bullet extends ChangingObject.ChangingObject
 		@points.push [@pos.x, @pos.y] if warp
 
 	update: () ->
-		@dead = @deleteMe = @collided()
+		switch @state
+			# Seek and destroy.
+			when 'active'
+				@state = 'dead' if @collidedWith 'ship', 'planet'
+
+			# No points left, disappear.
+			when 'dead'
+				@tailTrim = yes
+				@deleteMe = yes
 
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
-		not @dead and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
-
-	collided: () ->
-		@collidedWith 'ship', 'planet'
+		@state is 'active' and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 exports.Bullet = Bullet

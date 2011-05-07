@@ -2,8 +2,6 @@ class Bullet
 	constructor: (bullet) ->
 		@update(bullet)
 
-		@frameSinceShift = 0
-
 	update: (bullet) ->
 		for field, val of bullet
 			@[field] = val
@@ -37,6 +35,4 @@ class Bullet
 			ctxt.beginPath()
 			ctxt.moveTo x, y
 
-		if ++@frameSinceShift == bulletFrameStay
-			@points.shift()
-			@frameSinceShift = 0
+		@points.shift() if @tailTrim or @points.length > maxBulletLength
