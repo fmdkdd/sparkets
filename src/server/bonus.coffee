@@ -36,21 +36,22 @@ class Bonus extends ChangingObject.ChangingObject
 		@countdown -= prefs.server.timestep if @countdown?
 
 		# The bonus arrival is imminent!
-		if @state is 'incoming'
-			@nextState() if @countdown <= 0
+		switch @state
+			when 'incoming'
+				@nextState() if @countdown <= 0
 
 		# The bonus is available.
-		else if @state is 'active'
+			when 'active'
 
-			# Check if a ship is touching the bonus.
-			s = @modelSize
-			for id, ship of globals.ships
-				if not ship.isDead() and
-						not ship.isExploding() and
-						-s < @pos.x - ship.pos.x < s and
-						-s < @pos.y - ship.pos.y < s
-					++ship.mines
-					@state = 'dead'
-					@deleteMe = yes
+				# Check if a ship is touching the bonus.
+				s = @modelSize
+				for id, ship of globals.ships
+					if not ship.isDead() and
+							not ship.isExploding() and
+							-s < @pos.x - ship.pos.x < s and
+							-s < @pos.y - ship.pos.y < s
+						++ship.mines
+						@state = 'dead'
+						@deleteMe = yes
 
 exports.Bonus = Bonus

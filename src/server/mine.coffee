@@ -40,47 +40,48 @@ class Mine extends ChangingObject.ChangingObject
 		@countdown -= prefs.server.timestep if @countdown?
 
 		# The mine is not yet activated.
-		if @state is 'inactive'
-			@nextState() if @countdown <= 0
+		switch @state
+			when 'inactive'
+				@nextState() if @countdown <= 0
 
 		# The mine is ready.
-		else if @state is 'active'
-			r = @detectionRadius
+			when 'active'
+				r = @detectionRadius
 
-			for id, ship of globals.ships
-				if not ship.isDead() and
-						not ship.isExploding() and
-						-r < @pos.x - ship.pos.x < r and
-						-r < @pos.y - ship.pos.y < r
-					@nextState()
+				for id, ship of globals.ships
+					if not ship.isDead() and
+							not ship.isExploding() and
+							-r < @pos.x - ship.pos.x < r and
+							-r < @pos.y - ship.pos.y < r
+						@nextState()
 
-			for id, bullet of globals.bullets
-				if not bullet.dead and
-						-r < @pos.x - bullet.pos.x < r and
-						-r < @pos.y - bullet.pos.y < r
-					@nextState()
+				for id, bullet of globals.bullets
+					if not bullet.dead and
+							-r < @pos.x - bullet.pos.x < r and
+							-r < @pos.y - bullet.pos.y < r
+						@nextState()
 
-		# The mine is exploding.
-		else if @state is 'exploding'
-			@nextState() if @countdown <= 0
+			# The mine is exploding.
+			when 'exploding'
+				@nextState() if @countdown <= 0
 
-			r = @explosionRadius
+				r = @explosionRadius
 
-			for id, ship of globals.ships
-				if not ship.isDead() and
-						not ship.isExploding() and
-						-r < @pos.x - ship.pos.x < r and
-						-r < @pos.y - ship.pos.y < r
-					ship.explode()
+				for id, ship of globals.ships
+					if not ship.isDead() and
+							not ship.isExploding() and
+							-r < @pos.x - ship.pos.x < r and
+							-r < @pos.y - ship.pos.y < r
+						ship.explode()
 
-			for id, mine of globals.mines
-				if mine.id isnt @id and mine.state is 'active'
-					radii = @explosionRadius + mine.detectionRadius
-					dist = utils.distance(@pos.x, @pos.y, mine.pos.x, mine.pos.y)
-					mine.explode() if dist < radii
+				for id, mine of globals.mines
+					if mine.id isnt @id and mine.state is 'active'
+						radii = @explosionRadius + mine.detectionRadius
+						dist = utils.distance(@pos.x, @pos.y, mine.pos.x, mine.pos.y)
+						mine.explode() if dist < radii
 
-		# The explosion is over.
-		else if @state is 'dead'
-			@deleteMe = yes
+			# The explosion is over.
+			when 'dead'
+				@deleteMe = yes
 
 exports.Mine = Mine
