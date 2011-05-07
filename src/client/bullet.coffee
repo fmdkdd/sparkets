@@ -36,4 +36,9 @@ class Bullet
 			ctxt.beginPath()
 			ctxt.moveTo x, y
 
+		if showHitCircles
+			ctxt.strokeStyle = 'red'
+			ctxt.lineWidth = 1
+			strokeCircle(ctxt, x, y, @hitRadius)
+
 		@points.shift() if @tailTrim or @points.length > maxBulletLength

@@ -23,7 +23,7 @@ exports.server =
 	bonusWait: 30000				  # ms before a bonus drop.
 
 exports.bullet =
-	hitRadius: 4					  # Radius of hit circle.
+	hitRadius: 2					  # Radius of hit circle.
 	gravityPull: 200				  # Gravity pull factor.
 	tailLength: 15					  # Bullet points to keep on server.
 
