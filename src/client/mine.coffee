@@ -29,6 +29,11 @@ class Mine
 		x -= view.x
 		y -= view.y
 
+		if showHitCircles
+			ctxt.strokeStyle = 'red'
+			ctxt.lineWidth = 1
+			strokeCircle(ctxt, x, y, dr)
+
 		# Make the mine grow during the activation process.
 		if @state is 'inactive'
 			r -= r * @countdown / 1000
@@ -71,6 +76,11 @@ class Mine
 
 		x -= view.x
 		y -= view.y
+
+		if showHitCircles
+			ctxt.strokeStyle = 'red'
+			ctxt.lineWidth = 1
+			strokeCircle(ctxt, x, y, r)
 
 		ctxt.fillStyle = color(@color, a)
 		ctxt.beginPath()

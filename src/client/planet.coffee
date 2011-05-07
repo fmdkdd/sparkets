@@ -1,6 +1,7 @@
 class Planet
 	constructor: (planet) ->
 		@pos = planet.pos
+		@hitRadius = planet.hitRadius
 		@force = planet.force
 
 	draw: (ctxt, offset = {x: 0, y: 0}) ->
@@ -17,6 +18,11 @@ class Planet
 
 		x = px - view.x
 		y = py - view.y
+
+		if showHitCircles
+			ctxt.strokeStyle = 'red'
+			ctxt.lineWidth = 1
+			strokeCircle(ctxt, x, y, @hitRadius)
 
 		ctxt.strokeStyle = color planetColor
 		ctxt.fillStyle = color planetColor

@@ -42,8 +42,14 @@ class Ship
 		for i, p of points
 			points[i] = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
 
+		if showHitCircles
+			ctxt.strokeStyle = 'red'
+			ctxt.lineWidth = 1
+			strokeCircle(ctxt, x, y, @hitRadius)
+
 		ctxt.strokeStyle = color @color
 		ctxt.fillStyle = color @color, (@firePower-minPower)/(maxPower-minPower)
+
 		ctxt.lineWidth = 4
 		ctxt.beginPath()
 		ctxt.moveTo x+points[3][0], y+points[3][1]

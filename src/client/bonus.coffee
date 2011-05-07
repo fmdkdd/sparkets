@@ -23,6 +23,11 @@ class Bonus
 		x -= view.x
 		y -= view.y
 
+		if showHitCircles
+			ctxt.strokeStyle = 'red'
+			ctxt.lineWidth = 1
+			strokeCircle(ctxt, x, y, @hitRadius)
+
 		ctxt.fillStyle = color @color
 		ctxt.strokeStyle = color @color
 		ctxt.lineWidth = 2

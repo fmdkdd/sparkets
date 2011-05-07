@@ -36,3 +36,9 @@ exports.randomColor = () ->
 	Math.round(70 + Math.random()*150) +
 		',' + Math.round(70 + Math.random()*150) +
 		',' + Math.round(70 + Math.random()*150)
+
+# Stroke circle.
+exports.strokeCircle = (ctxt, x, y, r) ->
+	ctxt.beginPath()
+	ctxt.arc(x, y, r, 2*Math.PI, false)
+	ctxt.stroke()

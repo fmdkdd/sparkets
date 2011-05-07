@@ -25,6 +25,9 @@ gameObjects = {}
 
 keys = {}
 
+# Debugging
+showHitCircles = no
+
 # Entry point
 $(document).ready (event) ->
 	# Connect to server and set callbacks.
@@ -147,6 +150,14 @@ newObject = (i, type, obj) ->
 			bonuses[i] = new Bonus(obj)
 		when 'planet'
 			new Planet(obj)
+
+deleteObject = (i, type) ->
+	switch type
+		when 'ship'
+			delete ships[i]
+		when 'bonus'
+			delete bonuses[i]
+	delete gameObjects[i]
 
 onMessage = (msg) ->
 	switch msg.type
