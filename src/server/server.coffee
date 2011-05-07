@@ -56,7 +56,7 @@ io.on 'clientConnect', (player) ->
 		keys: {}
 
 	# Create ship.
-	ships[id] = new Ship.Ship id
+	gameObjects[id] = ships[id] = new Ship.Ship id
 
 	# Send the playfield.
 	player.send
@@ -67,9 +67,6 @@ io.on 'clientConnect', (player) ->
 	player.send
 		type: 'objects update'
 		objects: gameObjects
-
-	# Add ship to game objects.
-	gameObjects[id] = ships[id]
 
 	# Good news!
 	player.send
