@@ -25,6 +25,7 @@ exports.server =
 exports.bullet =
 	hitRadius: 4					  # Radius of hit circle.
 	gravityPull: 200				  # Gravity pull factor.
+	tailLength: 15					  # Bullet points to keep on server.
 
 exports.mine =
 	modelRadius: 5						# Drawing size on client.

@@ -81,6 +81,7 @@ class Bullet extends ChangingObject.ChangingObject
 			# Seek and destroy.
 			when 'active'
 				@state = 'dead' if @collidedWith 'ship', 'planet'
+				@points.shift() if @points.length > prefs.bullet.tailLength
 
 			# No points left, disappear.
 			when 'dead'
