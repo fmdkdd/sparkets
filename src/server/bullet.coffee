@@ -106,12 +106,6 @@ class Bullet extends ChangingObject.ChangingObject
 		[Ax, Ay] = if @warp then @points[@points.length-3] else @points[@points.length-2]
 		[Bx, By] = if @warp then @points[@points.length-2] else @points[@points.length-1]
 
-		[ABx, ABy] = [Bx-Ax, By-Ay]
-		steps = utils.distance(Ax, Ay, Bx, By) / prefs.bullet.checkWidth
-
-		for i in [0..steps]
-			alpha = i/steps
-			return true if utils.distance(Ax + alpha*ABx, Ay + alpha*ABy, x, y) < @hitRadius + hitRadius
-		return false
+		return utils.lineInterCircle(Ax,Ay, Bx,By, @hitRadius, x,y,hitRadius, prefs.bullet.checkWidth)?
 
 exports.Bullet = Bullet

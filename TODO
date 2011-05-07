@@ -1,5 +1,4 @@
-o [merwan] Display engine fire trail when a ship is moving.
-   Or rather, display engine fires in a vector drawing fashion.
+* Fade in and fade out engine fire.
 
 * Add afterburner.
    Instant speed-up to escape pursuers, harder to control. Comes with a

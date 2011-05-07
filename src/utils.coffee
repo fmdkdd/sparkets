@@ -21,6 +21,17 @@ exports.color = (rgb, alpha = 1.0) ->
 exports.distance = (x1, y1, x2, y2) ->
 	Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
 
+# Return intersection point between line AB and circle (Cx,Cy,Cr).
+exports.lineInterCircle = (Ax,Ay, Bx,By, r, Cx,Cy,Cr, gap) ->
+	[ABx, ABy] = [Bx-Ax, By-Ay]
+	steps = exports.distance(Ax, Ay, Bx, By) / gap
+
+	for i in [0..steps]
+		alpha = i/steps
+		[Dx, Dy] = [Ax + alpha*ABx, Ay + alpha*ABy]
+		return [Dx, Dy] if exports.distance(Dx, Dy, Cx, Cy) < r + Cr
+	return null
+
 # From jQuery
 exports.isEmptyObject = (obj) ->
 	for p of obj
