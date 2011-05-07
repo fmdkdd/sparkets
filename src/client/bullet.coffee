@@ -5,8 +5,9 @@ class Bullet
 	update: (bullet) ->
 		for field, val of bullet
 			@[field] = val
-
-		@points.push @lastPoint
+	
+		for p in @lastPoints
+			@points.push p
 
 	draw: (ctxt, offset = {x: 0, y: 0}) ->
 		return if @points.length is 0

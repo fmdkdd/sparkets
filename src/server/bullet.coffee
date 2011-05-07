@@ -11,7 +11,7 @@ class Bullet extends ChangingObject.ChangingObject
 		@watchChanges 'color'
 		@watchChanges 'hitRadius'
 		@watchChanges 'points'
-		@watchChanges 'lastPoint'
+		@watchChanges 'lastPoints'
 		@watchChanges 'tailTrim'
 
 		@type = 'bullet'
@@ -33,7 +33,7 @@ class Bullet extends ChangingObject.ChangingObject
 
 		@color = owner.color
 		@points = [ [@pos.x, @pos.y] ]
-		@lastPoint = [@pos.x, @pos.y]
+		@lastPoints = [ [@pos.x, @pos.y] ]
 
 	move: () ->
 		return if @state isnt 'active'
@@ -55,7 +55,7 @@ class Bullet extends ChangingObject.ChangingObject
 		@accel.y = ay
 
 		@points.push [@pos.x, @pos.y]
-		@lastPoint = [@pos.x, @pos.y]
+		@lastPoints = [ [@pos.x, @pos.y] ]
 
 		# Warp the bullet around the map.
 		{w, h} = prefs.server.mapSize
@@ -74,8 +74,10 @@ class Bullet extends ChangingObject.ChangingObject
 			warp = on
 
 		# Append the warped point again so that the line remains continuous.
-		@points.push [@pos.x, @pos.y] if warp
-
+		if warp
+			@points.push [@pos.x, @pos.y]
+			@lastPoints.push  [@pos.x, @pos.y]
+	
 	update: () ->
 		switch @state
 			# Seek and destroy.
