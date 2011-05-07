@@ -12,7 +12,7 @@ class Bonus extends ChangingObject.ChangingObject
 		@watchChanges 'countdown'
 		@watchChanges 'color'
 		@watchChanges 'modelSize'
-		@changed 'pos'
+		@watchChanges 'pos'
 
 		@type = 'bonus'
 		@modelSize = prefs.bonus.modelSize
@@ -36,12 +36,12 @@ class Bonus extends ChangingObject.ChangingObject
 		@countdown -= prefs.server.timestep if @countdown?
 
 		# The bonus arrival is imminent!
-		if @state is 'incoming'		
+		if @state is 'incoming'
 			@nextState() if @countdown <= 0
 
 		# The bonus is available.
 		else if @state is 'active'
-			
+
 			# Check if a ship is touching the bonus.
 			s = @modelSize
 			for id, ship of globals.ships
@@ -51,5 +51,6 @@ class Bonus extends ChangingObject.ChangingObject
 						-s < @pos.y - ship.pos.y < s
 					++ship.mines
 					@state = 'dead'
+					@deleteMe = yes
 
 exports.Bonus = Bonus

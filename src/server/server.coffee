@@ -85,8 +85,7 @@ io.on 'clientDisconnect', (player) ->
 	# Purge from list.
 	id = player.sessionId
 	delete players[id]
-	delete ships[id]
-	delete gameObjects[id]
+	deleteObject(id, ships[id])
 
 	# Tell everyone.
 	player.broadcast
@@ -171,25 +170,41 @@ update = () ->
 	diff = (new Date).getTime() - start
 	setTimeout(update, prefs.server.timestep - utils.mod(diff, 20))
 
-collectChanges = (objects, reset = no) ->
+updateObjects = (objects) ->
 	allChanges = {}
+
 	for id, obj of objects
+		# Let object update
+		obj.update()
+
+		# Register its changes
 		changes = obj.changes()
 		if not utils.isEmptyObject changes
 			allChanges[id] = changes
-			obj.resetChanges() if reset
+			obj.resetChanges()
 
-	return allChanges
+		# Delete if requested
+		deleteObject(id, obj) if obj.deleteMe
 
-updateObjects = (objects) ->
-	obj.update() for id, obj of objects
-
-	changes = collectChanges(objects, yes)
-
-	if not utils.isEmptyObject changes
+	# Broadcast changes to all players.
+	if not utils.isEmptyObject allChanges
 		io.broadcast
 			type: 'objects update'
-			objects: changes
+			objects: allChanges
+
+deleteObject = (id, obj) ->
+	switch obj.type
+		when 'bonus'
+			delete bonuses[id]
+		when 'bullet'
+			delete bullets[id]
+		when 'mine'
+			delete mines[id]
+		when 'planet'
+			delete planets[id]
+		when 'ship'
+			delete ships[id]
+	delete gameObjects[id]
 
 initPlanets = () ->
 	_planets = []

@@ -81,7 +81,6 @@ class Mine extends ChangingObject.ChangingObject
 
 		# The explosion is over.
 		else if @state is 'dead'
-			delete globals.mines[@id]
-			delete globals.gameObjects[@id]
+			@deleteMe = yes
 
 exports.Mine = Mine

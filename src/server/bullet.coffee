@@ -31,11 +31,6 @@ class Bullet extends ChangingObject.ChangingObject
 		@lastPoint = [@pos.x, @pos.y]
 
 	update: () ->
-		if @dead
-			delete globals.bullets[@id]
-			delete globals.gameObjects[@id]
-			return
-
 		# Compute new position from acceleration and gravity of all planets.
 		{x, y} = @pos
 		{x: ax, y: ay} = @accel
@@ -73,7 +68,7 @@ class Bullet extends ChangingObject.ChangingObject
 		# Append the warped point again so that the line remains continuous.
 		@points.push [@pos.x, @pos.y] if warp
 
-		@dead = @collides()
+		@dead = @deleteMe = @collides()
 
 	collides : () ->
 		@collidesWithPlanet()
