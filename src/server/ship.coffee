@@ -12,6 +12,7 @@ class Ship extends ChangingObject.ChangingObject
 		@watchChanges(
 			'type',
 			'color',
+			'hitRadius',
 			'pos',
 			'vel',
 			'dir',
@@ -24,6 +25,7 @@ class Ship extends ChangingObject.ChangingObject
 
 		@type = 'ship'
 		@color = utils.randomColor()
+		@hitRadius = prefs.ship.hitRadius
 
 		@spawn()
 
@@ -40,17 +42,21 @@ class Ship extends ChangingObject.ChangingObject
 		@cannonHeat = 0
 		@mines = 0
 		@dead = false
+		@exploding = false
 		@exploFrame = 0
+		@collisions = []
 
 		@spawn() if @collidesWithPlanet()
 
 	move: () ->
+		return if @isDead() or @isExploding()
+
 		{x, y} = @pos
 
 		if prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
-			for p in globals.planets
+			for id, p of globals.planets
 				d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 				d2 = 20 * p.force / (d * Math.sqrt(d))
 				ax -= (x-p.pos.x) * d2
@@ -80,43 +86,17 @@ class Ship extends ChangingObject.ChangingObject
 			@changed 'pos'
 			@changed 'vel'
 
-	collides: () ->
-		@collidesWithOtherShip() or
-			@collidesWithBullet() or
-			@collidesWithPlanet()
-
-	collidesWithOtherShip: () ->
-		for id, ship of globals.ships
-			if @id isnt ship.id and
-					not ship.isDead() and
-					not ship.isExploding() and
-					-10 < @pos.x - ship.pos.x < 10 and
-					-10 < @pos.y - ship.pos.y < 10
-				ship.explode()
-				return true
-
-		return false
-
 	collidesWithPlanet: () ->
-		{x, y} = @pos
-
-		for id, p of globals.planets
-			{x: px, y: py} = p.pos
-			return true if utils.distance(px, py, x, y) < p.force
-
+		for id, planet of globals.planets
+			return true if @.collidesWith(planet)
 		return false
 
-	collidesWithBullet: () ->
-		{x, y} = @pos
+	collidesWith: ({pos: {x,y}, hitRadius}) ->
+		not @dead and not @exploding and
+			utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
-		for id, bullet of globals.bullets
-			if not bullet.dead and
-					-10 < x - bullet.pos.x < 10 and
-					-10 < y - bullet.pos.y < 10
-				bullet.dead = true
-				return true
-
-		return false
+	collided: () ->
+		@collidedWith 'ship', 'planet', 'bullet', 'mine'
 
 	isExploding: () ->
 		@exploding
@@ -131,8 +111,8 @@ class Ship extends ChangingObject.ChangingObject
 			@updateExplosion()
 		else
 			--@cannonHeat if @cannonHeat > 0
-			@move()
-			@explode() if @collides()
+			@explode() if @collided()
+			++@mines if @collidedWith 'bonus'
 
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0

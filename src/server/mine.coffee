@@ -28,6 +28,13 @@ class Mine extends ChangingObject.ChangingObject
 		@explosionRadius = prefs.mine.explosionRadius
 		@countdown = prefs.mine.states[@state].countdown
 
+		@hitRadius = 0
+		@collisions = []
+
+	collidesWith: ({pos: {x,y}, hitRadius}) ->
+		@state isnt 'inactive' and @state isnt 'dead' and
+			utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
+
 	nextState: () ->
 		@state = prefs.mine.states[@state].next
 		@countdown = prefs.mine.states[@state].countdown
@@ -35,6 +42,9 @@ class Mine extends ChangingObject.ChangingObject
 	explode: () ->
 		@state = 'exploding'
 		@countdown = prefs.mine.states[@state].countdown
+
+	move: () ->
+		true
 
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?
@@ -44,41 +54,19 @@ class Mine extends ChangingObject.ChangingObject
 			when 'inactive'
 				@nextState() if @countdown <= 0
 
-		# The mine is ready.
+			# The mine is ready.
 			when 'active'
-				r = @detectionRadius
+				@hitRadius = @detectionRadius
+				@nextState() if @collidedWith 'ship', 'bullet'
 
-				for id, ship of globals.ships
-					if not ship.isDead() and
-							not ship.isExploding() and
-							-r < @pos.x - ship.pos.x < r and
-							-r < @pos.y - ship.pos.y < r
-						@nextState()
-
-				for id, bullet of globals.bullets
-					if not bullet.dead and
-							-r < @pos.x - bullet.pos.x < r and
-							-r < @pos.y - bullet.pos.y < r
-						@nextState()
+				# Only exploding mines trigger other mines.
+				@nextState() if @collisions.some( ({type, state}) ->
+					type is 'mine' and state is 'exploding' )
 
 			# The mine is exploding.
 			when 'exploding'
+				@hitRadius = @explosionRadius
 				@nextState() if @countdown <= 0
-
-				r = @explosionRadius
-
-				for id, ship of globals.ships
-					if not ship.isDead() and
-							not ship.isExploding() and
-							-r < @pos.x - ship.pos.x < r and
-							-r < @pos.y - ship.pos.y < r
-						ship.explode()
-
-				for id, mine of globals.mines
-					if mine.id isnt @id and mine.state is 'active'
-						radii = @explosionRadius + mine.detectionRadius
-						dist = utils.distance(@pos.x, @pos.y, mine.pos.x, mine.pos.y)
-						mine.explode() if dist < radii
 
 			# The explosion is over.
 			when 'dead'

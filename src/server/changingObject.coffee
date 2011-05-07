@@ -24,4 +24,9 @@ class ChangingObject
 	resetChanges: () ->
 		@_changes = {}
 
+	collidedWith: (types...) ->
+		@collisions.some ({type}) ->
+			types.some (t) ->
+				type is t
+
 exports.ChangingObject = ChangingObject

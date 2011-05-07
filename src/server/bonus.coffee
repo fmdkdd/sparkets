@@ -8,6 +8,7 @@ class Bonus extends ChangingObject.ChangingObject
 		super()
 
 		@watchChanges 'type'
+		@watchChanges 'hitRadius'
 		@watchChanges 'state'
 		@watchChanges 'countdown'
 		@watchChanges 'color'
@@ -15,6 +16,8 @@ class Bonus extends ChangingObject.ChangingObject
 		@watchChanges 'pos'
 
 		@type = 'bonus'
+
+		@hitRadius = prefs.bonus.hitRadius
 		@modelSize = prefs.bonus.modelSize
 
 		@spawn()
@@ -27,10 +30,17 @@ class Bonus extends ChangingObject.ChangingObject
 			x: Math.random() * prefs.server.mapSize.w
 			y: Math.random() * prefs.server.mapSize.h
 		@color = utils.randomColor()
+		@collisions = []
+
+	collidesWith: ({pos: {x,y}, hitRadius}) ->
+		@state isnt @dead and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
 		@state = prefs.bonus.states[@state].next
 		@countdown = prefs.bonus.states[@state].countdown
+
+	move: () ->
+		true
 
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?
@@ -42,16 +52,8 @@ class Bonus extends ChangingObject.ChangingObject
 
 		# The bonus is available.
 			when 'active'
-
-				# Check if a ship is touching the bonus.
-				s = @modelSize
-				for id, ship of globals.ships
-					if not ship.isDead() and
-							not ship.isExploding() and
-							-s < @pos.x - ship.pos.x < s and
-							-s < @pos.y - ship.pos.y < s
-						++ship.mines
-						@state = 'dead'
-						@deleteMe = yes
+				if @collidedWith 'ship'
+					@state = 'dead'
+					@deleteMe = yes
 
 exports.Bonus = Bonus

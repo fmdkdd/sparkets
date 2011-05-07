@@ -24,6 +24,8 @@ o [merwan] Display engine fire trail when a ship is moving.
       Easier to shoot at, harder to slip between planets.
    - Drunk mode
       Inverse controls, point, laugh.
+   - Paintball mode
+      Spray other ships with your colors! Rating 2 and up.
       
 * Get rid of evil global variables.
 
@@ -35,3 +37,7 @@ o [merwan] Display engine fire trail when a ship is moving.
    satisfying enough.
 
 * Ship explosion radius is affected by bullet speed. 
+
+* Leave some ephemeral traces of fight on planets.
+   Ships and bullets splatters their colors. À la paintball.
+

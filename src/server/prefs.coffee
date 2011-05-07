@@ -1,6 +1,7 @@
 # Server constants.
 
 exports.ship =
+	hitRadius: 9		  # Radius of hit circle.
 	dirInc: 0.1						  	# Rotation increase at input update.
 	speed: 0.3						  	# Velocity increase at input update
 	frictionDecay: 0.97			  # Inertia decay at ship update.
@@ -21,6 +22,10 @@ exports.server =
 
 	bonusWait: 30000				  # ms before a bonus drop.
 
+exports.bullet =
+	hitRadius: 4					  # Radius of hit circle.
+	gravityPull: 200				  # Gravity pull factor.
+
 exports.mine =
 	modelRadius: 5						# Drawing size on client.
 	detectionRadius: 50				# Sensibility radius.
@@ -40,6 +45,7 @@ exports.mine =
 			next: null
 
 exports.bonus =
+	hitRadius: 10					  # Radius of hit circle.
 	modelSize: 20							# Drawing size on client.
 	states:
 		'incoming':

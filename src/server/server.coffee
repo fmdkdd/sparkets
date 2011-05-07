@@ -171,11 +171,30 @@ update = () ->
 	setTimeout(update, prefs.server.timestep - utils.mod(diff, 20))
 
 updateObjects = (objects) ->
-	allChanges = {}
+	# Move all objects
+	obj.move() for id, obj of objects
 
+	# Check collisions with planets
+	for i, planet of planets
+		for j, obj of objects
+			if obj.collidesWith(planet)
+				obj.collisions.push(planet)
+
+	# Check all collisions
+	for i, obj1 of objects
+		for j, obj2 of objects
+			if j > i and obj1.collidesWith(obj2) and obj2.collidesWith(obj1)
+				obj1.collisions.push(obj2)
+				obj2.collisions.push(obj1)
+
+	# Record all changes.
+	allChanges = {}
 	for id, obj of objects
 		# Let object update
 		obj.update()
+
+		# Clear its collisions
+		obj.collisions = []
 
 		# Register its changes
 		changes = obj.changes()

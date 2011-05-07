@@ -9,6 +9,7 @@ class Bullet extends ChangingObject.ChangingObject
 
 		@watchChanges 'type'
 		@watchChanges 'color'
+		@watchChanges 'hitRadius'
 		@watchChanges 'points'
 		@watchChanges 'lastPoint'
 
@@ -26,18 +27,22 @@ class Bullet extends ChangingObject.ChangingObject
 			y: @owner.vel.y + @power*ydir
 		@dead = false
 
+		@hitRadius = prefs.bullet.hitRadius
+		@collisions = []
+
 		@color = owner.color
 		@points = [ [@pos.x, @pos.y] ]
 		@lastPoint = [@pos.x, @pos.y]
 
-	update: () ->
+	move: () ->
 		# Compute new position from acceleration and gravity of all planets.
 		{x, y} = @pos
 		{x: ax, y: ay} = @accel
 
+		g = prefs.bullet.gravityPull
 		for id, p of globals.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-			d2 = 200 * p.force / (d * Math.sqrt(d))
+			d2 = g * p.force / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
 			ay -= (y-p.pos.y) * d2
 
@@ -68,19 +73,13 @@ class Bullet extends ChangingObject.ChangingObject
 		# Append the warped point again so that the line remains continuous.
 		@points.push [@pos.x, @pos.y] if warp
 
-		@dead = @deleteMe = @collides()
+	update: () ->
+		@dead = @deleteMe = @collided()
 
-	collides : () ->
-		@collidesWithPlanet()
+	collidesWith: ({pos: {x,y}, hitRadius}) ->
+		not @dead and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
-	collidesWithPlanet : () ->
-		{x, y} = @pos
-
-		for id, p of globals.planets
-			px = p.pos.x
-			py = p.pos.y
-			return true if utils.distance(px, py, x, y) < p.force
-
-		return false
+	collided: () ->
+		@collidedWith 'ship', 'planet'
 
 exports.Bullet = Bullet
