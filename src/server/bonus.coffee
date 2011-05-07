@@ -1,4 +1,5 @@
 ChangingObject = require './changingObject'
+globals = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 
@@ -31,6 +32,13 @@ class Bonus extends ChangingObject.ChangingObject
 		@color = utils.randomColor()
 		@collisions = []
 
+		@spawn() if @collidesWithPlanet()
+
+	collidesWithPlanet: () ->
+		for id, planet of globals.planets
+			return true if @collidesWith(planet)
+		return false
+	
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
 		@state isnt 'dead' and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 

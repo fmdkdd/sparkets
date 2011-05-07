@@ -34,9 +34,6 @@ o [merwan] Display engine fire trail when a ship is moving.
 * Bonuses are a bit spammy on an idle server right now.
    Could restrict to one bonus at a time.
 
-* Stop bonuses from spawning in planets!
-   Frustrating. Ideally, they should spawn far from any player.
-
 * Add scores ... someday?
    Not sure it is necessary right now. The gratuitous space combat is
    satisfying enough.
