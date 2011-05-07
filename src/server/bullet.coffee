@@ -59,24 +59,24 @@ class Bullet extends ChangingObject.ChangingObject
 
 		# Warp the bullet around the map.
 		{w, h} = prefs.server.mapSize
-		warp = off
+		@warp = off
 		if @pos.x < 0
 			@pos.x += w
-			warp = on
+			@warp = on
 		if @pos.x > w
 			@pos.x -= w
-			warp = on
+			@warp = on
 		if @pos.y < 0
 			@pos.y += h
-			warp = on
+			@warp = on
 		if @pos.y > h
 			@pos.y -= h
-			warp = on
+			@warp = on
 
 		# Append the warped point again so that the line remains continuous.
-		if warp
+		if @warp
 			@points.push [@pos.x, @pos.y]
-			@lastPoints.push  [@pos.x, @pos.y]
+			@lastPoints.push [@pos.x, @pos.y]
 
 	update: () ->
 		switch @state
@@ -103,8 +103,8 @@ class Bullet extends ChangingObject.ChangingObject
 
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
 		# Check collisions on the line between the two latest points.
-		[Ax, Ay] = @points[@points.length-2]
-		[Bx, By] = @points[@points.length-1]
+		[Ax, Ay] = if @warp then @points[@points.length-3] else @points[@points.length-2]
+		[Bx, By] = if @warp then @points[@points.length-2] else @points[@points.length-1]
 
 		[ABx, ABy] = [Bx-Ax, By-Ay]
 		steps = utils.distance(Ax, Ay, Bx, By) / prefs.bullet.checkWidth
