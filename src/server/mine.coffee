@@ -29,9 +29,11 @@ class Mine extends ChangingObject.ChangingObject
 		@hitRadius = 0
 		@collisions = []
 
+	tangible: () ->
+		@state is 'active' or @state is 'exploding'
+
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
-		@state isnt 'inactive' and @state isnt 'dead' and
-			utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
+		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
 		@state = prefs.mine.states[@state].next

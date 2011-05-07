@@ -91,9 +91,11 @@ class Ship extends ChangingObject.ChangingObject
 			return true if @.collidesWith(planet)
 		return false
 
+	tangible: () ->
+		not @dead and not @exploding
+
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
-		not @dead and not @exploding and
-			utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
+		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	isExploding: () ->
 		@exploding
@@ -108,7 +110,14 @@ class Ship extends ChangingObject.ChangingObject
 			@updateExplosion()
 		else
 			--@cannonHeat if @cannonHeat > 0
-			@explode() if @collidedWith 'ship', 'planet', 'bullet', 'mine'
+			@explode() if @collidedWith 'ship', 'planet', 'mine'
+
+			# Immunity to own bullet for a set time.
+			@explode() if @collisions.some( ({type, owner, points}) =>
+				type is 'bullet' and
+					((owner.id isnt @id) or
+					(points.length > 10)) )
+
 			++@mines if @collidedWith 'bonus'
 
 	fire : () ->

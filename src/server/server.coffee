@@ -180,7 +180,10 @@ updateObjects = (objects) ->
 	# Check all collisions
 	for i, obj1 of objects
 		for j, obj2 of objects
-			if j > i and obj1.collidesWith(obj2) and obj2.collidesWith(obj1)
+			if j > i and
+					obj1.tangible() and
+					obj2.tangible() and
+					(obj1.collidesWith(obj2) or obj2.collidesWith(obj1))
 				obj1.collisions.push(obj2)
 				obj2.collisions.push(obj1)
 

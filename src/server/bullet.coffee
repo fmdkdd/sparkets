@@ -31,7 +31,7 @@ class Bullet extends ChangingObject.ChangingObject
 		@hitRadius = prefs.bullet.hitRadius
 		@collisions = []
 
-		@color = owner.color
+		@color = @owner.color
 		@points = [ [@pos.x, @pos.y] ]
 		@lastPoints = [ [@pos.x, @pos.y] ]
 
@@ -82,7 +82,15 @@ class Bullet extends ChangingObject.ChangingObject
 		switch @state
 			# Seek and destroy.
 			when 'active'
-				@state = 'dead' if @collidedWith 'ship', 'planet'
+				@state = 'dead' if @collidedWith 'planet'
+
+				# Don't hit owner before having put some distance.
+				if @points.length > 10
+					@state = 'dead' if @collidedWith 'ship'
+				else
+					@state = 'dead' if @collisions.some( ({id, type}) =>
+						type is 'ship' and @owner.id isnt id )
+
 				@points.shift() if @points.length > prefs.bullet.tailLength
 
 			# No points left, disappear.
@@ -90,7 +98,20 @@ class Bullet extends ChangingObject.ChangingObject
 				@tailTrim = yes
 				@deleteMe = yes
 
+	tangible: ->
+		@state is 'active'
+
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
-		@state is 'active' and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
+		# Check collisions on the line between the two latest points.
+		[Ax, Ay] = @points[@points.length-2]
+		[Bx, By] = @lastPoint
+
+		[ABx, ABy] = [Bx-Ax, By-Ay]
+		steps = utils.distance(Ax, Ay, Bx, By) / prefs.bullet.checkWidth
+
+		for i in [0..steps]
+			alpha = i/steps
+			return true if utils.distance(Ax + alpha*ABx, Ay + alpha*ABy, x, y) < @hitRadius + hitRadius
+		return false
 
 exports.Bullet = Bullet

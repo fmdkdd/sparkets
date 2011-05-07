@@ -38,9 +38,12 @@ class Bonus extends ChangingObject.ChangingObject
 		for id, planet of globals.planets
 			return true if @collidesWith(planet)
 		return false
-	
+
+	tangible: () ->
+		@state isnt 'dead'
+
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
-		@state isnt 'dead' and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
+		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
 		@state = prefs.bonus.states[@state].next
