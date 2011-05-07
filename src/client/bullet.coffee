@@ -19,6 +19,7 @@ class Bullet
 
 		x = p[0][0] + ox
 		y = p[0][1] + oy
+		ctxt.lineWidth = 4
 		ctxt.beginPath()
 		ctxt.moveTo x, y
 
