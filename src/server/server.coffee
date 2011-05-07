@@ -216,15 +216,11 @@ initPlanets = () ->
 				colliding = yes if nearBorder(rock) or collides(p,rock)
 		_planets.push rock
 
-	for i in [0..0]
-		spawnBonus()
-
 	return _planets
 
 spawnBonus = () ->
 	id = gameObjectCount++
 	gameObjects[id] = bonuses[id] = new Bonus.Bonus(id)
-
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch the game loop once everything is defined.
@@ -233,6 +229,9 @@ launch = () ->
 	for p in initPlanets()
 		id = gameObjectCount++
 		planets[id] = p
+
+	spawnBonus()
+	setInterval(spawnBonus, prefs.server.bonusWait)
 
 	# Exports
 

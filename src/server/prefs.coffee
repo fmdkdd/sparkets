@@ -19,6 +19,7 @@ exports.server =
 		h: 2000
 	planetsCount: 30				  # Number of planets on the map.
 
+	bonusWait: 30000				  # ms before a bonus drop.
 
 exports.mine =
 	modelRadius: 5						# Drawing size on client.

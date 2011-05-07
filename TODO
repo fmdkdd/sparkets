@@ -16,6 +16,14 @@ o [merwan] Display engine fire trail when a ship is moving.
       Rapid-fire weapon but takes longer to kill ships.
    - Portable black hole
       Gravity affects bullets and ships?
+
+* Add items
+   - Invisible hull
+      Stay invisible while you do not fire or drop any mine.
+   - Big head mode
+      Easier to shoot at, harder to slip between planets.
+   - Drunk mode
+      Inverse controls, point, laugh.
       
 * Get rid of evil global variables.
 
