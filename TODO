@@ -32,6 +32,14 @@ o [merwan] Display engine fire trail when a ship is moving.
 * Check if object is in view before drawing it on canvas.
    Could save some more cycles.
 
+* Delete useless objects on client.
+
+* Bonuses are a bit spammy on an idle server right now.
+   Could restrict to one bonus at a time.
+
+* Stop bonuses from spawning in planets!
+   Frustrating. Ideally, they should spawn far from any player.
+
 * Add scores ... someday?
    Not sure it is necessary right now. The gratuitous space combat is
    satisfying enough.
@@ -40,4 +48,3 @@ o [merwan] Display engine fire trail when a ship is moving.
 
 * Leave some ephemeral traces of fight on planets.
    Ships and bullets splatters their colors. À la paintball.
-

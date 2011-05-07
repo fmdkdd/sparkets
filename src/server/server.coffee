@@ -129,7 +129,7 @@ processKeyUp = (id, key) ->
 		exports.ships[id].thrust = false
 
 	# Z : drop a mine.
-	if key is 90 and exports.ships[id].mines > 0
+	if key is 90
 		exports.ships[id].dropMine()
 
 processInputs = (id) ->

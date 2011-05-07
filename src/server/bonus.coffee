@@ -1,5 +1,4 @@
 ChangingObject = require './changingObject'
-globals = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 
@@ -33,7 +32,7 @@ class Bonus extends ChangingObject.ChangingObject
 		@collisions = []
 
 	collidesWith: ({pos: {x,y}, hitRadius}) ->
-		@state isnt @dead and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
+		@state isnt 'dead' and utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
 		@state = prefs.bonus.states[@state].next
@@ -45,15 +44,17 @@ class Bonus extends ChangingObject.ChangingObject
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?
 
-		# The bonus arrival is imminent!
 		switch @state
+			# The bonus arrival is imminent!
 			when 'incoming'
 				@nextState() if @countdown <= 0
 
-		# The bonus is available.
+			# The bonus is available.
 			when 'active'
-				if @collidedWith 'ship'
-					@state = 'dead'
-					@deleteMe = yes
+				@nextState() if @collidedWith 'ship'
+
+			# The bonus is of no more use.
+			when 'dead'
+				@deleteMe = yes
 
 exports.Bonus = Bonus

@@ -1,5 +1,4 @@
 ChangingObject = require './changingObject'
-globals = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 
@@ -18,7 +17,6 @@ class Mine extends ChangingObject.ChangingObject
 
 		@type = 'mine'
 		@state = 'inactive'
-		@playerId = ship.id
 		@pos =
 			x: ship.pos.x
 			y: ship.pos.y
@@ -37,10 +35,6 @@ class Mine extends ChangingObject.ChangingObject
 
 	nextState: () ->
 		@state = prefs.mine.states[@state].next
-		@countdown = prefs.mine.states[@state].countdown
-
-	explode: () ->
-		@state = 'exploding'
 		@countdown = prefs.mine.states[@state].countdown
 
 	move: () ->

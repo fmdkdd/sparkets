@@ -124,7 +124,7 @@ class Ship extends ChangingObject.ChangingObject
 		@cannonHeat = prefs.ship.cannonCooldown
 
 	dropMine: () ->
-		return if @isDead() or @isExploding()
+		return if @isDead() or @isExploding() or @mines == 0
 
 		id = globals.gameObjectCount++
 		globals.gameObjects[id] = globals.mines[id] = new Mine.Mine(@, id)
