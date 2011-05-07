@@ -122,20 +122,11 @@ class Ship
 			ry = Math.max -screen.h/2 + margin, dy
 			ry = Math.min screen.h/2 - margin, ry
 
-			# Choose on which ship we should base the animation. If the two
-			# of them are exploding, focus on the first to die.
-			if @isExploding() and localShip.isExploding()
-				dying = if @exploFrame > localShip.exploFrame then @ else localShip
-			else if @isExploding()
-				dying = @
-			else if localShip.isExploding()
-				dying = localShip
-
 			radius = 10
 			alpha = 1
 
-			if dying?
-				animRatio = dying.exploFrame / maxExploFrame
+			if @isExploding()
+				animRatio = @exploFrame / maxExploFrame
 				radius -= animRatio * 10
 				alpha -= animRatio
 
