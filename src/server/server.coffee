@@ -250,7 +250,7 @@ initPlanets = () ->
 	return _planets
 
 spawnBonus = () ->
-	id = gameObjectCount++
+	id = exports.gameObjectCount++
 	gameObjects[id] = bonuses[id] = new Bonus.Bonus(id)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
