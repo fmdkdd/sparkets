@@ -19,6 +19,7 @@ class Bullet
 		x = p[0][0] + ox
 		y = p[0][1] + oy
 		ctxt.lineWidth = 4
+		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.beginPath()
 		ctxt.moveTo x, y
 
@@ -35,6 +36,8 @@ class Bullet
 			ctxt.stroke()
 			ctxt.beginPath()
 			ctxt.moveTo x, y
+
+		ctxt.globalCompositeOperation = 'source-over'
 
 		if showHitCircles
 			ctxt.strokeStyle = 'red'

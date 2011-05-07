@@ -25,8 +25,10 @@ class Planet
 			strokeCircle(ctxt, x, y, @hitRadius)
 
 		ctxt.strokeStyle = color planetColor
-		ctxt.fillStyle = color planetColor
-		ctxt.lineWidth = 4
+		ctxt.fillStyle = 'white'
+		ctxt.lineWidth = 8
 		ctxt.beginPath()
 		ctxt.arc x, y, f, 0, 2*Math.PI, false
 		ctxt.stroke()
+		ctxt.fill()
+
