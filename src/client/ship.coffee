@@ -1,10 +1,10 @@
 class Ship
 	constructor: (ship) ->
-		@update(ship)
+		@serverUpdate(ship)
 
 		@explosionBits = null
 
-	update: (ship) ->
+	serverUpdate: (ship) ->
 		for field, val of ship
 			@[field] = val
 
@@ -15,6 +15,9 @@ class Ship
 		# Reset the explosion bits if the ship respawned.
 		else if not @exploding and @explosionBits?
 			delete @explosionBits
+
+	update: () ->
+		true
 
 	isExploding: () ->
 		return @exploding
@@ -48,7 +51,7 @@ class Ship
 			strokeCircle(ctxt, x, y, @hitRadius)
 
 		ctxt.strokeStyle = color @color
-		
+
 		if @cannonHeat > 0
 			fillAlpha = @cannonHeat/cannonCooldown
 		else if @firePower > 0

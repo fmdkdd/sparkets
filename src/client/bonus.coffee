@@ -1,15 +1,16 @@
 class Bonus
 	constructor: (bonus) ->
-		@update(bonus)
+		@serverUpdate(bonus)
 
-	update: (bonus) ->
+	serverUpdate: (bonus) ->
 		for field, val of bonus
 			@[field] = val
 
+	update: () ->
 		@clientDelete = @serverDelete
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
-		return if @state is 'incoming' or @state is 'dead'
+		return if @state is 'incoming'
 
 		x = @pos.x + offset.x
 		y = @pos.y + offset.y

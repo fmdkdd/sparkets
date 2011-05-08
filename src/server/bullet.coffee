@@ -12,7 +12,6 @@ class Bullet extends ChangingObject.ChangingObject
 		@watchChanges 'hitRadius'
 		@watchChanges 'points'
 		@watchChanges 'lastPoints'
-		@watchChanges 'tailTrim'
 		@watchChanges 'serverDelete'
 
 		@type = 'bullet'
@@ -96,7 +95,6 @@ class Bullet extends ChangingObject.ChangingObject
 
 			# No points left, disappear.
 			when 'dead'
-				@tailTrim = yes
 				@serverDelete = yes
 
 	tangible: ->

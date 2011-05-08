@@ -1,13 +1,14 @@
 class Mine
 	constructor: (mine) ->
-		@update(mine)
+		@serverUpdate(mine)
 
 		@waves = [0, -@detectionRadius/3, -2*@detectionRadius/3]
 
-	update: (mine) ->
+	serverUpdate: (mine) ->
 		for field, val of mine
 			this[field] = val
 
+	update: () ->
 		@clientDelete = @serverDelete
 
 	draw: (ctxt, offset) ->

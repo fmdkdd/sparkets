@@ -73,9 +73,17 @@ go = (clientId) ->
 update = () ->
 	start = (new Date).getTime()
 
+	# Update and cleanup objects.
+	for idx, obj of gameObjects
+		obj.update()
+		if obj.serverDelete and obj.clientDelete
+			deleteObject idx
+
+	# Draw scene.
 	centerView()
 	redraw(ctxt)
 
+	# Setup next update.
 	diff = (new Date).getTime() - start
 	setTimeout(update, 20-mod(diff, 20))
 
@@ -90,10 +98,7 @@ redraw = (ctxt) ->
 	ctxt.lineJoin = 'round'
 
 	# Draw all objects.
-	for idx, obj of gameObjects
-		obj.draw(ctxt)
-		if obj.serverDelete and obj.clientDelete
-			deleteObject idx
+	obj.draw(ctxt)	for idx, obj of gameObjects
 
 	drawRadar ctxt if ships[id]? and not ships[id].isDead()
 
@@ -175,7 +180,7 @@ onMessage = (msg) ->
 				if not gameObjects[i]?
 					gameObjects[i] = newObject(i, obj.type, obj)
 				else
-					gameObjects[i].update(obj)
+					gameObjects[i].serverUpdate(obj)
 
 		# When receiving our id from the server.
 		when 'connected'

@@ -1,19 +1,18 @@
 class Bullet
 	constructor: (bullet) ->
-		@update(bullet)
+		@serverUpdate (bullet)
 
-	update: (bullet) ->
+	serverUpdate: (bullet) ->
 		for field, val of bullet
 			@[field] = val
 
-		for p in @lastPoints
-			@points.push p
+		@points.push p for p in @lastPoints
+
+	update: () ->
+		@points.shift() if @serverDelete or @points.length > maxBulletLength
+		@clientDelete = yes if @points.length == 0
 
 	draw: (ctxt, offset = {x: 0, y: 0}) ->
-		if @points.length is 0
-			@clientDelete = yes if @points.length == 0
-			return
-
 		p = @points
 		ox = -view.x + offset.x
 		oy = -view.y + offset.y
@@ -45,5 +44,3 @@ class Bullet
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, @hitRadius)
-
-		@points.shift() if @tailTrim or @points.length > maxBulletLength

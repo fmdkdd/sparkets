@@ -4,6 +4,9 @@ class Planet
 		@hitRadius = planet.hitRadius
 		@force = planet.force
 
+	update: () ->
+		true
+
 	draw: (ctxt, offset = {x: 0, y: 0}) ->
 		px = @pos.x + offset.x
 		py = @pos.y + offset.y
