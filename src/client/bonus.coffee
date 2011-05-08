@@ -6,6 +6,8 @@ class Bonus
 		for field, val of bonus
 			@[field] = val
 
+		@clientDelete = @serverDelete
+
 	draw: (ctxt, offset = {x:0, y:0}) ->
 		return if @state is 'incoming' or @state is 'dead'
 

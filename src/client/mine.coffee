@@ -8,6 +8,8 @@ class Mine
 		for field, val of mine
 			this[field] = val
 
+		@clientDelete = @serverDelete
+
 	draw: (ctxt, offset) ->
 		if @state is 'inactive' or @state is 'active'
 			@drawMine(ctxt, offset)

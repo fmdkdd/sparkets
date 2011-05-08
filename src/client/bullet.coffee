@@ -5,12 +5,14 @@ class Bullet
 	update: (bullet) ->
 		for field, val of bullet
 			@[field] = val
-	
+
 		for p in @lastPoints
 			@points.push p
 
 	draw: (ctxt, offset = {x: 0, y: 0}) ->
-		return if @points.length is 0
+		if @points.length is 0
+			@clientDelete = yes if @points.length == 0
+			return
 
 		p = @points
 		ox = -view.x + offset.x

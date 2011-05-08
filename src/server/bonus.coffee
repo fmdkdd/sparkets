@@ -14,6 +14,7 @@ class Bonus extends ChangingObject.ChangingObject
 		@watchChanges 'color'
 		@watchChanges 'modelSize'
 		@watchChanges 'pos'
+		@watchChanges 'serverDelete'
 
 		@type = 'bonus'
 
@@ -66,6 +67,6 @@ class Bonus extends ChangingObject.ChangingObject
 
 			# The bonus is of no more use.
 			when 'dead'
-				@deleteMe = yes
+				@serverDelete = yes
 
 exports.Bonus = Bonus

@@ -110,8 +110,6 @@ exports.planets = {}
 exports.gameObjects = {}
 exports.gameObjectCount = 0
 
-exports.destroyed = []
-
 # Input processing
 
 processKeyDown = (id, key) ->
@@ -205,21 +203,13 @@ updateObjects = (objects) ->
 			obj.resetChanges()
 
 		# Delete if requested
-		deleteObject id if obj.deleteMe
+		deleteObject id if obj.serverDelete
 
 	# Broadcast changes to all players.
 	if not utils.isEmptyObject allChanges
 		io.broadcast
 			type: 'objects update'
 			objects: allChanges
-
-sendDestructionNotification = () ->
-	if exports.destroyed.length > 0
-		io.broadcast	
-			type: 'destruction notification'
-			ids: exports.destroyed
-
-		exports.destroyed = []
 
 deleteObject = (id) ->
 	type = exports.gameObjects[id].type
@@ -237,7 +227,6 @@ deleteObject = (id) ->
 			delete exports.ships[id]
 
 	delete exports.gameObjects[id]
-	exports.destroyed.push id
 
 initPlanets = () ->
 	planets = []
@@ -280,8 +269,6 @@ launch = () ->
 
 	spawnBonus()
 	setInterval(spawnBonus, prefs.server.bonusWait)
-
-	setInterval(sendDestructionNotification, 10000)
 
 	update()
 

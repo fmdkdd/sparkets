@@ -14,6 +14,7 @@ class Mine extends ChangingObject.ChangingObject
 		@watchChanges 'detectionRadius'
 		@watchChanges 'explosionRadius'
 		@watchChanges 'countdown'
+		@watchChanges 'serverDelete'
 
 		@type = 'mine'
 		@state = 'inactive'
@@ -66,6 +67,6 @@ class Mine extends ChangingObject.ChangingObject
 
 			# The explosion is over.
 			when 'dead'
-				@deleteMe = yes
+				@serverDelete = yes
 
 exports.Mine = Mine

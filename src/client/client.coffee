@@ -90,7 +90,10 @@ redraw = (ctxt) ->
 	ctxt.lineJoin = 'round'
 
 	# Draw all objects.
-	obj.draw(ctxt)	for idx, obj of gameObjects
+	for idx, obj of gameObjects
+		obj.draw(ctxt)
+		if obj.serverDelete and obj.clientDelete
+			deleteObject idx
 
 	drawRadar ctxt if ships[id]? and not ships[id].isDead()
 
@@ -173,11 +176,6 @@ onMessage = (msg) ->
 					gameObjects[i] = newObject(i, obj.type, obj)
 				else
 					gameObjects[i].update(obj)
-
-		# When receiving destruction notification
-		when 'destruction notification'
-			for i in msg.ids
-				deleteObject i
 
 		# When receiving our id from the server.
 		when 'connected'
