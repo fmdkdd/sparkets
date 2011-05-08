@@ -152,12 +152,15 @@ newObject = (i, type, obj) ->
 		when 'planet'
 			new Planet(obj)
 
-deleteObject = (i, type) ->
+deleteObject = (i) ->
+	type = gameObjects[i].type
+
 	switch type
 		when 'ship'
 			delete ships[i]
 		when 'bonus'
 			delete bonuses[i]
+
 	delete gameObjects[i]
 
 onMessage = (msg) ->
@@ -170,6 +173,11 @@ onMessage = (msg) ->
 					gameObjects[i] = newObject(i, obj.type, obj)
 				else
 					gameObjects[i].update(obj)
+
+		# When receiving destruction notification
+		when 'destruction notification'
+			for i in msg.ids
+				deleteObject i
 
 		# When receiving our id from the server.
 		when 'connected'

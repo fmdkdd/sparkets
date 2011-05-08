@@ -82,7 +82,7 @@ io.on 'clientDisconnect', (player) ->
 	# Purge from list.
 	id = player.sessionId
 	delete exports.players[id]
-	deleteObject(id, exports.ships[id])
+	deleteObject id
 
 	# Tell everyone.
 	player.broadcast
@@ -109,6 +109,8 @@ exports.planets = {}
 
 exports.gameObjects = {}
 exports.gameObjectCount = 0
+
+exports.destroyed = []
 
 # Input processing
 
@@ -203,7 +205,7 @@ updateObjects = (objects) ->
 			obj.resetChanges()
 
 		# Delete if requested
-		deleteObject(id, obj) if obj.deleteMe
+		deleteObject id if obj.deleteMe
 
 	# Broadcast changes to all players.
 	if not utils.isEmptyObject allChanges
@@ -211,8 +213,18 @@ updateObjects = (objects) ->
 			type: 'objects update'
 			objects: allChanges
 
-deleteObject = (id, obj) ->
-	switch obj.type
+sendDestructionNotification = () ->
+	if exports.destroyed.length > 0
+		io.broadcast	
+			type: 'destruction notification'
+			ids: exports.destroyed
+
+		exports.destroyed = []
+
+deleteObject = (id) ->
+	type = exports.gameObjects[id].type
+
+	switch type
 		when 'bonus'
 			delete exports.bonuses[id]
 		when 'bullet'
@@ -223,7 +235,9 @@ deleteObject = (id, obj) ->
 			delete exports.planets[id]
 		when 'ship'
 			delete exports.ships[id]
+
 	delete exports.gameObjects[id]
+	exports.destroyed.push id
 
 initPlanets = () ->
 	planets = []
@@ -266,6 +280,8 @@ launch = () ->
 
 	spawnBonus()
 	setInterval(spawnBonus, prefs.server.bonusWait)
+
+	setInterval(sendDestructionNotification, 10000)
 
 	update()
 
