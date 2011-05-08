@@ -91,13 +91,28 @@ class Ship
 	explode: () ->
 		@explosionBits = []
 
-		vel = Math.max @vel.x, @vel.y
+		# Initial particle speed is derived from ship speed at death
+		# and killing bullet speed.
+		[vx, vy] = [@vel.x, @vel.y]
+		nvel = Math.sqrt(vx*vx + vy*vy)
+
+		if @killingAccel?
+			[ax, ay] = [@killingAccel.x, @killingAccel.y]
+			nacc = Math.sqrt(ax*ax + ay*ay)
+			speed = Math.max nvel, .5*nacc
+		else
+			speed = nvel
+
+		# Ensure decent fireworks.
+		speed = Math.max(speed, 3)
+
+		# Create explosion particles.
 		for i in [0..200]
 			particle =
 				x: @pos.x
 				y: @pos.y
-				vx: .5*vel*(2*Math.random()-1)
-				vy: .5*vel*(2*Math.random()-1)
+				vx: .35* speed *(2*Math.random()-1)
+				vy: .35* speed *(2*Math.random()-1)
 				size: Math.random() * 10
 			angle = Math.atan2(particle.vy, particle.vx)
 			particle.vx *= Math.abs(Math.cos angle)

@@ -21,7 +21,8 @@ class Ship extends ChangingObject.ChangingObject
 			'cannonHeat',
 			'dead',
 			'exploding',
-			'exploFrame' )
+			'exploFrame',
+			'killingAccel' )
 
 		@type = 'ship'
 		@color = utils.randomColor()
@@ -45,6 +46,7 @@ class Ship extends ChangingObject.ChangingObject
 		@exploding = false
 		@exploFrame = 0
 		@collisions = []
+		@killingAccel = {x: 0, y: 0}
 
 		@spawn() if @collidesWithPlanet()
 
@@ -113,10 +115,13 @@ class Ship extends ChangingObject.ChangingObject
 			@explode() if @collidedWith 'ship', 'planet', 'mine'
 
 			# Immunity to own bullet for a set time.
-			@explode() if @collisions.some( ({type, owner, points}) =>
+			bullets = @collisions.filter( ({type, owner, points}) =>
 				type is 'bullet' and
 					((owner.id isnt @id) or
 					(points.length > 10)) )
+			if bullets.length > 0
+				@explode()
+				@killingAccel = bullets[0].accel
 
 			++@mines if @collisions.some( ({type, empty}) ->
 				type is 'bonus' and not empty )
