@@ -32,6 +32,7 @@ class Bonus extends ChangingObject.ChangingObject
 			y: Math.random() * prefs.server.mapSize.h
 		@color = utils.randomColor()
 		@collisions = []
+		@empty = yes
 
 		@spawn() if @collidesWithPlanet()
 
@@ -59,7 +60,9 @@ class Bonus extends ChangingObject.ChangingObject
 		switch @state
 			# The bonus arrival is imminent!
 			when 'incoming'
-				@nextState() if @countdown <= 0
+				if @countdown <= 0
+					@empty = no
+					@nextState()
 
 			# The bonus is available.
 			when 'active'
@@ -67,6 +70,7 @@ class Bonus extends ChangingObject.ChangingObject
 
 			# The bonus is of no more use.
 			when 'dead'
+				@empty = yes
 				@serverDelete = yes
 
 exports.Bonus = Bonus

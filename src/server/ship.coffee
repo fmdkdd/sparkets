@@ -118,7 +118,8 @@ class Ship extends ChangingObject.ChangingObject
 					((owner.id isnt @id) or
 					(points.length > 10)) )
 
-			++@mines if @collidedWith 'bonus'
+			++@mines if @collisions.some( ({type, empty}) ->
+				type is 'bonus' and not empty )
 
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
