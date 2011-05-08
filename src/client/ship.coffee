@@ -34,13 +34,21 @@ class Ship
 			@drawShip(ctxt, offset)
 
 	drawShip: (ctxt, offset = {x: 0, y: 0}) ->
-		x = @pos.x - view.x + offset.x
-		y = @pos.y - view.y + offset.y
+		x = @pos.x + offset.x
+		y = @pos.y + offset.y
 		cos = Math.cos @dir
 		sin = Math.sin @dir
 
-		# Draw hull.
+		# Check if ship is in view before drawing.
+		if not inView(x+10, y+10) and
+				not inView(x+10, y-10) and
+				not inView(x-10, y+10) and
+				not inView(x-10, y-10)
+			return
+		x -= view.x
+		y -= view.y
 
+		# Draw hull.
 		points = [[-7,10], [0,-10], [7,10], [0,6]]
 		for i, p of points
 			points[i] = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
@@ -107,7 +115,8 @@ class Ship
 
 		ctxt.fillStyle = color @color, (maxExploFrame-@exploFrame)/maxExploFrame
 		for b in @explosionBits
-			ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
+			if inView(b.x+offset.x, b.y+offset.y)
+				ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
 
 	drawOnRadar: (ctxt) ->
 		localShip = ships[id]

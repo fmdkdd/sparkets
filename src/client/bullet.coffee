@@ -31,8 +31,10 @@ class Bullet
 
 			# Check for a bullet warping.
 			if -50  < p[i-1][0] - p[i][0] < 50 and
-					-50 < p[i-1][1] - p[i][1] < 50
-				ctxt.lineTo x, y
+					-50 < p[i-1][1] - p[i][1] < 50 and
+					(inView(x+view.x, y+view.y) or
+						inView(p[i-1][0]+offset.x, p[i-1][1]+offset.y))
+					ctxt.lineTo x, y
 
 			ctxt.stroke()
 			ctxt.beginPath()
