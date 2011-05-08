@@ -100,10 +100,11 @@ redraw = (ctxt) ->
 	# Draw all objects.
 	obj.draw(ctxt)	for idx, obj of gameObjects
 
-	drawRadar ctxt if ships[id]? and not ships[id].isDead()
-
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
+
+	# Draw UI
+	drawRadar ctxt if ships[id]? and not ships[id].isDead()
 
 centerView = () ->
 	if gameObjects[id]?
