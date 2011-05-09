@@ -50,9 +50,6 @@ class Ship
 		sin = Math.sin @dir
 
 		# Draw hull.
-		points = [[-7,10], [0,-10], [7,10], [0,6]]
-		for i, p of points
-			points[i] = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
 
 		if showHitCircles
 			ctxt.strokeStyle = 'red'
@@ -64,16 +61,20 @@ class Ship
 		else if @firePower > 0
 			fillAlpha = (@firePower-minPower)/(maxPower-minPower)
 
+		points = [[-7,10], [0,-10], [7,10], [0,6]]
 		ctxt.fillStyle = color(@color, fillAlpha)
 		ctxt.strokeStyle = color @color
 		ctxt.lineWidth = 4
+		ctxt.save()
+		ctxt.translate(x, y)
+		ctxt.rotate(@dir)
 		ctxt.beginPath()
-		ctxt.moveTo x+points[3][0], y+points[3][1]
-		for i in [0..3]
-			ctxt.lineTo x+points[i][0], y+points[i][1]
+		for p in points
+			ctxt.lineTo(p[0], p[1])
 		ctxt.closePath()
 		ctxt.stroke()
 		ctxt.fill()
+		ctxt.restore()
 
 		# Draw engine fire.
 		if @thrust
