@@ -26,11 +26,10 @@ exports.bullet =
 	hitRadius: 2					  # Radius of hit circle.
 	gravityPull: 200				  # Gravity pull factor.
 	tailLength: 15					  # Bullet points to keep on server.
-	checkWidth: 4					  # Gap to leave in the hit line.
+	checkWidth: 4					  	# Gap to leave in the hit line.
 
 exports.mine =
-	modelRadius: 5						# Drawing size on client.
-	detectionRadius: 50				# Sensibility radius.
+	maxDetectionRadius: 50		# Sensibility radius.
 	explosionRadius: 80			  # Detonation radius.
 	states:
 		'inactive':

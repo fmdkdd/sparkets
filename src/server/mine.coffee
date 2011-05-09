@@ -10,22 +10,18 @@ class Mine extends ChangingObject.ChangingObject
 		@watchChanges 'pos'
 		@watchChanges 'state'
 		@watchChanges 'color'
-		@watchChanges 'modelRadius'
-		@watchChanges 'detectionRadius'
-		@watchChanges 'explosionRadius'
+		@watchChanges 'hitRadius'
 		@watchChanges 'countdown'
 		@watchChanges 'serverDelete'
 
 		@type = 'mine'
 		@state = 'inactive'
+		@countdown = prefs.mine.states[@state].countdown
 		@pos =
 			x: ship.pos.x
 			y: ship.pos.y
 		@color = ship.color
-		@modelRadius = prefs.mine.modelRadius
-		@detectionRadius = prefs.mine.detectionRadius
 		@explosionRadius = prefs.mine.explosionRadius
-		@countdown = prefs.mine.states[@state].countdown
 
 		@hitRadius = 0
 		@collisions = []
@@ -53,7 +49,9 @@ class Mine extends ChangingObject.ChangingObject
 
 			# The mine is ready.
 			when 'active'
-				@hitRadius = @detectionRadius
+				++@hitRadius
+				@hitRadius = 0 if @hitRadius is prefs.mine.maxDetectionRadius
+
 				@nextState() if @collidedWith 'ship', 'bullet'
 
 				# Only exploding mines trigger other mines.
