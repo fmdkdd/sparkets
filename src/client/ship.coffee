@@ -4,9 +4,18 @@ class Ship
 
 		@explosionBits = null
 
+		@engineAnimFor = null
+		@engineAnimDelay = 200
+
 	serverUpdate: (ship) ->
+		thrust_old = @thrust
+
 		for field, val of ship
 			@[field] = val
+
+		# Start the engine fade-in/out in the ship just started/stopped thrusting.
+		if @thrust isnt thrust_old
+			@engineAnimFor = @engineAnimDelay
 
 		# Start the explosion animation if the ship just exploded.
 		if @exploding
@@ -17,6 +26,12 @@ class Ship
 			delete @explosionBits
 
 	update: () ->
+
+		# Update the engine animation countdown.
+		if @engineAnimFor?
+			@engineAnimFor -= sinceLastUpdate
+			@engineAnimFor = null if @engineAnimFor <= 0
+
 		true
 
 	isExploding: () ->
@@ -77,12 +92,21 @@ class Ship
 		ctxt.restore()
 
 		# Draw engine fire.
-		if @thrust
+		if @thrust or @engineAnimFor?
+
+			alpha = 1
+			if @engineAnimFor? and @thrust
+				alpha = 1-@engineAnimFor/@engineAnimDelay
+			else if @engineAnimFor?
+				alpha = @engineAnimFor/@engineAnimDelay
+
+			ctxt.strokeStyle = color(@color, alpha)
 			enginePoints = [ [-5,8], [0,18], [5,8] ]
 			ctxt.lineWidth = 2
 			ctxt.save()
 			ctxt.translate(x, y)
 			ctxt.rotate(@dir)
+			ctxt.scale(1, Math.max(0.85,alpha))
 			ctxt.beginPath()
 			for p in enginePoints
 				ctxt.lineTo(p[0], p[1])

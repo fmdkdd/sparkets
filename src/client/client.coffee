@@ -8,6 +8,10 @@ screen = {w: 0, h: 0}
 map = {w: 2000, h: 2000}
 view = {x: 0, y: 0}
 
+# Time
+now = null
+sinceLastUpdate = null
+
 planetColor = '127, 157, 185'
 maxBulletLength = 15
 
@@ -72,6 +76,10 @@ go = (clientId) ->
 # Game loop!
 update = () ->
 	start = (new Date).getTime()
+
+	# Update time globals (poor kittens...).
+	sinceLastUpdate = start - now
+	now = start
 
 	# Update and cleanup objects.
 	for idx, obj of gameObjects
