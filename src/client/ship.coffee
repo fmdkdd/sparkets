@@ -36,8 +36,6 @@ class Ship
 	drawShip: (ctxt, offset = {x: 0, y: 0}) ->
 		x = @pos.x + offset.x
 		y = @pos.y + offset.y
-		cos = Math.cos @dir
-		sin = Math.sin @dir
 
 		# Check if ship is in view before drawing.
 		if not inView(x+10, y+10) and
@@ -47,6 +45,9 @@ class Ship
 			return
 		x -= view.x
 		y -= view.y
+
+		cos = Math.cos @dir
+		sin = Math.sin @dir
 
 		# Draw hull.
 		points = [[-7,10], [0,-10], [7,10], [0,6]]
@@ -58,14 +59,13 @@ class Ship
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, @hitRadius)
 
-		ctxt.strokeStyle = color @color
-
 		if @cannonHeat > 0
 			fillAlpha = @cannonHeat/cannonCooldown
 		else if @firePower > 0
 			fillAlpha = (@firePower-minPower)/(maxPower-minPower)
 
 		ctxt.fillStyle = color(@color, fillAlpha)
+		ctxt.strokeStyle = color @color
 		ctxt.lineWidth = 4
 		ctxt.beginPath()
 		ctxt.moveTo x+points[3][0], y+points[3][1]
@@ -77,16 +77,16 @@ class Ship
 
 		# Draw engine fire.
 		if @thrust
+			enginePoints = [ [-5,8], [0,18], [5,8] ]
 			ctxt.lineWidth = 2
-			enginePoints = [ [0,18], [-5,8], [5,8], [0,18] ]
-			for i, p of enginePoints
-				enginePoints[i] = [p[0]*cos - p[1]*sin, p[0]*sin + p[1]*cos]
+			ctxt.save()
+			ctxt.translate(x, y)
+			ctxt.rotate(@dir)
 			ctxt.beginPath()
-			ctxt.moveTo x+enginePoints[0][0], y+enginePoints[0][1]
 			for p in enginePoints
-				ctxt.lineTo x+p[0], y+p[1]
+				ctxt.lineTo(p[0], p[1])
 			ctxt.stroke()
-			ctxt.lineWidth = 4
+			ctxt.restore()
 
 	explode: () ->
 		@explosionBits = []
