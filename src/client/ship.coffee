@@ -107,6 +107,9 @@ class Ship
 			ctxt.translate(x, y)
 			ctxt.rotate(@dir)
 			ctxt.scale(1, Math.max(0.85,alpha))
+			if @boost > 1
+				boostScale = @boost-1
+				ctxt.scale(1 + .15*boostScale, 1 + .3*boostScale)
 			ctxt.beginPath()
 			for p in enginePoints
 				ctxt.lineTo(p[0], p[1])

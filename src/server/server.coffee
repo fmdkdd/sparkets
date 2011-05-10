@@ -117,20 +117,25 @@ processKeyDown = (id, key) ->
 
 processKeyUp = (id, key) ->
 	exports.players[id].keys[key] = off
+	ship = exports.ships[id]
 
 	# Fire the bullet or respawn if the spacebar is released.
 	if key is 32 or key is 65
-		if exports.ships[id].isDead()
-			exports.ships[id].spawn()
+		if ship.isDead()
+			ship.spawn()
 		else
-			exports.ships[id].fire()
+			ship.fire()
 
 	if key is 38
-		exports.ships[id].thrust = false
+		ship.thrust = false
 
 	# Z : drop a mine.
 	if key is 90
-		exports.ships[id].dropMine()
+		ship.dropMine()
+
+	# X: 88 miles/h
+	if key is 88
+		ship.boost = prefs.ship.boostFactor
 
 processInputs = (id) ->
 	keys = exports.players[id].keys
@@ -148,8 +153,8 @@ processInputs = (id) ->
 
 	# Up arrow : thrust forward.
 	if keys[38] is on
-		ship.vel.x += Math.sin(ship.dir) * prefs.ship.speed
-		ship.vel.y -= Math.cos(ship.dir) * prefs.ship.speed
+		ship.vel.x += Math.sin(ship.dir) * prefs.ship.speed * ship.boost
+		ship.vel.y -= Math.cos(ship.dir) * prefs.ship.speed * ship.boost
 		ship.thrust = true
 
 	# Spacebar : charge the bullet.

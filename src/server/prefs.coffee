@@ -5,6 +5,8 @@ exports.ship =
 	dirInc: 0.12						  	# Rotation increase at input update.
 	speed: 0.3						  	# Velocity increase at input update
 	frictionDecay: 0.97			  # Inertia decay at ship update.
+	boostFactor: 2					  # Multiplies speed when boost is active.
+	boostDecay: 0.01				  # Decrease boost factor at each update.
 	minFirepower: 1.3				  # Lowest initial bullet speed.
 	maxFirepower: 3				  	# Highest initial bullet speed.
 	cannonCooldown: 20			  # Number of frames to wait before firing again.

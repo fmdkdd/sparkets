@@ -22,7 +22,8 @@ class Ship extends ChangingObject.ChangingObject
 			'dead',
 			'exploding',
 			'exploFrame',
-			'killingAccel' )
+			'killingAccel',
+			'boost' )
 
 		@type = 'ship'
 		@color = utils.randomColor()
@@ -42,6 +43,7 @@ class Ship extends ChangingObject.ChangingObject
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = 0
 		@mines = 0
+		@boost = 1
 		@dead = false
 		@exploding = false
 		@exploFrame = 0
@@ -125,6 +127,9 @@ class Ship extends ChangingObject.ChangingObject
 
 			++@mines if @collisions.some( ({type, empty}) ->
 				type is 'bonus' and not empty )
+
+			@boost -= prefs.ship.boostDecay if @boost > 1
+			@boost = 1 if @boost < 1
 
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
