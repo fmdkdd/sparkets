@@ -1,11 +1,6 @@
-* Add afterburner.
-   Instant speed-up to escape pursuers, harder to control. Comes with a
-   cool graphic effect of course.
-   
-* Add other weapons (static bombs, machine gun, etc.).
-   - Bombs
-      Stationary bombs left behind to disrupt pursuers or setup
-      traps. Supply is limited.
+= Gameplay =
+
+* Add other weapons.
    - Machine gun
       Rapid-fire weapon but takes longer to kill ships.
    - Portable black hole
@@ -20,13 +15,14 @@
       Inverse controls, point, laugh.
    - Paintball mode
       Spray other ships with your colors! Rating 2 and up.
-      
-* Get rid of evil global variables.
+   - Negative gravity shield.
+      Send bullets flying away.
+   - Mirror image.
+      Copy of the ship that mirror the player, but turn in opposite directions.
+      Fires phony bullets, disappear when colliding something (different explosion visual).
 
-* Check if object is in view before drawing it on canvas.
-   Could save some more cycles.
-
-* Delete useless objects on client.
+* Scale with number of players.
+   Should scale : bonus drop, map size, planet density?
 
 * Bonuses are a bit spammy on an idle server right now.
    Could restrict to one bonus at a time.
@@ -35,7 +31,34 @@
    Not sure it is necessary right now. The gratuitous space combat is
    satisfying enough.
 
-* Ship explosion radius is affected by bullet speed. 
+= Graphics =
+
+* Enhance ship boost visual feedback.
+   Ghost image of ship trailing behind.
 
 * Leave some ephemeral traces of fight on planets.
    Ships and bullets splatters their colors. À la paintball.
+
+= Cleanup =
+      
+* Get rid of evil global variables.
+
+* Rework collisions.
+   - Use an event model: 'ship collided with planet' to avoid problems with
+     side-effects in each object affected by the collision.
+   - Do some checks before deciding exact collisions. Server can't handle
+     30 meager bonuses before crunching half a CPU.
+     Octree, larger bounding boxes, check if the object is interested in the collision or not.
+
+* Enhance bonus object.
+   Should be able to elegantly handle all crazy ideas we could have.
+   That means total control over the engine, not adding attributes to ship
+   for every bonus type. 
+   
+* Rework client drawing.
+   - Replace homebrew transformations by scale(), translate(), rotate.
+   - Use save() and restore(). Every object should set its own lineWidth.
+   - Find out why Core2 with puny graphic chipset can handle the client fullscreen
+     when beefier hardware can't.
+
+* Share prefs file with client.
