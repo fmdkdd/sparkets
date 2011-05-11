@@ -250,8 +250,8 @@ initPlanets = () ->
 	for [0...prefs.server.planetsCount]
 		colliding = yes
 		while colliding			  # Ensure none are colliding
-			rock = new Planet.Planet(Math.random()*2000,
-				Math.random()*2000,
+			rock = new Planet.Planet(Math.random() * prefs.server.mapSize.w,
+				Math.random() * prefs.server.mapSize.h,
 				50+Math.random()*50)
 			colliding = no
 			for p in planets
