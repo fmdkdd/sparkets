@@ -144,22 +144,16 @@ processInputs = (id) ->
 	if not ship? then return
 
 	# Left arrow : rotate to the left.
-	if keys[37] is on
-		ship.dir -= prefs.ship.dirInc
+	ship.turnLeft() if keys[37] is on
 
 	# Right arrow : rotate to the right.
-	if keys[39] is on
-		ship.dir += prefs.ship.dirInc
+	ship.turnRight() if keys[39] is on
 
 	# Up arrow : thrust forward.
-	if keys[38] is on
-		ship.vel.x += Math.sin(ship.dir) * prefs.ship.speed * ship.boost
-		ship.vel.y -= Math.cos(ship.dir) * prefs.ship.speed * ship.boost
-		ship.thrust = true
+	ship.ahead() if keys[38] is on
 
-	# Spacebar : charge the bullet.
-	if keys[32] or keys[65]
-		ship.firePower = Math.min(ship.firePower + 0.1, prefs.ship.maxFirepower)
+	# Spacebar/A : charge the bullet.
+	ship.chargeFire()	if keys[32] is on or keys[65] is on
 
 # Game loop
 update = () ->

@@ -8,6 +8,7 @@ exports.ship =
 	boostFactor: 2					  # Multiplies speed when boost is active.
 	boostDecay: 0.01				  # Decrease boost factor at each update.
 	minFirepower: 1.3				  # Lowest initial bullet speed.
+	firepowerInc: 0.1				  # Increase in firepower at each update.
 	maxFirepower: 3				  	# Highest initial bullet speed.
 	cannonCooldown: 20			  # Number of frames to wait before firing again.
 	maxExploFrame: 50				  # Duration of explosion animation in frames.

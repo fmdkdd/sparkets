@@ -52,6 +52,20 @@ class Ship extends ChangingObject.ChangingObject
 
 		@spawn() if @collidesWithPlanet()
 
+	turnLeft: () ->
+		@dir -= prefs.ship.dirInc
+
+	turnRight: () ->
+		@dir += prefs.ship.dirInc
+
+	ahead: () ->
+		@vel.x += Math.sin(@dir) * prefs.ship.speed * @boost
+		@vel.y -= Math.cos(@dir) * prefs.ship.speed * @boost
+		@thrust = true
+
+	chargeFire: () ->
+		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
+
 	move: () ->
 		return if @isDead() or @isExploding()
 
