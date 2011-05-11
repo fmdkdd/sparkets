@@ -22,7 +22,10 @@ maxExploFrame = 50
 maxBullets = 10
 cannonCooldown = 20
 
-id = null
+playerId = null
+shipId = null
+localShip = null
+
 ships = {}
 bonuses = {}
 
@@ -53,22 +56,22 @@ $(document).ready (event) ->
 	$(window).resize()
 
 # Setup input callbacks and launch game loop.
-go = (clientId) ->
-	id = clientId
+go = (id) ->
+	playerId = id
 
 	$(document).keydown ({keyCode}) ->
 		if not keys[keyCode]? or keys[keyCode] is off
 			keys[keyCode] = on
 			socket.send
 				type: 'key down'
-				playerId: id
+				playerId: playerId
 				key: keyCode
 
 	$(document).keyup ({keyCode}) ->
 		keys[keyCode] = off
 		socket.send
 			type: 'key up'
-			playerId: id
+			playerId: playerId
 			key: keyCode
 
 	update()
@@ -112,16 +115,16 @@ redraw = (ctxt) ->
 	drawInfinity ctxt
 
 	# Draw UI
-	drawRadar ctxt if ships[id]? and not ships[id].isDead()
+	drawRadar ctxt if localShip? and not localShip.isDead()
 
 centerView = () ->
-	if gameObjects[id]?
-		view.x = gameObjects[id].pos.x - screen.w/2
-		view.y = gameObjects[id].pos.y - screen.h/2
+	if localShip?
+		view.x = localShip.pos.x - screen.w/2
+		view.y = localShip.pos.y - screen.h/2
 
 drawRadar = (ctxt) ->
 	for i, s of ships
-		if i isnt id and not s.isDead()
+		if i isnt shipId and not s.isDead()
 			s.drawOnRadar(ctxt)
 
 	for i, b of bonuses
@@ -193,12 +196,14 @@ onMessage = (msg) ->
 
 		# When receiving our id from the server.
 		when 'connected'
+			shipId = msg.shipId
+			localShip = gameObjects[shipId]
 			go(msg.playerId)
 
 		# When another player leaves.
 		when 'player quits'
-			delete ships[msg.playerId]
-			delete gameObjects[msg.playerId]
+			delete ships[msg.shipId]
+			delete gameObjects[msg.shipId]
 			console.info 'player '+msg.playerId+' quits'
 
 	return true

@@ -34,60 +34,57 @@ server.listen port
 # Socket.IO setup
 
 prefs = require './prefs'
-Ship = require './ship'
-Bullet = require './bullet'
+Player = require './player'
 Bonus = require './bonus'
 Planet = require './planet'
 utils = require '../utils'
 
 io = io.listen server
 
-io.on 'clientConnect', (player) ->
-	# Send list of connected players.
-	for id of exports.players
-		player.send
-			type: 'player list'
-			playerId: id
+io.on 'clientConnect', (client) ->
+	id = client.sessionId
 
 	# Add new player to player list.
-	id = player.sessionId
-	exports.players[id] =
-		id: id
-		keys: {}
+	player = exports.players[id] = new Player.Player(id)
 
 	# Create ship.
-	exports.gameObjects[id] = exports.ships[id] = new Ship.Ship id
+	exports.newGameObject( (id) ->
+		player.createShip(id) )
 
 	# Send the playfield.
-	player.send
+	client.send
 		type: 'objects update'
 		objects: exports.planets
 
-	# Send other game objects.
-	player.send
+	# Send game objects.
+	client.send
 		type: 'objects update'
 		objects: exports.gameObjects
 
 	# Good news!
-	player.send
+	client.send
 		type: 'connected'
 		playerId: id
+		shipId: player.ship.id
 
-io.on 'clientMessage', (msg, player) ->
+io.on 'clientMessage', (msg, client) ->
 	switch msg.type
-		when 'key down' then processKeyDown msg.playerId, msg.key
-		when 'key up' then processKeyUp msg.playerId, msg.key
+		when 'key down'
+			exports.players[msg.playerId].keyDown(msg.key)
+		when 'key up'
+			exports.players[msg.playerId].keyUp(msg.key)
 
-io.on 'clientDisconnect', (player) ->
-	# Purge from list.
-	id = player.sessionId
-	delete exports.players[id]
-	deleteObject id
+io.on 'clientDisconnect', (client) ->
+	id = client.sessionId
 
 	# Tell everyone.
-	player.broadcast
+	client.broadcast
 		type: 'player quits'
-		playerId : id
+		playerId: id
+		shipId : exports.players[id].ship.id
+
+	# Purge objects belonging to client.
+	delete exports.players[id]
 
 console.log "Server started"
 
@@ -101,7 +98,6 @@ exports.now = 0
 
 exports.players = {}
 
-exports.ships = {}
 exports.bullets = {}
 exports.mines = {}
 exports.bonuses = {}
@@ -110,56 +106,11 @@ exports.planets = {}
 exports.gameObjects = {}
 exports.gameObjectCount = 0
 
-# Input processing
-
-processKeyDown = (id, key) ->
-	exports.players[id].keys[key] = on
-
-processKeyUp = (id, key) ->
-	exports.players[id].keys[key] = off
-	ship = exports.ships[id]
-
-	# Fire the bullet or respawn if the spacebar is released.
-	if key is 32 or key is 65
-		if ship.isDead()
-			ship.spawn()
-		else
-			ship.fire()
-
-	if key is 38
-		ship.thrust = false
-
-	# Z : drop a mine.
-	if key is 90
-		ship.dropMine()
-
-	# X: 88 miles/h
-	if key is 88
-		ship.boost = prefs.ship.boostFactor
-
-processInputs = (id) ->
-	keys = exports.players[id].keys
-	ship = exports.ships[id]
-
-	if not ship? then return
-
-	# Left arrow : rotate to the left.
-	ship.turnLeft() if keys[37] is on
-
-	# Right arrow : rotate to the right.
-	ship.turnRight() if keys[39] is on
-
-	# Up arrow : thrust forward.
-	ship.ahead() if keys[38] is on
-
-	# Spacebar/A : charge the bullet.
-	ship.chargeFire()	if keys[32] is on or keys[65] is on
-
 # Game loop
 update = () ->
 	start = now = (new Date).getTime()
 
-	processInputs id for id of exports.players
+	player.update() for id, player of exports.players
 
 	updateObjects(exports.gameObjects)
 
@@ -226,8 +177,6 @@ deleteObject = (id) ->
 			delete exports.mines[id]
 		when 'planet'
 			delete exports.planets[id]
-		when 'ship'
-			delete exports.ships[id]
 
 	delete exports.gameObjects[id]
 

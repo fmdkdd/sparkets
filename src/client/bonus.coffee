@@ -43,8 +43,6 @@ class Bonus
 		ctxt.restore()
 
 	drawOnRadar: (ctxt) ->
-		localShip = ships[id]
-
 		# Select the closest bonus among the real one and its ghosts.
 		bestDistance = Infinity
 		for j in [-1..1]

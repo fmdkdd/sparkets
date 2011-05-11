@@ -162,8 +162,6 @@ class Ship
 				ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
 
 	drawOnRadar: (ctxt) ->
-		localShip = ships[id]
-
 		# Select the closest ship among the real one and its ghosts.
 		bestDistance = Infinity
 		for j in [-1..1]
