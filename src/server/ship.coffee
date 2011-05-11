@@ -148,8 +148,8 @@ class Ship extends ChangingObject.ChangingObject
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
-		id = globals.gameObjectCount++
-		globals.gameObjects[id] = globals.bullets[id] = new Bullet.Bullet(@, id)
+		globals.newGameObject (id) =>
+			globals.bullets[id] = new Bullet.Bullet(@, id)
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown
@@ -157,8 +157,8 @@ class Ship extends ChangingObject.ChangingObject
 	dropMine: () ->
 		return if @isDead() or @isExploding() or @mines == 0
 
-		id = globals.gameObjectCount++
-		globals.gameObjects[id] = globals.mines[id] = new Mine.Mine(@, id)
+		globals.newGameObject (id) =>
+			globals.mines[id] = new Mine.Mine(@, id)
 
 		--@mines
 

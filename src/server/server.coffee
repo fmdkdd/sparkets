@@ -210,6 +210,10 @@ updateObjects = (objects) ->
 			type: 'objects update'
 			objects: allChanges
 
+exports.newGameObject = (creator) ->
+	id = exports.gameObjectCount++
+	exports.gameObjects[id] = creator(id)
+
 deleteObject = (id) ->
 	type = exports.gameObjects[id].type
 
@@ -255,8 +259,8 @@ initPlanets = () ->
 	return planets
 
 spawnBonus = () ->
-	id = exports.gameObjectCount++
-	exports.gameObjects[id] = exports.bonuses[id] = new Bonus.Bonus(id)
+	exports.newGameObject (id) ->
+		exports.bonuses[id] = new Bonus.Bonus(id)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Launch the game loop once everything is defined.
