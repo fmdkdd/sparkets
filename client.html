@@ -5,6 +5,7 @@
   <script src="/jquery.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/client.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
   <style>
 	* {
 			margin : 0;
@@ -19,8 +20,9 @@
 			height: 500px;
 			margin: auto;
 			position: relative;
+			padding: 20px;
 			border-radius: 5px;
-			background-color: purple; }
+			background-color: rgba(120, 0, 181, 1); }
 	#menu.hidden {
 			top: -600px;
 			-webkit-transition: top 1s ease-in;
@@ -37,18 +39,37 @@
 			float: right;
 			width: 50%;
 	}
+	h1 {
+			margin-bottom: 20px;
+			font-family: 'Quattrocento Sans';
+			font-weight: normal;
+			color: white;
+	}
+	p {
+			font-family: 'Quattrocento Sans';
+			color: white;
+	}
+	a {
+			text-decoration: underline;
+			color: white;
+	}
   </style>
 </head>
 <body>
   <canvas id="canvas">Canvas not supported.</canvas>
 
 	<div id="menu" class="hidden">
+
 		<div id="customize">
-			color wheel + name
+			<h1>You.</h1>
 		</div>
+
 		<div id="about">
-			lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin lorem machin 
+			<h1>Us.</h1>
+			<p>Hello, this is Spacewar.</p>
 		</div>
+
 	</div>
+
 </body>
 </html>
