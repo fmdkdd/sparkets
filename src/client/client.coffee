@@ -35,6 +35,7 @@ showHitCircles = no
 
 # Entry point
 $(document).ready (event) ->
+
 	# Connect to server and set callbacks.
 	socket = new io.Socket null, {port: port}
 	socket.connect()
@@ -44,13 +45,21 @@ $(document).ready (event) ->
 
 	# Setup canvas.
 	ctxt = document.getElementById('canvas').getContext('2d')
-
+	
 	# Setup window resizing event.
 	$(window).resize (event) =>
 		screen.w = document.getElementById('canvas').width = window.innerWidth
 		screen.h = document.getElementById('canvas').height = window.innerHeight
 		centerView()
 	$(window).resize()
+
+	# Let the menu peek out when the user moves the cursor to the detection area.
+	$(document).click (event) =>
+		m = $('#menu')
+		if m.attr('class') is 'hidden'
+			m.attr('class', 'visible')
+		else
+			m.attr('class', 'hidden')
 
 # Setup input callbacks and launch game loop.
 go = (clientId) ->
