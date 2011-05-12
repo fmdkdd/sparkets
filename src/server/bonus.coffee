@@ -1,9 +1,9 @@
-ChangingObject = require './changingObject'
-globals = require './server'
+ChangingObject = require('./changingObject').ChangingObject
+server = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 
-class Bonus extends ChangingObject.ChangingObject
+class Bonus extends ChangingObject
 	constructor: (@id) ->
 		super()
 
@@ -34,12 +34,7 @@ class Bonus extends ChangingObject.ChangingObject
 		@collisions = []
 		@empty = yes
 
-		@spawn() if @collidesWithPlanet()
-
-	collidesWithPlanet: () ->
-		for id, planet of globals.planets
-			return true if @collidesWith(planet)
-		return false
+		@spawn() if server.game.collidesWithPlanet(@)
 
 	tangible: () ->
 		@state isnt 'dead'

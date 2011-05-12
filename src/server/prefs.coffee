@@ -15,6 +15,7 @@ exports.ship =
 	enableGravity: false			# If true, planets gravity affect ships.
 
 exports.server =
+	port: 12345
 	timestep: 20					  	# ms between two a server update.
 	maxBullets: 10					  # Max number of bullets updated by the server
 		                        # Oldest bullets are simply discarded.

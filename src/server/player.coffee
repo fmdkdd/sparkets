@@ -1,6 +1,6 @@
 server = require './server'
 prefs = require './prefs'
-Ship = require './ship'
+Ship = require('./ship').Ship
 
 class Player
 	constructor: (@id) ->
@@ -8,7 +8,7 @@ class Player
 		@ship = null
 
 	createShip: (id) ->
-		@ship = new Ship.Ship(id)
+		@ship = new Ship(id)
 
 	keyDown: (key) ->
 		@keys[key] = on

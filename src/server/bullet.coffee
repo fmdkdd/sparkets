@@ -1,9 +1,9 @@
-ChangingObject = require './changingObject'
-globals = require './server'
+ChangingObject = require('./changingObject').ChangingObject
+server = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 
-class Bullet extends ChangingObject.ChangingObject
+class Bullet extends ChangingObject
 	constructor: (@owner, @id) ->
 		super()
 
@@ -43,7 +43,7 @@ class Bullet extends ChangingObject.ChangingObject
 		{x: ax, y: ay} = @accel
 
 		g = prefs.bullet.gravityPull
-		for id, p of globals.planets
+		for id, p of server.game.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 			d2 = g * p.force / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2

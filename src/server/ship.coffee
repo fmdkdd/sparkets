@@ -1,11 +1,11 @@
-ChangingObject = require './changingObject'
-globals = require './server'
+ChangingObject = require('./changingObject').ChangingObject
+server = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 Bullet = require './bullet'
 Mine = require './mine'
 
-class Ship extends ChangingObject.ChangingObject
+class Ship extends ChangingObject
 	constructor: (@id) ->
 		super()
 
@@ -50,7 +50,7 @@ class Ship extends ChangingObject.ChangingObject
 		@collisions = []
 		@killingAccel = {x: 0, y: 0}
 
-		@spawn() if @collidesWithPlanet()
+		@spawn() if server.game.collidesWithPlanet(@)
 
 	turnLeft: () ->
 		@dir -= prefs.ship.dirInc
@@ -74,7 +74,7 @@ class Ship extends ChangingObject.ChangingObject
 		if prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
-			for id, p of globals.planets
+			for id, p of server.game.planets
 				d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 				d2 = 20 * p.force / (d * Math.sqrt(d))
 				ax -= (x-p.pos.x) * d2
@@ -103,11 +103,6 @@ class Ship extends ChangingObject.ChangingObject
 				Math.abs(@pos.y-y) > .05
 			@changed 'pos'
 			@changed 'vel'
-
-	collidesWithPlanet: () ->
-		for id, planet of globals.planets
-			return true if @.collidesWith(planet)
-		return false
 
 	tangible: () ->
 		not @dead and not @exploding
@@ -148,8 +143,8 @@ class Ship extends ChangingObject.ChangingObject
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
-		globals.newGameObject (id) =>
-			globals.bullets[id] = new Bullet.Bullet(@, id)
+		server.game.newGameObject (id) =>
+			server.game.bullets[id] = new Bullet.Bullet(@, id)
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown
@@ -157,8 +152,8 @@ class Ship extends ChangingObject.ChangingObject
 	dropMine: () ->
 		return if @isDead() or @isExploding() or @mines == 0
 
-		globals.newGameObject (id) =>
-			globals.mines[id] = new Mine.Mine(@, id)
+		server.game.newGameObject (id) =>
+			server.game.mines[id] = new Mine.Mine(@, id)
 
 		--@mines
 

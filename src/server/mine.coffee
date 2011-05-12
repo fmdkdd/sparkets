@@ -1,8 +1,8 @@
-ChangingObject = require './changingObject'
+ChangingObject = require('./changingObject').ChangingObject
 prefs = require './prefs'
 utils = require '../utils'
 
-class Mine extends ChangingObject.ChangingObject
+class Mine extends ChangingObject
 	constructor: (ship, @id) ->
 		super()
 
