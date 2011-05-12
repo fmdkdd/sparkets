@@ -2,19 +2,22 @@
 <html>
 <head>
   <title>Spacewar!</title>
+	<link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/client.js"></script>
-	<link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
   <style>
 	* {
 			margin : 0;
-			padding : 0; }
+			padding : 0;
+			font-family: 'Quattrocento Sans'; }
+
 	#canvas {
 			position: absolute;
 			width: 100%;
 			height: 100%;
 			z-index: -1; }
+
 	#menu {
 			width: 700px;
 			height: 500px;
@@ -22,37 +25,51 @@
 			position: relative;
 			padding: 20px;
 			border-radius: 5px;
-			background-color: rgba(120, 0, 181, 1); }
+			background: rgba(120, 0, 181, 1); }
 	#menu.hidden {
 			top: -600px;
-			-webkit-transition: top 1s ease-in;
-	}
+			-webkit-transition: top 1s ease-in; }
 	#menu.visible {
 			top: 50px;
-			-webkit-transition: top 1s ease-out;
-	}
+			-webkit-transition: top 1s ease-out; }
+
 	#customize {
+			position: relative;
 			float: left;
 			width: 50%;
-	}
+			height: 100%; }
+	#colorwheel {
+			width: 200px;
+			height: 200px;
+			margin: auto;
+			margin-bottom: 5%;
+			border: 1px solid white; }
+	#nameForm {
+			width: 100%;
+			text-align: center; }
+	#name {
+			display: block;
+			width: 200px;
+			margin: auto;
+			margin-bottom: 5%; }
+	#displayNamesBox {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			color: white; }
+
 	#about {
 			float: right;
-			width: 50%;
-	}
+			width: 50%; }
 	h1 {
 			margin-bottom: 20px;
-			font-family: 'Quattrocento Sans';
 			font-weight: normal;
-			color: white;
-	}
+			color: white;	}
 	p {
-			font-family: 'Quattrocento Sans';
-			color: white;
-	}
+			color: white; }
 	a {
 			text-decoration: underline;
-			color: white;
-	}
+			color: white; }
   </style>
 </head>
 <body>
@@ -63,13 +80,18 @@
 		<div id="customize">
 			<h1>You.</h1>
 			
-			<form id="nameform">
+			<div id="colorwheel">
+			</div>
+
+			<form id="nameForm">
 				<input type="text" id="name"/>
-				<input type="submit" value="Ok"/>
+				<input type="submit" value="Save name and color"/>
 			</form>
 			
-			<input type="checkbox" value="false" id="displaynames" name="x"/>
-			Always display players' names
+			<div id="displayNamesBox">
+				<input type="checkbox" value="false" id="displayNames"/>
+				Always display players' names
+			</div>
 		</div>
 
 		<div id="about">
