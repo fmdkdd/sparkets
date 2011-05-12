@@ -72,7 +72,7 @@ class GameServer
 			when 'key up'
 				@players[msg.playerId].keyUp(msg.key)
 
-			when 'name changed'
+			when 'prefs changed'
 				@players[msg.playerId].changeName(msg.name)
 
 	clientDisconnect: (client) ->

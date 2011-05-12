@@ -74,19 +74,42 @@ $(document).ready (event) ->
 
 	# Send a message to the server when the user changes his name.
 	$('#nameForm').submit (event) =>
-		socket.send
-			type: 'name changed'
-			playerId: playerId
-			name: $('#name').val()
+		sendPreferences($('#name').val())
+		saveLocalPreferences($('#name').val())
 		event.preventDefault()
 
 	# Toggle the name display option.
 	$('#displayNames').change (event) ->
 		displayNames = $(this).is(':checked')
 
+sendPreferences = (name) ->
+		socket.send
+			type: 'prefs changed'
+			playerId: playerId
+			name: name
+
+# Store user preferences in the browser local storage.
+saveLocalPreferences = (name) ->
+	localStorage['spacewar.name'] = name
+
+	info 'Preferences saved.'
+
+# Restores user preferences in the browser local storage.
+restoreLocalPreferences = () ->
+	name = localStorage['spacewar.name']
+
+	# Send the preferences to the server and fill the menu.
+	if name?
+		sendPreferences(name)
+		$('#name').val(name)
+		console.info 'Preferences restored.'
+
 # Setup input callbacks and launch game loop.
 go = (id) ->
 	playerId = id
+
+	# Check if user preferences are stored locally.
+	restoreLocalPreferences()
 
 	$(document).keydown ({keyCode}) ->
 		if not keys[keyCode]? or keys[keyCode] is off
@@ -183,7 +206,7 @@ drawInfinity = (ctxt) ->
 	return true
 
 onConnect = () ->
-	info "Connected to server"
+	info "Connected to server."
 
 onDisconnect = () ->
 	info "Aaargh! Disconnected!"
@@ -233,6 +256,6 @@ onMessage = (msg) ->
 		when 'player quits'
 			delete ships[msg.shipId]
 			delete gameObjects[msg.shipId]
-			console.info 'player '+msg.playerId+' quits'
+			info 'Player '+msg.playerId+' quits'
 
 	return true
