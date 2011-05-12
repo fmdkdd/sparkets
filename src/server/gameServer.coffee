@@ -73,8 +73,7 @@ class GameServer
 				@players[msg.playerId].keyUp(msg.key)
 
 			when 'name changed'
-				@players[msg.playerId].name = msg.name
-				console.log msg.name
+				@players[msg.playerId].changeName(msg.name)
 
 	clientDisconnect: (client) ->
 		id = client.sessionId

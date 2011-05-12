@@ -6,10 +6,9 @@ class Player
 	constructor: (@id) ->
 		@keys = {}
 		@ship = null
-		@name = null
 
 	createShip: (id) ->
-		@ship = new Ship(id)
+		@ship = new Ship(id, @id)
 
 	keyDown: (key) ->
 		@keys[key] = on
@@ -49,5 +48,9 @@ class Player
 
 		# Spacebar/A : charge the bullet.
 		@ship.chargeFire() if @keys[32] is on or @keys[65] is on
+
+	changeName: (name) ->
+		@name = name
+		@ship.name = name
 
 exports.Player = Player

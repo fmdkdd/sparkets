@@ -116,6 +116,11 @@ class Ship
 			ctxt.stroke()
 			ctxt.restore()
 
+		# Draw the player name.
+		if @name?
+			ctxt.fillStyle = 'black'
+			ctxt.fillText(@name, x - 20, y - 20)
+
 	explode: () ->
 		@explosionBits = []
 
