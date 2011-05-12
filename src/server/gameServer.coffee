@@ -68,8 +68,13 @@ class GameServer
 		switch msg.type
 			when 'key down'
 				@players[msg.playerId].keyDown(msg.key)
+
 			when 'key up'
 				@players[msg.playerId].keyUp(msg.key)
+
+			when 'name changed'
+				@players[msg.playerId].name = msg.name
+				console.log msg.name
 
 	clientDisconnect: (client) ->
 		id = client.sessionId

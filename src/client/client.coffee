@@ -64,6 +64,14 @@ $(document).ready (event) ->
 	$('#menu').click (event) =>
 		event.stopPropagation()
 
+	# Send a message to the server when the user changes his name.
+	$('#nameform').submit (event) =>
+		socket.send
+			type: 'name changed'
+			playerId: playerId
+			name: $('#name').val()
+		event.preventDefault()
+
 # Setup input callbacks and launch game loop.
 go = (id) ->
 	playerId = id

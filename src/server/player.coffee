@@ -6,6 +6,7 @@ class Player
 	constructor: (@id) ->
 		@keys = {}
 		@ship = null
+		@name = null
 
 	createShip: (id) ->
 		@ship = new Ship(id)
