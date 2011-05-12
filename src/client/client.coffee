@@ -90,10 +90,16 @@ $(document).ready (event) ->
 		dx = wheel.width()/2 - (event.pageX - wheel.offset().left)
 		dy = wheel.height()/2 - (event.pageY - wheel.offset().top)
 		a = Math.atan2(-dy, dx)+	2*Math.PI/2
+
 		wheelRatio = a/(2*Math.PI)
 		colorIndex = Math.floor(wheelRatio*12)
-		c = colors[colorIndex][0]+','+colors[colorIndex][1]+','+colors[colorIndex][2]
-		
+		colorRatio = wheelRatio*12 - colorIndex
+
+		trueColor = [0, 0, 0]
+		for i in [0..2]
+			trueColor[i] = colors[colorIndex][i] + Math.floor(colorRatio*(colors[(colorIndex+1)%12][i] - colors[colorIndex][i]))
+		c = trueColor[0]+','+trueColor[1]+','+trueColor[2]
+		info c
 		# Store the color in a hidden field.
 		$('#color').val(c)
 		$('h1:first').css('color', 'rgb('+c+')')
