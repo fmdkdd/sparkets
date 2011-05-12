@@ -102,7 +102,6 @@ $(document).ready (event) ->
 		info c
 		# Store the color in a hidden field.
 		$('#color').val(c)
-		$('h1:first').css('color', 'rgb('+c+')')
 
 	# Send a message to the server when the user changes his preferences.
 	$('#nameForm').submit (event) =>
