@@ -60,6 +60,9 @@ $(document).ready (event) ->
 	$(document).click (event) =>
 		$('#menu').toggleClass('hidden visible')
 
+		if $('#menu').attr('class') is 'visible'
+			$('#name').focus()
+
 	# Do not propagate a click event if the user clicked on the menu.
 	$('#menu').click (event) =>
 		event.stopPropagation()
