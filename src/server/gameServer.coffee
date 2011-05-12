@@ -73,7 +73,7 @@ class GameServer
 				@players[msg.playerId].keyUp(msg.key)
 
 			when 'prefs changed'
-				@players[msg.playerId].changeName(msg.name)
+				@players[msg.playerId].changePrefs(msg.name, msg.color)
 
 	clientDisconnect: (client) ->
 		id = client.sessionId

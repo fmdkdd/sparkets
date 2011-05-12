@@ -7,6 +7,7 @@ ctxt = null
 screen = {w: 0, h: 0}
 map = {w: 2000, h: 2000}
 view = {x: 0, y: 0}
+colors = [] # TEMP (major colors of the color wheel)
 
 # Time
 now = null
@@ -68,41 +69,76 @@ $(document).ready (event) ->
 		else
 			$('#name').blur()
 
-	# Do not propagate a click event if the user clicked on the menu.
+	# Do not propagate a click event when the user clicked on the menu.
 	$('#menu').click (event) =>
 		event.stopPropagation()
 
-	# Send a message to the server when the user changes his name.
+	# Generate the major colors of an HSV color wheel
+	# (empiric, there may be a clearer way to do that) 
+	c = [0, 254, 0]
+	ci = 0
+	s = 1
+	for i in [0..11]
+		if (c[ci] is 254 or c[ci] is 0) and i isnt 0
+			s *= -1
+			ci = ++ci % 3
+		c[ci] += s*127
+		colors.push c.slice(0)
+
+	$('#colorwheel').click (event) =>
+		wheel = $('#colorwheel')
+		dx = wheel.width()/2 - (event.pageX - wheel.offset().left)
+		dy = wheel.height()/2 - (event.pageY - wheel.offset().top)
+		a = Math.atan2(-dy, dx)+	2*Math.PI/2
+		wheelRatio = a/(2*Math.PI)
+		colorIndex = Math.floor(wheelRatio*12)
+		c = colors[colorIndex][0]+','+colors[colorIndex][1]+','+colors[colorIndex][2]
+		
+		# Store the color in a hidden field.
+		$('#color').val(c)
+		$('h1:first').css('color', 'rgb('+c+')')
+
+	# Send a message to the server when the user changes his preferences.
 	$('#nameForm').submit (event) =>
-		sendPreferences($('#name').val())
-		saveLocalPreferences($('#name').val())
+		sendPreferences()
+		saveLocalPreferences()
 		event.preventDefault()
 
 	# Toggle the name display option.
 	$('#displayNames').change (event) ->
 		displayNames = $(this).is(':checked')
 
-sendPreferences = (name) ->
+sendPreferences = () ->
+		color =  $('#color').val() or null
+		name =  $('#name').val() or null
+
 		socket.send
 			type: 'prefs changed'
 			playerId: playerId
+			color: color
 			name: name
 
 # Store user preferences in the browser local storage.
-saveLocalPreferences = (name) ->
-	localStorage['spacewar.name'] = name
+saveLocalPreferences = () ->
+	color =  $('#color').val() or null
+	name =  $('#name').val() or null
+
+	localStorage['spacewar.color'] = color if color?
+	localStorage['spacewar.name'] = name if name?
 
 	info 'Preferences saved.'
 
 # Restores user preferences in the browser local storage.
 restoreLocalPreferences = () ->
+	color = localStorage['spacewar.color']
 	name = localStorage['spacewar.name']
 
-	# Send the preferences to the server and fill the menu.
-	if name?
-		sendPreferences(name)
-		$('#name').val(name)
-		console.info 'Preferences restored.'
+	# Fill the menu and send the preferences to the server.
+	$('#color').val(color) if color?
+	$('#name').val(name) if name?
+	sendPreferences()
+
+	info 'Preferences restored.' if color? or name?
 
 # Setup input callbacks and launch game loop.
 go = (id) ->

@@ -49,8 +49,8 @@ class Player
 		# Spacebar/A : charge the bullet.
 		@ship.chargeFire() if @keys[32] is on or @keys[65] is on
 
-	changeName: (name) ->
-		@name = name
-		@ship.name = name
+	changePrefs: (name, color) ->
+		@ship.name = name if name?
+		@ship.color = color if color?
 
 exports.Player = Player
