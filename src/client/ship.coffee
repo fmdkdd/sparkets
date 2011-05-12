@@ -116,10 +116,10 @@ class Ship
 			ctxt.stroke()
 			ctxt.restore()
 
-		# Draw the player name if the local player is dead.
-		if 	@name? # and
-				#@ isnt localShip and
-				#(localShip.isExploding() or localShip.isDead())
+		# Draw the player's name.
+		if 	@name?  and @ isnt localShip and
+				(displayNames is on or
+				localShip.isExploding() or localShip.isDead())
 			ctxt.fillStyle = 'black'
 			ctxt.font = '15px Quattrocento sans'
 			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)

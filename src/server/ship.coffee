@@ -27,7 +27,7 @@ class Ship extends ChangingObject
 			'boost' )
 
 		@type = 'ship'
-		@name = 'robert le chauve'
+		@name = 'merwaaaaan blabla long name'
 		@color = utils.randomColor()
 		@hitRadius = prefs.ship.hitRadius
 

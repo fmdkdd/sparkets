@@ -33,6 +33,9 @@ gameObjects = {}
 
 keys = {}
 
+# user preferences
+displayNames = no
+
 # Debugging
 showHitCircles = no
 
@@ -62,6 +65,8 @@ $(document).ready (event) ->
 
 		if $('#menu').attr('class') is 'visible'
 			$('#name').focus()
+		else
+			$('#name').blur()
 
 	# Do not propagate a click event if the user clicked on the menu.
 	$('#menu').click (event) =>
@@ -74,6 +79,10 @@ $(document).ready (event) ->
 			playerId: playerId
 			name: $('#name').val()
 		event.preventDefault()
+
+	#
+	$('#displaynames').change (event) ->
+		displayNames = $(this).is(':checked')
 
 # Setup input callbacks and launch game loop.
 go = (id) ->
