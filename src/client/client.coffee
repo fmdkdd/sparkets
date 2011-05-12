@@ -56,13 +56,13 @@ $(document).ready (event) ->
 		centerView()
 	$(window).resize()
 
-	# Let the menu peek out when the user moves the cursor to the detection area.
+	# Let the menu out when the user clicks anywhere.
 	$(document).click (event) =>
-		m = $('#menu')
-		if m.attr('class') is 'hidden'
-			m.attr('class', 'visible')
-		else
-			m.attr('class', 'hidden')
+		$('#menu').toggleClass('hidden visible')
+
+	# Do not propagate a click event if the user clicked on the menu.
+	$('#menu').click (event) =>
+		event.stopPropagation()
 
 # Setup input callbacks and launch game loop.
 go = (id) ->
