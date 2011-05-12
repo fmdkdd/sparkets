@@ -8,7 +8,7 @@ js = (path) ->
 server = http.createServer (req, res) ->
 	path = url.parse(req.url).pathname
 	switch path
-		when '/client.html', '/client.js', '/jquery.js'
+		when '/client.html', '/client.js'
 			fs.readFile __dirname + '/../..' + path, (err, data) ->
 				return send404(res) if err?
 				res.writeHead 200,
