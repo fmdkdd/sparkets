@@ -76,16 +76,18 @@ class GameServer
 				@players[msg.playerId].changePrefs(msg.name, msg.color)
 
 	clientDisconnect: (client) ->
-		id = client.sessionId
+		playerId = client.sessionId
+		shipId = @players[playerId].ship.id
 
 		# Tell everyone.
 		client.broadcast
 			type: 'player quits'
-			playerId: id
-			shipId : @players[id].ship.id
+			playerId: playerId
+			shipId : shipId
 
 		# Purge objects belonging to client.
-		delete @players[id]
+		@deleteObject(shipId)
+		delete @players[playerId]
 
 	# Game loop
 	update: () ->
