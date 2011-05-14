@@ -46,6 +46,7 @@ class Ship extends ChangingObject
 		@cannonHeat = 0
 		@bonus = null
 		@boost = 1
+		@boostDecay = 0
 		@dead = false
 		@exploding = false
 		@exploFrame = 0
@@ -69,7 +70,7 @@ class Ship extends ChangingObject
 
 	useBonus: () ->
 		return if @isDead() or @isExploding() or not @bonus?
-		@bonus.use()
+		@bonusTimeout = @bonus.use()
 
 	move: () ->
 		return if @isDead() or @isExploding()
@@ -129,7 +130,7 @@ class Ship extends ChangingObject
 		else
 			--@cannonHeat if @cannonHeat > 0
 
-			@boost -= prefs.ship.boostDecay if @boost > 1
+			@boost -= @boostDecay if @boost > 1
 			@boost = 1 if @boost < 1
 
 	fire : () ->

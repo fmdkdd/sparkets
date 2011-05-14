@@ -13,5 +13,8 @@ class BonusMine
 			server.game.mines[id] = new Mine(@ship, id)
 
 		--@mines
+		@ship.bonus = null if @mines == 0
 
 exports.BonusMine = BonusMine
+exports.constructor = BonusMine
+exports.type = 'bonusMine'

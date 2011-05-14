@@ -1,3 +1,6 @@
+BonusBoost = require './bonusBoost'
+BonusMine = require './bonusMine'
+
 # Server constants.
 
 exports.ship =
@@ -5,8 +8,6 @@ exports.ship =
 	dirInc: 0.12						  	# Rotation increase at input update.
 	speed: 0.3						  	# Velocity increase at input update
 	frictionDecay: 0.97			  # Inertia decay at ship update.
-	boostFactor: 2					  # Multiplies speed when boost is active.
-	boostDecay: 0.01				  # Decrease boost factor at each update.
 	minFirepower: 1.3				  # Lowest initial bullet speed.
 	firepowerInc: 0.1				  # Increase in firepower at each update.
 	maxFirepower: 3				  	# Highest initial bullet speed.
@@ -51,6 +52,8 @@ exports.mine =
 			next: null
 
 exports.bonus =
+	bonusType:
+		[ BonusBoost, BonusMine ]
 	hitRadius: 10					  # Radius of hit circle.
 	modelSize: 20							# Drawing size on client.
 	states:
@@ -66,3 +69,8 @@ exports.bonus =
 
 exports.bonus.mine =
 	mineCount: 2					  # Number of held mines.
+
+exports.bonus.boost =
+	boostFactor: 2					 # Initial speed multiplier.
+	boostDuration: 1500			 # Duration of initial boost.
+	boostDecay: 0.02				  # Decrease boost factor in decay state.

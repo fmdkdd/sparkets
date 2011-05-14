@@ -1,6 +1,7 @@
 ChangingObject = require('./changingObject').ChangingObject
 server = require './server'
-BonusMine = require('./bonusMine').BonusMine
+BonusMine = require './bonusMine'
+BonusBoost = require './bonusBoost'
 prefs = require './prefs'
 utils = require '../utils'
 
@@ -16,6 +17,7 @@ class Bonus extends ChangingObject
 		@watchChanges 'modelSize'
 		@watchChanges 'pos'
 		@watchChanges 'serverDelete'
+		@watchChanges 'bonusType'
 
 		@type = 'bonus'
 
@@ -33,7 +35,11 @@ class Bonus extends ChangingObject
 			y: Math.random() * prefs.server.mapSize.h
 		@color = utils.randomColor()
 		@empty = yes
-		@bonusEffet = BonusMine
+
+		# Choose bonus type.
+		type = utils.randomElem prefs.bonus.bonusType
+		@bonusEffect = type.constructor
+		@bonusType = type.type
 
 		@spawn() if server.game.collidesWithPlanet(@)
 

@@ -30,10 +30,6 @@ class Player
 		if key is 90
 			@ship.useBonus()
 
-		# X: 88 miles/h
-		if key is 88
-			@ship.boost = prefs.ship.boostFactor
-
 	update: () ->
 		return if not @ship?
 

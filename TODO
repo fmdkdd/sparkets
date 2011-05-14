@@ -30,6 +30,9 @@
 
 = Graphics =
 
+* Current bonus visual clue.
+   Without polluting the UI. À la Mario Kart: floating around ship?
+
 * Enhance ship boost visual feedback.
    Ghost image of ship trailing behind.
 
@@ -44,11 +47,6 @@
    - Do some checks before deciding exact collisions. Server can't handle
      30 meager bonuses before crunching half a CPU.
      Octree, larger bounding boxes, check if the object is interested in the collision or not.
-
-* Enhance bonus object.
-   Should be able to elegantly handle all crazy ideas we could have.
-   That means total control over the engine, not adding attributes to ship
-   for every bonus type. 
    
 * Rework client drawing.
    - Replace homebrew transformations by scale(), translate(), rotate.

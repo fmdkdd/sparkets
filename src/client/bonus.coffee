@@ -33,14 +33,37 @@ class Bonus
 
 		ctxt.fillStyle = color @color
 		ctxt.strokeStyle = color @color
+
 		ctxt.lineWidth = 2
 		ctxt.save()
 		ctxt.translate(x, y)
 		ctxt.strokeRect(-s/2, -s/2, s, s)
-		ctxt.fillRect(-r, -r, r*2, r*2)
-		ctxt.rotate(Math.PI/4)
-		ctxt.fillRect(-r, -r, r*2, r*2)
+
+		switch @bonusType
+			when 'bonusMine'
+				ctxt.fillRect(-r, -r, r*2, r*2)
+				ctxt.rotate(Math.PI/4)
+				ctxt.fillRect(-r, -r, r*2, r*2)
+
+			when 'bonusBoost'
+				ctxt.save()
+				ctxt.translate(0, -6)
+				@drawArrow(ctxt)
+				ctxt.restore()
+
 		ctxt.restore()
+
+	drawArrow: (ctxt) ->
+		ctxt.beginPath()
+		ctxt.moveTo(0, 0)
+		ctxt.lineTo(-6, 6)
+		ctxt.lineTo(-2, 6)
+		ctxt.lineTo(-6, 11)
+		ctxt.lineTo( 6, 11)
+		ctxt.lineTo( 2, 6)
+		ctxt.lineTo( 6, 6)
+		ctxt.closePath()
+		ctxt.fill()
 
 	drawOnRadar: (ctxt) ->
 		# Select the closest bonus among the real one and its ghosts.

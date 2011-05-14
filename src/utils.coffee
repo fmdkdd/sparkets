@@ -42,6 +42,10 @@ exports.isEmptyObject = (obj) ->
 exports.mod = (x, n) ->
 	if x > 0 then x%n else exports.mod(x+n, n)
 
+# Random element in array.
+exports.randomElem = (array) ->
+	array[Math.round(Math.random() * (array.length-1))]
+
 # Returns nice random colors.
 exports.randomColor = () ->
 	Math.round(70 + Math.random()*150) +
