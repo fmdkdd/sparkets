@@ -24,9 +24,6 @@
 * Scale with number of players.
    Should scale : bonus drop, map size, planet density?
 
-* Bonuses are a bit spammy on an idle server right now.
-   Could restrict to one bonus at a time.
-
 * Add scores ... someday?
    Not sure it is necessary right now. The gratuitous space combat is
    satisfying enough.
@@ -44,8 +41,6 @@
 * Get rid of evil global variables.
 
 * Rework collisions.
-   - Use an event model: 'ship collided with planet' to avoid problems with
-     side-effects in each object affected by the collision.
    - Do some checks before deciding exact collisions. Server can't handle
      30 meager bonuses before crunching half a CPU.
      Octree, larger bounding boxes, check if the object is interested in the collision or not.
