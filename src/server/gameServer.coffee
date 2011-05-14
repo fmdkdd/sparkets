@@ -56,15 +56,27 @@ class GameServer
 			objects: @planets
 
 		# Send game objects.
-		client.send
-			type: 'objects update'
-			objects: @gameObjects
+		objs = @watched(@gameObjects)
+		if not utils.isEmptyObject objs
+			client.send
+				type: 'objects update'
+				objects: objs
 
 		# Good news!
 		client.send
 			type: 'connected'
 			playerId: id
 			shipId: player.ship.id
+
+	watched: (objs) ->
+		allWatched = {}
+
+		for id, obj of objs
+			objWatched = obj.watched()
+			if not utils.isEmptyObject objWatched
+				allWatched[id] = objWatched
+
+		return allWatched
 
 	clientMessage: (msg, client) ->
 		switch msg.type
