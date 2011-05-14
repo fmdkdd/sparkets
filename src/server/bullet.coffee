@@ -29,7 +29,6 @@ class Bullet extends ChangingObject
 
 		@state = 'active'
 		@hitRadius = prefs.bullet.hitRadius
-		@collisions = []
 
 		@color = @owner.color
 		@points = [ [@pos.x, @pos.y] ]
@@ -82,15 +81,6 @@ class Bullet extends ChangingObject
 		switch @state
 			# Seek and destroy.
 			when 'active'
-				@state = 'dead' if @collidedWith 'planet'
-
-				# Don't hit owner before having put some distance.
-				if @points.length > 10
-					@state = 'dead' if @collidedWith 'ship'
-				else
-					@state = 'dead' if @collisions.some( ({id, type}) =>
-						type is 'ship' and @owner.id isnt id )
-
 				@points.shift() if @points.length > prefs.bullet.tailLength
 
 			# No points left, disappear.

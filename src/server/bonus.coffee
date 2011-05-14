@@ -31,7 +31,6 @@ class Bonus extends ChangingObject
 			x: Math.random() * prefs.server.mapSize.w
 			y: Math.random() * prefs.server.mapSize.h
 		@color = utils.randomColor()
-		@collisions = []
 		@empty = yes
 
 		@spawn() if server.game.collidesWithPlanet(@)
@@ -60,8 +59,6 @@ class Bonus extends ChangingObject
 					@nextState()
 
 			# The bonus is available.
-			when 'active'
-				@nextState() if @collidedWith 'ship'
 
 			# The bonus is of no more use.
 			when 'dead'

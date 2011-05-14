@@ -24,7 +24,6 @@ class Mine extends ChangingObject
 		@explosionRadius = prefs.mine.explosionRadius
 
 		@hitRadius = 0
-		@collisions = []
 
 	tangible: () ->
 		@state is 'active' or @state is 'exploding'
@@ -51,12 +50,6 @@ class Mine extends ChangingObject
 			when 'active'
 				++@hitRadius
 				@hitRadius = 0 if @hitRadius is prefs.mine.maxDetectionRadius
-
-				@nextState() if @collidedWith 'ship', 'bullet'
-
-				# Only exploding mines trigger other mines.
-				@nextState() if @collisions.some( ({type, state}) ->
-					type is 'mine' and state is 'exploding' )
 
 			# The mine is exploding.
 			when 'exploding'

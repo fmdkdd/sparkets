@@ -2,6 +2,7 @@ prefs = require './prefs'
 Player = require('./player').Player
 Bonus = require('./bonus').Bonus
 Planet = require('./planet').Planet
+collisions = require('./collisions')
 utils = require '../utils'
 
 class GameServer
@@ -108,8 +109,8 @@ class GameServer
 		# Check collisions with planets
 		for i, planet of @planets
 			for j, obj of objects
-				if obj.collidesWith(planet)
-					obj.collisions.push(planet)
+				if obj.tangible() and obj.collidesWith(planet)
+					collisions.handle(obj, planet)
 
 		# Check all collisions
 		for i, obj1 of objects
@@ -118,17 +119,13 @@ class GameServer
 						obj1.tangible() and
 						obj2.tangible() and
 						(obj1.collidesWith(obj2) or obj2.collidesWith(obj1))
-					obj1.collisions.push(obj2)
-					obj2.collisions.push(obj1)
+					collisions.handle(obj1, obj2)
 
 		# Record all changes.
 		allChanges = {}
 		for id, obj of objects
 			# Let object update
 			obj.update()
-
-			# Clear its collisions
-			obj.collisions = []
 
 			# Register its changes
 			changes = obj.changes()

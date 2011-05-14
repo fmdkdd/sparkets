@@ -49,7 +49,6 @@ class Ship extends ChangingObject
 		@dead = false
 		@exploding = false
 		@exploFrame = 0
-		@collisions = []
 		@killingAccel = {x: 0, y: 0}
 
 		@spawn() if server.game.collidesWithPlanet(@)
@@ -125,19 +124,6 @@ class Ship extends ChangingObject
 			@updateExplosion()
 		else
 			--@cannonHeat if @cannonHeat > 0
-			@explode() if @collidedWith 'ship', 'planet', 'mine'
-
-			# Immunity to own bullet for a set time.
-			bullets = @collisions.filter( ({type, owner, points}) =>
-				type is 'bullet' and
-					((owner.id isnt @id) or
-					(points.length > 10)) )
-			if bullets.length > 0
-				@explode()
-				@killingAccel = bullets[0].accel
-
-			++@mines if @collisions.some( ({type, empty}) ->
-				type is 'bonus' and not empty )
 
 			@boost -= prefs.ship.boostDecay if @boost > 1
 			@boost = 1 if @boost < 1
