@@ -52,7 +52,7 @@ $(document).ready (event) ->
 
 	# Setup canvas.
 	ctxt = document.getElementById('canvas').getContext('2d')
-	
+
 	# Setup window resizing event.
 	$(window).resize (event) =>
 		screen.w = document.getElementById('canvas').width = window.innerWidth
@@ -74,7 +74,7 @@ $(document).ready (event) ->
 		event.stopPropagation()
 
 	# Generate the major colors of an HSV color wheel
-	# (empiric, there may be a clearer way to do that) 
+	# (empiric, there may be a clearer way to do that)
 	c = [0, 254, 0]
 	ci = 0
 	s = 1
@@ -260,6 +260,8 @@ newObject = (i, type, obj) ->
 			new Bullet(obj)
 		when 'mine'
 			new Mine(obj)
+		when 'EMP'
+			new EMP(obj)
 		when 'bonus'
 			bonuses[i] = new Bonus(obj)
 		when 'planet'

@@ -51,6 +51,12 @@ class Bonus
 				@drawArrow(ctxt)
 				ctxt.restore()
 
+			when 'bonusEMP'
+				ctxt.beginPath()
+				ctxt.arc(0, 0, 3, 0, 2*Math.PI, false)
+				ctxt.arc(0, 0, 7, 0, 2*Math.PI, false)
+				ctxt.stroke()
+
 		ctxt.restore()
 
 	drawArrow: (ctxt) ->

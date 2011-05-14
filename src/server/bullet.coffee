@@ -41,12 +41,21 @@ class Bullet extends ChangingObject
 		{x, y} = @pos
 		{x: ax, y: ay} = @accel
 
+		# Apply gravity from all planets.
 		g = prefs.bullet.gravityPull
 		for id, p of server.game.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 			d2 = g * p.force / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
 			ay -= (y-p.pos.y) * d2
+
+		# Apply negative force from all EMPs.
+		g2 = prefs.bullet.EMPPull
+		for id, e of server.game.EMPs
+			d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
+			d2 = g2 * e.force / (d * Math.sqrt(d))
+			ax -= (x-e.pos.x) * d2
+			ay -= (y-e.pos.y) * d2
 
 		@pos.x = x + ax
 		@pos.y = y + ay

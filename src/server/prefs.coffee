@@ -1,5 +1,6 @@
 BonusBoost = require './bonusBoost'
 BonusMine = require './bonusMine'
+BonusEMP = require './bonusEMP'
 
 # Server constants.
 
@@ -31,6 +32,7 @@ exports.server =
 exports.bullet =
 	hitRadius: 2					  # Radius of hit circle.
 	gravityPull: 200				  # Gravity pull factor.
+	EMPPull: -500					  # EMP repulsive force.
 	tailLength: 15					  # Bullet points to keep on server.
 	checkWidth: 4					  	# Gap to leave in the hit line.
 
@@ -53,7 +55,7 @@ exports.mine =
 
 exports.bonus =
 	bonusType:
-		[ BonusBoost, BonusMine ]
+		[ BonusMine, BonusBoost, BonusEMP ]
 	hitRadius: 10					  # Radius of hit circle.
 	modelSize: 20							# Drawing size on client.
 	states:
@@ -74,3 +76,8 @@ exports.bonus.boost =
 	boostFactor: 2					 # Initial speed multiplier.
 	boostDuration: 1500			 # Duration of initial boost.
 	boostDecay: 0.02				  # Decrease boost factor in decay state.
+
+exports.bonus.emp =
+	initialForce: 5				  # Initial negative force.
+	forceIncrease: 1				  # Force increase at each update.
+	maxForce: 100					  # Max force of the EMP.
