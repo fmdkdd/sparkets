@@ -63,3 +63,6 @@ exports.bonus =
 		'dead':
 			countdown: null
 			next: null
+
+exports.bonus.mine =
+	mineCount: 2					  # Number of held mines.

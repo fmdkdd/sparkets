@@ -1,5 +1,6 @@
 ChangingObject = require('./changingObject').ChangingObject
 server = require './server'
+BonusMine = require('./bonusMine').BonusMine
 prefs = require './prefs'
 utils = require '../utils'
 
@@ -32,6 +33,7 @@ class Bonus extends ChangingObject
 			y: Math.random() * prefs.server.mapSize.h
 		@color = utils.randomColor()
 		@empty = yes
+		@bonusEffet = BonusMine
 
 		@spawn() if server.game.collidesWithPlanet(@)
 
@@ -54,15 +56,13 @@ class Bonus extends ChangingObject
 		switch @state
 			# The bonus arrival is imminent!
 			when 'incoming'
-				if @countdown <= 0
-					@empty = no
-					@nextState()
+				@nextState() if @countdown <= 0
 
 			# The bonus is available.
+			# when 'available'
 
 			# The bonus is of no more use.
 			when 'dead'
-				@empty = yes
 				@serverDelete = yes
 
 exports.Bonus = Bonus

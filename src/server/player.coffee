@@ -26,9 +26,9 @@ class Player
 		if key is 38
 			@ship.thrust = false
 
-		# Z : drop a mine.
+		# Z : use bonus.
 		if key is 90
-			@ship.dropMine()
+			@ship.useBonus()
 
 		# X: 88 miles/h
 		if key is 88

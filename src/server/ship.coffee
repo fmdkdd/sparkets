@@ -44,7 +44,7 @@ class Ship extends ChangingObject
 		@thrust = false
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = 0
-		@mines = 0
+		@bonus = null
 		@boost = 1
 		@dead = false
 		@exploding = false
@@ -66,6 +66,10 @@ class Ship extends ChangingObject
 
 	chargeFire: () ->
 		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
+
+	useBonus: () ->
+		return if @isDead() or @isExploding() or not @bonus?
+		@bonus.use()
 
 	move: () ->
 		return if @isDead() or @isExploding()
@@ -136,14 +140,6 @@ class Ship extends ChangingObject
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown
-
-	dropMine: () ->
-		return if @isDead() or @isExploding() or @mines == 0
-
-		server.game.newGameObject (id) =>
-			server.game.mines[id] = new Mine.Mine(@, id)
-
-		--@mines
 
 	explode : () ->
 		@exploding = true
