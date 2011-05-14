@@ -25,6 +25,7 @@ exports.server =
 	planetsCount: 30				  # Number of planets on the map.
 
 	bonusWait: 30000				  # ms before a bonus drop.
+	maxBonuses: 5				  # Number of allowed simultaneous bonuses.
 
 exports.bullet =
 	hitRadius: 2					  # Radius of hit circle.
