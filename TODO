@@ -11,12 +11,8 @@
       Stay invisible while you do not fire or drop any mine.
    - Big head mode
       Easier to shoot at, harder to slip between planets but kills on contact.
-   - Drunk mode
-      Inverse controls, point, laugh.
    - Paintball mode
       Spray other ships with your colors! Rating 2 and up.
-   - Negative gravity shield.
-      Send bullets flying away.
    - Mirror image.
       Copy of the ship that mirror the player, but turn in opposite directions.
       Fires phony bullets, disappear when colliding something (different explosion visual).
@@ -27,6 +23,13 @@
 * Add scores ... someday?
    Not sure it is necessary right now. The gratuitous space combat is
    satisfying enough.
+
+= Interface =
+
+* Add minimalist tutorial.
+   Display a keyboard with highlighted arrow keys and spacebar to new
+   players (no local storage prefs). When they pickup a bonus, display
+   a Z keyboard key.
 
 = Graphics =
 
