@@ -1,6 +1,5 @@
 class EMP
 	constructor: (emp) ->
-		console.info emp
 		@serverUpdate(emp)
 
 	serverUpdate: (emp) ->
