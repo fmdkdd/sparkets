@@ -42,7 +42,7 @@ exports.mine =
 	explosionRadius: 80			  # Detonation radius.
 	states:
 		'inactive':
-			countdown: 500			  # Time (ms) before activation.
+			countdown: 100			  # Time (ms) before activation.
 			next: 'active'
 		'active':
 			countdown: null
