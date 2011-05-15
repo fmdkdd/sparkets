@@ -80,7 +80,7 @@ exports.bonus.boost =
 
 exports.bonus.emp =
 	initialForce: 5				  # Initial negative force.
-	forceIncrease: 1				  # Force increase at each update.
+	forceIncrease: .6				  # Force increase at each update.
 	maxForce: 100					  # Max force of the EMP.
 
 exports.bonus.drunk =
