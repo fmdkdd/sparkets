@@ -18,7 +18,7 @@ exports.collisions =
 		# Immunity to own bullets for a set time.
 		if bullet.state is 'active' and
 				(ship.id isnt bullet.owner.id or
-				bullet.points.length > 10)
+				bullet.points.length > 3)
 			ship.explode()
 			ship.killingAccel = bullet.accel
 			bullet.state = 'dead'
