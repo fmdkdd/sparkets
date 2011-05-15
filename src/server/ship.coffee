@@ -45,8 +45,10 @@ class Ship extends ChangingObject
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = 0
 		@bonus = null
+		@bonusTimeout = {}
 		@boost = 1
 		@boostDecay = 0
+		@inverseTurn = no
 		@dead = false
 		@exploding = false
 		@exploFrame = 0
@@ -55,10 +57,10 @@ class Ship extends ChangingObject
 		@spawn() if server.game.collidesWithPlanet(@)
 
 	turnLeft: () ->
-		@dir -= prefs.ship.dirInc
+		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
 
 	turnRight: () ->
-		@dir += prefs.ship.dirInc
+		@dir += if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
 
 	ahead: () ->
 		@vel.x += Math.sin(@dir) * prefs.ship.speed * @boost
@@ -70,7 +72,7 @@ class Ship extends ChangingObject
 
 	useBonus: () ->
 		return if @isDead() or @isExploding() or not @bonus?
-		@bonusTimeout = @bonus.use()
+		@bonus.use()
 
 	move: () ->
 		return if @isDead() or @isExploding()

@@ -1,6 +1,7 @@
 BonusBoost = require './bonusBoost'
 BonusMine = require './bonusMine'
 BonusEMP = require './bonusEMP'
+BonusDrunk = require './bonusDrunk'
 
 # Server constants.
 
@@ -55,7 +56,7 @@ exports.mine =
 
 exports.bonus =
 	bonusType:
-		[ BonusMine, BonusBoost, BonusEMP ]
+		[ BonusMine, BonusBoost, BonusEMP, BonusDrunk ]
 	hitRadius: 10					  # Radius of hit circle.
 	modelSize: 20							# Drawing size on client.
 	states:
@@ -81,3 +82,6 @@ exports.bonus.emp =
 	initialForce: 5				  # Initial negative force.
 	forceIncrease: 1				  # Force increase at each update.
 	maxForce: 100					  # Max force of the EMP.
+
+exports.bonus.drunk =
+	duration: 3000					  # Duration of drunk effect in ms.

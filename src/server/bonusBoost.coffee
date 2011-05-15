@@ -15,9 +15,10 @@ class BonusBoost
 		@ship.bonus = null
 
 		# Cancel the previous pending boost decay.
-		clearTimeout(@ship.bonusTimeout) if @ship.bonusTimeout?
+		if @ship.bonusTimeout['bonusBoost']?
+			clearTimeout(@ship.bonusTimeout['bonusBoost'])
 
-		setTimeout(( () =>
+		@ship.bonusTimeout[exports.type] = setTimeout(( () =>
 			@ship.boostDecay = prefs.bonus.boost.boostDecay ),
 			prefs.bonus.boost.boostDuration)
 

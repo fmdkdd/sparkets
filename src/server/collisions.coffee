@@ -11,6 +11,7 @@ exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'active'
 			ship.bonus = new bonus.bonusEffect(ship)
+			ship.useBonus() if ship.bonus.evil?
 			bonus.nextState()
 
 	'ship-bullet': (ship, bullet) ->
