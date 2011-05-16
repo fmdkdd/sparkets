@@ -164,7 +164,7 @@ class Ship
 		ox = -view.x + offset.x
 		oy = -view.y + offset.y
 
-		ctxt.fillStyle = color @color, (maxExploFrame-@exploFrame)/maxExploFrame
+		ctxt.fillStyle = color(@color, (maxExploFrame-@exploFrame)/maxExploFrame)
 		for b in @explosionBits
 			if inView(b.x+offset.x, b.y+offset.y)
 				ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size

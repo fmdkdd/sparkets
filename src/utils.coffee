@@ -1,6 +1,7 @@
 exports ?= window
 
 # Console output shortcuts.
+
 exports.log = (msg) ->
 	console.log msg
 
@@ -13,9 +14,13 @@ exports.warn = (msg) ->
 exports.log = (msg) ->
 	console.error msg
 
-# Neat color construction.
-exports.color = (rgb, alpha = 1.0) ->
-	'rgba(' + rgb + ',' + alpha + ')'
+# Array extension
+
+Array.max = (array) ->
+	Math.max.apply(Math, array)
+
+Array.min = (array) ->
+	Math.min.apply(Math, array)
 
 # Euclidean distance between two points.
 exports.distance = (x1, y1, x2, y2) ->
@@ -46,14 +51,18 @@ exports.mod = (x, n) ->
 exports.randomElem = (array) ->
 	array[Math.round(Math.random() * (array.length-1))]
 
-# Returns nice random colors.
-exports.randomColor = () ->
-	Math.round(70 + Math.random()*150) +
-		',' + Math.round(70 + Math.random()*150) +
-		',' + Math.round(70 + Math.random()*150)
-
 # Stroke circle.
 exports.strokeCircle = (ctxt, x, y, r) ->
 	ctxt.beginPath()
 	ctxt.arc(x, y, r, 2*Math.PI, false)
 	ctxt.stroke()
+
+# Color utils.
+
+exports.color = (hsl, alpha = 1.0) ->
+	'hsla(' + hsl + ',' + alpha + ')'
+
+exports.randomColor = () ->
+	Math.round(Math.random()*360) +
+		',100%' +
+		',' + Math.round(20 + Math.random()*50) + '%'

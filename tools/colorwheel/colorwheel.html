@@ -1,0 +1,63 @@
+<!Doctype html>
+<html>
+<head>
+  <title>Color wheel generator</title>
+  <script src="../../build/utils.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+				var ctxt = document.getElementById('canvas').getContext('2d');
+
+				var maxRadius = 100;
+				var minRadius = 60;
+				var maxLum = 80;
+				var minLum = 20;
+
+				for(var i = 0; i < 200; ++i)
+					for(var j = 0; j < 200; ++j)
+					{
+						var d = distance(i, j, 100, 100);
+
+						if(d < maxRadius && d > minRadius)
+						{
+							var dx = 100 - j;
+							var dy = 100 - i; 
+
+							// Hue.
+							var h = Math.atan2(dx, dy);
+							h = h > 0 ? h : h + 2*Math.PI;
+							h *=  180/Math.PI;
+							h = Math.floor(h);
+
+							// Saturation.
+							s = 100;
+
+							// Luminance.
+							l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
+
+							ctxt.fillStyle = 'hsl('+h+','+s+'%,'+l+'%)';
+							ctxt.fillRect(j, i, 1, 1);
+						}
+					}
+
+				// Draw arcs to smooth the inner edge.
+				ctxt.strokeStyle = 'white';
+				ctxt.lineWidth = 1;
+				ctxt.beginPath();
+				ctxt.arc(100, 100, minRadius, 0, 2*Math.PI, false);	 
+				ctxt.stroke();
+
+				var img = canvas.toDataURL('image/png');
+				document.write('<img src="'+img+'"/>');
+		});
+	</script>
+  <style>
+	* {
+			margin : 0;
+			padding : 0; }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="200" height="200">Canvas not supported.</canvas>
+</body>
+</html>

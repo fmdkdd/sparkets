@@ -7,13 +7,12 @@ ctxt = null
 screen = {w: 0, h: 0}
 map = {w: 2000, h: 2000}
 view = {x: 0, y: 0}
-colors = [] # TEMP (major colors of the color wheel)
 
 # Time
 now = null
 sinceLastUpdate = null
 
-planetColor = '127, 157, 185'
+planetColor = '209,29%,61%'
 maxBulletLength = 15
 
 # Game logic
@@ -73,35 +72,28 @@ $(document).ready (event) ->
 	$('#menu').click (event) =>
 		event.stopPropagation()
 
-	# Generate the major colors of an HSV color wheel
-	# (empiric, there may be a clearer way to do that)
-	c = [0, 254, 0]
-	ci = 0
-	s = 1
-	for i in [0..11]
-		if (c[ci] is 254 or c[ci] is 0) and i isnt 0
-			s *= -1
-			ci = ++ci % 3
-		c[ci] += s*127
-		colors.push c.slice(0)
-
 	$('#colorwheel').click (event) =>
+		maxRadius = 100
+		minRadius = 60
+		maxLum = 80
+		minLum = 20
+
 		wheel = $('#colorwheel')
 		dx = wheel.width()/2 - (event.pageX - wheel.offset().left)
 		dy = wheel.height()/2 - (event.pageY - wheel.offset().top)
-		a = Math.atan2(-dy, dx)+	2*Math.PI/2
 
-		wheelRatio = a/(2*Math.PI)
-		colorIndex = Math.floor(wheelRatio*12)
-		colorRatio = wheelRatio*12 - colorIndex
+		h = Math.atan2(dx, dy)
+		h += 2*Math.PI if h < 0
+		h =  Math.floor(h * 180/Math.PI)
 
-		trueColor = [0, 0, 0]
-		for i in [0..2]
-			trueColor[i] = colors[colorIndex][i] + Math.floor(colorRatio*(colors[(colorIndex+1)%12][i] - colors[colorIndex][i]))
-		c = trueColor[0]+','+trueColor[1]+','+trueColor[2]
-		info c
+		d = distance(event.pageX, event.pageY, wheel.offset().left+100, wheel.offset().top+100) 
+		l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
+
+		c = h + ',' + 100 + '%,' + l + '%'
+
 		# Store the color in a hidden field.
 		$('#color').val(c)
+		$('h1').css('color', 'hsl('+c+')');
 
 	# Send a message to the server when the user changes his preferences.
 	$('#nameForm').submit (event) =>
@@ -114,8 +106,8 @@ $(document).ready (event) ->
 		displayNames = $(this).is(':checked')
 
 sendPreferences = () ->
-		color =  $('#color').val() or null
-		name =  $('#name').val() or null
+		color = $('#color').val() or null
+		name = $('#name').val() or null
 
 		socket.send
 			type: 'prefs changed'
