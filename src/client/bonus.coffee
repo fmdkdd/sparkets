@@ -47,6 +47,7 @@ class Bonus
 
 			when 'bonusBoost'
 				ctxt.save()
+				ctxt.rotate(Math.PI/2)
 				ctxt.translate(0, -6)
 				@drawBoostIcon(ctxt)
 				ctxt.restore()
