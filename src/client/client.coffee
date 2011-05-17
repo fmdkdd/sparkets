@@ -12,7 +12,7 @@ view = {x: 0, y: 0}
 now = null
 sinceLastUpdate = null
 
-planetColor = '209,29%,61%'
+planetColor = [209,29,61]
 maxBulletLength = 15
 
 # Game logic

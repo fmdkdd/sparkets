@@ -60,9 +60,7 @@ exports.strokeCircle = (ctxt, x, y, r) ->
 # Color utils.
 
 exports.color = (hsl, alpha = 1.0) ->
-	'hsla(' + hsl + ',' + alpha + ')'
+	'hsla(' + hsl[0] + ',' + hsl[1] + '%,' + hsl[2] + '%,' + alpha + ')'
 
 exports.randomColor = () ->
-	Math.round(Math.random()*360) +
-		',100%' +
-		',' + Math.round(20 + Math.random()*50) + '%'
+	[Math.round(Math.random()*360), 100, Math.round(20 + Math.random()*50)]
