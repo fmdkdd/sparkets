@@ -8,20 +8,21 @@
 		$(document).ready(function() {
 				var ctxt = document.getElementById('canvas').getContext('2d');
 
-				var maxRadius = 100;
-				var minRadius = 60;
+				var size = $('#canvas').width();
+				var maxRadius = size/2;
+				var minRadius = size/2*0.5;
 				var maxLum = 80;
 				var minLum = 20;
 
-				for(var i = 0; i < 200; ++i)
-					for(var j = 0; j < 200; ++j)
+				for(var i = 0; i < size; ++i)
+					for(var j = 0; j < size; ++j)
 					{
-						var d = distance(i, j, 100, 100);
+						var d = distance(i, j, size/2, size/2);
 
 						if(d < maxRadius && d > minRadius)
 						{
-							var dx = 100 - j;
-							var dy = 100 - i; 
+							var dx = size/2 - j;
+							var dy = size/2 - i; 
 
 							// Hue.
 							var h = Math.atan2(dx, dy);
@@ -30,22 +31,15 @@
 							h = Math.floor(h);
 
 							// Saturation.
-							s = 100;
+							var s = 100;
 
 							// Luminance.
-							l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
+							var l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
 
 							ctxt.fillStyle = 'hsl('+h+','+s+'%,'+l+'%)';
 							ctxt.fillRect(j, i, 1, 1);
 						}
 					}
-
-				// Draw arcs to smooth the inner edge.
-				ctxt.strokeStyle = 'white';
-				ctxt.lineWidth = 1;
-				ctxt.beginPath();
-				ctxt.arc(100, 100, minRadius, 0, 2*Math.PI, false);	 
-				ctxt.stroke();
 
 				var img = canvas.toDataURL('image/png');
 				document.write('<img src="'+img+'"/>');
@@ -58,6 +52,6 @@
   </style>
 </head>
 <body>
-  <canvas id="canvas" width="200" height="200">Canvas not supported.</canvas>
+  <canvas id="canvas" width="500" height="500">Canvas not supported.</canvas>
 </body>
 </html>

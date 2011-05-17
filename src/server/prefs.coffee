@@ -56,7 +56,7 @@ exports.mine =
 
 exports.bonus =
 	bonusType:
-		[ BonusBoost, BonusMine, BonusEMP, BonusDrunk]
+		[ BonusBoost, BonusMine, BonusEMP, BonusDrunk ]
 	hitRadius: 10					  # Radius of hit circle.
 	modelSize: 20							# Drawing size on client.
 	states:

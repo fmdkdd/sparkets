@@ -82,6 +82,11 @@ $(document).ready (event) ->
 		dx = wheel.width()/2 - (event.pageX - wheel.offset().left)
 		dy = wheel.height()/2 - (event.pageY - wheel.offset().top)
 
+		# Put the cursor at the click position.
+		cursor = $('#colorCursor')
+		cursor.css('display', 'block')
+		cursor.offset({top: event.pageY-cursor.height()/2, left: event.pageX-cursor.width()/2})
+	
 		h = Math.atan2(dx, dy)
 		h += 2*Math.PI if h < 0
 		h =  Math.floor(h * 180/Math.PI)
@@ -92,7 +97,6 @@ $(document).ready (event) ->
 		# Store the color in a hidden field.
 		c = h + ' ' + 100 + ' ' + l
 		$('#color').val(c)
-		$('h1').css('color', 'hsl('+c+')');
 
 	# Send a message to the server when the user changes his preferences.
 	$('#nameForm').submit (event) =>
