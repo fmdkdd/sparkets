@@ -63,4 +63,4 @@ exports.color = (hsl, alpha = 1.0) ->
 	'hsla(' + hsl[0] + ',' + hsl[1] + '%,' + hsl[2] + '%,' + alpha + ')'
 
 exports.randomColor = () ->
-	[Math.round(Math.random()*360), 100, Math.round(20 + Math.random()*50)]
+	[Math.round(Math.random()*360), Math.round(40 + Math.random()*30), Math.round(20 + Math.random()*50)]

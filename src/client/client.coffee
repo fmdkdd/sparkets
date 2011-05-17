@@ -89,9 +89,8 @@ $(document).ready (event) ->
 		d = distance(event.pageX, event.pageY, wheel.offset().left+100, wheel.offset().top+100) 
 		l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
 
-		c = h + ',' + 100 + '%,' + l + '%'
-
 		# Store the color in a hidden field.
+		c = h + ' ' + 100 + ' ' + l
 		$('#color').val(c)
 		$('h1').css('color', 'hsl('+c+')');
 
@@ -106,8 +105,13 @@ $(document).ready (event) ->
 		displayNames = $(this).is(':checked')
 
 sendPreferences = () ->
-		color = $('#color').val() or null
-		name = $('#name').val() or null
+		color = name = null
+
+		if $('#color').val().length > 0
+			color = $('#color').val().split(' ')
+
+		if $('#name').val().length > 0
+			name = $('#name').val()
 
 		socket.send
 			type: 'prefs changed'
