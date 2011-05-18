@@ -76,7 +76,7 @@ $(document).ready (event) ->
 		maxRadius = 100
 		minRadius = 60
 		maxLum = 80
-		minLum = 20
+		minLum = 30
 
 		wheel = $('#colorwheel')
 		dx = wheel.width()/2 - (event.pageX - wheel.offset().left)
@@ -95,7 +95,7 @@ $(document).ready (event) ->
 		l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
 
 		# Store the color in a hidden field.
-		c = h + ' ' + 100 + ' ' + l
+		c = h + ' ' + 60 + ' ' + l
 		$('#color').val(c)
 
 	# Send a message to the server when the user changes his preferences.

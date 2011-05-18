@@ -12,7 +12,7 @@
 				var maxRadius = size/2;
 				var minRadius = size/2*0.5;
 				var maxLum = 80;
-				var minLum = 20;
+				var minLum = 30;
 
 				for(var i = 0; i < size; ++i)
 					for(var j = 0; j < size; ++j)
@@ -31,7 +31,7 @@
 							h = Math.floor(h);
 
 							// Saturation.
-							var s = 100;
+							var s = 60;
 
 							// Luminance.
 							var l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
