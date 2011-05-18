@@ -19,19 +19,22 @@
 			z-index: -1; }
 
 	#menu {
-			width: 700px;
+	      top: 50px;
+         width: 700px;
 			height: 500px;
 			margin: auto;
 			position: relative;
 			padding: 20px;
 			border-radius: 5px;
-			background: rgba(120, 0, 181, 1); }
+			background: hsla(-90, 15%, 50%, .97); }
 	#menu.hidden {
-			top: -600px;
-			-webkit-transition: top 1s ease-in; }
+			opacity: 0;
+			-webkit-transition: opacity 150ms ease-in;
+			-moz-transition: opacity 150ms ease-out; }
 	#menu.visible {
-			top: 50px;
-			-webkit-transition: top 1s ease-out; }
+			opacity: 1;
+			-webkit-transition: opacity 150ms ease-out;
+			-moz-transition: opacity 150ms ease-in; }
 
 	#customize {
 			position: relative;

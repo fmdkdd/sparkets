@@ -70,7 +70,7 @@ $(document).ready (event) ->
 
 	# Do not propagate a click event when the user clicked on the menu.
 	$('#menu').click (event) =>
-		event.stopPropagation()
+		event.stopPropagation() if $('#menu').attr('class') is 'visible'
 
 	$('#colorwheel').click (event) =>
 		maxRadius = 100
@@ -86,12 +86,12 @@ $(document).ready (event) ->
 		cursor = $('#colorCursor')
 		cursor.css('display', 'block')
 		cursor.offset({top: event.pageY-cursor.height()/2, left: event.pageX-cursor.width()/2})
-	
+
 		h = Math.atan2(dx, dy)
 		h += 2*Math.PI if h < 0
 		h =  Math.floor(h * 180/Math.PI)
 
-		d = distance(event.pageX, event.pageY, wheel.offset().left+100, wheel.offset().top+100) 
+		d = distance(event.pageX, event.pageY, wheel.offset().left+100, wheel.offset().top+100)
 		l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
 
 		# Store the color in a hidden field.
