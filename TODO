@@ -42,6 +42,9 @@
 * Leave some ephemeral traces of fight on planets.
    Ships and bullets splatters their colors. À la paintball.
 
+* Add debugging facilities.
+   Display map bounds, fps, messages dropped...
+
 = Cleanup =
       
 * Get rid of evil global variables.
