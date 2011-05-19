@@ -106,8 +106,13 @@
 					<defs>
 						<mask id="shipMask">
 							<circle cx="50%" cy="50%" r="50%" style="fill: white;"/>
-							<path transform="translate(100, 100) scale(2)" d="M -7 10 L 0 -10 L 7 10 L 0 6 Z" style="stroke-width: 2;stroke: black;fill: white"/>
-		points = [[-7,10], [0,-10], [7,10], [0,6]]
+							<path transform="translate(100, 100) scale(2)"
+							      d="M -7 10 L 0 -10 L 7 10 L 0 6 Z"
+							      style="stroke-width: 3;
+                                  stroke: black;
+                                  stroke-linejoin: round;
+                                  fill: white"/>
+		               points = [[-7,10], [0,-10], [7,10], [0,6]]
 						</mask>
 					</defs>
 					<g style="mask: url(#shipMask)">
