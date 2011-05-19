@@ -34,7 +34,7 @@
 							var s = 60;
 
 							// Luminance.
-							var l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
+							var l = minLum + (maxRadius-d)/(maxRadius-minRadius)*(maxLum-minLum);
 
 							ctxt.fillStyle = 'hsl('+h+','+s+'%,'+l+'%)';
 							ctxt.fillRect(j, i, 1, 1);

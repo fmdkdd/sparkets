@@ -93,7 +93,7 @@ $(document).ready (event) ->
 		h =  Math.floor(h * 180/Math.PI)
 
 		d = distance(event.pageX, event.pageY, wheel.offset().left+100, wheel.offset().top+100)
-		l = minLum + (d-minRadius)/(maxRadius-minRadius)*(maxLum-minLum);
+		l = minLum + (maxRadius-d)/(maxRadius-minRadius)*(maxLum-minLum);
 
 		# Store the color in a hidden field.
 		c = h + ' ' + 60 + ' ' + l
