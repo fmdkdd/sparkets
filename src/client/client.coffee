@@ -81,15 +81,30 @@ go = (id) ->
 			playerId: playerId
 			key: keyCode
 
-	update()
+	requestAnimFrame(update)
+
+# RequestAnimationFrame API
+# http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+requestAnimFrame = ( () ->
+	window.requestAnimationFrame       ||
+		window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame    ||
+		window.oRequestAnimationFrame      ||
+		window.msRequestAnimationFrame     ||
+		(callback, element) ->
+			window.setTimeout(callback, 1000 / 60) )()
 
 # Game loop!
-update = () ->
-	start = (new Date).getTime()
+update = (time) ->
+	# Setup next update.
+	requestAnimFrame(update)
+
+	# For browsers which do not pass the time argument
+	time ?= (new Date).getTime()
 
 	# Update time globals (poor kittens...).
-	sinceLastUpdate = start - now
-	now = start
+	sinceLastUpdate = time - now
+	now = time
 
 	# Update and cleanup objects.
 	for idx, obj of gameObjects
@@ -100,10 +115,6 @@ update = () ->
 	# Draw scene.
 	centerView()
 	redraw(ctxt)
-
-	# Setup next update.
-	diff = (new Date).getTime() - start
-	setTimeout(update, 20-mod(diff, 20))
 
 inView = (x, y) ->
 	view.x <= x <= view.x + screen.w and
