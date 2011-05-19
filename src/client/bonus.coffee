@@ -93,6 +93,8 @@ class Bonus
 		ctxt.fill()
 
 	drawOnRadar: (ctxt) ->
+		return if @state isnt 'incoming'
+
 		# Select the closest bonus among the real one and its ghosts.
 		bestDistance = Infinity
 		for j in [-1..1]
@@ -116,14 +118,12 @@ class Bonus
 			ry = Math.max -screen.h/2 + margin, dy
 			ry = Math.min screen.h/2 - margin, ry
 
-			# The radar is blinking when the bonus is incoming.
-			if @state is 'active' or
-					@state is 'incoming' and @countdown % 500 < 250
+			# The radar is blinking.
+			if @countdown % 500 < 250
 				@drawRadarSymbol(screen.w/2 + rx, screen.h/2 + ry)
 
-		# Draw the radar on the future bonus position if it is in the screen
-		# bounds and incoming.
-		else if @state is 'incoming' and @countdown % 500 < 250
+		# Draw the X on the future bonus position if it lies within the screen.
+		else if @countdown % 500 < 250
 			rx = -screen.w/2 + bestPos.x - view.x
 			ry = -screen.h/2 + bestPos.y - view.y
 
