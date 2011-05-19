@@ -8,7 +8,7 @@ js = (path) ->
 server = http.createServer (req, res) ->
 	path = url.parse(req.url).pathname
 	switch path
-		when '/client.html', '/client.js', '/colorwheel.png', '/colorCursor.png', '/closeButton.png'
+		when '/client.html', '/client.js', '/colorWheel.png', '/colorCursor.png', '/closeButton.png'
 			fs.readFile __dirname + '/../..' + path, (err, data) ->
 				return send404(res) if err?
 				res.writeHead 200,

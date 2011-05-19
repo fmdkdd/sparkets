@@ -2,7 +2,8 @@ class Menu
 	constructor: () ->
 
 		@menu = $('#menu')
-		@wheel = $('#colorwheel')
+		@wheelBox = $('#colorWheelBox')
+		@wheel = $('#colorWheel')
 		@colorCursor = $('#colorCursor')
 		@form = $('#nameForm')
 		@nameField = $('#name')
@@ -19,8 +20,11 @@ class Menu
 		$('#menu').click (event) =>
 			event.stopPropagation() if $('#menu').attr('class') is 'visible'
 
-		$('#colorwheel').click (event) =>
-			@currentColor = @readColor(event)
+		@wheelBox.click (event) =>
+			@currentColor = c = @readColor(event)
+
+			# Change the color of the center of the wheel.
+			@wheelBox.css('background-color', 'hsl('+c[0]+','+c[1]+'%,'+c[2]+'%)')
 
 		# Send users preferences and save them locally.
 		@form.submit (event) =>
@@ -87,8 +91,8 @@ class Menu
 		maxLum = 80
 		minLum = 30
 
-		dx = @wheel.width()/2 - (event.pageX - @wheel.offset().left)
-		dy = @wheel.height()/2 - (event.pageY - @wheel.offset().top)
+		dx = @wheelBox.width()/2 - (event.pageX - @wheelBox.offset().left)
+		dy = @wheelBox.height()/2 - (event.pageY - @wheelBox.offset().top)
 
 		# Put the cursor at the click position.
 		cursor = $('#colorCursor')
@@ -99,7 +103,7 @@ class Menu
 		h += 2*Math.PI if h < 0
 		h =  Math.floor(h * 180/Math.PI)
 
-		d = distance(event.pageX, event.pageY, @wheel.offset().left+100, @wheel.offset().top+100)
+		d = distance(event.pageX, event.pageY, @wheelBox.offset().left+100, @wheelBox.offset().top+100)
 		l = Math.round(minLum + (maxRadius-d)/(maxRadius-minRadius)*(maxLum-minLum))
 
 		return [h, 60, l]

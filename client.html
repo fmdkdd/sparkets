@@ -19,8 +19,8 @@
 			z-index: -1; }
 
 	#menu {
-	      top: 50px;
-         width: 700px;
+	    top: 50px;
+      width: 700px;
 			height: 500px;
 			margin: auto;
 			position: relative;
@@ -44,13 +44,25 @@
 			float: left;
 			width: 50%;
 			height: 100%; }
-	#colorwheel {
+	#colorWheelBox {
 			width: 200px;
 			height: 200px;
+			position: relative;
 			margin: auto;
-			margin-bottom: 5%; }
+			margin-bottom: 5%;
+			background-color : white;
+			border-radius: 100px; }
+	svg {
+			width: 100%;
+			height: 100%; }
+	#colorWheel {
+			width: 200px;
+			height: 200px;
+			position: absolute;
+			top: 0; }
 	#colorCursor {
 			display: none; }
+
 	#nameForm {
 			width: 100%;
 			text-align: center; }
@@ -69,6 +81,7 @@
 	#about {
 			float: right;
 			width: 50%; }
+
 	h1 {
 			margin-bottom: 50px;
 			font-weight: normal;
@@ -88,8 +101,22 @@
 		<div id="customize">
 			<h1>You.</h1>
 			
-			<div id="colorwheel">
-				<img src="/colorwheel.png" width="200" height="200"/>
+			<div id="colorWheelBox">
+				<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="shipPreview">
+					<defs>
+						<mask id="shipMask">
+							<circle cx="50%" cy="50%" r="50%" style="fill: white;"/>
+							<path transform="translate(100, 100) scale(2)" d="M -7 10 L 0 -10 L 7 10 L 0 6 Z" style="stroke-width: 2;stroke: black;fill: white"/>
+		points = [[-7,10], [0,-10], [7,10], [0,6]]
+						</mask>
+					</defs>
+					<g style="mask: url(#shipMask)">
+						<circle cx="50%" cy="50%" r="40%" style="fill: white"/>
+					</g>
+				</svg>
+
+				<img id="colorWheel" src="/colorWheel.png"/>
+
 				<img id="colorCursor" src="/colorCursor.png"/>
 			</div>
 
@@ -111,6 +138,5 @@
 		
 		<img id="closeButton" src="closeButton.png"/>
 	</div>
-
 </body>
 </html>
