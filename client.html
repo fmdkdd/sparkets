@@ -35,7 +35,7 @@
 			opacity: 1;
 			-webkit-transition: opacity 150ms ease-out;
 			-moz-transition: opacity 150ms ease-in; }
-	#menuClose {
+	#closeButton {
 			position: absolute; 
 			top: 10px;
 			right: 10px; }
@@ -56,7 +56,7 @@
 			text-align: center; }
 	#name {
 			display: block;
-			width: 200px;
+			width: 100px;
 			margin: auto;
 			margin-bottom: 5%;
 			text-align: center; }
@@ -90,17 +90,16 @@
 			
 			<div id="colorwheel">
 				<img src="/colorwheel.png" width="200" height="200"/>
-				<img id="colorCursor" src="/colorcursor.png"/>
+				<img id="colorCursor" src="/colorCursor.png"/>
 			</div>
 
 			<form id="nameForm">
 				<input type="text" id="name"/>
-				<input type="hidden" id="color"/>
 				<input type="submit" value="Save color and name"/>
 			</form>
 			
 			<div id="displayNamesBox">
-				<input type="checkbox" value="false" id="displayNames"/>
+				<input type="checkbox" value="false" id="displayNamesCheck"/>
 				Always display players' names
 			</div>
 		</div>
@@ -110,7 +109,7 @@
 			<p>Hello, this is Spacewar.</p>
 		</div>
 		
-		<img id="menuClose" src="menuclose.png"/>
+		<img id="closeButton" src="closeButton.png"/>
 	</div>
 
 </body>

@@ -48,5 +48,6 @@ class Player
 	changePrefs: (name, color) ->
 		@ship.name = name if name?
 		@ship.color = color if color?
+		console.log color
 
 exports.Player = Player

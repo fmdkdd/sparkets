@@ -59,105 +59,12 @@ $(document).ready (event) ->
 		centerView()
 	$(window).resize()
 
-	# Let the menu out when the user clicks anywhere.
-	$(document).click (event) =>
-		$('#menu').toggleClass('hidden visible')
-
-		if $('#menu').attr('class') is 'visible'
-			$('#name').focus()
-		else
-			$('#name').blur()
-
-	# Do not propagate a click event when the user clicked on the menu.
-	$('#menu').click (event) =>
-		console.info 'y'
-		event.stopPropagation() if $('#menu').attr('class') is 'visible'
-
-	$('#colorwheel').click (event) =>
-		maxRadius = 100
-		minRadius = 60
-		maxLum = 80
-		minLum = 30
-
-		wheel = $('#colorwheel')
-		dx = wheel.width()/2 - (event.pageX - wheel.offset().left)
-		dy = wheel.height()/2 - (event.pageY - wheel.offset().top)
-
-		# Put the cursor at the click position.
-		cursor = $('#colorCursor')
-		cursor.css('display', 'block')
-		cursor.offset({top: event.pageY-cursor.height()/2, left: event.pageX-cursor.width()/2})
-
-		h = Math.atan2(dx, dy)
-		h += 2*Math.PI if h < 0
-		h =  Math.floor(h * 180/Math.PI)
-
-		d = distance(event.pageX, event.pageY, wheel.offset().left+100, wheel.offset().top+100)
-		l = minLum + (maxRadius-d)/(maxRadius-minRadius)*(maxLum-minLum);
-
-		# Store the color in a hidden field.
-		c = h + ' ' + 60 + ' ' + l
-		$('#color').val(c)
-
-	# Send a message to the server when the user changes his preferences.
-	$('#nameForm').submit (event) =>
-		sendPreferences()
-		saveLocalPreferences()
-		event.preventDefault()
-
-	# Toggle the name display option.
-	$('#displayNames').change (event) ->
-		displayNames = $(this).is(':checked')
-
-	$('#menuClose').click (event) =>
-		if $('#menu').attr('class') is 'visible'
-			$('#menu').toggleClass('hidden visible')
-			event.stopPropagation()
-			console.info 'x'
-
-sendPreferences = () ->
-		color = name = null
-
-		if $('#color').val().length > 0
-			color = $('#color').val().split(' ')
-
-		if $('#name').val().length > 0
-			name = $('#name').val()
-
-		socket.send
-			type: 'prefs changed'
-			playerId: playerId
-			color: color
-			name: name
-
-# Store user preferences in the browser local storage.
-saveLocalPreferences = () ->
-	color =  $('#color').val() or null
-	name =  $('#name').val() or null
-
-	localStorage['spacewar.color'] = color if color?
-	localStorage['spacewar.name'] = name if name?
-
-	info 'Preferences saved.'
-
-# Restores user preferences in the browser local storage.
-restoreLocalPreferences = () ->
-	color = localStorage['spacewar.color']
-	name = localStorage['spacewar.name']
-
-	# Fill the menu and send the preferences to the server.
-	$('#color').val(color) if color?
-	$('#name').val(name) if name?
-	sendPreferences()
-
-	info 'Preferences restored.' if color? or name?
-
 # Setup input callbacks and launch game loop.
 go = (id) ->
 	playerId = id
 
-	# Check if user preferences are stored locally.
-	restoreLocalPreferences()
+	menu = new Menu()
+	menu.restoreLocalPreferences()
 
 	$(document).keydown ({keyCode}) ->
 		if not keys[keyCode]? or keys[keyCode] is off
