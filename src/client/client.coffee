@@ -70,6 +70,7 @@ $(document).ready (event) ->
 
 	# Do not propagate a click event when the user clicked on the menu.
 	$('#menu').click (event) =>
+		console.info 'y'
 		event.stopPropagation() if $('#menu').attr('class') is 'visible'
 
 	$('#colorwheel').click (event) =>
@@ -107,6 +108,12 @@ $(document).ready (event) ->
 	# Toggle the name display option.
 	$('#displayNames').change (event) ->
 		displayNames = $(this).is(':checked')
+
+	$('#menuClose').click (event) =>
+		if $('#menu').attr('class') is 'visible'
+			$('#menu').toggleClass('hidden visible')
+			event.stopPropagation()
+			console.info 'x'
 
 sendPreferences = () ->
 		color = name = null
