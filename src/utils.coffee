@@ -45,7 +45,7 @@ exports.isEmptyObject = (obj) ->
 
 # Stupid % operator.
 exports.mod = (x, n) ->
-	if x > 0 then x%n else exports.mod(x+n, n)
+	if x >= 0 then x%n else exports.mod(x+n, n)
 
 # Random element in array.
 exports.randomArrayElem = (array) ->
