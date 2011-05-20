@@ -40,7 +40,7 @@ class Bonus extends ChangingObject
 		if not bonusType?
 			type = @randomBonus()
 		else
-			type = prefs.bonus.bonusType[bonusType]
+			type = prefs.bonus.bonusType[bonusType].class
 		@bonusEffect = type.constructor
 		@bonusType = type.type
 
