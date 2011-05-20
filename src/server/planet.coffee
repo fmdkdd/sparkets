@@ -1,10 +1,21 @@
+ChangingObject = require('./changingObject').ChangingObject
 utils = require '../utils'
 
-class Planet
-	constructor: (x, y, @force) ->
+class Planet extends ChangingObject
+	constructor: (x, y, force) ->
+		super()
+
+		@watchChanges 'type'
+		@watchChanges 'pos'
+		@watchChanges 'force'
+
 		@type = 'planet'
-		@hitRadius = @force
+		@hitRadius = @force = force
 		@pos = {x, y}
+
+	update: () ->
+
+	move: () ->
 
 	tangible: () ->
 		yes

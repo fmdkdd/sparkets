@@ -1,8 +1,10 @@
 class Planet
 	constructor: (planet) ->
-		@pos = planet.pos
-		@hitRadius = planet.hitRadius
-		@force = planet.force
+		@serverUpdate(planet)
+
+	serverUpdate: (planet) ->
+		for field, val of planet
+			@[field] = val
 
 	update: () ->
 		true
