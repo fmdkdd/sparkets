@@ -48,8 +48,11 @@ exports.mod = (x, n) ->
 	if x > 0 then x%n else exports.mod(x+n, n)
 
 # Random element in array.
-exports.randomElem = (array) ->
+exports.randomArrayElem = (array) ->
 	array[Math.round(Math.random() * (array.length-1))]
+
+exports.randomObjectElem = (obj) ->
+	obj[ exports.randomArrayElem(Object.keys(obj)) ]
 
 # Stroke circle.
 exports.strokeCircle = (ctxt, x, y, r) ->

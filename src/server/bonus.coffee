@@ -6,7 +6,7 @@ prefs = require './prefs'
 utils = require '../utils'
 
 class Bonus extends ChangingObject
-	constructor: (@id) ->
+	constructor: (@id, bonusType) ->
 		super()
 
 		@watchChanges 'type'
@@ -24,9 +24,9 @@ class Bonus extends ChangingObject
 		@hitRadius = prefs.bonus.hitRadius
 		@modelSize = prefs.bonus.modelSize
 
-		@spawn()
+		@spawn(bonusType)
 
-	spawn: () ->
+	spawn: (bonusType) ->
 		@state = 'incoming'
 		@countdown = prefs.bonus.states[@state].countdown
 
@@ -37,11 +37,14 @@ class Bonus extends ChangingObject
 		@empty = yes
 
 		# Choose bonus type.
-		type = utils.randomElem prefs.bonus.bonusType
+		if not bonusType?
+			type = utils.randomObjectElem prefs.bonus.bonusType
+		else
+			type = prefs.bonus.bonusType[bonusType]
 		@bonusEffect = type.constructor
 		@bonusType = type.type
 
-		@spawn() if server.game.collidesWithPlanet(@)
+		@spawn(bonusType) if server.game.collidesWithPlanet(@)
 
 	tangible: () ->
 		@state isnt 'dead'

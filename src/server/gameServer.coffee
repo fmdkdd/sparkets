@@ -208,9 +208,9 @@ class GameServer
 
 		return planets
 
-	spawnBonus: () ->
-		return if Object.keys(@bonuses).length >= prefs.server.maxBonuses
+	spawnBonus: (bonusType) ->
+		return false if Object.keys(@bonuses).length >= prefs.server.maxBonuses
 		@newGameObject( (id) =>
-			@bonuses[id] = new Bonus(id) )
+			@bonuses[id] = new Bonus(id, bonusType) )
 
 exports.GameServer = GameServer
