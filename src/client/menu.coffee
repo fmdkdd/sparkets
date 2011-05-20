@@ -91,23 +91,36 @@ class Menu
 	# Return the color chosen from the colorwheel.
 	readColor: (event) ->
 		maxRadius = 100
-		minRadius = 60
+		minRadius = 50
 		maxLum = 80
 		minLum = 30
 
-		dx = @wheelBox.width()/2 - (event.pageX - @wheelBox.offset().left)
-		dy = @wheelBox.height()/2 - (event.pageY - @wheelBox.offset().top)
+		center =
+			x: @wheelBox.offset().left + @wheelBox.width()/2
+			y: @wheelBox.offset().top + @wheelBox.height()/2
 
-		# Put the cursor at the click position.
-		cursor = $('#colorCursor')
-		cursor.css('display', 'block')
-		cursor.offset({top: event.pageY-@colorCursor.height()/2, left: event.pageX-@colorCursor.width()/2})
+		dx = center.x - event.pageX
+		dy = center.y - event.pageY
 
 		h = Math.atan2(dx, dy)
 		h += 2*Math.PI if h < 0
-		h =  Math.floor(h * 180/Math.PI)
+		hDeg = Math.round(h * 180/Math.PI)
 
-		d = distance(event.pageX, event.pageY, @wheelBox.offset().left+100, @wheelBox.offset().top+100)
+		d = distance(0, 0, dx, dy)
+
+		# Clamp distance to colorwheel disc.
+		d = Math.max(minRadius, Math.min(d, maxRadius))
+
 		l = Math.round(minLum + (maxRadius-d)/(maxRadius-minRadius)*(maxLum-minLum))
 
-		return [h, 60, l]
+		# Put the cursor at the clamped click position.
+		x = center.x - Math.sin(h) * d
+		y = center.y - Math.cos(h) * d
+
+		cursor = $('#colorCursor')
+		cursor.css('display', 'block')
+		cursor.offset
+			left: x - @colorCursor.width()/2
+			top: y - @colorCursor.height()/2
+
+		return [hDeg, 60, l]
