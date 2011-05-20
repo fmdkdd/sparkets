@@ -58,9 +58,15 @@ exports.mine =
 
 exports.bonus =
 	bonusType:
-		boost: BonusBoost
-		mine: BonusMine
-		EMP: BonusEMP
+		mine:
+			class: BonusMine
+			weight: 3
+		boost:
+			class: BonusBoost
+			weight: 2
+		EMP:
+			class: BonusEMP
+			weight: 1
 	hitRadius: 10					  # Radius of hit circle.
 	modelSize: 20							# Drawing size on client.
 	states:

@@ -38,13 +38,19 @@ class Bonus extends ChangingObject
 
 		# Choose bonus type.
 		if not bonusType?
-			type = utils.randomObjectElem prefs.bonus.bonusType
+			type = @randomBonus()
 		else
 			type = prefs.bonus.bonusType[bonusType]
 		@bonusEffect = type.constructor
 		@bonusType = type.type
 
 		@spawn(bonusType) if server.game.collidesWithPlanet(@)
+
+	randomBonus: () ->
+		roulette = []
+		for type, bonus of prefs.bonus.bonusType
+			roulette.push(bonus.class) for i in [1..bonus.weight]
+		return utils.randomArrayElem roulette
 
 	tangible: () ->
 		@state isnt 'dead'
