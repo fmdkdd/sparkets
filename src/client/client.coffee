@@ -38,6 +38,7 @@ displayNames = no
 
 # Debugging
 showHitCircles = no
+showMapBounds = no
 
 # Entry point
 $(document).ready (event) ->
@@ -126,6 +127,8 @@ redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, screen.w, screen.h)
 	ctxt.lineJoin = 'round'
 
+	drawMapBounds(ctxt) if showMapBounds
+
 	# Draw all objects.
 	obj.draw(ctxt)	for idx, obj of gameObjects
 
@@ -134,6 +137,13 @@ redraw = (ctxt) ->
 
 	# Draw UI
 	drawRadar ctxt if localShip? and not localShip.isDead()
+
+drawMapBounds = (ctxt) ->
+	ctxt.save()
+	ctxt.lineWidth = 2
+	ctxt.strokeStyle = '#dae'
+	ctxt.strokeRect(-view.x, -view.y, map.w, map.h)
+	ctxt.restore()
 
 centerView = () ->
 	if localShip?
