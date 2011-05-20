@@ -1,0 +1,82 @@
+* {
+	 margin : 0;
+	 padding : 0;
+	 font-family: 'Quattrocento Sans'; }
+
+#canvas {
+	 position: absolute;
+	 width: 100%;
+	 height: 100%;
+	 z-index: -1; }
+
+#menu {
+	 top: 50px;
+    width: 700px;
+	 height: 500px;
+	 margin: auto;
+	 position: relative;
+	 padding: 20px;
+	 border-radius: 5px;
+	 background: hsla(-90, 15%, 50%, .97); }
+#menu.hidden {
+	 opacity: 0;
+	 -webkit-transition: opacity 150ms ease-in;
+	 -moz-transition: opacity 150ms ease-out; }
+#menu.visible {
+	 opacity: 1;
+	 -webkit-transition: opacity 150ms ease-out;
+	 -moz-transition: opacity 150ms ease-in; }
+#closeButton {
+	 position: absolute; 
+	 top: 10px;
+	 right: 10px; }
+#customize {
+	 position: relative;
+	 float: left;
+	 width: 50%;
+	 height: 100%; }
+#colorWheelBox {
+	 width: 200px;
+	 height: 200px;
+	 position: relative;
+	 margin: auto;
+	 margin-bottom: 5%; }
+svg {
+	 width: 100%;
+	 height: 100%; }
+#colorWheel {
+	 width: 200px;
+	 height: 200px;
+	 position: absolute;
+	 top: 0; }
+#colorCursor {
+	 display: none; }
+
+#nameForm {
+	 width: 100%;
+	 text-align: center; }
+#name {
+	 display: block;
+	 width: 100px;
+	 margin: auto;
+	 margin-bottom: 5%;
+	 text-align: center; }
+#displayNamesBox {
+	 position: absolute;
+	 bottom: 0;
+	 right: 0;
+	 color: white; }
+
+#about {
+	 float: right;
+	 width: 50%; }
+
+h1 {
+	 margin-bottom: 50px;
+	 font-weight: normal;
+	 color: white;	}
+p {
+	 color: white; }
+a {
+	 text-decoration: underline;
+	 color: white; }

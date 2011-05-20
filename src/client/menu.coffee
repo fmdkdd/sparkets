@@ -3,6 +3,7 @@ class Menu
 
 		@menu = $('#menu')
 		@wheelBox = $('#colorWheelBox')
+		@shipPreview = $('#shipPreview')
 		@wheel = $('#colorWheel')
 		@colorCursor = $('#colorCursor')
 		@form = $('#nameForm')
@@ -24,7 +25,10 @@ class Menu
 			@currentColor = c = @readColor(event)
 
 			# Change the color of the center of the wheel.
-			@wheelBox.css('background-color', 'hsl('+c[0]+','+c[1]+'%,'+c[2]+'%)')
+			style = @shipPreview.attr('style')
+			style = style.replace(/stroke: [^\n]+/,
+				'stroke: hsl('+c[0]+','+c[1]+'%,'+c[2]+'%);')
+			@shipPreview.attr('style', style)
 
 		# Send users preferences and save them locally.
 		@form.submit (event) =>

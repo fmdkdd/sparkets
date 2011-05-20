@@ -2,96 +2,11 @@
 <html>
 <head>
   <title>Spacewar!</title>
-	<link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Quattrocento+Sans' rel='stylesheet' type='text/css'>
+  <link href="/client.css" rel="stylesheet" type="text/css" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/client.js"></script>
-  <style>
-	* {
-			margin : 0;
-			padding : 0;
-			font-family: 'Quattrocento Sans'; }
-
-	#canvas {
-			position: absolute;
-			width: 100%;
-			height: 100%;
-			z-index: -1; }
-
-	#menu {
-	    top: 50px;
-      width: 700px;
-			height: 500px;
-			margin: auto;
-			position: relative;
-			padding: 20px;
-			border-radius: 5px;
-			background: hsla(-90, 15%, 50%, .97); }
-	#menu.hidden {
-			opacity: 0;
-			-webkit-transition: opacity 150ms ease-in;
-			-moz-transition: opacity 150ms ease-out; }
-	#menu.visible {
-			opacity: 1;
-			-webkit-transition: opacity 150ms ease-out;
-			-moz-transition: opacity 150ms ease-in; }
-	#closeButton {
-			position: absolute; 
-			top: 10px;
-			right: 10px; }
-	#customize {
-			position: relative;
-			float: left;
-			width: 50%;
-			height: 100%; }
-	#colorWheelBox {
-			width: 200px;
-			height: 200px;
-			position: relative;
-			margin: auto;
-			margin-bottom: 5%;
-			background-color : white;
-			border-radius: 100px; }
-	svg {
-			width: 100%;
-			height: 100%; }
-	#colorWheel {
-			width: 200px;
-			height: 200px;
-			position: absolute;
-			top: 0; }
-	#colorCursor {
-			display: none; }
-
-	#nameForm {
-			width: 100%;
-			text-align: center; }
-	#name {
-			display: block;
-			width: 100px;
-			margin: auto;
-			margin-bottom: 5%;
-			text-align: center; }
-	#displayNamesBox {
-			position: absolute;
-			bottom: 0;
-			right: 0;
-			color: white; }
-
-	#about {
-			float: right;
-			width: 50%; }
-
-	h1 {
-			margin-bottom: 50px;
-			font-weight: normal;
-			color: white;	}
-	p {
-			color: white; }
-	a {
-			text-decoration: underline;
-			color: white; }
-  </style>
 </head>
 <body>
   <canvas id="canvas">Canvas not supported.</canvas>
@@ -102,21 +17,16 @@
 			<h1>You.</h1>
 			
 			<div id="colorWheelBox">
-				<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="shipPreview">
-					<defs>
-						<mask id="shipMask">
-							<circle cx="50%" cy="50%" r="50%" style="fill: white;"/>
-							<path transform="translate(100, 100) scale(2)"
-							      d="M -7 10 L 0 -10 L 7 10 L 0 6 Z"
-							      style="stroke-width: 3;
-                                  stroke: black;
-                                  stroke-linejoin: round;
-                                  fill: white"/>
-		               points = [[-7,10], [0,-10], [7,10], [0,6]]
-						</mask>
-					</defs>
-					<g style="mask: url(#shipMask)">
-						<circle cx="50%" cy="50%" r="40%" style="fill: white"/>
+				<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+				  <g>
+					 <circle cx="50%" cy="50%" r="40%" style="fill: white"/>
+				    <path id="shipPreview"
+                      transform="translate(100, 100) scale(2)"
+							 d="M -7 10 L 0 -10 L 7 10 L 0 6 Z"
+							 style="stroke-width: 3;
+                             stroke: black;
+                             stroke-linejoin: round;
+                             fill: white"/>
 					</g>
 				</svg>
 
