@@ -30,6 +30,8 @@ exports.server =
 	bonusWait: 30000				  # ms before a bonus drop.
 	maxBonuses: 5				  # Number of allowed simultaneous bonuses.
 
+	replPort: 54321				  # Port of the web REPL.
+
 exports.bullet =
 	hitRadius: 2					  # Radius of hit circle.
 	gravityPull: 200				  # Gravity pull factor.

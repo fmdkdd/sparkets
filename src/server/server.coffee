@@ -17,3 +17,6 @@ exports.game = new GameServer(socket)
 exports.game.launch()
 console.info 'Server started'
 
+# Start the admin REPL and expose game server object.
+repl = require 'webrepl'
+repl.start(prefs.server.replPort).context.game = exports.game
