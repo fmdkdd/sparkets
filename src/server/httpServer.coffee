@@ -7,11 +7,12 @@ mime = (path) ->
 	return 'text/html' if path.match(/html$/)
 	return 'text/css' if path.match(/css$/)
 	return 'image/png' if path.match(/png$/)
+	return 'image/svg+xml' if path.match(/svg$/)
 
 server = http.createServer (req, res) ->
 	path = url.parse(req.url).pathname
 	switch path
-		when '/client.html', '/client.css', '/client.js', '/colorWheel.png', '/colorCursor.png', '/closeButton.png'
+		when '/client.html', '/client.css', '/client.js', '/colorWheel.png', '/colorCursor.png', '/closeButton.svg'
 			fs.readFile __dirname + '/../..' + path, (err, data) ->
 				return send404(res) if err?
 				res.writeHead 200,
