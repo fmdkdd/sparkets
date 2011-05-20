@@ -43,16 +43,15 @@
    Ships and bullets splatters their colors. À la paintball.
 
 * Add debugging facilities.
-   Display map bounds, fps, messages dropped...
+   Display fps, messages dropped...
 
 = Cleanup =
       
 * Get rid of evil global variables.
 
-* Rework collisions.
-   - Do some checks before deciding exact collisions. Server can't handle
-     30 meager bonuses before crunching half a CPU.
-     Octree, larger bounding boxes, check if the object is interested in the collision or not.
+* Tune collisions.
+   - Immobile objects need not to be reinserted in the grid (planets).
+   - Don't check collisions between objects that can't collide gameplay-wise.
    
 * Rework client drawing.
    - Replace homebrew transformations by scale(), translate(), rotate.
