@@ -19,4 +19,8 @@ console.info 'Server started'
 
 # Start the admin REPL and expose game server object.
 repl = require 'webrepl'
-repl.start(prefs.server.replPort).context.game = exports.game
+replServ = repl.start(prefs.server.replPort)
+replServ.context.game = exports.game
+replServ.context.stop = () ->
+	httpServer.close()
+	process.exit()
