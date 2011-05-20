@@ -25,6 +25,11 @@ exports.server =
 	mapSize:							  	# Size of the real map (duh).
 		w: 2000
 		h: 2000
+
+	grid:
+		width: 10
+		height: 10
+
 	planetsCount: 30				  # Number of planets on the map.
 
 	bonusWait: 30000				  # ms before a bonus drop.

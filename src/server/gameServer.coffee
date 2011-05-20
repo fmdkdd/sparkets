@@ -22,8 +22,9 @@ class GameServer
 
 	launch: () ->
 		for p in @initPlanets()
-			id = @gameObjectCount++
-			@planets[id] = p
+			@newGameObject (id) =>
+				p.id = id
+				@planets[id] = p
 
 		@spawnBonus()
 		setInterval(( () => @spawnBonus() ), prefs.server.bonusWait)
@@ -38,6 +39,14 @@ class GameServer
 		@socket.on 'clientDisconnect', (client) =>
 			@clientDisconnect(client)
 
+		# Setup space grid
+		@grid =
+			width: prefs.server.grid.width
+			height: prefs.server.grid.height
+			cellWidth: prefs.server.mapSize.w / prefs.server.grid.width
+			cellHeight: prefs.server.mapSize.h / prefs.server.grid.height
+			cells: {}
+
 		@update()
 
 	clientConnect: (client) ->
@@ -49,11 +58,6 @@ class GameServer
 		# Create ship.
 		@newGameObject( (id) ->
 			player.createShip(id) )
-
-		# Send the playfield.
-		client.send
-			type: 'objects update'
-			objects: @planets
 
 		# Send game objects.
 		objs = @watched(@gameObjects)
@@ -115,24 +119,45 @@ class GameServer
 		setTimeout(( () => @update() ),
 			prefs.server.timestep - utils.mod(diff, prefs.server.timestep))
 
+	placeObjectInGrid: (obj) ->
+		{x: ox, y: oy} = obj.pos
+		w = @grid.cellWidth
+		h = @grid.cellHeight
+
+		insert = (x,y) =>
+			gridX = Math.floor(utils.mod(x, prefs.server.mapSize.w) / w)
+			gridY = Math.floor(utils.mod(y, prefs.server.mapSize.h) / h)
+			cell = gridY * @grid.width + gridX
+			@grid.cells[cell] = {} if not @grid.cells[cell]?
+			@grid.cells[cell][obj.id] = obj
+
+		# First place object in the cell containing (x,y)
+		insert(ox, oy)
+
+		# Now place it in adjacent squares
+		r = obj.hitRadius
+
+		insert(ox-r, oy-r)
+		insert(ox-r, oy+r)
+		insert(ox+r, oy-r)
+		insert(ox+r, oy+r)
+
 	updateObjects: (objects) ->
 		# Move all objects
-		obj.move() for id, obj of objects
-
-		# Check collisions with planets
-		for i, planet of @planets
-			for j, obj of objects
-				if obj.tangible() and obj.collidesWith(planet)
-					collisions.handle(obj, planet)
+		@grid.cells = {}
+		for id, obj of objects
+			obj.move()
+			@placeObjectInGrid(obj) if obj.tangible()
 
 		# Check all collisions
-		for i, obj1 of objects
-			for j, obj2 of objects
-				if j > i and
-						obj1.tangible() and
-						obj2.tangible() and
-						(obj1.collidesWith(obj2) or obj2.collidesWith(obj1))
-					collisions.handle(obj1, obj2)
+		for idx, cell of @grid.cells
+			for i, obj1 of cell
+				for j, obj2 of cell
+					if j > i and
+							obj1.tangible() and
+							obj2.tangible() and
+							(obj1.collidesWith(obj2) or obj2.collidesWith(obj1))
+						collisions.handle(obj1, obj2)
 
 		# Record all changes.
 		allChanges = {}
