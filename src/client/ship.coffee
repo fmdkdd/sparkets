@@ -111,7 +111,7 @@ class Ship
 				alpha = @engineAnimFor/@engineAnimDelay
 
 			ctxt.strokeStyle = color(@color, alpha)
-			enginePoints = [ [-5,8], [0,18], [5,8] ]
+			enginePoints = [[-8,-5], [-18,0], [-8,5]]
 			ctxt.lineWidth = 2
 			ctxt.save()
 			ctxt.translate(x, y)
@@ -135,7 +135,6 @@ class Ship
 			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)
 
 	drawShipModel: (x, y, dir, strokeAlpha, fillAlpha) ->
-		#points = [[-7,10], [0,-10], [7,10], [0,6]]
 		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
 
 		ctxt.fillStyle = color(@color, fillAlpha)
