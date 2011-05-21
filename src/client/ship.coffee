@@ -135,7 +135,8 @@ class Ship
 			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)
 
 	drawShipModel: (x, y, dir, strokeAlpha, fillAlpha) ->
-		points = [[-7,10], [0,-10], [7,10], [0,6]]
+		#points = [[-7,10], [0,-10], [7,10], [0,6]]
+		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
 
 		ctxt.fillStyle = color(@color, fillAlpha)
 		ctxt.strokeStyle = color(@color, strokeAlpha)
@@ -143,7 +144,7 @@ class Ship
 
 		ctxt.save()
 		ctxt.translate(x, y)
-		ctxt.rotate(dir)
+		ctxt.rotate(@dir)
 		ctxt.beginPath()
 		for p in points
 			ctxt.lineTo(p[0], p[1])

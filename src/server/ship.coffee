@@ -63,8 +63,8 @@ class Ship extends ChangingObject
 		@dir += if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
 
 	ahead: () ->
-		@vel.x += Math.sin(@dir) * prefs.ship.speed * @boost
-		@vel.y -= Math.cos(@dir) * prefs.ship.speed * @boost
+		@vel.x += Math.cos(@dir) * prefs.ship.speed * @boost
+		@vel.y += Math.sin(@dir) * prefs.ship.speed * @boost
 		@thrust = true
 
 	chargeFire: () ->
