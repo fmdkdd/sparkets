@@ -16,8 +16,8 @@ class Bullet extends ChangingObject
 
 		@type = 'bullet'
 
-		xdir = 10*Math.sin(@owner.dir)
-		ydir = -10*Math.cos(@owner.dir)
+		xdir = 10*Math.cos(@owner.dir)
+		ydir = 10*Math.sin(@owner.dir)
 
 		@power = @owner.firePower
 		@pos =
