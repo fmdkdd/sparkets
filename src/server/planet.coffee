@@ -8,6 +8,7 @@ class Planet extends ChangingObject
 		@watchChanges 'type'
 		@watchChanges 'pos'
 		@watchChanges 'force'
+		@watchChanges 'hitRadius'
 
 		@type = 'planet'
 		@hitRadius = @force = force

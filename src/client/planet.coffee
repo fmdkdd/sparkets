@@ -24,11 +24,6 @@ class Planet
 		x = px - view.x
 		y = py - view.y
 
-		if showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, @hitRadius)
-
 		ctxt.strokeStyle = color planetColor
 		ctxt.fillStyle = 'white'
 		ctxt.lineWidth = 8
@@ -37,3 +32,7 @@ class Planet
 		ctxt.stroke()
 		ctxt.fill()
 
+		if showHitCircles
+			ctxt.strokeStyle = 'red'
+			ctxt.lineWidth = 1
+			strokeCircle(ctxt, x, y, @hitRadius)
