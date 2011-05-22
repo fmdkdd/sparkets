@@ -11,7 +11,7 @@
 
 #menu {
 	 top: 50px;
-    width: 700px;
+   width: 700px;
 	 height: 500px;
 	 margin: auto;
 	 position: relative;
@@ -52,7 +52,7 @@
     to { -moz-transform: rotate(360deg); }
 }
 
-svg {
+#colorWheelBox svg {
     -webkit-animation-name: rotate;
     -moz-animation-name: rotate;
     -webkit-animation-duration: 15s;
@@ -62,8 +62,8 @@ svg {
     -webkit-animation-timing-function: linear;
     -moz-animation-timing-function: linear;
 
-	 width: 100%;
-	 height: 100%; }
+		width: 100%;
+		height: 100%; }
 #colorWheel {
 	 width: 200px;
 	 height: 200px;
@@ -91,6 +91,11 @@ svg {
 	 float: right;
 	 width: 50%; }
 
+.slide {
+		position: absolute;
+		left: 50px;
+		bottom: 50px; }
+
 h1 {
 	 margin-bottom: 50px;
 	 font-weight: normal;
@@ -100,3 +105,4 @@ p {
 a {
 	 text-decoration: underline;
 	 color: white; }
+
