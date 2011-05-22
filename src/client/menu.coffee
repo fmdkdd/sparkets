@@ -33,7 +33,7 @@ class Menu
 			event.preventDefault()
 
 		# Toggle the name display option.
-		@displayNamesCheck.change (event) ->
+		@displayNamesCheck.change (event) =>
 			displayNames = @displayNamesCheck.is(':checked')
 
 		# Close the menu.
