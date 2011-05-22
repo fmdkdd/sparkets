@@ -1,6 +1,7 @@
 class Tutorial
 	constructor: () ->
 
+		@startDelay = 2000
 		@fadeDuration = 1000
 		@expositionDuration = 10000
 
@@ -8,6 +9,8 @@ class Tutorial
 		@slides = ['/tutorialMove.svg', '/tutorialShoot.svg']
 
 		@load()
+
+		setTimeout((() => @start()), @startDelay)
 
 	load: () ->
 		for i, s of @slides
@@ -18,17 +21,14 @@ class Tutorial
 		@fadeIn()
 
 	fadeIn: () ->
-		info 'in '+@current
 		# Fade-in the current slide
 		if @current < @slides.length
 			$('#slide' + @current).fadeIn(@fadeDuration, () => @pause())
 
 	pause: () ->
-		info 'pause '+@current
 		setTimeout((() => @fadeOut()), @expositionDuration)
 
 	fadeOut: () ->
-		info 'out '+@current
 		# Fade-out the current slide.
 		$('#slide' + @current).fadeOut(@fadeDuration, () => @fadeIn())
 		++@current

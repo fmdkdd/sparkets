@@ -69,7 +69,7 @@ go = (id) ->
 	menu = new Menu()
 	menu.restoreLocalPreferences()
 
-	new Tutorial().start()
+	new Tutorial()
 
 	# Use the game event handler.
 	focusInputs()
