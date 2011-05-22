@@ -69,7 +69,8 @@ go = (id) ->
 	menu = new Menu()
 	menu.restoreLocalPreferences()
 
-	new Tutorial()
+	# Launch the tutorial if it has never been done before.
+	new Tutorial() if not localStorage['spacewar.tutorial']?
 
 	# Use the game event handler.
 	focusInputs()

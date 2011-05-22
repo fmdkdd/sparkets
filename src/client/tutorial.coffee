@@ -24,6 +24,10 @@ class Tutorial
 		# Fade-in the current slide
 		if @current < @slides.length
 			$('#slide' + @current).fadeIn(@fadeDuration, () => @pause())
+		# Mark the tutorial as passed.
+		else
+			localStorage['spacewar.tutorial'] = true
+
 
 	pause: () ->
 		setTimeout((() => @fadeOut()), @expositionDuration)
