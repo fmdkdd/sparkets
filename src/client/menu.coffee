@@ -13,10 +13,6 @@ class Menu
 
 		@currentColor = null
 
-		# Stop the event propagation when a click on the menu is detected.
-		$('#menu').click (event) =>
-			event.stopPropagation() if $('#menu').attr('class') is 'visible'
-
 		@wheelBox.click (event) =>
 			@currentColor = c = @readColor(event)
 
@@ -74,6 +70,7 @@ class Menu
 		@menu.addClass('hidden')
 
 		# Use the game event handler.
+		@menu.unbind()
 		focusInputs()
 
 		@nameField.blur()
