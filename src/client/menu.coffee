@@ -13,10 +13,6 @@ class Menu
 
 		@currentColor = null
 
-		# Fade-in when the user clicks anywhere.
-		$(document).click (event) =>
-			if @isOpen() then @close() else @open()
-
 		# Stop the event propagation when a click on the menu is detected.
 		$('#menu').click (event) =>
 			event.stopPropagation() if $('#menu').attr('class') is 'visible'
@@ -46,15 +42,39 @@ class Menu
 				@close()
 				event.stopPropagation()
 
+	focusInputs: () ->
+	
+		# Clear all event handlers attached to the document.
+		$(document).unbind()
+
+		# Close the menu when a click is detected outside of it.
+		$(document).click (event) =>
+			@close()
+		@menu.click (event) =>
+			event.stopPropagation()
+
+		$(document).keyup ({keyCode}) =>
+			switch keyCode
+
+				# Close the menu when the Escape key is pressed.
+				when 27
+					@close()
+
 	open: () ->
 		@menu.removeClass('hidden')
 		@menu.addClass('visible')
+
+		# Use the menu event handler.
+		@focusInputs()
 
 		@nameField.focus()
 
 	close: () ->
 		@menu.removeClass('visible')
 		@menu.addClass('hidden')
+
+		# Use the game event handler.
+		focusInputs()
 
 		@nameField.blur()
 

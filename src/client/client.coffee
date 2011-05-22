@@ -33,6 +33,8 @@ gameObjects = {}
 
 keys = {}
 
+menu = null
+
 # user preferences
 displayNames = no
 
@@ -67,6 +69,21 @@ go = (id) ->
 	menu = new Menu()
 	menu.restoreLocalPreferences()
 
+	# Use the game event handler.
+	focusInputs()
+	
+	requestAnimFrame(update)
+
+focusInputs = () ->
+	
+	# Clear all event handlers attached to the document.
+	$(document).unbind()
+
+	# Fade-in the menu when the user clicks anywhere.
+	$(document).click (event) =>
+		menu.open()
+
+	# Send key presses and key releases to the server.
 	$(document).keydown ({keyCode}) ->
 		if not keys[keyCode]? or keys[keyCode] is off
 			keys[keyCode] = on
@@ -81,8 +98,6 @@ go = (id) ->
 			type: 'key up'
 			playerId: playerId
 			key: keyCode
-
-	requestAnimFrame(update)
 
 # RequestAnimationFrame API
 # http://paulirish.com/2011/requestanimationframe-for-smart-animating/
