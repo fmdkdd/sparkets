@@ -41,6 +41,10 @@ displayNames = no
 # Debugging
 showHitCircles = no
 showMapBounds = no
+showFPS = no
+lastFPS = []
+avgFPS = 0
+FPSsamples = 30
 
 # Entry point
 $(document).ready (event) ->
@@ -74,11 +78,15 @@ go = (id) ->
 
 	# Use the game event handler.
 	focusInputs()
-	
+
 	requestAnimFrame(update)
 
+	if showFPS
+		setInterval(( () =>
+			console.info avgFPS ), 500)
+
 focusInputs = () ->
-	
+
 	# Clear all event handlers attached to the document.
 	$(document).unbind()
 
@@ -124,6 +132,10 @@ update = (time) ->
 	# Update time globals (poor kittens...).
 	sinceLastUpdate = time - now
 	now = time
+
+	lastFPS.push(1000/sinceLastUpdate)
+	lastFPS.shift() if lastFPS.length > FPSsamples
+	avgFPS = lastFPS.reduce( (a,b) -> a+b ) / lastFPS.length
 
 	# Update and cleanup objects.
 	for idx, obj of gameObjects
