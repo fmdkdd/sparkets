@@ -39,7 +39,7 @@ class Menu
 				event.stopPropagation()
 
 	focusInputs: () ->
-	
+
 		# Clear all event handlers attached to the document.
 		$(document).unbind()
 
@@ -62,8 +62,6 @@ class Menu
 
 		# Use the menu event handler.
 		@focusInputs()
-
-		@nameField.focus()
 
 	close: () ->
 		@menu.removeClass('visible')
