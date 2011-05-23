@@ -6,16 +6,16 @@ class Planet
 
 	initSprite: () ->
 		@sprite = document.createElement('canvas')
-		@sprite.width = @sprite.height = 200
-		
-		spriteCtxt = @sprite.getContext('2d')
-		spriteCtxt.strokeStyle = color planetColor
-		spriteCtxt.fillStyle = 'white'
-		spriteCtxt.lineWidth = 8
-		spriteCtxt.beginPath()
-		spriteCtxt.arc(@force, @force, @force - spriteCtxt.lineWidth/2, 0, 2*Math.PI, false)
-		spriteCtxt.stroke()
-		spriteCtxt.fill()
+		@sprite.width = @sprite.height = Math.ceil(2*@force)
+
+		c = @sprite.getContext('2d')
+		c.strokeStyle = color planetColor
+		c.fillStyle = 'white'
+		c.lineWidth = 8
+		c.beginPath()
+		c.arc(@force, @force, @force - c.lineWidth/2, 0, 2*Math.PI, false)
+		c.stroke()
+		c.fill()
 
 	serverUpdate: (planet) ->
 		for field, val of planet
@@ -39,10 +39,7 @@ class Planet
 		x = px - view.x
 		y = py - view.y
 
-		ctxt.save()
-		ctxt.translate(x-f,y-f)
-		ctxt.drawImage(@sprite, 0, 0)
-		ctxt.restore()
+		ctxt.drawImage(@sprite, x-f, y-f)
 
 		if showHitCircles
 			ctxt.strokeStyle = 'red'
