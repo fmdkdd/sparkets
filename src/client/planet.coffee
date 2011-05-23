@@ -2,6 +2,21 @@ class Planet
 	constructor: (planet) ->
 		@serverUpdate(planet)
 
+		@initSprite() if not @sprite?
+
+	initSprite: () ->
+		@sprite = document.createElement('canvas')
+		@sprite.width = @sprite.height = 200
+		
+		spriteCtxt = @sprite.getContext('2d')
+		spriteCtxt.strokeStyle = color planetColor
+		spriteCtxt.fillStyle = 'white'
+		spriteCtxt.lineWidth = 8
+		spriteCtxt.beginPath()
+		spriteCtxt.arc(@force, @force, @force - spriteCtxt.lineWidth/2, 0, 2*Math.PI, false)
+		spriteCtxt.stroke()
+		spriteCtxt.fill()
+
 	serverUpdate: (planet) ->
 		for field, val of planet
 			@[field] = val
@@ -24,13 +39,10 @@ class Planet
 		x = px - view.x
 		y = py - view.y
 
-		ctxt.strokeStyle = color planetColor
-		ctxt.fillStyle = 'white'
-		ctxt.lineWidth = 8
-		ctxt.beginPath()
-		ctxt.arc x, y, f, 0, 2*Math.PI, false
-		ctxt.stroke()
-		ctxt.fill()
+		ctxt.save()
+		ctxt.translate(x-f,y-f)
+		ctxt.drawImage(@sprite, 0, 0)
+		ctxt.restore()
 
 		if showHitCircles
 			ctxt.strokeStyle = 'red'
