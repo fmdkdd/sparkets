@@ -83,6 +83,8 @@ class GameServer
 		return allWatched
 
 	clientMessage: (msg, client) ->
+		return if not @players[msg.playerId]?
+
 		switch msg.type
 			when 'key down'
 				@players[msg.playerId].keyDown(msg.key)
