@@ -42,9 +42,6 @@ displayNames = no
 showHitCircles = no
 showMapBounds = no
 showFPS = no
-lastFPS = []
-avgFPS = 0
-FPSsamples = 30
 
 # Entry point
 $(document).ready (event) ->
@@ -79,11 +76,7 @@ go = (id) ->
 	# Use the game event handler.
 	focusInputs()
 
-	requestAnimFrame(update)
-
-	if showFPS
-		setInterval(( () =>
-			console.info avgFPS ), 500)
+	renderLoop(update, showFPS)
 
 focusInputs = () ->
 
@@ -110,32 +103,54 @@ focusInputs = () ->
 			playerId: playerId
 			key: keyCode
 
-# RequestAnimationFrame API
-# http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-requestAnimFrame = ( () ->
-	window.requestAnimationFrame       ||
-		window.webkitRequestAnimationFrame ||
-		window.mozRequestAnimationFrame    ||
-		window.oRequestAnimationFrame      ||
-		window.msRequestAnimationFrame     ||
-		(callback, element) ->
-			window.setTimeout(callback, 1000 / 60) )()
+renderLoop = (callback, showFPS) ->
+	# RequestAnimationFrame API
+	# http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+	requestAnimFrame = ( () ->
+		window.requestAnimationFrame       ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame    ||
+			window.oRequestAnimationFrame      ||
+			window.msRequestAnimationFrame     ||
+			(callback, element) ->
+				window.setTimeout(callback, 1000 / 60) )()
+
+	currentFPS = 0
+	frameCount = 0
+	lastFPSupdate = 0
+
+	lastTime = 0
+
+	render = (time) ->
+		# Setup next update.
+		requestAnimFrame(render)
+
+		# For browsers which do not pass the time argument.
+		time ?= (new Date).getTime()
+
+		# Update FPS every second
+		if (time - lastFPSupdate > 1000)
+			currentFPS = frameCount
+			frameCount = 0
+			lastFPSupdate = time
+			console.info(currentFPS) if showFPS
+
+		# Pass current time and time since last update to callback.
+		callback(time, time - lastTime)
+
+		# Another frame blit you must.
+		++frameCount
+
+		# Update time of the last update.
+		lastTime = time
+
+	requestAnimFrame(render)
 
 # Game loop!
-update = (time) ->
-	# Setup next update.
-	requestAnimFrame(update)
-
-	# For browsers which do not pass the time argument
-	time ?= (new Date).getTime()
-
+update = (time, sinceUpdate) ->
 	# Update time globals (poor kittens...).
-	sinceLastUpdate = time - now
+	sinceLastUpdate = sinceUpdate
 	now = time
-
-	lastFPS.push(1000/sinceLastUpdate)
-	lastFPS.shift() if lastFPS.length > FPSsamples
-	avgFPS = lastFPS.reduce( (a,b) -> a+b ) / lastFPS.length
 
 	# Update and cleanup objects.
 	for idx, obj of gameObjects
