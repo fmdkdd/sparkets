@@ -15,7 +15,12 @@
       Spray other ships with your colors! Rating 2 and up.
    - Mirror image.
       Copy of the ship that mirror the player, but turn in opposite directions.
-      Fires phony bullets, disappear when colliding something (different explosion visual).
+      Fires phony bullets, disappear when colliding something
+      (different explosion visual).
+
+o [alpha-3] Add fun to solo play
+   - Basic AI? Based on tracker pathing. Training.
+   - Shoot moving asteroids for score. Repetitive.
 
 * Scale with number of players.
    Should scale : bonus drop, map size, planet density?
@@ -26,14 +31,14 @@
 
 = Interface =
 
-* Add minimalist tutorial.
+o [alpha-2] Add minimalist tutorial.
    Display a keyboard with highlighted arrow keys and spacebar to new
    players (no local storage prefs). When they pickup a bonus, display
    a Z keyboard key.
 
 = Graphics =
 
-* Current bonus visual clue.
+o [alpha-3] Current bonus visual clue.
    Without polluting the UI. À la Mario Kart: floating around ship?
 
 * Enhance ship boost visual feedback.
@@ -43,20 +48,25 @@
    Ships and bullets splatters their colors. À la paintball.
 
 * Add debugging facilities.
-   Display fps, messages dropped...
+   Display messages dropped...
 
 = Cleanup =
       
 * Get rid of evil global variables.
+   Use closures where relevant, pass arguments when convenient.
 
 * Tune collisions.
    - Immobile objects need not to be reinserted in the grid (planets).
    - Don't check collisions between objects that can't collide gameplay-wise.
    
-* Rework client drawing.
+o [alpha-3] Refactor client clode
+   What a mess.
+
+o [alpha-3] Rework client drawing.
    - Replace homebrew transformations by scale(), translate(), rotate.
+      Especially all the offset passing in drawInfinity and view centering.
    - Use save() and restore(). Every object should set its own lineWidth.
    - Find out why Core2 with puny graphic chipset can handle the client fullscreen
      when beefier hardware can't.
 
-* Share prefs file with client.
+o [alpha-3] Share prefs file with client.
