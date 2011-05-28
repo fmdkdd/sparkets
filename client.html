@@ -15,18 +15,23 @@
 
 		<div id="customize">
 			<h1>You.</h1>
-			
+	      
 			<div id="colorWheelBox">
-				<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-				  <g>
-					 <circle cx="50%" cy="50%" r="40%" style="fill: white"/>
-				    <path id="shipPreview"
-                  transform="translate(100, 98) scale(2)"
-									d="M -7 10 L 0 -10 L 7 10 L 0 6 Z"
-									style="stroke-width: 3;
-                         stroke: black;
-                         stroke-linejoin: round;
-                         fill: white"/>
+			  <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+				  <g transform="translate(100,100) scale(2)">
+					 <circle cx="0" cy="0" r="20%" style="fill: white"/>
+					 <path id="shipPreview"
+							 d="M -7 10 L 0 -10 L 7 10 L 0 6 Z"
+							 style="stroke-width: 3;
+									  stroke: black;
+									  stroke-linejoin: round;
+									  fill: white" >
+						<animateTransform
+							attributeName="transform" attributeType="XML"
+							type="rotate" from="0" to="360"
+							dur="15s" repeatCount="indefinite" />
+						</path>
+
 					</g>
 				</svg>
 
