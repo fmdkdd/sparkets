@@ -8,7 +8,7 @@ class Player
 		@ship = null
 
 	createShip: (id) ->
-		@ship = new Ship(id, @id)
+		@ship = new Ship(id, @id, @name, @color)
 
 	keyDown: (key) ->
 		@keys[key] = on
@@ -46,7 +46,12 @@ class Player
 		@ship.chargeFire() if @keys[32] is on or @keys[65] is on
 
 	changePrefs: (name, color) ->
-		@ship.name = name if name?
-		@ship.color = color if color?
+		if name?
+			@name = name
+			@ship.name = name if @ship?
+
+		if color?
+			@color = color
+			@ship.color = color if @ship?
 
 exports.Player = Player

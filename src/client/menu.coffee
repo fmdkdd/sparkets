@@ -99,8 +99,6 @@ class Menu
 		@currentColor = localStorage['spacewar.color'].split(',') if localStorage['spacewar.color']?
 		@nameField.val(localStorage['spacewar.name']) if localStorage['spacewar.name']
 
-		@sendPreferences()
-
 		info 'Preferences restored.'
 
 	# Return the color chosen from the colorwheel.

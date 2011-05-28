@@ -55,6 +55,14 @@ class GameServer
 		# Add new player to player list.
 		player = @players[id] = new Player(id)
 
+		client.send
+			type: 'connected'
+			playerId: id
+
+	createShip: (client) ->
+		id = client.sessionId
+		player = @players[id]
+
 		# Create ship.
 		@newGameObject( (id) ->
 			player.createShip(id) )
@@ -68,7 +76,7 @@ class GameServer
 
 		# Good news!
 		client.send
-			type: 'connected'
+			type: 'ship created'
 			playerId: id
 			shipId: player.ship.id
 
@@ -92,12 +100,15 @@ class GameServer
 			when 'key up'
 				@players[msg.playerId].keyUp(msg.key)
 
+			when 'create ship'
+				@createShip(client)
+
 			when 'prefs changed'
 				@players[msg.playerId].changePrefs(msg.name, msg.color)
 
 	clientDisconnect: (client) ->
 		playerId = client.sessionId
-		shipId = @players[playerId].ship.id
+		shipId = @players[playerId].ship?.id
 
 		# Tell everyone.
 		client.broadcast
@@ -192,7 +203,7 @@ class GameServer
 		@gameObjects[id] = creator(id)
 
 	deleteObject: (id) ->
-		type = @gameObjects[id].type
+		type = @gameObjects[id]?.type
 
 		switch type
 			when 'bonus'

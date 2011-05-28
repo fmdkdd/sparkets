@@ -46,6 +46,10 @@ showFPS = no
 # Entry point
 $(document).ready (event) ->
 
+	# Restore local preferences.
+	menu = new Menu()
+	menu.restoreLocalPreferences()
+
 	# Connect to server and set callbacks.
 	socket = new io.Socket null, {port: port}
 	socket.connect()
@@ -64,12 +68,7 @@ $(document).ready (event) ->
 	$(window).resize()
 
 # Setup input callbacks and launch game loop.
-go = (id) ->
-	playerId = id
-
-	menu = new Menu()
-	menu.restoreLocalPreferences()
-
+go = () ->
 	# Launch the tutorial if it has never been done before.
 	new Tutorial() if not localStorage['spacewar.tutorial']?
 
@@ -271,9 +270,19 @@ onMessage = (msg) ->
 
 		# When receiving our id from the server.
 		when 'connected'
+			playerId = msg.playerId
+
+			menu.sendPreferences()
+
+			socket.send
+				type: 'create ship'
+				playerId: playerId
+
+		# When receiving our id from the server.
+		when 'ship created'
 			shipId = msg.shipId
 			localShip = gameObjects[shipId]
-			go(msg.playerId)
+			go()
 
 		# When another player leaves.
 		when 'player quits'

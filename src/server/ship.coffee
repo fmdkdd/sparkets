@@ -6,7 +6,7 @@ Bullet = require './bullet'
 Mine = require './mine'
 
 class Ship extends ChangingObject
-	constructor: (@id, @playerId) ->
+	constructor: (@id, @playerId, name, color) ->
 		super()
 
 		@watchChanges(
@@ -27,8 +27,8 @@ class Ship extends ChangingObject
 			'boost' )
 
 		@type = 'ship'
-		@name = null
-		@color = utils.randomColor()
+		@name = if name? then name else null
+		@color = if color? then color else utils.randomColor()
 		@hitRadius = prefs.ship.hitRadius
 
 		@spawn()
