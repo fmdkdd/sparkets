@@ -5,6 +5,10 @@
       Rapid-fire weapon but takes longer to kill ships.
    - Portable black hole
       Gravity affects bullets and ships?
+   - EMP/Shield
+      Deflect bullets. Has potential but needs refinement.
+   - Tracker
+      Mercilessly follow a designated target. Needs testing.
 
 * Add items
    - Invisible hull
@@ -13,10 +17,13 @@
       Easier to shoot at, harder to slip between planets but kills on contact.
    - Paintball mode
       Spray other ships with your colors! Rating 2 and up.
-   - Mirror image.
+   - Mirror image
       Copy of the ship that mirror the player, but turn in opposite directions.
       Fires phony bullets, disappear when colliding something
       (different explosion visual).
+   - Drunk mode
+      Convert to offensive bonus.
+       
 
 o [alpha-3] Add fun to solo play
    - Basic AI? Based on tracker pathing. Training.
@@ -39,7 +46,7 @@ o [alpha-2] Add minimalist tutorial.
 = Graphics =
 
 o [alpha-3] Current bonus visual clue.
-   Without polluting the UI. À la Mario Kart: floating around ship?
+   Without polluting the UI. À la Mario Kart: floating around ship? Dragging behind the ship?
 
 * Enhance ship boost visual feedback.
    Ghost image of ship trailing behind.
