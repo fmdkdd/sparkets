@@ -49,7 +49,10 @@ class Bonus extends ChangingObject
 	randomBonus: () ->
 		roulette = []
 		for type, bonus of prefs.bonus.bonusType
-			roulette.push(bonus.class) for i in [1..bonus.weight]
+			i = 0
+			while i < bonus.weight
+				roulette.push(bonus.class)
+				++i;
 		return utils.randomArrayElem roulette
 
 	tangible: () ->
