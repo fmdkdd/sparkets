@@ -58,7 +58,9 @@ class Bonus extends ChangingObject
 	tangible: () ->
 		@state isnt 'dead'
 
-	collidesWith: ({pos: {x,y}, hitRadius}) ->
+	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
+		x += offset.x
+		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->

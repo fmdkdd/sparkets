@@ -28,24 +28,10 @@ class Mine extends ChangingObject
 	tangible: () ->
 		@state is 'active' or @state is 'exploding'
 
-	collidesWith: ({pos: {x,y}, hitRadius, type}) ->
-		# Distance should wrap around the map, since potentially
-		# colliding objects are in the vicinity.
-
-		# Consider the closest object among its images in infinity.
-		{w, h} = prefs.server.mapSize
-
-		bestDistance = Infinity
-		for j in [-1..1]
-			for k in [-1..1]
-				ox = x + j * w
-				oy = y + k * h
-				d = utils.distance(@pos.x, @pos.y, ox, oy)
-
-				if d < bestDistance
-					bestDistance = d
-
-		bestDistance < @hitRadius + hitRadius
+	collidesWith: ({pos: {x,y}, hitRadius, type}, offset = {x:0, y:0}) ->
+		x += offset.x
+		y += offset.y
+		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
 		@state = prefs.mine.states[@state].next

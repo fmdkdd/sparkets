@@ -99,7 +99,9 @@ class Bullet extends ChangingObject
 	tangible: ->
 		@state is 'active'
 
-	collidesWith: ({pos: {x,y}, hitRadius}) ->
+	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
+		x += offset.x
+		y += offset.y
 		# Check collisions on the line between the two latest points.
 		[Ax, Ay] = if @warp then @points[@points.length-3] else @points[@points.length-2]
 		[Bx, By] = if @warp then @points[@points.length-2] else @points[@points.length-1]

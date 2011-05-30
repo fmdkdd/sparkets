@@ -133,16 +133,26 @@ class GameServer
 			prefs.server.timestep - utils.mod(diff, prefs.server.timestep))
 
 	placeObjectInGrid: (obj) ->
+		{w: mapWidth, h: mapHeight} = prefs.server.mapSize
 		{x: ox, y: oy} = obj.pos
 		w = @grid.cellWidth
 		h = @grid.cellHeight
 
 		insert = (x,y) =>
-			gridX = Math.floor(utils.mod(x, prefs.server.mapSize.w) / w)
-			gridY = Math.floor(utils.mod(y, prefs.server.mapSize.h) / h)
+			# Set offset accordingly to wrapping.
+			xOff = yOff = 0
+			xOff = mapWidth if x < 0
+			xOff = -mapWidth if x >= mapWidth
+			yOff = mapHeight if y < 0
+			yOff = -mapHeight if y >= mapHeight
+
+			gridX = Math.floor(utils.mod(x, mapWidth) / w)
+			gridY = Math.floor(utils.mod(y, mapHeight) / h)
 			cell = gridY * @grid.width + gridX
 			@grid.cells[cell] = {} if not @grid.cells[cell]?
-			@grid.cells[cell][obj.id] = obj
+			gridObj = @grid.cells[cell][obj.id] = {}
+			gridObj.object = obj
+			gridObj.offset = {x: xOff, y: yOff}
 
 		# First place object in the cell containing (x,y)
 		insert(ox, oy)
@@ -166,11 +176,13 @@ class GameServer
 		for idx, cell of @grid.cells
 			for i, obj1 of cell
 				for j, obj2 of cell
+					o1 = obj1.object
+					o2 = obj2.object
 					if j > i and
-							obj1.tangible() and
-							obj2.tangible() and
-							(obj1.collidesWith(obj2) or obj2.collidesWith(obj1))
-						collisions.handle(obj1, obj2)
+							o1.tangible() and
+							o2.tangible() and
+							(o1.collidesWith(o2, obj2.offset) or o2.collidesWith(o1, obj1.offset))
+						collisions.handle(o1, o2)
 
 		# Record all changes.
 		allChanges = {}

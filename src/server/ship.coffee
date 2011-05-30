@@ -115,7 +115,9 @@ class Ship extends ChangingObject
 	tangible: () ->
 		not @dead and not @exploding
 
-	collidesWith: ({pos: {x,y}, hitRadius}) ->
+	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
+		x += offset.x
+		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	isExploding: () ->
