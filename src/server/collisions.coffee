@@ -31,8 +31,24 @@ exports.collisions =
 		ship.explode()
 
 	'ship-ship': (ship1, ship2) ->
-		ship1.explode()
-		ship2.explode()
+		# Boost bonus grants immunity except when both have it.
+		boost1 = ship1.boost > 1
+		boost2 = ship2.boost > 1
+
+		# Ship1 has boost, not ship2.
+		if boost1 and not boost2
+			ship2.explode()
+			ship2.killingAccel = ship1.vel
+		# Ship2 has boost, not ship1.
+		else if boost2 and not boost1
+			ship1.explode()
+			ship1.killingAccel = ship2.vel
+		# Both or none have boost.
+		else
+			ship1.explode()
+			ship1.killingAccel = ship2.vel
+			ship2.explode()
+			ship2.killingAccel = ship1.vel
 
 	'bullet-planet': (bullet, planet) ->
 		bullet.state = 'dead' if bullet.state is 'active'
