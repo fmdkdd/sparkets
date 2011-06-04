@@ -14,6 +14,7 @@ webFiles = {
 	'/client.html',
 	'/client.css',
 	'/client.js',
+	'/favicon.ico',
 	'/img/colorWheel.png',
 	'/img/colorCursor.png',
 	'/img/closeButton.svg',
