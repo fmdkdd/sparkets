@@ -24,7 +24,6 @@
    - Drunk mode
       Convert to offensive bonus.
        
-
 o [alpha-3] Add fun to solo play
    - Basic AI? Based on tracker pathing. Training.
    - Shoot moving asteroids for score. Repetitive.
@@ -37,11 +36,6 @@ o [alpha-3] Add fun to solo play
    satisfying enough.
 
 = Interface =
-
-o [alpha-2] Add minimalist tutorial.
-   Display a keyboard with highlighted arrow keys and spacebar to new
-   players (no local storage prefs). When they pickup a bonus, display
-   a Z keyboard key.
 
 = Graphics =
 
