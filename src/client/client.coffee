@@ -69,8 +69,11 @@ $(document).ready (event) ->
 
 # Setup input callbacks and launch game loop.
 go = () ->
-	# Launch the tutorial if it has never been done before.
-	new Tutorial() if not localStorage['spacewar.tutorial']?
+	# Show the menu the first time.
+	if not localStorage['spacewar.tutorial']?
+		menu.open()
+		localStorage['spacewar.tutorial'] = true
+
 
 	# Use the game event handler.
 	focusInputs()
