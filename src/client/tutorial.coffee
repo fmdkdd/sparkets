@@ -6,7 +6,7 @@ class Tutorial
 		@expositionDuration = 10000
 
 		@current = 0
-		@slides = ['/tutorialMove.svg', '/tutorialShoot.svg']
+		@slides = ['/img/tutorialMove.svg', '/img/tutorialShoot.svg']
 
 		@load()
 
