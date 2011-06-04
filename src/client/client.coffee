@@ -74,7 +74,6 @@ go = () ->
 		menu.open()
 		localStorage['spacewar.tutorial'] = true
 
-
 	# Use the game event handler.
 	focusInputs()
 
@@ -85,9 +84,9 @@ focusInputs = () ->
 	# Clear all event handlers attached to the document.
 	$(document).unbind()
 
-	# Fade-in the menu when the user clicks anywhere.
+	# Fade-in the menu when the user left clicks anywhere.
 	$(document).click (event) =>
-		menu.open()
+		menu.open() if event.which is 1
 
 	# Send key presses and key releases to the server.
 	$(document).keydown ({keyCode}) ->

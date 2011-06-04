@@ -14,6 +14,8 @@ class Menu
 		@currentColor = null
 
 		@wheelBox.click (event) =>
+			return if event.which is not 1 # Only left click triggers
+
 			@currentColor = c = @readColor(event)
 
 			# Change the color of the center of the wheel.
@@ -34,7 +36,7 @@ class Menu
 
 		# Close the menu.
 		@closeButton.click (event) =>
-			if @isOpen()
+			if @isOpen() and event.which is 1 # Left click
 				@close()
 				event.stopPropagation()
 
@@ -43,11 +45,11 @@ class Menu
 		# Clear all event handlers attached to the document.
 		$(document).unbind()
 
-		# Close the menu when a click is detected outside of it.
+		# Close the menu when a left click is detected outside of it.
 		$(document).click (event) =>
-			@close()
+			@close() if event.which is 1
 		@menu.click (event) =>
-			event.stopPropagation()
+			event.stopPropagation() if event.which is 1
 
 		$(document).keyup ({keyCode}) =>
 			switch keyCode
