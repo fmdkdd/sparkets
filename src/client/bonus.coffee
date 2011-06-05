@@ -23,9 +23,6 @@ class Bonus
 				not window.inView(x-s, y-s)
 			return
 
-		x -= window.view.x
-		y -= window.view.y
-
 		if showHitCircles
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1

@@ -20,9 +20,6 @@ class EMP
 				not window.inView(x-f, y-f)
 			return
 
-		x -= window.view.x
-		y -= window.view.y
-
 		ctxt.save()
 
 		ctxt.lineWidth = 3

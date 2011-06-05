@@ -25,19 +25,16 @@ class Planet
 		true
 
 	draw: (ctxt, offset = {x: 0, y: 0}) ->
-		px = @pos.x + offset.x
-		py = @pos.y + offset.y
+		x = @pos.x + offset.x
+		y = @pos.y + offset.y
 		f = @force;
 
 		# Check the planet really needs to be drawn.
-		if not window.inView(px+f, py+f) and
-				not window.inView(px+f, py-f) and
-				not window.inView(px-f, py+f) and
-				not window.inView(px-f, py-f)
+		if not window.inView(x+f, y+f) and
+				not window.inView(x+f, y-f) and
+				not window.inView(x-f, y+f) and
+				not window.inView(x-f, y-f)
 			return
-
-		x = px - window.view.x
-		y = py - window.view.y
 
 		ctxt.drawImage(@sprite, x-f, y-f)
 

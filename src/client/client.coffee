@@ -64,7 +64,6 @@ $(document).ready (event) ->
 	$(window).resize (event) =>
 		window.screen.w = document.getElementById('canvas').width = window.innerWidth
 		window.screen.h = document.getElementById('canvas').height = window.innerHeight
-		centerView()
 	$(window).resize()
 
 # Setup input callbacks and launch game loop.
@@ -152,7 +151,6 @@ update = (time, sinceUpdate) ->
 			deleteObject id
 
 	# Draw scene.
-	centerView()
 	redraw(window.ctxt)
 
 window.inView = (x, y) ->
@@ -163,7 +161,13 @@ window.inView = (x, y) ->
 # Not efficient, but we don't have that many objects.
 redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, window.screen.w, window.screen.h)
+
+	ctxt.save()
 	ctxt.lineJoin = 'round'
+
+	# Draw everything centered around the player.
+	centerView()
+	ctxt.translate(-view.x, -view.y)
 
 	drawMapBounds(ctxt) if window.showMapBounds
 
@@ -173,6 +177,9 @@ redraw = (ctxt) ->
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
 
+	# View translation doesn't apply to UI.
+	ctxt.restore()
+
 	# Draw UI
 	drawRadar(ctxt) if window.localShip? and not window.localShip.isDead()
 
@@ -180,7 +187,7 @@ drawMapBounds = (ctxt) ->
 	ctxt.save()
 	ctxt.lineWidth = 2
 	ctxt.strokeStyle = '#dae'
-	ctxt.strokeRect(-window.view.x, -window.view.y, window.map.w, window.map.h)
+	ctxt.strokeRect(0, 0, window.map.w, window.map.h)
 	ctxt.restore()
 
 centerView = () ->

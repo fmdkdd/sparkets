@@ -14,8 +14,8 @@ class Bullet
 
 	draw: (ctxt, offset = {x: 0, y: 0}) ->
 		p = @points
-		ox = -window.view.x + offset.x
-		oy = -window.view.y + offset.y
+		ox = offset.x
+		oy = offset.y
 
 		x = p[0][0] + ox
 		y = p[0][1] + oy
@@ -31,10 +31,8 @@ class Bullet
 
 			# Check for a bullet warping.
 			if -50  < p[i-1][0] - p[i][0] < 50 and
-					-50 < p[i-1][1] - p[i][1] < 50 and
-					(window.inView(x+window.view.x, y+window.view.y) or
-						window.inView(p[i-1][0]+offset.x, p[i-1][1]+offset.y))
-					ctxt.lineTo x, y
+					-50 < p[i-1][1] - p[i][1] < 50
+				ctxt.lineTo x, y
 
 			ctxt.stroke()
 			ctxt.beginPath()

@@ -27,9 +27,6 @@ class Mine
 				not window.inView(x-hr, y-hr)
 			return
 
-		x -= window.view.x
-		y -= window.view.y
-
 		if window.showHitCircles
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
@@ -66,9 +63,6 @@ class Mine
 				not window.inView(x-r, y+r) and
 				not window.inView(x-r, y-r)
 			return
-
-		x -= window.view.x
-		y -= window.view.y
 
 		if window.showHitCircles
 			ctxt.strokeStyle = 'red'

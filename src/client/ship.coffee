@@ -71,8 +71,6 @@ class Ship
 				not window.inView(x-10, y+10) and
 				not window.inView(x-10, y-10)
 			return
-		x -= window.view.x
-		y -= window.view.y
 
 		cos = Math.cos @dir
 		sin = Math.sin @dir
@@ -95,8 +93,8 @@ class Ship
 		if @ghosts?
 			for i of @ghosts
 				@drawShipModel(ctxt,
-						@ghosts[i].x+offset.x-window.view.x,
-						@ghosts[i].y+offset.y-window.view.y,
+						@ghosts[i].x+offset.x,
+						@ghosts[i].y+offset.y,
 						@ghosts[i].dir,
 						0.1,
 						0)
@@ -189,8 +187,8 @@ class Ship
 			b.y += b.vy + (-1 + 2*Math.random())/1.5
 
 	drawExplosion: (ctxt, offset = {x: 0, y: 0}) ->
-		ox = -window.view.x + offset.x
-		oy = -window.view.y + offset.y
+		ox = offset.x
+		oy = offset.y
 
 		ctxt.fillStyle = color(@color, (window.maxExploFrame-@exploFrame)/window.maxExploFrame)
 		for b in @explosionBits
