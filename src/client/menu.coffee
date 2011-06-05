@@ -13,6 +13,9 @@ class Menu
 
 		@currentColor = null
 
+		@setInputHandlers()
+
+	setInputHandlers: () ->
 		@wheelBox.click (event) =>
 			return if event.which is not 1 # Only left click triggers
 
@@ -40,40 +43,28 @@ class Menu
 				@close()
 				event.stopPropagation()
 
-	focusInputs: () ->
-
-		# Clear all event handlers attached to the document.
-		$(document).unbind()
-
 		# Close the menu when a left click is detected outside of it.
+		# Fade-in the menu when the user left clicks anywhere.
 		$(document).click (event) =>
-			@close() if event.which is 1
-		@menu.click (event) =>
-			event.stopPropagation() if event.which is 1
+			@toggle() if event.which is 1
 
 		$(document).keyup ({keyCode}) =>
 			switch keyCode
 
 				# Close the menu when the Escape key is pressed.
 				when 27
-					@close()
+					@toggle()
+
+	toggle: () ->
+		if @isOpen() then @close() else @open()
 
 	open: () ->
 		@menu.removeClass('hidden')
 		@menu.addClass('visible')
 
-		# Use the menu event handler.
-		@focusInputs()
-
 	close: () ->
 		@menu.removeClass('visible')
 		@menu.addClass('hidden')
-
-		# Use the game event handler.
-		@menu.unbind()
-		focusInputs()
-
-		@nameField.blur()
 
 	isOpen: () ->
 		@menu.hasClass('visible')
