@@ -87,6 +87,7 @@ class Ship
 		else if @firePower > 0
 			fillAlpha = (@firePower-window.minPower)/(window.maxPower-window.minPower)
 
+		ctxt.lineJoin = 'round'
 		@drawShipModel(ctxt, x, y, @dir, 1, fillAlpha)
 
 		# Draw ghosts trail.

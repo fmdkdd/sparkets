@@ -162,17 +162,18 @@ window.inView = (x, y) ->
 redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, window.screen.w, window.screen.h)
 
-	ctxt.save()
-	ctxt.lineJoin = 'round'
-
 	# Draw everything centered around the player.
 	centerView()
+	ctxt.save()
 	ctxt.translate(-view.x, -view.y)
 
 	drawMapBounds(ctxt) if window.showMapBounds
 
 	# Draw all objects.
-	obj.draw(ctxt)	for idx, obj of window.gameObjects
+	for idx, obj of window.gameObjects
+		ctxt.save()
+		obj.draw(ctxt)
+		ctxt.restore()
 
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
@@ -198,11 +199,15 @@ centerView = () ->
 drawRadar = (ctxt) ->
 	for id, ship of window.ships
 		if id isnt window.shipId and not ship.isDead()
+			ctxt.save()
 			ship.drawOnRadar(ctxt)
+			ctxt.restore()
 
 	for id, bonus of window.bonuses
 		if bonus.state isnt 'dead'
+			ctxt.save()
 			bonus.drawOnRadar(ctxt)
+			ctxt.restore()
 
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
@@ -222,7 +227,9 @@ drawInfinity = (ctxt) ->
 					offset =
 						x: (j-1)*window.map.w
 						y: (i-1)*window.map.h
+					ctxt.save()
 					obj.draw(ctxt, offset)
+					ctxt.restore()
 
 	return true
 
