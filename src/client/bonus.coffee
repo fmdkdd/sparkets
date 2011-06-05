@@ -120,7 +120,7 @@ class Bonus
 
 			# The radar is blinking.
 			if @countdown % 500 < 250
-				@drawRadarSymbol(window.screen.w/2 + rx, window.screen.h/2 + ry)
+				@drawRadarSymbol(ctxt, window.screen.w/2 + rx, window.screen.h/2 + ry)
 
 		# Draw the X on the future bonus position if it lies within the screen.
 		else if @countdown % 500 < 250
