@@ -17,6 +17,12 @@ class Bullet
 		# in @draw.
 		true
 
+	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1
+		lastPoint = @points[@points.length-1]
+		strokeCircle(ctxt, lastPoint[0], lastPoint[1], @hitRadius)
+
 	bulletWrap: (x1, y1, x2, y2) ->
 		Math.abs(x1 - x2) > 50 or
 			Math.abs(y1 - y2) > 50
@@ -47,11 +53,6 @@ class Bullet
 			y1 = y2
 
 		ctxt.globalCompositeOperation = 'source-over'
-
-		if window.showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x2, y2, @hitRadius)
 
 # Exports
 

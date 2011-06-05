@@ -65,6 +65,11 @@ class Ship
 		window.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, 10)
 
+	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1
+		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+
 	drawShip: (ctxt) ->
 		x = @pos.x
 		y = @pos.y
@@ -73,12 +78,6 @@ class Ship
 		sin = Math.sin @dir
 
 		# Draw hull.
-
-		if window.showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, @hitRadius)
-
 		if @cannonHeat > 0
 			fillAlpha = @cannonHeat/window.cannonCooldown
 		else if @firePower > 0

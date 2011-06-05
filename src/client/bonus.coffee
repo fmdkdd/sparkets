@@ -14,14 +14,14 @@ class Bonus
 			window.boxInView(@pos.x + offset.x,
 				@pos.y + offset.y, @modelSize)
 
+	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1
+		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+
 	draw: (ctxt) ->
 		x = @pos.x
 		y = @pos.y
-
-		if showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, @hitRadius)
 
 		ctxt.fillStyle = color @color
 		ctxt.strokeStyle = color @color

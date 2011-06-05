@@ -19,16 +19,16 @@ class Mine
 		window.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, @hitRadius)
 
+	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1
+		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+
 	drawMine: (ctxt) ->
 		x = @pos.x
 		y = @pos.y
 		r = 5
 		hr = @hitRadius
-
-		if window.showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, hr)
 
 		# Make the mine grow during the activation process.
 		r -= r * @countdown/1000 if @state is 'inactive'

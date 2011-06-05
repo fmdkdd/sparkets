@@ -28,6 +28,11 @@ class Planet
 		window.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, @force)
 
+	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1
+		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+
 	draw: (ctxt) ->
 		x = @pos.x
 		y = @pos.y
@@ -36,11 +41,6 @@ class Planet
 		# Fix jiggling planets?
 		ctxt.translate(x-f, y-f)
 		ctxt.drawImage(@sprite, 0, 0)
-
-		if window.showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, @hitRadius)
 
 # Exports
 window.Planet = Planet
