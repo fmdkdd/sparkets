@@ -146,10 +146,10 @@ update = (time, sinceUpdate) ->
 	window.now = time
 
 	# Update and cleanup objects.
-	for idx, obj of window.gameObjects
+	for id, obj of window.gameObjects
 		obj.update()
 		if obj.serverDelete and obj.clientDelete
-			deleteObject idx
+			deleteObject id
 
 	# Draw scene.
 	centerView()
@@ -157,7 +157,7 @@ update = (time, sinceUpdate) ->
 
 window.inView = (x, y) ->
 	window.view.x <= x <= window.view.x + window.screen.w and
-	window.view.y <= y <= window.view.y + window.screen.h
+		window.view.y <= y <= window.view.y + window.screen.h
 
 # Clear canvas and draw everything.
 # Not efficient, but we don't have that many objects.
@@ -174,7 +174,7 @@ redraw = (ctxt) ->
 	drawInfinity ctxt
 
 	# Draw UI
-	drawRadar ctxt if window.localShip? and not window.localShip.isDead()
+	drawRadar(ctxt) if window.localShip? and not window.localShip.isDead()
 
 drawMapBounds = (ctxt) ->
 	ctxt.save()
@@ -189,13 +189,13 @@ centerView = () ->
 		window.view.y = window.localShip.pos.y - window.screen.h/2
 
 drawRadar = (ctxt) ->
-	for i, s of window.ships
-		if i isnt window.shipId and not s.isDead()
-			s.drawOnRadar(ctxt)
+	for id, ship of window.ships
+		if id isnt window.shipId and not ship.isDead()
+			ship.drawOnRadar(ctxt)
 
-	for i, b of window.bonuses
-		if b.state isnt 'dead'
-			b.drawOnRadar(ctxt)
+	for id, bonus of window.bonuses
+		if bonus.state isnt 'dead'
+			bonus.drawOnRadar(ctxt)
 
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
@@ -211,7 +211,7 @@ drawInfinity = (ctxt) ->
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
-				for idx, obj of window.gameObjects
+				for id, obj of window.gameObjects
 					offset =
 						x: (j-1)*window.map.w
 						y: (i-1)*window.map.h
@@ -220,10 +220,10 @@ drawInfinity = (ctxt) ->
 	return true
 
 onConnect = () ->
-	info "Connected to server."
+	console.info "Connected to server."
 
 onDisconnect = () ->
-	info "Aaargh! Disconnected!"
+	console.info "Aaargh! Disconnected!"
 
 newObject = (i, type, obj) ->
 	switch type
@@ -240,27 +240,27 @@ newObject = (i, type, obj) ->
 		when 'planet'
 			new Planet(obj)
 
-deleteObject = (i) ->
-	type = window.gameObjects[i].type
+deleteObject = (id) ->
+	type = window.gameObjects[id].type
 
 	switch type
 		when 'ship'
-			delete window.ships[i]
+			delete window.ships[id]
 		when 'bonus'
-			delete window.bonuses[i]
+			delete window.bonuses[id]
 
-	delete window.gameObjects[i]
+	delete window.gameObjects[id]
 
 onMessage = (msg) ->
 	switch msg.type
 
 		# When receiving world update data.
 		when 'objects update'
-			for i, obj of msg.objects
-				if not window.gameObjects[i]?
-					window.gameObjects[i] = newObject(i, obj.type, obj)
+			for id, obj of msg.objects
+				if not window.gameObjects[id]?
+					window.gameObjects[id] = newObject(id, obj.type, obj)
 				else
-					window.gameObjects[i].serverUpdate(obj)
+					window.gameObjects[id].serverUpdate(obj)
 
 		# When receiving our id from the server.
 		when 'connected'
@@ -280,8 +280,7 @@ onMessage = (msg) ->
 
 		# When another player leaves.
 		when 'player quits'
-			delete window.ships[msg.shipId]
-			delete window.gameObjects[msg.shipId]
-			info 'Player '+msg.playerId+' quits'
+			deleteObject msg.shipId
+			console.info 'Player #{msg.playerId} quits'
 
 	return true
