@@ -153,6 +153,10 @@ update = (time, sinceUpdate) ->
 	# Draw scene.
 	redraw(window.ctxt)
 
+window.boxInView = (x, y, r) ->
+	window.inView(x-r, y-r) or window.inView(x-r, y+r) or
+		window.inView(x+r, y-r) or window.inView(x+r, y+r)
+
 window.inView = (x, y) ->
 	window.view.x <= x <= window.view.x + window.screen.w and
 		window.view.y <= y <= window.view.y + window.screen.h
@@ -171,9 +175,10 @@ redraw = (ctxt) ->
 
 	# Draw all objects.
 	for idx, obj of window.gameObjects
-		ctxt.save()
-		obj.draw(ctxt)
-		ctxt.restore()
+		if obj.inView()
+			ctxt.save()
+			obj.draw(ctxt)
+			ctxt.restore()
 
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
@@ -223,13 +228,23 @@ drawInfinity = (ctxt) ->
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
+				# Translate to the adequate quadrant.
+				offset =
+					x: (j-1)*window.map.w
+					y: (i-1)*window.map.h
+
+				ctxt.save()
+				ctxt.translate(offset.x, offset.y)
+
+				# Draw all visible objects in it.
 				for id, obj of window.gameObjects
-					offset =
-						x: (j-1)*window.map.w
-						y: (i-1)*window.map.h
-					ctxt.save()
-					obj.draw(ctxt, offset)
-					ctxt.restore()
+					if obj.inView(offset)
+						ctxt.save()
+						obj.draw(ctxt)
+						ctxt.restore()
+
+				# Quadrant is done drawing.
+				ctxt.restore()
 
 	return true
 

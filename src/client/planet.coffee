@@ -24,19 +24,18 @@ class Planet
 	update: () ->
 		true
 
-	draw: (ctxt, offset = {x: 0, y: 0}) ->
-		x = @pos.x + offset.x
-		y = @pos.y + offset.y
+	inView: (offset = {x: 0, y: 0}) ->
+		window.boxInView(@pos.x + offset.x,
+			@pos.y + offset.y, @force)
+
+	draw: (ctxt) ->
+		x = @pos.x
+		y = @pos.y
 		f = @force;
 
-		# Check the planet really needs to be drawn.
-		if not window.inView(x+f, y+f) and
-				not window.inView(x+f, y-f) and
-				not window.inView(x-f, y+f) and
-				not window.inView(x-f, y-f)
-			return
-
-		ctxt.drawImage(@sprite, x-f, y-f)
+		# Fix jiggling planets?
+		ctxt.translate(x-f, y-f)
+		ctxt.drawImage(@sprite, 0, 0)
 
 		if window.showHitCircles
 			ctxt.strokeStyle = 'red'

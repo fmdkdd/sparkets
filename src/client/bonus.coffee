@@ -9,19 +9,14 @@ class Bonus
 	update: () ->
 		@clientDelete = @serverDelete
 
-	draw: (ctxt, offset = {x:0, y:0}) ->
-		return if @state is 'incoming'
+	inView: (offset = {x:0, y:0}) ->
+		(@state isnt 'incoming') and
+			window.boxInView(@pos.x + offset.x,
+				@pos.y + offset.y, @modelSize)
 
-		x = @pos.x + offset.x
-		y = @pos.y + offset.y
-		s = @modelSize
-		r = 5
-
-		if not window.inView(x+s, y+s) and
-				not window.inView(x+s, y-s) and
-				not window.inView(x-s, y+s) and
-				not window.inView(x-s, y-s)
-			return
+	draw: (ctxt) ->
+		x = @pos.x
+		y = @pos.y
 
 		if showHitCircles
 			ctxt.strokeStyle = 'red'
@@ -30,14 +25,17 @@ class Bonus
 
 		ctxt.fillStyle = color @color
 		ctxt.strokeStyle = color @color
-
 		ctxt.lineWidth = 2
+
+		s = @modelSize
+
 		ctxt.save()
 		ctxt.translate(x, y)
 		ctxt.strokeRect(-s/2, -s/2, s, s)
 
 		switch @bonusType
 			when 'bonusMine'
+				r = 5
 				ctxt.fillRect(-r, -r, r*2, r*2)
 				ctxt.rotate(Math.PI/4)
 				ctxt.fillRect(-r, -r, r*2, r*2)
@@ -129,16 +127,14 @@ class Bonus
 		return true
 
 	drawRadarSymbol: (ctxt, x, y) ->
-		ctxt.fillStyle = color @color
 		ctxt.save()
+		ctxt.fillStyle = color @color
 		ctxt.translate(x, y)
 		ctxt.rotate(Math.PI/4)
 		ctxt.fillRect(-4, -10, 8, 20)
 		ctxt.rotate(Math.PI/2)
 		ctxt.fillRect(-4, -10, 8, 20)
 		ctxt.restore()
-
-		return true
 
 # Exports
 window.Bonus = Bonus

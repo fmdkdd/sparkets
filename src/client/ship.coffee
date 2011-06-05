@@ -61,16 +61,13 @@ class Ship
 		else
 			@drawShip(ctxt, offset)
 
-	drawShip: (ctxt, offset = {x: 0, y: 0}) ->
-		x = @pos.x + offset.x
-		y = @pos.y + offset.y
+	inView: (offset = {x:0, y:0}) ->
+		window.boxInView(@pos.x + offset.x,
+			@pos.y + offset.y, 10)
 
-		# Check if ship is in view before drawing.
-		if not window.inView(x+10, y+10) and
-				not window.inView(x+10, y-10) and
-				not window.inView(x-10, y+10) and
-				not window.inView(x-10, y-10)
-			return
+	drawShip: (ctxt) ->
+		x = @pos.x
+		y = @pos.y
 
 		cos = Math.cos @dir
 		sin = Math.sin @dir
@@ -94,8 +91,8 @@ class Ship
 		if @ghosts?
 			for i of @ghosts
 				@drawShipModel(ctxt,
-						@ghosts[i].x+offset.x,
-						@ghosts[i].y+offset.y,
+						@ghosts[i].x,
+						@ghosts[i].y,
 						@ghosts[i].dir,
 						0.1,
 						0)
@@ -187,14 +184,11 @@ class Ship
 			b.x += b.vx + (-1 + 2*Math.random())/1.5
 			b.y += b.vy + (-1 + 2*Math.random())/1.5
 
-	drawExplosion: (ctxt, offset = {x: 0, y: 0}) ->
-		ox = offset.x
-		oy = offset.y
-
+	drawExplosion: (ctxt) ->
 		ctxt.fillStyle = color(@color, (window.maxExploFrame-@exploFrame)/window.maxExploFrame)
 		for b in @explosionBits
-			if window.inView(b.x+offset.x, b.y+offset.y)
-				ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
+			if window.inView(b.x, b.y)
+				ctxt.fillRect b.x, b.y, b.size, b.size
 
 	drawOnRadar: (ctxt) ->
 		# Select the closest ship among the real one and its ghosts.

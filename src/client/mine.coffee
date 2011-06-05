@@ -9,23 +9,21 @@ class Mine
 	update: () ->
 		@clientDelete = @serverDelete
 
-	draw: (ctxt, offset) ->
+	draw: (ctxt) ->
 		if @state is 'inactive' or @state is 'active'
-			@drawMine(ctxt, offset)
+			@drawMine(ctxt)
 		else if @state is 'exploding'
-			@drawExplosion(ctxt, offset)
+			@drawExplosion(ctxt)
 
-	drawMine: (ctxt, offset = {x:0, y:0}) ->
-		x = @pos.x + offset.x
-		y = @pos.y + offset.y
+	inView: (offset = {x:0, y:0}) ->
+		window.boxInView(@pos.x + offset.x,
+			@pos.y + offset.y, @hitRadius)
+
+	drawMine: (ctxt) ->
+		x = @pos.x
+		y = @pos.y
 		r = 5
 		hr = @hitRadius
-
-		if  not window.inView(x+hr, y+hr) and
-				not window.inView(x+hr, y-hr) and
-				not window.inView(x-hr, y+hr) and
-				not window.inView(x-hr, y-hr)
-			return
 
 		if window.showHitCircles
 			ctxt.strokeStyle = 'red'
@@ -52,17 +50,11 @@ class Mine
 			ctxt.arc(x, y, @hitRadius, 0, 2*Math.PI, false)
 			ctxt.stroke()
 
-	drawExplosion: (ctxt, offset = {x:0, y:0}) ->
-		x = @pos.x + offset.x
-		y = @pos.y + offset.y
+	drawExplosion: (ctxt) ->
+		x = @pos.x
+		y = @pos.y
 		r = 80
 		a = @countdown/500
-
-		if 	not window.inView(x+r, y+r) and
-				not window.inView(x+r, y-r) and
-				not window.inView(x-r, y+r) and
-				not window.inView(x-r, y-r)
-			return
 
 		if window.showHitCircles
 			ctxt.strokeStyle = 'red'
