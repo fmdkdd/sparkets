@@ -175,10 +175,7 @@ redraw = (ctxt) ->
 
 	# Draw all objects.
 	for idx, obj of window.gameObjects
-		if obj.inView()
-			ctxt.save()
-			obj.draw(ctxt)
-			ctxt.restore()
+		drawObject(obj) if obj.inView()
 
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
@@ -188,6 +185,12 @@ redraw = (ctxt) ->
 
 	# Draw UI
 	drawRadar(ctxt) if window.localShip? and not window.localShip.isDead()
+
+drawObject = (obj) ->
+	ctxt.save()
+	obj.draw(ctxt)
+	ctxt.restore()
+	obj.drawHitbox(ctxt) if window.showHitCircles
 
 drawMapBounds = (ctxt) ->
 	ctxt.save()
@@ -238,10 +241,7 @@ drawInfinity = (ctxt) ->
 
 				# Draw all visible objects in it.
 				for id, obj of window.gameObjects
-					if obj.inView(offset)
-						ctxt.save()
-						obj.draw(ctxt)
-						ctxt.restore()
+					drawObject(obj) if obj.inView(offset)
 
 				# Quadrant is done drawing.
 				ctxt.restore()
