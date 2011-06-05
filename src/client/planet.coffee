@@ -1,8 +1,25 @@
 class Planet
 	constructor: (planet) ->
-		@pos = planet.pos
-		@hitRadius = planet.hitRadius
-		@force = planet.force
+		@serverUpdate(planet)
+
+		@initSprite() if not @sprite?
+
+	initSprite: () ->
+		@sprite = document.createElement('canvas')
+		@sprite.width = @sprite.height = Math.ceil(2*@force)
+
+		c = @sprite.getContext('2d')
+		c.strokeStyle = color planetColor
+		c.fillStyle = 'white'
+		c.lineWidth = 8
+		c.beginPath()
+		c.arc(@force, @force, @force - c.lineWidth/2, 0, 2*Math.PI, false)
+		c.stroke()
+		c.fill()
+
+	serverUpdate: (planet) ->
+		for field, val of planet
+			@[field] = val
 
 	update: () ->
 		true
@@ -22,16 +39,9 @@ class Planet
 		x = px - view.x
 		y = py - view.y
 
+		ctxt.drawImage(@sprite, x-f, y-f)
+
 		if showHitCircles
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, @hitRadius)
-
-		ctxt.strokeStyle = color planetColor
-		ctxt.fillStyle = 'white'
-		ctxt.lineWidth = 8
-		ctxt.beginPath()
-		ctxt.arc x, y, f, 0, 2*Math.PI, false
-		ctxt.stroke()
-		ctxt.fill()
-

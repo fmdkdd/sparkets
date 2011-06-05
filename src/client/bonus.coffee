@@ -33,17 +33,67 @@ class Bonus
 
 		ctxt.fillStyle = color @color
 		ctxt.strokeStyle = color @color
+
 		ctxt.lineWidth = 2
 		ctxt.save()
 		ctxt.translate(x, y)
 		ctxt.strokeRect(-s/2, -s/2, s, s)
-		ctxt.fillRect(-r, -r, r*2, r*2)
-		ctxt.rotate(Math.PI/4)
-		ctxt.fillRect(-r, -r, r*2, r*2)
+
+		switch @bonusType
+			when 'bonusMine'
+				ctxt.fillRect(-r, -r, r*2, r*2)
+				ctxt.rotate(Math.PI/4)
+				ctxt.fillRect(-r, -r, r*2, r*2)
+
+			when 'bonusBoost'
+				ctxt.save()
+				ctxt.rotate(Math.PI/2)
+				ctxt.translate(0, -6)
+				@drawBoostIcon(ctxt)
+				ctxt.restore()
+
+			when 'bonusEMP'
+				ctxt.beginPath()
+				ctxt.arc(0, 0, 3, 0, 2*Math.PI, false)
+				ctxt.arc(0, 0, 7, 0, 2*Math.PI, false)
+				ctxt.stroke()
+
+			when 'bonusDrunk'
+				ctxt.save()
+				ctxt.translate(0, -3)
+				@drawArrow(ctxt)
+				ctxt.translate(0, 6)
+				ctxt.save()
+				ctxt.rotate(Math.PI)
+				@drawArrow(ctxt)
+				ctxt.restore()
+				ctxt.restore()
+
 		ctxt.restore()
 
+	drawArrow: (ctxt) ->
+		ctxt.beginPath()
+		ctxt.moveTo(5, 0)
+		ctxt.lineTo(-6, 0)
+		ctxt.lineTo(-3, -3)
+		ctxt.moveTo(-6, 0)
+		ctxt.lineTo(-3, 3)
+		ctxt.stroke()
+
+	drawBoostIcon: (ctxt) ->
+		ctxt.beginPath()
+		ctxt.moveTo(0, 0)
+		ctxt.lineTo(-6, 6)
+		ctxt.lineTo(-2, 6)
+		ctxt.lineTo(-6, 11)
+		ctxt.lineTo( 6, 11)
+		ctxt.lineTo( 2, 6)
+		ctxt.lineTo( 6, 6)
+		ctxt.closePath()
+		ctxt.fill()
+
 	drawOnRadar: (ctxt) ->
-		localShip = ships[id]
+		return if @state isnt 'incoming'
 
 		# Select the closest bonus among the real one and its ghosts.
 		bestDistance = Infinity
@@ -68,14 +118,12 @@ class Bonus
 			ry = Math.max -screen.h/2 + margin, dy
 			ry = Math.min screen.h/2 - margin, ry
 
-			# The radar is blinking when the bonus is incoming.
-			if @state is 'active' or
-					@state is 'incoming' and @countdown % 500 < 250
+			# The radar is blinking.
+			if @countdown % 500 < 250
 				@drawRadarSymbol(screen.w/2 + rx, screen.h/2 + ry)
 
-		# Draw the radar on the future bonus position if it is in the screen
-		# bounds and incoming.
-		else if @state is 'incoming' and @countdown % 500 < 250
+		# Draw the X on the future bonus position if it lies within the screen.
+		else if @countdown % 500 < 250
 			rx = -screen.w/2 + bestPos.x - view.x
 			ry = -screen.h/2 + bestPos.y - view.y
 

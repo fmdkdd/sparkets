@@ -1,10 +1,12 @@
-ChangingObject = require './changingObject'
-globals = require './server'
+ChangingObject = require('./changingObject').ChangingObject
+server = require './server'
+BonusMine = require './bonusMine'
+BonusBoost = require './bonusBoost'
 prefs = require './prefs'
 utils = require '../utils'
 
-class Bonus extends ChangingObject.ChangingObject
-	constructor: (@id) ->
+class Bonus extends ChangingObject
+	constructor: (@id, bonusType) ->
 		super()
 
 		@watchChanges 'type'
@@ -15,15 +17,16 @@ class Bonus extends ChangingObject.ChangingObject
 		@watchChanges 'modelSize'
 		@watchChanges 'pos'
 		@watchChanges 'serverDelete'
+		@watchChanges 'bonusType'
 
 		@type = 'bonus'
 
 		@hitRadius = prefs.bonus.hitRadius
 		@modelSize = prefs.bonus.modelSize
 
-		@spawn()
+		@spawn(bonusType)
 
-	spawn: () ->
+	spawn: (bonusType) ->
 		@state = 'incoming'
 		@countdown = prefs.bonus.states[@state].countdown
 
@@ -31,20 +34,33 @@ class Bonus extends ChangingObject.ChangingObject
 			x: Math.random() * prefs.server.mapSize.w
 			y: Math.random() * prefs.server.mapSize.h
 		@color = utils.randomColor()
-		@collisions = []
 		@empty = yes
 
-		@spawn() if @collidesWithPlanet()
+		# Choose bonus type.
+		if not bonusType?
+			type = @randomBonus()
+		else
+			type = prefs.bonus.bonusType[bonusType].class
+		@bonusEffect = type.constructor
+		@bonusType = type.type
 
-	collidesWithPlanet: () ->
-		for id, planet of globals.planets
-			return true if @collidesWith(planet)
-		return false
+		@spawn(bonusType) if server.game.collidesWithPlanet(@)
+
+	randomBonus: () ->
+		roulette = []
+		for type, bonus of prefs.bonus.bonusType
+			i = 0
+			while i < bonus.weight
+				roulette.push(bonus.class)
+				++i;
+		return utils.randomArrayElem roulette
 
 	tangible: () ->
 		@state isnt 'dead'
 
-	collidesWith: ({pos: {x,y}, hitRadius}) ->
+	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
+		x += offset.x
+		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
@@ -60,17 +76,13 @@ class Bonus extends ChangingObject.ChangingObject
 		switch @state
 			# The bonus arrival is imminent!
 			when 'incoming'
-				if @countdown <= 0
-					@empty = no
-					@nextState()
+				@nextState() if @countdown <= 0
 
 			# The bonus is available.
-			when 'active'
-				@nextState() if @collidedWith 'ship'
+			# when 'available'
 
 			# The bonus is of no more use.
 			when 'dead'
-				@empty = yes
 				@serverDelete = yes
 
 exports.Bonus = Bonus

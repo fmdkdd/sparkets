@@ -1,3 +1,8 @@
+BonusBoost = require './bonusBoost'
+BonusMine = require './bonusMine'
+BonusEMP = require './bonusEMP'
+BonusDrunk = require './bonusDrunk'
+
 # Server constants.
 
 exports.ship =
@@ -5,28 +10,37 @@ exports.ship =
 	dirInc: 0.12						  	# Rotation increase at input update.
 	speed: 0.3						  	# Velocity increase at input update
 	frictionDecay: 0.97			  # Inertia decay at ship update.
-	boostFactor: 2					  # Multiplies speed when boost is active.
-	boostDecay: 0.01				  # Decrease boost factor at each update.
 	minFirepower: 1.3				  # Lowest initial bullet speed.
+	firepowerInc: 0.1				  # Increase in firepower at each update.
 	maxFirepower: 3				  	# Highest initial bullet speed.
 	cannonCooldown: 20			  # Number of frames to wait before firing again.
 	maxExploFrame: 50				  # Duration of explosion animation in frames.
 	enableGravity: false			# If true, planets gravity affect ships.
 
 exports.server =
+	port: 12345
 	timestep: 20					  	# ms between two a server update.
 	maxBullets: 10					  # Max number of bullets updated by the server
 		                        # Oldest bullets are simply discarded.
 	mapSize:							  	# Size of the real map (duh).
 		w: 2000
 		h: 2000
+
+	grid:
+		width: 10
+		height: 10
+
 	planetsCount: 30				  # Number of planets on the map.
 
 	bonusWait: 30000				  # ms before a bonus drop.
+	maxBonuses: 5				  # Number of allowed simultaneous bonuses.
+
+	replPort: 54321				  # Port of the web REPL.
 
 exports.bullet =
 	hitRadius: 2					  # Radius of hit circle.
 	gravityPull: 200				  # Gravity pull factor.
+	EMPPull: -500					  # EMP repulsive force.
 	tailLength: 15					  # Bullet points to keep on server.
 	checkWidth: 4					  	# Gap to leave in the hit line.
 
@@ -35,7 +49,7 @@ exports.mine =
 	explosionRadius: 80			  # Detonation radius.
 	states:
 		'inactive':
-			countdown: 500			  # Time (ms) before activation.
+			countdown: 100			  # Time (ms) before activation.
 			next: 'active'
 		'active':
 			countdown: null
@@ -48,6 +62,16 @@ exports.mine =
 			next: null
 
 exports.bonus =
+	bonusType:
+		mine:
+			class: BonusMine
+			weight: 3
+		boost:
+			class: BonusBoost
+			weight: 2
+		EMP:
+			class: BonusEMP
+			weight: 1
 	hitRadius: 10					  # Radius of hit circle.
 	modelSize: 20							# Drawing size on client.
 	states:
@@ -60,3 +84,19 @@ exports.bonus =
 		'dead':
 			countdown: null
 			next: null
+
+exports.bonus.mine =
+	mineCount: 2					  # Number of held mines.
+
+exports.bonus.boost =
+	boostFactor: 2					 # Initial speed multiplier.
+	boostDuration: 1500			 # Duration of initial boost.
+	boostDecay: 0.02				  # Decrease boost factor in decay state.
+
+exports.bonus.emp =
+	initialForce: 5				  # Initial negative force.
+	forceIncrease: .6				  # Force increase at each update.
+	maxForce: 100					  # Max force of the EMP.
+
+exports.bonus.drunk =
+	duration: 3000					  # Duration of drunk effect in ms.

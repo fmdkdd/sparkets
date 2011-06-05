@@ -1,16 +1,17 @@
-ChangingObject = require './changingObject'
-globals = require './server'
+ChangingObject = require('./changingObject').ChangingObject
+server = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 Bullet = require './bullet'
 Mine = require './mine'
 
-class Ship extends ChangingObject.ChangingObject
-	constructor: (@id) ->
+class Ship extends ChangingObject
+	constructor: (@id, @playerId, name, color) ->
 		super()
 
 		@watchChanges(
 			'type',
+			'name',
 			'color',
 			'hitRadius',
 			'pos',
@@ -26,7 +27,8 @@ class Ship extends ChangingObject.ChangingObject
 			'boost' )
 
 		@type = 'ship'
-		@color = utils.randomColor()
+		@name = if name? then name else null
+		@color = if color? then color else utils.randomColor()
 		@hitRadius = prefs.ship.hitRadius
 
 		@spawn()
@@ -42,15 +44,35 @@ class Ship extends ChangingObject.ChangingObject
 		@thrust = false
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = 0
-		@mines = 0
+		@bonus = null
+		@bonusTimeout = {}
 		@boost = 1
+		@boostDecay = 0
+		@inverseTurn = no
 		@dead = false
 		@exploding = false
 		@exploFrame = 0
-		@collisions = []
 		@killingAccel = {x: 0, y: 0}
 
-		@spawn() if @collidesWithPlanet()
+		@spawn() if server.game.collidesWithPlanet(@)
+
+	turnLeft: () ->
+		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+
+	turnRight: () ->
+		@dir += if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+
+	ahead: () ->
+		@vel.x += Math.cos(@dir) * prefs.ship.speed * @boost
+		@vel.y += Math.sin(@dir) * prefs.ship.speed * @boost
+		@thrust = true
+
+	chargeFire: () ->
+		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
+
+	useBonus: () ->
+		return if @isDead() or @isExploding() or not @bonus?
+		@bonus.use()
 
 	move: () ->
 		return if @isDead() or @isExploding()
@@ -60,7 +82,7 @@ class Ship extends ChangingObject.ChangingObject
 		if prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
-			for id, p of globals.planets
+			for id, p of server.game.planets
 				d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 				d2 = 20 * p.force / (d * Math.sqrt(d))
 				ax -= (x-p.pos.x) * d2
@@ -90,15 +112,12 @@ class Ship extends ChangingObject.ChangingObject
 			@changed 'pos'
 			@changed 'vel'
 
-	collidesWithPlanet: () ->
-		for id, planet of globals.planets
-			return true if @.collidesWith(planet)
-		return false
-
 	tangible: () ->
 		not @dead and not @exploding
 
-	collidesWith: ({pos: {x,y}, hitRadius}) ->
+	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
+		x += offset.x
+		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	isExploding: () ->
@@ -114,39 +133,18 @@ class Ship extends ChangingObject.ChangingObject
 			@updateExplosion()
 		else
 			--@cannonHeat if @cannonHeat > 0
-			@explode() if @collidedWith 'ship', 'planet', 'mine'
 
-			# Immunity to own bullet for a set time.
-			bullets = @collisions.filter( ({type, owner, points}) =>
-				type is 'bullet' and
-					((owner.id isnt @id) or
-					(points.length > 10)) )
-			if bullets.length > 0
-				@explode()
-				@killingAccel = bullets[0].accel
-
-			++@mines if @collisions.some( ({type, empty}) ->
-				type is 'bonus' and not empty )
-
-			@boost -= prefs.ship.boostDecay if @boost > 1
+			@boost -= @boostDecay if @boost > 1
 			@boost = 1 if @boost < 1
 
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
-		id = globals.gameObjectCount++
-		globals.gameObjects[id] = globals.bullets[id] = new Bullet.Bullet(@, id)
+		server.game.newGameObject (id) =>
+			server.game.bullets[id] = new Bullet.Bullet(@, id)
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown
-
-	dropMine: () ->
-		return if @isDead() or @isExploding() or @mines == 0
-
-		id = globals.gameObjectCount++
-		globals.gameObjects[id] = globals.mines[id] = new Mine.Mine(@, id)
-
-		--@mines
 
 	explode : () ->
 		@exploding = true

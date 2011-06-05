@@ -1,9 +1,9 @@
-ChangingObject = require './changingObject'
-globals = require './server'
+ChangingObject = require('./changingObject').ChangingObject
+server = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 
-class Bullet extends ChangingObject.ChangingObject
+class Bullet extends ChangingObject
 	constructor: (@owner, @id) ->
 		super()
 
@@ -16,8 +16,8 @@ class Bullet extends ChangingObject.ChangingObject
 
 		@type = 'bullet'
 
-		xdir = 10*Math.sin(@owner.dir)
-		ydir = -10*Math.cos(@owner.dir)
+		xdir = 10*Math.cos(@owner.dir)
+		ydir = 10*Math.sin(@owner.dir)
 
 		@power = @owner.firePower
 		@pos =
@@ -29,7 +29,6 @@ class Bullet extends ChangingObject.ChangingObject
 
 		@state = 'active'
 		@hitRadius = prefs.bullet.hitRadius
-		@collisions = []
 
 		@color = @owner.color
 		@points = [ [@pos.x, @pos.y] ]
@@ -42,12 +41,21 @@ class Bullet extends ChangingObject.ChangingObject
 		{x, y} = @pos
 		{x: ax, y: ay} = @accel
 
+		# Apply gravity from all planets.
 		g = prefs.bullet.gravityPull
-		for id, p of globals.planets
+		for id, p of server.game.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 			d2 = g * p.force / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
 			ay -= (y-p.pos.y) * d2
+
+		# Apply negative force from all EMPs.
+		g2 = prefs.bullet.EMPPull
+		for id, e of server.game.EMPs
+			d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
+			d2 = g2 * e.force / (d * Math.sqrt(d))
+			ax -= (x-e.pos.x) * d2
+			ay -= (y-e.pos.y) * d2
 
 		@pos.x = x + ax
 		@pos.y = y + ay
@@ -82,15 +90,6 @@ class Bullet extends ChangingObject.ChangingObject
 		switch @state
 			# Seek and destroy.
 			when 'active'
-				@state = 'dead' if @collidedWith 'planet'
-
-				# Don't hit owner before having put some distance.
-				if @points.length > 10
-					@state = 'dead' if @collidedWith 'ship'
-				else
-					@state = 'dead' if @collisions.some( ({id, type}) =>
-						type is 'ship' and @owner.id isnt id )
-
 				@points.shift() if @points.length > prefs.bullet.tailLength
 
 			# No points left, disappear.
@@ -100,7 +99,9 @@ class Bullet extends ChangingObject.ChangingObject
 	tangible: ->
 		@state is 'active'
 
-	collidesWith: ({pos: {x,y}, hitRadius}) ->
+	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
+		x += offset.x
+		y += offset.y
 		# Check collisions on the line between the two latest points.
 		[Ax, Ay] = if @warp then @points[@points.length-3] else @points[@points.length-2]
 		[Bx, By] = if @warp then @points[@points.length-2] else @points[@points.length-1]

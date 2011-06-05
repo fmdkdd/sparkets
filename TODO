@@ -5,33 +5,42 @@
       Rapid-fire weapon but takes longer to kill ships.
    - Portable black hole
       Gravity affects bullets and ships?
+   - EMP/Shield
+      Deflect bullets. Has potential but needs refinement.
+   - Tracker
+      Mercilessly follow a designated target. Needs testing.
 
 * Add items
    - Invisible hull
       Stay invisible while you do not fire or drop any mine.
    - Big head mode
       Easier to shoot at, harder to slip between planets but kills on contact.
-   - Drunk mode
-      Inverse controls, point, laugh.
    - Paintball mode
       Spray other ships with your colors! Rating 2 and up.
-   - Negative gravity shield.
-      Send bullets flying away.
-   - Mirror image.
+   - Mirror image
       Copy of the ship that mirror the player, but turn in opposite directions.
-      Fires phony bullets, disappear when colliding something (different explosion visual).
+      Fires phony bullets, disappear when colliding something
+      (different explosion visual).
+   - Drunk mode
+      Convert to offensive bonus.
+       
+o [alpha-3] Add fun to solo play
+   - Basic AI? Based on tracker pathing. Training.
+   - Shoot moving asteroids for score. Repetitive.
 
 * Scale with number of players.
    Should scale : bonus drop, map size, planet density?
-
-* Bonuses are a bit spammy on an idle server right now.
-   Could restrict to one bonus at a time.
 
 * Add scores ... someday?
    Not sure it is necessary right now. The gratuitous space combat is
    satisfying enough.
 
+= Interface =
+
 = Graphics =
+
+o [alpha-3] Current bonus visual clue.
+   Without polluting the UI. À la Mario Kart: floating around ship? Dragging behind the ship?
 
 * Enhance ship boost visual feedback.
    Ghost image of ship trailing behind.
@@ -39,26 +48,26 @@
 * Leave some ephemeral traces of fight on planets.
    Ships and bullets splatters their colors. À la paintball.
 
+* Add debugging facilities.
+   Display messages dropped...
+
 = Cleanup =
       
 * Get rid of evil global variables.
+   Use closures where relevant, pass arguments when convenient.
 
-* Rework collisions.
-   - Use an event model: 'ship collided with planet' to avoid problems with
-     side-effects in each object affected by the collision.
-   - Do some checks before deciding exact collisions. Server can't handle
-     30 meager bonuses before crunching half a CPU.
-     Octree, larger bounding boxes, check if the object is interested in the collision or not.
-
-* Enhance bonus object.
-   Should be able to elegantly handle all crazy ideas we could have.
-   That means total control over the engine, not adding attributes to ship
-   for every bonus type. 
+* Tune collisions.
+   - Immobile objects need not to be reinserted in the grid (planets).
+   - Don't check collisions between objects that can't collide gameplay-wise.
    
-* Rework client drawing.
+o [alpha-3] Refactor client clode
+   What a mess.
+
+o [alpha-3] Rework client drawing.
    - Replace homebrew transformations by scale(), translate(), rotate.
+      Especially all the offset passing in drawInfinity and view centering.
    - Use save() and restore(). Every object should set its own lineWidth.
    - Find out why Core2 with puny graphic chipset can handle the client fullscreen
      when beefier hardware can't.
 
-* Share prefs file with client.
+o [alpha-3] Share prefs file with client.

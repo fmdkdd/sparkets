@@ -12,7 +12,7 @@ view = {x: 0, y: 0}
 now = null
 sinceLastUpdate = null
 
-planetColor = '127, 157, 185'
+planetColor = [209,29,61]
 maxBulletLength = 15
 
 # Game logic
@@ -22,7 +22,10 @@ maxExploFrame = 50
 maxBullets = 10
 cannonCooldown = 20
 
-id = null
+playerId = null
+shipId = null
+localShip = null
+
 ships = {}
 bonuses = {}
 
@@ -30,11 +33,23 @@ gameObjects = {}
 
 keys = {}
 
+menu = null
+
+# user preferences
+displayNames = no
+
 # Debugging
 showHitCircles = no
+showMapBounds = no
+showFPS = no
 
 # Entry point
 $(document).ready (event) ->
+
+	# Restore local preferences.
+	menu = new Menu()
+	menu.restoreLocalPreferences()
+
 	# Connect to server and set callbacks.
 	socket = new io.Socket null, {port: port}
 	socket.connect()
@@ -53,33 +68,90 @@ $(document).ready (event) ->
 	$(window).resize()
 
 # Setup input callbacks and launch game loop.
-go = (clientId) ->
-	id = clientId
+go = () ->
+	# Show the menu the first time.
+	if not localStorage['spacewar.tutorial']?
+		menu.open()
+		localStorage['spacewar.tutorial'] = true
 
+	# Use the game event handler.
+	focusInputs()
+
+	renderLoop(update, showFPS)
+
+focusInputs = () ->
+
+	# Clear all event handlers attached to the document.
+	$(document).unbind()
+
+	# Fade-in the menu when the user left clicks anywhere.
+	$(document).click (event) =>
+		menu.open() if event.which is 1
+
+	# Send key presses and key releases to the server.
 	$(document).keydown ({keyCode}) ->
 		if not keys[keyCode]? or keys[keyCode] is off
 			keys[keyCode] = on
 			socket.send
 				type: 'key down'
-				playerId: id
+				playerId: playerId
 				key: keyCode
 
 	$(document).keyup ({keyCode}) ->
 		keys[keyCode] = off
 		socket.send
 			type: 'key up'
-			playerId: id
+			playerId: playerId
 			key: keyCode
 
-	update()
+renderLoop = (callback, showFPS) ->
+	# RequestAnimationFrame API
+	# http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+	requestAnimFrame = ( () ->
+		window.requestAnimationFrame       ||
+			window.webkitRequestAnimationFrame ||
+			window.mozRequestAnimationFrame    ||
+			window.oRequestAnimationFrame      ||
+			window.msRequestAnimationFrame     ||
+			(callback, element) ->
+				window.setTimeout(callback, 1000 / 60) )()
+
+	currentFPS = 0
+	frameCount = 0
+	lastFPSupdate = 0
+
+	lastTime = 0
+
+	render = (time) ->
+		# Setup next update.
+		requestAnimFrame(render)
+
+		# For browsers which do not pass the time argument.
+		time ?= (new Date).getTime()
+
+		# Update FPS every second
+		if (time - lastFPSupdate > 1000)
+			currentFPS = frameCount
+			frameCount = 0
+			lastFPSupdate = time
+			console.info(currentFPS) if showFPS
+
+		# Pass current time and time since last update to callback.
+		callback(time, time - lastTime)
+
+		# Another frame blit you must.
+		++frameCount
+
+		# Update time of the last update.
+		lastTime = time
+
+	requestAnimFrame(render)
 
 # Game loop!
-update = () ->
-	start = (new Date).getTime()
-
+update = (time, sinceUpdate) ->
 	# Update time globals (poor kittens...).
-	sinceLastUpdate = start - now
-	now = start
+	sinceLastUpdate = sinceUpdate
+	now = time
 
 	# Update and cleanup objects.
 	for idx, obj of gameObjects
@@ -91,10 +163,6 @@ update = () ->
 	centerView()
 	redraw(ctxt)
 
-	# Setup next update.
-	diff = (new Date).getTime() - start
-	setTimeout(update, 20-mod(diff, 20))
-
 inView = (x, y) ->
 	view.x <= x <= view.x + screen.w and
 	view.y <= y <= view.y + screen.h
@@ -105,6 +173,8 @@ redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, screen.w, screen.h)
 	ctxt.lineJoin = 'round'
 
+	drawMapBounds(ctxt) if showMapBounds
+
 	# Draw all objects.
 	obj.draw(ctxt)	for idx, obj of gameObjects
 
@@ -112,16 +182,23 @@ redraw = (ctxt) ->
 	drawInfinity ctxt
 
 	# Draw UI
-	drawRadar ctxt if ships[id]? and not ships[id].isDead()
+	drawRadar ctxt if localShip? and not localShip.isDead()
+
+drawMapBounds = (ctxt) ->
+	ctxt.save()
+	ctxt.lineWidth = 2
+	ctxt.strokeStyle = '#dae'
+	ctxt.strokeRect(-view.x, -view.y, map.w, map.h)
+	ctxt.restore()
 
 centerView = () ->
-	if gameObjects[id]?
-		view.x = gameObjects[id].pos.x - screen.w/2
-		view.y = gameObjects[id].pos.y - screen.h/2
+	if localShip?
+		view.x = localShip.pos.x - screen.w/2
+		view.y = localShip.pos.y - screen.h/2
 
 drawRadar = (ctxt) ->
 	for i, s of ships
-		if i isnt id and not s.isDead()
+		if i isnt shipId and not s.isDead()
 			s.drawOnRadar(ctxt)
 
 	for i, b of bonuses
@@ -151,7 +228,7 @@ drawInfinity = (ctxt) ->
 	return true
 
 onConnect = () ->
-	info "Connected to server"
+	info "Connected to server."
 
 onDisconnect = () ->
 	info "Aaargh! Disconnected!"
@@ -164,6 +241,8 @@ newObject = (i, type, obj) ->
 			new Bullet(obj)
 		when 'mine'
 			new Mine(obj)
+		when 'EMP'
+			new EMP(obj)
 		when 'bonus'
 			bonuses[i] = new Bonus(obj)
 		when 'planet'
@@ -193,12 +272,24 @@ onMessage = (msg) ->
 
 		# When receiving our id from the server.
 		when 'connected'
-			go(msg.playerId)
+			playerId = msg.playerId
+
+			menu.sendPreferences()
+
+			socket.send
+				type: 'create ship'
+				playerId: playerId
+
+		# When receiving our id from the server.
+		when 'ship created'
+			shipId = msg.shipId
+			localShip = gameObjects[shipId]
+			go()
 
 		# When another player leaves.
 		when 'player quits'
-			delete ships[msg.playerId]
-			delete gameObjects[msg.playerId]
-			console.info 'player '+msg.playerId+' quits'
+			delete ships[msg.shipId]
+			delete gameObjects[msg.shipId]
+			info 'Player '+msg.playerId+' quits'
 
 	return true

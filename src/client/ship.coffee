@@ -25,6 +25,12 @@ class Ship
 		else if not @exploding and @explosionBits?
 			delete @explosionBits
 
+		# Start the boost animation if the ship just boosted.
+		if @boost > 1 and not @ghosts?
+			@ghosts = []
+		else if @boost <= 1 and @ghosts?
+			delete @ghosts
+
 	update: () ->
 
 		# Update the engine animation countdown.
@@ -32,7 +38,14 @@ class Ship
 			@engineAnimFor -= sinceLastUpdate
 			@engineAnimFor = null if @engineAnimFor <= 0
 
-		true
+		# Update the ghosts trail.
+		if @ghosts and (@ghosts.length is 0 or now-@ghosts[@ghosts.length-1].t > 0)
+			@ghosts.push
+				x: @pos.x
+				y: @pos.y
+				dir: @dir
+				t: now
+			@ghosts.shift() if @ghosts.length > 5
 
 	isExploding: () ->
 		return @exploding
@@ -76,20 +89,17 @@ class Ship
 		else if @firePower > 0
 			fillAlpha = (@firePower-minPower)/(maxPower-minPower)
 
-		points = [[-7,10], [0,-10], [7,10], [0,6]]
-		ctxt.fillStyle = color(@color, fillAlpha)
-		ctxt.strokeStyle = color @color
-		ctxt.lineWidth = 4
-		ctxt.save()
-		ctxt.translate(x, y)
-		ctxt.rotate(@dir)
-		ctxt.beginPath()
-		for p in points
-			ctxt.lineTo(p[0], p[1])
-		ctxt.closePath()
-		ctxt.stroke()
-		ctxt.fill()
-		ctxt.restore()
+		@drawShipModel(x, y, @dir, 1, fillAlpha)
+
+		# Draw ghosts trail.
+		if @ghosts?
+			for i of @ghosts
+				@drawShipModel(
+						@ghosts[i].x+offset.x-view.x,
+						@ghosts[i].y+offset.y-view.y,
+						@ghosts[i].dir,
+						0.1,
+						0)
 
 		# Draw engine fire.
 		if @thrust or @engineAnimFor?
@@ -101,7 +111,7 @@ class Ship
 				alpha = @engineAnimFor/@engineAnimDelay
 
 			ctxt.strokeStyle = color(@color, alpha)
-			enginePoints = [ [-5,8], [0,18], [5,8] ]
+			enginePoints = [[-8,-5], [-18,0], [-8,5]]
 			ctxt.lineWidth = 2
 			ctxt.save()
 			ctxt.translate(x, y)
@@ -115,6 +125,32 @@ class Ship
 				ctxt.lineTo(p[0], p[1])
 			ctxt.stroke()
 			ctxt.restore()
+
+		# Draw the player's name.
+		if 	@name?  and @ isnt localShip and
+				(displayNames is on or
+				localShip.isExploding() or localShip.isDead())
+			ctxt.fillStyle = 'black'
+			ctxt.font = '15px Quattrocento sans'
+			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)
+
+	drawShipModel: (x, y, dir, strokeAlpha, fillAlpha) ->
+		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
+
+		ctxt.fillStyle = color(@color, fillAlpha)
+		ctxt.strokeStyle = color(@color, strokeAlpha)
+		ctxt.lineWidth = 4
+
+		ctxt.save()
+		ctxt.translate(x, y)
+		ctxt.rotate(@dir)
+		ctxt.beginPath()
+		for p in points
+			ctxt.lineTo(p[0], p[1])
+		ctxt.closePath()
+		ctxt.stroke()
+		ctxt.fill()
+		ctxt.restore()
 
 	explode: () ->
 		@explosionBits = []
@@ -156,14 +192,12 @@ class Ship
 		ox = -view.x + offset.x
 		oy = -view.y + offset.y
 
-		ctxt.fillStyle = color @color, (maxExploFrame-@exploFrame)/maxExploFrame
+		ctxt.fillStyle = color(@color, (maxExploFrame-@exploFrame)/maxExploFrame)
 		for b in @explosionBits
 			if inView(b.x+offset.x, b.y+offset.y)
 				ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
 
 	drawOnRadar: (ctxt) ->
-		localShip = ships[id]
-
 		# Select the closest ship among the real one and its ghosts.
 		bestDistance = Infinity
 		for j in [-1..1]
