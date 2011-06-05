@@ -43,17 +43,18 @@ class Menu
 				@close()
 				event.stopPropagation()
 
-		# Close the menu when a left click is detected outside of it.
-		# Fade-in the menu when the user left clicks anywhere.
+		# Toggle the menu when a left click is detected in the document.
 		$(document).click (event) =>
 			@toggle() if event.which is 1
 
-		$(document).keyup ({keyCode}) =>
-			switch keyCode
+		# But don't toggle if the click is inside the menu.
+		# Clicking is expected on name input box and links.
+		@menu.click (event) ->
+			event.stopPropagation() if event.which is 1
 
-				# Close the menu when the Escape key is pressed.
-				when 27
-					@toggle()
+		# Close the menu when the Escape key is pressed.
+		$(document).keyup ({keyCode}) =>
+			@toggle() if keyCode is 27
 
 	toggle: () ->
 		if @isOpen() then @close() else @open()
