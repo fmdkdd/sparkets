@@ -54,15 +54,24 @@
 	 to { -webkit-transform: rotate(360deg); }
 }
 
+@-moz-keyframes rotate {
+	 from { -moz-transform: rotate(0deg); }
+	 to { -moz-transform: rotate(360deg); }
+}
+
 #colorWheelBox svg {
 	 -webkit-animation-name: rotate;
 	 -webkit-animation-duration: 15s;
 	 -webkit-animation-iteration-count: infinite;
 	 -webkit-animation-timing-function: linear;
 
+	 -moz-animation-name: rotate;
+	 -moz-animation-duration: 15s;
+	 -moz-animation-iteration-count: infinite;
+	 -moz-animation-timing-function: linear;
+
 	 width: 100%;
 	 height: 100%; }
-
 #colorWheel {
 	 width: 200px;
 	 height: 200px;
