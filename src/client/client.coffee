@@ -70,9 +70,9 @@ $(document).ready (event) ->
 # Setup input callbacks and launch game loop.
 go = () ->
 	# Show the menu the first time.
-	if not localStorage['spacewar.tutorial']?
+	if not window.localStorage['spacewar.tutorial']?
 		window.menu.open()
-		localStorage['spacewar.tutorial'] = true
+		window.localStorage['spacewar.tutorial'] = true
 
 	# Use the game event handler.
 	setInputHandlers()

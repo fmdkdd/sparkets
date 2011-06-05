@@ -26,7 +26,7 @@ class Tutorial
 			$('#slide' + @current).fadeIn(@fadeDuration, () => @pause())
 		# Mark the tutorial as passed.
 		else
-			localStorage['spacewar.tutorial'] = true
+			window.localStorage['spacewar.tutorial'] = true
 
 
 	pause: () ->
@@ -36,3 +36,6 @@ class Tutorial
 		# Fade-out the current slide.
 		$('#slide' + @current).fadeOut(@fadeDuration, () => @fadeIn())
 		++@current
+
+# Exports
+window.Tutorial = Tutorial

@@ -21,16 +21,16 @@ class Mine
 		r = 5
 		hr = @hitRadius
 
-		if  not inView(x+hr, y+hr) and
-				not inView(x+hr, y-hr) and
-				not inView(x-hr, y+hr) and
-				not inView(x-hr, y-hr)
+		if  not window.inView(x+hr, y+hr) and
+				not window.inView(x+hr, y-hr) and
+				not window.inView(x-hr, y+hr) and
+				not window.inView(x-hr, y-hr)
 			return
 
-		x -= view.x
-		y -= view.y
+		x -= window.view.x
+		y -= window.view.y
 
-		if showHitCircles
+		if window.showHitCircles
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, hr)
@@ -61,16 +61,16 @@ class Mine
 		r = 80
 		a = @countdown/500
 
-		if 	not inView(x+r, y+r) and
-				not inView(x+r, y-r) and
-				not inView(x-r, y+r) and
-				not inView(x-r, y-r)
+		if 	not window.inView(x+r, y+r) and
+				not window.inView(x+r, y-r) and
+				not window.inView(x-r, y+r) and
+				not window.inView(x-r, y-r)
 			return
 
-		x -= view.x
-		y -= view.y
+		x -= window.view.x
+		y -= window.view.y
 
-		if showHitCircles
+		if window.showHitCircles
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, r)

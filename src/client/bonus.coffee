@@ -17,14 +17,14 @@ class Bonus
 		s = @modelSize
 		r = 5
 
-		if not inView(x+s, y+s) and
-				not inView(x+s, y-s) and
-				not inView(x-s, y+s) and
-				not inView(x-s, y-s)
+		if not window.inView(x+s, y+s) and
+				not window.inView(x+s, y-s) and
+				not window.inView(x-s, y+s) and
+				not window.inView(x-s, y-s)
 			return
 
-		x -= view.x
-		y -= view.y
+		x -= window.view.x
+		y -= window.view.y
 
 		if showHitCircles
 			ctxt.strokeStyle = 'red'
@@ -99,39 +99,39 @@ class Bonus
 		bestDistance = Infinity
 		for j in [-1..1]
 			for k in [-1..1]
-				x = @pos.x + j * map.w
-				y = @pos.y + k * map.h
-				d = distance(localShip.pos.x, localShip.pos.y, x, y)
+				x = @pos.x + j * window.map.w
+				y = @pos.y + k * window.map.h
+				d = distance(window.localShip.pos.x, window.localShip.pos.y, x, y)
 
 				if d < bestDistance
 					bestDistance = d
 					bestPos = {x, y}
 
-		dx = bestPos.x - localShip.pos.x
-		dy = bestPos.y - localShip.pos.y
+		dx = bestPos.x - window.localShip.pos.x
+		dy = bestPos.y - window.localShip.pos.y
 		margin = 20
 
 		# Draw the radar on the edges of the screen if the bonus is too far.
-		if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
-			rx = Math.max -screen.w/2 + margin, dx
-			rx = Math.min screen.w/2 - margin, rx
-			ry = Math.max -screen.h/2 + margin, dy
-			ry = Math.min screen.h/2 - margin, ry
+		if Math.abs(dx) > window.screen.w/2 or Math.abs(dy) > window.screen.h/2
+			rx = Math.max -window.screen.w/2 + margin, dx
+			rx = Math.min window.screen.w/2 - margin, rx
+			ry = Math.max -window.screen.h/2 + margin, dy
+			ry = Math.min window.screen.h/2 - margin, ry
 
 			# The radar is blinking.
 			if @countdown % 500 < 250
-				@drawRadarSymbol(screen.w/2 + rx, screen.h/2 + ry)
+				@drawRadarSymbol(window.screen.w/2 + rx, window.screen.h/2 + ry)
 
 		# Draw the X on the future bonus position if it lies within the screen.
 		else if @countdown % 500 < 250
-			rx = -screen.w/2 + bestPos.x - view.x
-			ry = -screen.h/2 + bestPos.y - view.y
+			rx = -window.screen.w/2 + bestPos.x - window.view.x
+			ry = -window.screen.h/2 + bestPos.y - window.view.y
 
-			@drawRadarSymbol(screen.w/2 + rx, screen.h/2 + ry)
+			@drawRadarSymbol(ctxt, window.screen.w/2 + rx, screen.h/2 + ry)
 
 		return true
 
-	drawRadarSymbol: (x, y) ->
+	drawRadarSymbol: (ctxt, x, y) ->
 		ctxt.fillStyle = color @color
 		ctxt.save()
 		ctxt.translate(x, y)

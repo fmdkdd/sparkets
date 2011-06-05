@@ -35,7 +35,7 @@ class Menu
 
 		# Toggle the name display option.
 		@displayNamesCheck.change (event) =>
-			displayNames = @displayNamesCheck.is(':checked')
+			window.displayNames = @displayNamesCheck.is(':checked')
 
 		# Close the menu.
 		@closeButton.click (event) =>
@@ -75,7 +75,7 @@ class Menu
 		color = @currentColor
 		name = @nameField.val() if @nameField.val().length > 0
 
-		socket.send
+		window.socket.send
 			type: 'prefs changed'
 			playerId: playerId
 			color: color
@@ -83,17 +83,19 @@ class Menu
 
 	# Store user preferences in the browser local storage.
 	saveLocalPreferences: () ->
-		localStorage['spacewar.color'] = @currentColor if @currentColor?
-		localStorage['spacewar.name'] = @nameField.val() if @nameField.val().length > 0
+		window.localStorage['spacewar.color'] = @currentColor if @currentColor?
+		window.localStorage['spacewar.name'] = @nameField.val() if @nameField.val().length > 0
 
-		info 'Preferences saved.'
+		console.info 'Preferences saved.'
 
 	# Restores user preferences from browser local storage.
 	restoreLocalPreferences: () ->
-		@currentColor = localStorage['spacewar.color'].split(',') if localStorage['spacewar.color']?
-		@nameField.val(localStorage['spacewar.name']) if localStorage['spacewar.name']
+		if window.localStorage['spacewar.color']?
+			@currentColor = window.localStorage['spacewar.color'].split(',')
+		if window.localStorage['spacewar.name']
+			@nameField.val(window.localStorage['spacewar.name'])
 
-		info 'Preferences restored.'
+		console.info 'Preferences restored.'
 
 	# Return the color chosen from the colorwheel.
 	readColor: (event) ->

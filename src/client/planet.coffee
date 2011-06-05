@@ -9,7 +9,7 @@ class Planet
 		@sprite.width = @sprite.height = Math.ceil(2*@force)
 
 		c = @sprite.getContext('2d')
-		c.strokeStyle = color planetColor
+		c.strokeStyle = color window.planetColor
 		c.fillStyle = 'white'
 		c.lineWidth = 8
 		c.beginPath()
@@ -30,18 +30,18 @@ class Planet
 		f = @force;
 
 		# Check the planet really needs to be drawn.
-		if not inView(px+f, py+f) and
-				not inView(px+f, py-f) and
-				not inView(px-f, py+f) and
-				not inView(px-f, py-f)
+		if not window.inView(px+f, py+f) and
+				not window.inView(px+f, py-f) and
+				not window.inView(px-f, py+f) and
+				not window.inView(px-f, py-f)
 			return
 
-		x = px - view.x
-		y = py - view.y
+		x = px - window.view.x
+		y = py - window.view.y
 
 		ctxt.drawImage(@sprite, x-f, y-f)
 
-		if showHitCircles
+		if window.showHitCircles
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, @hitRadius)

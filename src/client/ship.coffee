@@ -35,7 +35,7 @@ class Ship
 
 		# Update the engine animation countdown.
 		if @engineAnimFor?
-			@engineAnimFor -= sinceLastUpdate
+			@engineAnimFor -= window.sinceLastUpdate
 			@engineAnimFor = null if @engineAnimFor <= 0
 
 		# Update the ghosts trail.
@@ -66,37 +66,37 @@ class Ship
 		y = @pos.y + offset.y
 
 		# Check if ship is in view before drawing.
-		if not inView(x+10, y+10) and
-				not inView(x+10, y-10) and
-				not inView(x-10, y+10) and
-				not inView(x-10, y-10)
+		if not window.inView(x+10, y+10) and
+				not window.inView(x+10, y-10) and
+				not window.inView(x-10, y+10) and
+				not window.inView(x-10, y-10)
 			return
-		x -= view.x
-		y -= view.y
+		x -= window.view.x
+		y -= window.view.y
 
 		cos = Math.cos @dir
 		sin = Math.sin @dir
 
 		# Draw hull.
 
-		if showHitCircles
+		if window.showHitCircles
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, @hitRadius)
 
 		if @cannonHeat > 0
-			fillAlpha = @cannonHeat/cannonCooldown
+			fillAlpha = @cannonHeat/window.cannonCooldown
 		else if @firePower > 0
-			fillAlpha = (@firePower-minPower)/(maxPower-minPower)
+			fillAlpha = (@firePower-window.minPower)/(window.maxPower-window.minPower)
 
-		@drawShipModel(x, y, @dir, 1, fillAlpha)
+		@drawShipModel(ctxt, x, y, @dir, 1, fillAlpha)
 
 		# Draw ghosts trail.
 		if @ghosts?
 			for i of @ghosts
-				@drawShipModel(
-						@ghosts[i].x+offset.x-view.x,
-						@ghosts[i].y+offset.y-view.y,
+				@drawShipModel(ctxt,
+						@ghosts[i].x+offset.x-window.view.x,
+						@ghosts[i].y+offset.y-window.view.y,
 						@ghosts[i].dir,
 						0.1,
 						0)
@@ -127,14 +127,14 @@ class Ship
 			ctxt.restore()
 
 		# Draw the player's name.
-		if 	@name?  and @ isnt localShip and
+		if 	@name?  and @ isnt window.localShip and
 				(displayNames is on or
-				localShip.isExploding() or localShip.isDead())
+				window.localShip.isExploding() or window.localShip.isDead())
 			ctxt.fillStyle = 'black'
 			ctxt.font = '15px Quattrocento sans'
 			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)
 
-	drawShipModel: (x, y, dir, strokeAlpha, fillAlpha) ->
+	drawShipModel: (ctxt, x, y, dir, strokeAlpha, fillAlpha) ->
 		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
 
 		ctxt.fillStyle = color(@color, fillAlpha)
@@ -189,12 +189,12 @@ class Ship
 			b.y += b.vy + (-1 + 2*Math.random())/1.5
 
 	drawExplosion: (ctxt, offset = {x: 0, y: 0}) ->
-		ox = -view.x + offset.x
-		oy = -view.y + offset.y
+		ox = -window.view.x + offset.x
+		oy = -window.view.y + offset.y
 
-		ctxt.fillStyle = color(@color, (maxExploFrame-@exploFrame)/maxExploFrame)
+		ctxt.fillStyle = color(@color, (window.maxExploFrame-@exploFrame)/window.maxExploFrame)
 		for b in @explosionBits
-			if inView(b.x+offset.x, b.y+offset.y)
+			if window.inView(b.x+offset.x, b.y+offset.y)
 				ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
 
 	drawOnRadar: (ctxt) ->
@@ -204,35 +204,35 @@ class Ship
 			for k in [-1..1]
 				x = @pos.x + j * map.w
 				y = @pos.y + k * map.h
-				d = distance(localShip.pos.x, localShip.pos.y, x, y)
+				d = distance(window.localShip.pos.x, window.localShip.pos.y, x, y)
 
 				if d < bestDistance
 					bestDistance = d
 					bestPos = {x, y}
 
-		dx = bestPos.x - localShip.pos.x
-		dy = bestPos.y - localShip.pos.y
+		dx = bestPos.x - window.localShip.pos.x
+		dy = bestPos.y - window.localShip.pos.y
 
 		# Draw the radar if the ship is outside of the screen bounds.
-		if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
+		if Math.abs(dx) > window.screen.w/2 or Math.abs(dy) > window.screen.h/2
 
 			margin = 20
-			rx = Math.max -screen.w/2 + margin, dx
-			rx = Math.min screen.w/2 - margin, rx
-			ry = Math.max -screen.h/2 + margin, dy
-			ry = Math.min screen.h/2 - margin, ry
+			rx = Math.max -window.screen.w/2 + margin, dx
+			rx = Math.min window.screen.w/2 - margin, rx
+			ry = Math.max -window.screen.h/2 + margin, dy
+			ry = Math.min window.screen.h/2 - margin, ry
 
 			radius = 10
 			alpha = 1
 
 			if @isExploding()
-				animRatio = @exploFrame / maxExploFrame
+				animRatio = @exploFrame / window.maxExploFrame
 				radius -= animRatio * 10
 				alpha -= animRatio
 
 			ctxt.fillStyle = color(@color, alpha)
 			ctxt.beginPath()
-			ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, radius, 0, 2*Math.PI, false)
+			ctxt.arc(window.screen.w/2 + rx, window.screen.h/2 + ry, radius, 0, 2*Math.PI, false)
 			ctxt.fill()
 
 		return true

@@ -14,14 +14,14 @@ class EMP
 		y = @pos.y + offset.y
 		f = @force
 
-		if not inView(x+f, y+f) and
-				not inView(x+f, y-f) and
-				not inView(x-f, y+f) and
-				not inView(x-f, y-f)
+		if not window.inView(x+f, y+f) and
+				not window.inView(x+f, y-f) and
+				not window.inView(x-f, y+f) and
+				not window.inView(x-f, y-f)
 			return
 
-		x -= view.x
-		y -= view.y
+		x -= window.view.x
+		y -= window.view.y
 
 		ctxt.save()
 
