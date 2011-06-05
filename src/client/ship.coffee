@@ -130,8 +130,8 @@ class Ship
 		if 	@name?  and @ isnt window.localShip and
 				(displayNames is on or
 				window.localShip.isExploding() or window.localShip.isDead())
-			ctxt.fillStyle = 'black'
-			ctxt.font = '15px Quattrocento sans'
+			ctxt.fillStyle = '#666'
+			ctxt.font = '15px sans'
 			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)
 
 	drawShipModel: (ctxt, x, y, dir, strokeAlpha, fillAlpha) ->
