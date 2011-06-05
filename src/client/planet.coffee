@@ -45,3 +45,6 @@ class Planet
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, @hitRadius)
+
+# Exports
+window.Planet = Planet

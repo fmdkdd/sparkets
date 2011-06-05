@@ -236,3 +236,6 @@ class Ship
 			ctxt.fill()
 
 		return true
+
+# Exports
+window.Ship = Ship

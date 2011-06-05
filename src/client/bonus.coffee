@@ -142,3 +142,6 @@ class Bonus
 		ctxt.restore()
 
 		return true
+
+# Exports
+window.Bonus = Bonus

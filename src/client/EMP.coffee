@@ -32,3 +32,6 @@ class EMP
 		ctxt.stroke()
 
 		ctxt.restore()
+
+# Exports
+window.EMP = EMP

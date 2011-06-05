@@ -139,3 +139,6 @@ class Menu
 			top: y - @colorCursor.height()/2
 
 		return [hDeg, 60, l]
+
+# Exports
+window.Menu = Menu

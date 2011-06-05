@@ -1,69 +1,69 @@
 # Server
-port = 12345
-socket = {}
+window.port = 12345
+window.socket = {}
 
 # Graphics
-ctxt = null
-screen = {w: 0, h: 0}
-map = {w: 2000, h: 2000}
-view = {x: 0, y: 0}
+window.ctxt = null
+window.screen = {w: 0, h: 0}
+window.map = {w: 2000, h: 2000}
+window.view = {x: 0, y: 0}
 
 # Time
-now = null
-sinceLastUpdate = null
+window.now = null
+window.sinceLastUpdate = null
 
-planetColor = [209,29,61]
-maxBulletLength = 15
+window.planetColor = [209,29,61]
+window.maxBulletLength = 15
 
 # Game logic
-minPower = 1.3
-maxPower = 3
-maxExploFrame = 50
-maxBullets = 10
-cannonCooldown = 20
+window.minPower = 1.3
+window.maxPower = 3
+window.maxExploFrame = 50
+window.maxBullets = 10
+window.cannonCooldown = 20
 
-playerId = null
-shipId = null
-localShip = null
+window.playerId = null
+window.shipId = null
+window.localShip = null
 
-ships = {}
-bonuses = {}
+window.ships = {}
+window.bonuses = {}
 
-gameObjects = {}
+window.gameObjects = {}
 
-keys = {}
+window.keys = {}
 
-menu = null
+window.menu = null
 
 # user preferences
-displayNames = no
+window.displayNames = no
 
 # Debugging
-showHitCircles = no
-showMapBounds = no
-showFPS = no
+window.showHitCircles = no
+window.showMapBounds = no
+window.showFPS = no
 
 # Entry point
 $(document).ready (event) ->
 
 	# Restore local preferences.
-	menu = new Menu()
-	menu.restoreLocalPreferences()
+	window.menu = new Menu()
+	window.menu.restoreLocalPreferences()
 
 	# Connect to server and set callbacks.
-	socket = new io.Socket null, {port: port}
-	socket.connect()
-	socket.on 'message', onMessage
-	socket.on 'connect', onConnect
-	socket.on 'disconnect', onDisconnect
+	window.socket = new io.Socket null, {port: window.port}
+	window.socket.connect()
+	window.socket.on 'message', onMessage
+	window.socket.on 'connect', onConnect
+	window.socket.on 'disconnect', onDisconnect
 
 	# Setup canvas.
-	ctxt = document.getElementById('canvas').getContext('2d')
+	window.ctxt = document.getElementById('canvas').getContext('2d')
 
 	# Setup window resizing event.
 	$(window).resize (event) =>
-		screen.w = document.getElementById('canvas').width = window.innerWidth
-		screen.h = document.getElementById('canvas').height = window.innerHeight
+		window.screen.w = document.getElementById('canvas').width = window.innerWidth
+		window.screen.h = document.getElementById('canvas').height = window.innerHeight
 		centerView()
 	$(window).resize()
 
@@ -71,37 +71,37 @@ $(document).ready (event) ->
 go = () ->
 	# Show the menu the first time.
 	if not localStorage['spacewar.tutorial']?
-		menu.open()
+		window.menu.open()
 		localStorage['spacewar.tutorial'] = true
 
 	# Use the game event handler.
 	focusInputs()
 
-	renderLoop(update, showFPS)
+	renderLoop(update, window.showFPS)
 
-focusInputs = () ->
+window.focusInputs = () ->
 
 	# Clear all event handlers attached to the document.
 	$(document).unbind()
 
 	# Fade-in the menu when the user left clicks anywhere.
 	$(document).click (event) =>
-		menu.open() if event.which is 1
+		window.menu.open() if event.which is 1
 
 	# Send key presses and key releases to the server.
 	$(document).keydown ({keyCode}) ->
-		if not keys[keyCode]? or keys[keyCode] is off
-			keys[keyCode] = on
-			socket.send
+		if not window.keys[keyCode]? or window.keys[keyCode] is off
+			window.keys[keyCode] = on
+			window.socket.send
 				type: 'key down'
-				playerId: playerId
+				playerId: window.playerId
 				key: keyCode
 
 	$(document).keyup ({keyCode}) ->
-		keys[keyCode] = off
-		socket.send
+		window.keys[keyCode] = off
+		window.socket.send
 			type: 'key up'
-			playerId: playerId
+			playerId: window.playerId
 			key: keyCode
 
 renderLoop = (callback, showFPS) ->
@@ -150,67 +150,67 @@ renderLoop = (callback, showFPS) ->
 # Game loop!
 update = (time, sinceUpdate) ->
 	# Update time globals (poor kittens...).
-	sinceLastUpdate = sinceUpdate
-	now = time
+	window.sinceLastUpdate = sinceUpdate
+	window.now = time
 
 	# Update and cleanup objects.
-	for idx, obj of gameObjects
+	for idx, obj of window.gameObjects
 		obj.update()
 		if obj.serverDelete and obj.clientDelete
 			deleteObject idx
 
 	# Draw scene.
 	centerView()
-	redraw(ctxt)
+	redraw(window.ctxt)
 
-inView = (x, y) ->
-	view.x <= x <= view.x + screen.w and
-	view.y <= y <= view.y + screen.h
+window.inView = (x, y) ->
+	window.view.x <= x <= window.view.x + window.screen.w and
+	window.view.y <= y <= window.view.y + window.screen.h
 
 # Clear canvas and draw everything.
 # Not efficient, but we don't have that many objects.
 redraw = (ctxt) ->
-	ctxt.clearRect(0, 0, screen.w, screen.h)
+	ctxt.clearRect(0, 0, window.screen.w, window.screen.h)
 	ctxt.lineJoin = 'round'
 
-	drawMapBounds(ctxt) if showMapBounds
+	drawMapBounds(ctxt) if window.showMapBounds
 
 	# Draw all objects.
-	obj.draw(ctxt)	for idx, obj of gameObjects
+	obj.draw(ctxt)	for idx, obj of window.gameObjects
 
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
 
 	# Draw UI
-	drawRadar ctxt if localShip? and not localShip.isDead()
+	drawRadar ctxt if window.localShip? and not window.localShip.isDead()
 
 drawMapBounds = (ctxt) ->
 	ctxt.save()
 	ctxt.lineWidth = 2
 	ctxt.strokeStyle = '#dae'
-	ctxt.strokeRect(-view.x, -view.y, map.w, map.h)
+	ctxt.strokeRect(-window.view.x, -window.view.y, window.map.w, window.map.h)
 	ctxt.restore()
 
 centerView = () ->
-	if localShip?
-		view.x = localShip.pos.x - screen.w/2
-		view.y = localShip.pos.y - screen.h/2
+	if window.localShip?
+		window.view.x = window.localShip.pos.x - window.screen.w/2
+		window.view.y = window.localShip.pos.y - window.screen.h/2
 
 drawRadar = (ctxt) ->
-	for i, s of ships
-		if i isnt shipId and not s.isDead()
+	for i, s of window.ships
+		if i isnt window.shipId and not s.isDead()
 			s.drawOnRadar(ctxt)
 
-	for i, b of bonuses
+	for i, b of window.bonuses
 		if b.state isnt 'dead'
 			b.drawOnRadar(ctxt)
 
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
-	left = view.x < 0
-	right = view.x > map.w - screen.w
-	top = view.y < 0
-	bottom = view.y > map.h - screen.h
+	left = window.view.x < 0
+	right = window.view.x > window.map.w - window.screen.w
+	top = window.view.y < 0
+	bottom = window.view.y > window.map.h - window.screen.h
 
 	visibility = [[left and top,    top,    right and top]
 	              [left,           	off,  right],
@@ -219,10 +219,10 @@ drawInfinity = (ctxt) ->
 	for i in [0..2]
 		for j in [0..2]
 			if visibility[i][j] is on
-				for idx, obj of gameObjects
+				for idx, obj of window.gameObjects
 					offset =
-						x: (j-1)*map.w
-						y: (i-1)*map.h
+						x: (j-1)*window.map.w
+						y: (i-1)*window.map.h
 					obj.draw(ctxt, offset)
 
 	return true
@@ -236,7 +236,7 @@ onDisconnect = () ->
 newObject = (i, type, obj) ->
 	switch type
 		when 'ship'
-			ships[i] = new Ship(obj)
+			window.ships[i] = new Ship(obj)
 		when 'bullet'
 			new Bullet(obj)
 		when 'mine'
@@ -244,20 +244,20 @@ newObject = (i, type, obj) ->
 		when 'EMP'
 			new EMP(obj)
 		when 'bonus'
-			bonuses[i] = new Bonus(obj)
+			window.bonuses[i] = new Bonus(obj)
 		when 'planet'
 			new Planet(obj)
 
 deleteObject = (i) ->
-	type = gameObjects[i].type
+	type = window.gameObjects[i].type
 
 	switch type
 		when 'ship'
-			delete ships[i]
+			delete window.ships[i]
 		when 'bonus'
-			delete bonuses[i]
+			delete window.bonuses[i]
 
-	delete gameObjects[i]
+	delete window.gameObjects[i]
 
 onMessage = (msg) ->
 	switch msg.type
@@ -265,31 +265,31 @@ onMessage = (msg) ->
 		# When receiving world update data.
 		when 'objects update'
 			for i, obj of msg.objects
-				if not gameObjects[i]?
-					gameObjects[i] = newObject(i, obj.type, obj)
+				if not window.gameObjects[i]?
+					window.gameObjects[i] = newObject(i, obj.type, obj)
 				else
-					gameObjects[i].serverUpdate(obj)
+					window.gameObjects[i].serverUpdate(obj)
 
 		# When receiving our id from the server.
 		when 'connected'
-			playerId = msg.playerId
+			window.playerId = msg.playerId
 
-			menu.sendPreferences()
+			window.menu.sendPreferences()
 
-			socket.send
+			window.socket.send
 				type: 'create ship'
-				playerId: playerId
+				playerId: window.playerId
 
 		# When receiving our id from the server.
 		when 'ship created'
-			shipId = msg.shipId
-			localShip = gameObjects[shipId]
+			window.shipId = msg.shipId
+			window.localShip = window.gameObjects[window.shipId]
 			go()
 
 		# When another player leaves.
 		when 'player quits'
-			delete ships[msg.shipId]
-			delete gameObjects[msg.shipId]
+			delete window.ships[msg.shipId]
+			delete window.gameObjects[msg.shipId]
 			info 'Player '+msg.playerId+' quits'
 
 	return true

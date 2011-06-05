@@ -79,3 +79,6 @@ class Mine
 		ctxt.beginPath()
 		ctxt.arc(x, y, r, 0, 2*Math.PI, false)
 		ctxt.fill()
+
+# Exports
+window.Mine = Mine
