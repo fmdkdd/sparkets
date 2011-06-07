@@ -1,19 +1,5 @@
 exports ?= window
 
-# Console output shortcuts.
-
-exports.log = (msg) ->
-	console.log msg
-
-exports.info = (msg) ->
-	console.info msg
-
-exports.warn = (msg) ->
-	console.warn msg
-
-exports.log = (msg) ->
-	console.error msg
-
 # Array extension
 
 Array.max = (array) ->
