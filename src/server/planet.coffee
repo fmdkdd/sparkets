@@ -5,6 +5,7 @@ class Planet extends ChangingObject
 	constructor: (x, y, force) ->
 		super()
 
+		@watchChanges 'id'
 		@watchChanges 'type'
 		@watchChanges 'pos'
 		@watchChanges 'force'
