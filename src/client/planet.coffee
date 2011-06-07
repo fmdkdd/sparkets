@@ -33,6 +33,10 @@ class Planet
 		ctxt.lineWidth = 1
 		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
+		ctxt.fillStyle = 'black'
+		ctxt.font = '15px sans'
+		ctxt.fillText(@id, @pos.x - ctxt.measureText(@id).width/2, @pos.y)
+
 	draw: (ctxt) ->
 		x = @pos.x
 		y = @pos.y

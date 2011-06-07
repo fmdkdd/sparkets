@@ -30,12 +30,37 @@ exports.server =
 		width: 10
 		height: 10
 
-	planetsCount: 30				  # Number of planets on the map.
-
 	bonusWait: 30000				  # ms before a bonus drop.
 	maxBonuses: 5				  # Number of allowed simultaneous bonuses.
 
 	replPort: 54321				  # Port of the web REPL.
+
+exports.planet =
+	# Number of planets on the map. Satellites don't count here.
+	count: 30
+
+	# No planet smaller or larger than this.
+	minForce: 30
+	maxForce: 120
+
+	# Probability of adding a satellite to each planet.
+	satelliteChance: .3
+
+	# Safeguard value (can't draw planets smaller than the line width,
+	# and gravity doesn't bode well with small planets)
+	satelliteAbsMinForce: 10
+
+	# Range of satellite size (factor of planet force).
+	satelliteMinForce: .1
+	satelliteMaxForce: .3
+
+	# Range of gap between planet and satellite (factor of planet force).
+	satelliteMinGap: .2
+	satelliteMaxGap: .6
+
+	# Range of attraction factor of satellites by planets.
+	satellitePullMin: .03
+	satellitePullMax: .2
 
 exports.bullet =
 	hitRadius: 2					  # Radius of hit circle.

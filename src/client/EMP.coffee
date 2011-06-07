@@ -13,6 +13,9 @@ class EMP
 		window.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, @force)
 
+	drawHitbox: (ctxt) ->
+
+
 	draw: (ctxt) ->
 		ctxt.lineWidth = 3
 		ctxt.strokeStyle = color @color

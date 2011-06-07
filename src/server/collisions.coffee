@@ -27,6 +27,9 @@ exports.collisions =
 		ship.explode()
 		mine.nextState() if mine.state is 'active'
 
+	'ship-moon': (ship, moon) ->
+		ship.explode()
+
 	'ship-planet': (ship, planet) ->
 		ship.explode()
 
@@ -49,6 +52,9 @@ exports.collisions =
 			ship1.killingAccel = ship2.vel
 			ship2.explode()
 			ship2.killingAccel = ship1.vel
+
+	'bullet-moon': (bullet, moon) ->
+		bullet.state = 'dead' if bullet.state is 'active'
 
 	'bullet-planet': (bullet, planet) ->
 		bullet.state = 'dead' if bullet.state is 'active'
