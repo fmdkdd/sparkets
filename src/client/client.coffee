@@ -31,6 +31,8 @@ window.bonuses = {}
 
 window.gameObjects = {}
 
+window.effects = []
+
 window.keys = {}
 
 window.menu = null
@@ -150,6 +152,13 @@ update = (time, sinceUpdate) ->
 		if obj.serverDelete and obj.clientDelete
 			deleteObject id
 
+	# Update and cleanup visual effects.
+	for i in [0...window.effects.length]
+		e = window.effects[i]
+		e.update()
+		if e.deletable()
+			window.effects.splice(i, 1)
+
 	# Draw scene.
 	redraw(window.ctxt)
 
@@ -176,6 +185,9 @@ redraw = (ctxt) ->
 	# Draw all objects.
 	for idx, obj of window.gameObjects
 		drawObject(obj) if obj.inView()
+
+	for e in window.effects
+		e.draw(ctxt)
 
 	# Draw outside of the map bounds.
 	drawInfinity ctxt

@@ -59,5 +59,4 @@ class Bullet
 		ctxt.globalCompositeOperation = 'source-over'
 
 # Exports
-
 window.Bullet = Bullet

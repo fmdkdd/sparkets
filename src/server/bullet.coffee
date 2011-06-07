@@ -10,6 +10,7 @@ class Bullet extends ChangingObject
 		@watchChanges 'type'
 		@watchChanges 'color'
 		@watchChanges 'hitRadius'
+		@watchChanges 'pos'
 		@watchChanges 'points'
 		@watchChanges 'lastPoints'
 		@watchChanges 'serverDelete'
@@ -85,6 +86,8 @@ class Bullet extends ChangingObject
 		if @warp
 			@points.push [@pos.x, @pos.y]
 			@lastPoints.push [@pos.x, @pos.y]
+
+		@changed 'pos'
 
 	update: () ->
 		switch @state
