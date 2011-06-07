@@ -122,7 +122,7 @@ class Bonus
 			rx = -window.canvasSize.w/2 + bestPos.x - window.view.x
 			ry = -window.canvasSize.h/2 + bestPos.y - window.view.y
 
-			@drawRadarSymbol(ctxt, window.canvasSize.w/2 + rx, screen.h/2 + ry)
+			@drawRadarSymbol(ctxt, window.canvasSize.w/2 + rx, window.canvasSize.h/2 + ry)
 
 		return true
 
