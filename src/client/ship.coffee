@@ -2,13 +2,12 @@ class Ship
 	constructor: (ship) ->
 		@serverUpdate(ship)
 
-		@explosionBits = null
-
 		@engineAnimFor = null
 		@engineAnimDelay = 200
 
 	serverUpdate: (ship) ->
 		thrust_old = @thrust
+		exploding_old = @exploding
 
 		for field, val of ship
 			@[field] = val
@@ -17,13 +16,9 @@ class Ship
 		if @thrust isnt thrust_old
 			@engineAnimFor = @engineAnimDelay
 
-		# Start the explosion animation if the ship just exploded.
-		if @exploding
-			@explode() if not @explosionBits?
-			@stepExplosion()
-		# Reset the explosion bits if the ship respawned.
-		else if not @exploding and @explosionBits?
-			delete @explosionBits
+		# Launch an explosion animation if the ship just exploded.
+		if @exploding and exploding_old isnt @exploding
+			@explode()
 
 		# Start the boost animation if the ship just boosted.
 		if @boost > 1 and not @ghosts?
@@ -54,12 +49,9 @@ class Ship
 		return @dead
 
 	draw: (ctxt, offset) ->
-		if @dead
-			return
-		else if @exploding
-			@drawExplosion(ctxt, offset)
-		else
-			@drawShip(ctxt, offset)
+		return if @exploding or @dead
+
+		@drawShip(ctxt, offset)
 
 	inView: (offset = {x:0, y:0}) ->
 		window.boxInView(@pos.x + offset.x,
@@ -148,8 +140,6 @@ class Ship
 		ctxt.restore()
 
 	explode: () ->
-		@explosionBits = []
-
 		# Initial particle speed is derived from ship speed at death
 		# and killing bullet speed.
 		[vx, vy] = [@vel.x, @vel.y]
@@ -165,29 +155,7 @@ class Ship
 		# Ensure decent fireworks.
 		speed = Math.max(speed, 3)
 
-		# Create explosion particles.
-		for i in [0..200]
-			particle =
-				x: @pos.x
-				y: @pos.y
-				vx: .35* speed *(2*Math.random()-1)
-				vy: .35* speed *(2*Math.random()-1)
-				size: Math.random() * 10
-			angle = Math.atan2(particle.vy, particle.vx)
-			particle.vx *= Math.abs(Math.cos angle)
-			particle.vy *= Math.abs(Math.sin angle)
-			@explosionBits.push particle
-
-	stepExplosion: () ->
-		for b in @explosionBits
-			b.x += b.vx + (-1 + 2*Math.random())/1.5
-			b.y += b.vy + (-1 + 2*Math.random())/1.5
-
-	drawExplosion: (ctxt) ->
-		ctxt.fillStyle = color(@color, (window.maxExploFrame-@exploFrame)/window.maxExploFrame)
-		for b in @explosionBits
-			if window.inView(b.x, b.y)
-				ctxt.fillRect b.x, b.y, b.size, b.size
+		window.effects.push new ExplosionEffect(@, speed)
 
 	drawOnRadar: (ctxt) ->
 		# Select the closest ship among the real one and its ghosts.

@@ -1,5 +1,5 @@
 class ExplosionEffect
-	constructor: (@target) ->
+	constructor: (@target, @speed = {x:0, y:0}) ->
 		@init()
 
 		@frame = 0
@@ -9,15 +9,15 @@ class ExplosionEffect
 		@bits = []
 
 		# Ensure decent fireworks.
-		speed = 3 #Math.max(@dir, 3)
+		@speed = Math.max(@speed, 3)
 
 		# Create explosion particles.
 		for i in [0..200]
 			particle =
 				x: @target.pos.x
 				y: @target.pos.y
-				vx: .35 * speed*(2*Math.random()-1)
-				vy: .35 * speed*(2*Math.random()-1)
+				vx: .35 * @speed*(2*Math.random()-1)
+				vy: .35 * @speed*(2*Math.random()-1)
 				size: Math.random()*10
 
 			angle = Math.atan2(particle.vy, particle.vx)
