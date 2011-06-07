@@ -240,8 +240,8 @@ class GameServer
 		# Circle to planet collision predicate.
 		collides = (x, y, r, p) ->
 			if p.type is 'moon'
-				x2 = p.origin.x
-				y2 = p.origin.y
+				x2 = p.planet.pos.x
+				y2 = p.planet.pos.y
 				r2 = p.dist + p.force
 			else
 				x2 = p.pos.x
@@ -290,9 +290,10 @@ class GameServer
 					collides(x, y, totForce, p)
 
 			# Not colliding, can add it
-			planets.push new Planet(x, y, force)
+			rock = new Planet(x, y, force)
+			planets.push rock
 			if satellite
-				planets.push new Moon(x, y, force, satForce, satGap)
+				planets.push new Moon(rock, satForce, satGap)
 
 		return planets
 
