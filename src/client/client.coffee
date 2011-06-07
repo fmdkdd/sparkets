@@ -268,6 +268,8 @@ newObject = (i, type, obj) ->
 			window.bonuses[i] = new Bonus(obj)
 		when 'planet'
 			new Planet(obj)
+		when 'moon'
+			new Planet(obj)
 
 deleteObject = (id) ->
 	type = window.gameObjects[id].type

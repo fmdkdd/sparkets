@@ -2,6 +2,7 @@ prefs = require './prefs'
 Player = require('./player').Player
 Bonus = require('./bonus').Bonus
 Planet = require('./planet').Planet
+Moon = require('./moon').Moon
 collisions = require('./collisions')
 utils = require '../utils'
 
@@ -226,6 +227,8 @@ class GameServer
 				delete @mines[id]
 			when 'planet'
 				delete @planets[id]
+			when 'moon'
+				delete @planets[id]
 			when 'EMP'
 				delete @EMPs[id]
 
@@ -234,27 +237,62 @@ class GameServer
 	initPlanets: () ->
 		planets = []
 
-		collides = (p1, p2) ->
-			(utils.distance(p1.pos.x, p1.pos.y,
-				p2.pos.x, p2.pos.y) < p1.force + p2.force)
+		# Circle to planet collision predicate.
+		collides = (x, y, r, p) ->
+			if p.type is 'moon'
+				x2 = p.origin.x
+				y2 = p.origin.y
+				r2 = p.dist + p.force
+			else
+				x2 = p.pos.x
+				y2 = p.pos.y
+				r2 = p.force
+			return (utils.distance(x, y, x2, y2) < r + r2)
+
+		mapW = prefs.server.mapSize.w
+		mapH = prefs.server.mapSize.h
 
 		# If a planet is overlapping the map, it will appear to be
 		# colliding with its ghosts in drawInfinity.
-		nearBorder = ({pos: {x, y}, force}) ->
-			(x - force < 0 or x + force > prefs.server.mapSize.w or
-				y - force < 0 or y + force > prefs.server.mapSize.h)
+		nearBorder = (x, y, r) ->
+			(x - r < 0 or x + r > mapW or y - r < 0 or y + r > mapH)
+
+		min = prefs.planet.minForce
+		marge = prefs.planet.maxForce - min
+
+		satAbsFMin = prefs.planet.satelliteAbsMinForce
+		satFMin = prefs.planet.satelliteMinForce
+		satFMarge = prefs.planet.satelliteMaxForce - satFMin
+
+		satGMin = prefs.planet.satelliteMinGap
+		satGMarge = prefs.planet.satelliteMaxGap - satGMin
 
 		# Spawn planets randomly.
-		for [0...prefs.server.planetsCount]
+		for [0...prefs.planet.count]
+			satellite = Math.random() < prefs.planet.satelliteChance
 			colliding = yes
-			while colliding		  # Ensure none are colliding
-				rock = new Planet(Math.random() * prefs.server.mapSize.w,
-					Math.random() * prefs.server.mapSize.h,
-					50+Math.random()*50)
-				colliding = no
-				for p in planets
-					colliding = yes if nearBorder(rock) or collides(p,rock)
-			planets.push rock
+			# Ensure none are colliding (no do .. while in Coffee)
+			while colliding
+				x = Math.random() * mapW
+				y = Math.random() * mapH
+				force = min + marge * Math.random()
+
+				# Account for satellite size and distance
+				if satellite
+					satGap = force * (satGMin + satGMarge * Math.random())
+					satForce = satAbsFMin + force * (satFMin + satFMarge * Math.random())
+					totForce = force + satGap + 3*satForce
+				else
+					totForce = force
+
+				# Check collisions with existing planets (and moons)
+				colliding = nearBorder(x, y, totForce) or planets.some (p) ->
+					collides(x, y, totForce, p)
+
+			# Not colliding, can add it
+			planets.push new Planet(x, y, force)
+			if satellite
+				planets.push new Moon(x, y, force, satForce, satGap)
 
 		return planets
 
