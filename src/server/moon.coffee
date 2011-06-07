@@ -18,6 +18,7 @@ class Moon extends Planet
 		M = prefs.planet.satellitePullMax - m
 		pull = m + M * Math.random()
 		@speed = pull * @planet.force / (@dist * Math.sqrt(@dist))
+		@speed *= -1 if Math.random() < 0.5
 
 		# Update position
 		@move()
