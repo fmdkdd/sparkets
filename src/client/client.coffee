@@ -4,7 +4,7 @@ window.socket = {}
 
 # Graphics
 window.ctxt = null
-window.screen = {w: 0, h: 0}
+window.canvasSize = {w: 0, h: 0}
 window.map = {w: 2000, h: 2000}
 window.view = {x: 0, y: 0}
 
@@ -61,9 +61,9 @@ $(document).ready (event) ->
 	window.ctxt = document.getElementById('canvas').getContext('2d')
 
 	# Setup window resizing event.
-	$(window).resize (event) =>
-		window.screen.w = document.getElementById('canvas').width = window.innerWidth
-		window.screen.h = document.getElementById('canvas').height = window.innerHeight
+	$(window).resize (event) ->
+		window.canvasSize.w = document.getElementById('canvas').width = window.innerWidth
+		window.canvasSize.h = document.getElementById('canvas').height = window.innerHeight
 	$(window).resize()
 
 # Setup input callbacks and launch game loop.
@@ -158,13 +158,13 @@ window.boxInView = (x, y, r) ->
 		window.inView(x+r, y-r) or window.inView(x+r, y+r)
 
 window.inView = (x, y) ->
-	window.view.x <= x <= window.view.x + window.screen.w and
-		window.view.y <= y <= window.view.y + window.screen.h
+	window.view.x <= x <= window.view.x + window.canvasSize.w and
+		window.view.y <= y <= window.view.y + window.canvasSize.h
 
 # Clear canvas and draw everything.
 # Not efficient, but we don't have that many objects.
 redraw = (ctxt) ->
-	ctxt.clearRect(0, 0, window.screen.w, window.screen.h)
+	ctxt.clearRect(0, 0, window.canvasSize.w, window.canvasSize.h)
 
 	# Draw everything centered around the player.
 	centerView()
@@ -201,8 +201,8 @@ drawMapBounds = (ctxt) ->
 
 centerView = () ->
 	if window.localShip?
-		window.view.x = window.localShip.pos.x - window.screen.w/2
-		window.view.y = window.localShip.pos.y - window.screen.h/2
+		window.view.x = window.localShip.pos.x - window.canvasSize.w/2
+		window.view.y = window.localShip.pos.y - window.canvasSize.h/2
 
 drawRadar = (ctxt) ->
 	for id, ship of window.ships
@@ -220,9 +220,9 @@ drawRadar = (ctxt) ->
 drawInfinity = (ctxt) ->
 	# Can the player see the left, right, top and bottom voids?
 	left = window.view.x < 0
-	right = window.view.x > window.map.w - window.screen.w
+	right = window.view.x > window.map.w - window.canvasSize.w
 	top = window.view.y < 0
-	bottom = window.view.y > window.map.h - window.screen.h
+	bottom = window.view.y > window.map.h - window.canvasSize.h
 
 	visibility = [[left and top,    top,    right and top]
 	              [left,           	off,  right],

@@ -107,22 +107,22 @@ class Bonus
 		margin = 20
 
 		# Draw the radar on the edges of the screen if the bonus is too far.
-		if Math.abs(dx) > window.screen.w/2 or Math.abs(dy) > window.screen.h/2
-			rx = Math.max -window.screen.w/2 + margin, dx
-			rx = Math.min window.screen.w/2 - margin, rx
-			ry = Math.max -window.screen.h/2 + margin, dy
-			ry = Math.min window.screen.h/2 - margin, ry
+		if Math.abs(dx) > window.canvasSize.w/2 or Math.abs(dy) > window.canvasSize.h/2
+			rx = Math.max -window.canvasSize.w/2 + margin, dx
+			rx = Math.min window.canvasSize.w/2 - margin, rx
+			ry = Math.max -window.canvasSize.h/2 + margin, dy
+			ry = Math.min window.canvasSize.h/2 - margin, ry
 
 			# The radar is blinking.
 			if @countdown % 500 < 250
-				@drawRadarSymbol(ctxt, window.screen.w/2 + rx, window.screen.h/2 + ry)
+				@drawRadarSymbol(ctxt, window.canvasSize.w/2 + rx, window.canvasSize.h/2 + ry)
 
 		# Draw the X on the future bonus position if it lies within the screen.
 		else if @countdown % 500 < 250
-			rx = -window.screen.w/2 + bestPos.x - window.view.x
-			ry = -window.screen.h/2 + bestPos.y - window.view.y
+			rx = -window.canvasSize.w/2 + bestPos.x - window.view.x
+			ry = -window.canvasSize.h/2 + bestPos.y - window.view.y
 
-			@drawRadarSymbol(ctxt, window.screen.w/2 + rx, screen.h/2 + ry)
+			@drawRadarSymbol(ctxt, window.canvasSize.w/2 + rx, screen.h/2 + ry)
 
 		return true
 
