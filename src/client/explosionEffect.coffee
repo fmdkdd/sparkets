@@ -2,11 +2,10 @@ class ExplosionEffect
 	constructor: (@target, @speed = {x:0, y:0}) ->
 		@init()
 
-		@frame = 0
-		@color = @target.color
-
 	init: () ->
 		@bits = []
+		@frame = 0
+		@color = @target.color
 
 		# Ensure decent fireworks.
 		@speed = Math.max(@speed, 3)

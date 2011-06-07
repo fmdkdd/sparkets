@@ -186,6 +186,7 @@ redraw = (ctxt) ->
 	for idx, obj of window.gameObjects
 		drawObject(obj) if obj.inView()
 
+	# Draw all visual effects.
 	for e in window.effects
 		e.draw(ctxt)
 
