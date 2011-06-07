@@ -206,13 +206,13 @@ class Ship
 		dy = bestPos.y - window.localShip.pos.y
 
 		# Draw the radar if the ship is outside of the screen bounds.
-		if Math.abs(dx) > window.screen.w/2 or Math.abs(dy) > window.screen.h/2
+		if Math.abs(dx) > window.canvasSize.w/2 or Math.abs(dy) > window.canvasSize.h/2
 
 			margin = 20
-			rx = Math.max -window.screen.w/2 + margin, dx
-			rx = Math.min window.screen.w/2 - margin, rx
-			ry = Math.max -window.screen.h/2 + margin, dy
-			ry = Math.min window.screen.h/2 - margin, ry
+			rx = Math.max -window.canvasSize.w/2 + margin, dx
+			rx = Math.min window.canvasSize.w/2 - margin, rx
+			ry = Math.max -window.canvasSize.h/2 + margin, dy
+			ry = Math.min window.canvasSize.h/2 - margin, ry
 
 			radius = 10
 			alpha = 1
@@ -224,7 +224,7 @@ class Ship
 
 			ctxt.fillStyle = color(@color, alpha)
 			ctxt.beginPath()
-			ctxt.arc(window.screen.w/2 + rx, window.screen.h/2 + ry, radius, 0, 2*Math.PI, false)
+			ctxt.arc(window.canvasSize.w/2 + rx, window.canvasSize.h/2 + ry, radius, 0, 2*Math.PI, false)
 			ctxt.fill()
 
 		return true

@@ -27,8 +27,12 @@ class Bullet
 		Math.abs(x1 - x2) > 50 or
 			Math.abs(y1 - y2) > 50
 
-	drawSegment: (ctxt, x1, y1, x2, y2, alpha) ->
-		ctxt.strokeStyle = color @color, alpha
+	drawSegment: (ctxt, x1, y1, x2, y2, alpha1, alpha2) ->
+		gradient = ctxt.createLinearGradient(x1, y1, x2, y2)
+		gradient.addColorStop(0, color(@color, alpha1))
+		gradient.addColorStop(1, color(@color, alpha2))
+
+		ctxt.strokeStyle = gradient
 		ctxt.beginPath()
 		ctxt.moveTo x1, y1
 		ctxt.lineTo x2, y2
@@ -47,7 +51,7 @@ class Bullet
 			y2 = p[i][1]
 
 			if not @bulletWrap(x1, y1, x2, y2)
-				@drawSegment(ctxt, x1, y1, x2, y2, i/p.length)
+				@drawSegment(ctxt, x1, y1, x2, y2, (i-1)/p.length, i/p.length)
 
 			x1 = x2
 			y1 = y2
