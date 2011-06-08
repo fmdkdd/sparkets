@@ -28,7 +28,7 @@ class GameServer
 				@planets[id] = p
 
 		@spawnBonus()
-		setInterval(( () => @spawnBonus() ), prefs.server.bonusWait)
+		setInterval(( () => @spawnBonus() ), prefs.bonus.waitTime)
 
 		# Bind socket events
 		@socket.on 'clientConnect', (client) =>
@@ -298,7 +298,7 @@ class GameServer
 		return planets
 
 	spawnBonus: (bonusType) ->
-		return false if Object.keys(@bonuses).length >= prefs.server.maxBonuses
+		return false if Object.keys(@bonuses).length >= prefs.bonus.maxCount
 		@newGameObject( (id) =>
 			@bonuses[id] = new Bonus(id, bonusType) )
 

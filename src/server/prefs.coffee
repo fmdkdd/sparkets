@@ -6,34 +6,56 @@ BonusDrunk = require './bonusDrunk'
 # Server constants.
 
 exports.ship =
-	hitRadius: 9		  # Radius of hit circle.
-	dirInc: 0.12						  	# Rotation increase at input update.
-	speed: 0.3						  	# Velocity increase at input update
-	frictionDecay: 0.97			  # Inertia decay at ship update.
-	minFirepower: 1.3				  # Lowest initial bullet speed.
-	firepowerInc: 0.1				  # Increase in firepower at each update.
-	maxFirepower: 3				  	# Highest initial bullet speed.
-	cannonCooldown: 20			  # Number of frames to wait before firing again.
-	maxExploFrame: 50				  # Duration of explosion animation in frames.
-	enableGravity: false			# If true, planets gravity affect ships.
+	# Radius of hit circle.
+	hitRadius: 9
+
+	# Rotation increase at input update.
+	dirInc: 0.12
+
+	# Velocity increase at input update
+	speed: 0.3
+
+	# Inertia decay at ship update.
+	frictionDecay: 0.97
+
+	# Lowest initial bullet speed.
+	minFirepower: 1.3
+
+	# Increase in firepower at each update.
+	firepowerInc: 0.1
+
+	# Highest initial bullet speed.
+	maxFirepower: 3
+
+	# Number of frames to wait before firing again.
+	cannonCooldown: 20
+
+	# Duration of explosion animation in frames.
+	maxExploFrame: 50
+
+	# If true, planets gravity affect ships.
+	enableGravity: false
 
 exports.server =
+	# HTTP server port.
 	port: 12345
-	timestep: 20					  	# ms between two a server update.
-	maxBullets: 10					  # Max number of bullets updated by the server
-		                        # Oldest bullets are simply discarded.
-	mapSize:							  	# Size of the real map (duh).
+
+	# Port of the web REPL.
+	replPort: 54321
+
+	# ms between two server updates.
+	timestep: 20
+
+	# Size of the real map (duh).
+	mapSize:
 		w: 2000
 		h: 2000
 
+	# The map is divided into a grid of width*height cells.
+	# Colliding objects are checked only in the same cell.
 	grid:
 		width: 10
 		height: 10
-
-	bonusWait: 30000				  # ms before a bonus drop.
-	maxBonuses: 5				  # Number of allowed simultaneous bonuses.
-
-	replPort: 54321				  # Port of the web REPL.
 
 exports.planet =
 	# Number of planets on the map. Satellites don't count here.
@@ -87,6 +109,14 @@ exports.mine =
 			next: null
 
 exports.bonus =
+	# ms before a bonus drop.
+	waitTime: 30000
+
+	# Number of allowed simultaneous bonuses.
+	maxCount: 5
+
+	# Type and weight of allowed bonuses.
+	# Heavier bonuses spawn more often.
 	bonusType:
 		mine:
 			class: BonusMine
@@ -97,8 +127,13 @@ exports.bonus =
 		EMP:
 			class: BonusEMP
 			weight: 1
-	hitRadius: 10					  # Radius of hit circle.
-	modelSize: 20							# Drawing size on client.
+
+	# Radius of hit circle.
+	hitRadius: 10
+
+	# Drawing size on client.
+	modelSize: 20
+
 	states:
 		'incoming':
 			countdown: 10000
@@ -111,17 +146,29 @@ exports.bonus =
 			next: null
 
 exports.bonus.mine =
-	mineCount: 2					  # Number of held mines.
+	# Number of held mines.
+	mineCount: 2
 
 exports.bonus.boost =
-	boostFactor: 2					 # Initial speed multiplier.
-	boostDuration: 1500			 # Duration of initial boost.
-	boostDecay: 0.02				  # Decrease boost factor in decay state.
+	# Initial speed multiplier.
+	boostFactor: 2
+
+	# Duration of initial boost.
+	boostDuration: 1500
+
+	# Decrease boost factor in decay state.
+	boostDecay: 0.02
 
 exports.bonus.emp =
-	initialForce: 5				  # Initial negative force.
-	forceIncrease: .6				  # Force increase at each update.
-	maxForce: 100					  # Max force of the EMP.
+	# Initial negative force.
+	initialForce: 5
+
+	# Force increase at each update.
+	forceIncrease: .6
+
+	# Max force of the EMP.
+	maxForce: 100
 
 exports.bonus.drunk =
-	duration: 3000					  # Duration of drunk effect in ms.
+	# Duration of drunk effect in ms.
+	duration: 3000
