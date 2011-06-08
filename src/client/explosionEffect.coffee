@@ -22,7 +22,7 @@ class ExplosionEffect
 			angle = Math.atan2(particle.vy, particle.vx)
 			particle.vx *= Math.abs(Math.cos angle)
 			particle.vy *= Math.abs(Math.sin angle)
-			
+
 			@bits.push particle
 
 	update: () ->
@@ -35,11 +35,13 @@ class ExplosionEffect
 	deletable: () ->
 		@frame > window.maxExploFrame
 
+	inView: (offset = {x:0, y:0}) ->
+		true
+
 	draw: (ctxt) ->
 		ctxt.fillStyle = color(@color, (window.maxExploFrame-@frame)/window.maxExploFrame)
 		for b in @bits
-			if window.inView(b.x, b.y)
-				ctxt.fillRect(b.x, b.y, b.size, b.size)
+			ctxt.fillRect(b.x, b.y, b.size, b.size)
 
 # Exports
 window.ExplosionEffect = ExplosionEffect

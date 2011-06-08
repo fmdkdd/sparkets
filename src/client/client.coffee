@@ -41,8 +41,8 @@ window.menu = null
 window.displayNames = no
 
 # Debugging
-window.showHitCircles = yes
-window.showMapBounds = yes
+window.showHitCircles = no
+window.showMapBounds = no
 window.showFPS = no
 
 # Entry point
@@ -184,11 +184,11 @@ redraw = (ctxt) ->
 
 	# Draw all objects.
 	for idx, obj of window.gameObjects
-		drawObject(obj) if obj.inView()
+		drawObject(ctxt, obj) if obj.inView()
 
 	# Draw all visual effects.
 	for e in window.effects
-		e.draw(ctxt)
+		e.draw(ctxt) if e.inView()
 
 	# Draw outside of the map bounds.
 	drawInfinity ctxt
@@ -199,7 +199,7 @@ redraw = (ctxt) ->
 	# Draw UI
 	drawRadar(ctxt) if window.localShip? and not window.localShip.isDead()
 
-drawObject = (obj) ->
+drawObject = (ctxt, obj) ->
 	ctxt.save()
 	obj.draw(ctxt)
 	ctxt.restore()
@@ -254,7 +254,11 @@ drawInfinity = (ctxt) ->
 
 				# Draw all visible objects in it.
 				for id, obj of window.gameObjects
-					drawObject(obj) if obj.inView(offset)
+					drawObject(ctxt, obj) if obj.inView(offset)
+
+				# Draw all visible effects
+				for e in window.effects
+					e.draw(ctxt) if e.inView(offset)
 
 				# Quadrant is done drawing.
 				ctxt.restore()
