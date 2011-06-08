@@ -49,6 +49,8 @@ class Bot extends Player
 							@state = 'acquire'
 							break
 
+				@negativeGravityMove()
+
 			# Fire at target, but do not chase yet.
 			when 'acquire'
 				@targetGhost = closestGhost(@target)
@@ -92,5 +94,25 @@ class Bot extends Player
 			@ship.chargeFire()
 		else
 			@ship.fire()
+
+	negativeGravityMove: () ->
+		{x, y} = @ship.pos
+		ax = ay = 0
+
+		# Try to avoid planets and mines using a negative field motion.
+		for id, p of server.game.planets
+			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
+			d2 = -20 * p.force / (d * Math.sqrt(d))
+			ax -= (x-p.pos.x) * d2
+			ay -= (y-p.pos.y) * d2
+
+		for id, p of server.game.mines
+			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
+			d2 = -200 / (d * Math.sqrt(d))
+			ax -= (x-p.pos.x) * d2
+			ay -= (y-p.pos.y) * d2
+
+		@face({x: ax + @ship.pos.x, y: ay + @ship.pos.y})
+		@ship.ahead()
 
 exports.Bot = Bot

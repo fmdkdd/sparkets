@@ -95,15 +95,28 @@ exports.planet =
 	satellitePullMax: .2
 
 exports.bullet =
-	hitRadius: 2					  # Radius of hit circle.
-	gravityPull: 200				  # Gravity pull factor.
-	EMPPull: -500					  # EMP repulsive force.
-	tailLength: 15					  # Bullet points to keep on server.
-	checkWidth: 4					  	# Gap to leave in the hit line.
+	# Radius of hit circle.
+	hitRadius: 2
+
+	# Gravity pull factor.
+	gravityPull: 200
+
+	# EMP repulsive force.
+	EMPPull: -500
+
+	# Bullet points to keep on server.
+	tailLength: 15
+
+	# Gap to leave in the hit line.
+	checkWidth: 4
 
 exports.mine =
-	maxDetectionRadius: 50		# Sensibility radius.
-	explosionRadius: 80			  # Detonation radius.
+	# Sensibility radius.
+	maxDetectionRadius: 50
+
+	# Detonation radius.
+	explosionRadius: 80
+
 	states:
 		'inactive':
 			countdown: 100			  # Time (ms) before activation.
