@@ -5,6 +5,27 @@ BonusDrunk = require './bonusDrunk'
 
 # Server constants.
 
+exports.server =
+	# HTTP server port.
+	port: 12345
+
+	# Port of the web REPL.
+	replPort: 54321
+
+	# ms between two server updates.
+	timestep: 20
+
+	# Size of the real map (duh).
+	mapSize:
+		w: 2000
+		h: 2000
+
+	# The map is divided into a grid of width*height cells.
+	# Colliding objects are checked only in the same cell.
+	grid:
+		width: 10
+		height: 10
+
 exports.ship =
 	# Radius of hit circle.
 	hitRadius: 9
@@ -36,26 +57,15 @@ exports.ship =
 	# If true, planets gravity affect ships.
 	enableGravity: false
 
-exports.server =
-	# HTTP server port.
-	port: 12345
+exports.bot =
+	# Number of bots on server.
+	count: 1
 
-	# Port of the web REPL.
-	replPort: 54321
+	# Distance threshold to begin firing at a target.
+	acquireDistance: 500
 
-	# ms between two server updates.
-	timestep: 20
-
-	# Size of the real map (duh).
-	mapSize:
-		w: 2000
-		h: 2000
-
-	# The map is divided into a grid of width*height cells.
-	# Colliding objects are checked only in the same cell.
-	grid:
-		width: 10
-		height: 10
+	# Distance threshold to begin chasing an acquired target.
+	chaseDistance: 500
 
 exports.planet =
 	# Number of planets on the map. Satellites don't count here.

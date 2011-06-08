@@ -33,6 +33,17 @@ exports.isEmptyObject = (obj) ->
 exports.mod = (x, n) ->
 	if x >= 0 then x%n else exports.mod(x+n, n)
 
+# Normalize angle between -Pi and +Pi.
+exports.relativeAngle = (a) ->
+	a = exports.mod(a, 2*Math.PI)
+
+	if a > Math.PI
+		a - 2*Math.PI
+	else if a < -Math.PI
+		a + 2*Math.PI
+	else
+		a
+
 # Random element in array.
 exports.randomArrayElem = (array) ->
 	array[Math.round(Math.random() * (array.length-1))]

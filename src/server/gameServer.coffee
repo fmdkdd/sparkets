@@ -1,5 +1,6 @@
 prefs = require './prefs'
 Player = require('./player').Player
+Bot = require('./bot').Bot
 Bonus = require('./bonus').Bonus
 Planet = require('./planet').Planet
 Moon = require('./moon').Moon
@@ -47,6 +48,8 @@ class GameServer
 			cellWidth: prefs.server.mapSize.w / prefs.server.grid.width
 			cellHeight: prefs.server.mapSize.h / prefs.server.grid.height
 			cells: {}
+
+		@addBots()
 
 		@update()
 
@@ -301,5 +304,12 @@ class GameServer
 		return false if Object.keys(@bonuses).length >= prefs.bonus.maxCount
 		@newGameObject( (id) =>
 			@bonuses[id] = new Bonus(id, bonusType) )
+
+	addBots: () ->
+		for i in [0...prefs.bot.count]
+			botId = 'b' + i
+			@players[botId] = new Bot(botId)
+			@newGameObject( (id) =>
+				@players[botId].createShip(id) )
 
 exports.GameServer = GameServer
