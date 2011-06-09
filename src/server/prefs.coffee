@@ -225,10 +225,10 @@ exports.mine =
 
 exports.bonus =
 	# ms before a bonus drop.
-	waitTime: 30000
+	waitTime: 5000
 
 	# Number of allowed simultaneous bonuses.
-	maxCount: 5
+	maxCount: 10
 
 	# Type and weight of allowed bonuses.
 	# Heavier bonuses spawn more often.
@@ -251,7 +251,7 @@ exports.bonus =
 
 	states:
 		'incoming':
-			countdown: 10000
+			countdown: 2000
 			next: 'active'
 		'active':
 			countdown: null
