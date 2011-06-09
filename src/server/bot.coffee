@@ -148,28 +148,33 @@ class Bot extends Player
 		else
 			ax = ay = 0
 
+		gravityEscape = (objs, g, source = ((obj) -> obj.pos)) ->
+			gx = gy = 0
+			for id, obj of objs
+				point = source(obj)
+				d = (point.x-x)*(point.x-x) + (point.y-y)*(point.y-y)
+				d2 = g * obj.hitRadius / (d * Math.sqrt(d))
+				gx -= (x-point.x) * d2
+				gy -= (y-point.y) * d2
+			return {x: gx, y: gy}
+
 		# Try to avoid planets and mines using a negative field motion.
 		g = if @state is 'chase' then @prefs.chasePlanetAvoid else @prefs.seekPlanetAvoid
-		for id, p of server.game.planets
-			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-			d2 = g * p.force / (d * Math.sqrt(d))
-			ax -= (x-p.pos.x) * d2
-			ay -= (y-p.pos.y) * d2
+		grav = gravityEscape(server.game.planets, g)
+		ax += grav.x
+		ay += grav.y
 
 		g = if @state is 'chase' then @prefs.chaseMineAvoid else @prefs.seekMineAvoid
-		for id, p of server.game.mines
-			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-			d2 = g / (d * Math.sqrt(d))
-			ax -= (x-p.pos.x) * d2
-			ay -= (y-p.pos.y) * d2
+		grav = gravityEscape(server.game.mines, g)
+		ax += grav.x
+		ay += grav.y
 
 		g = if @state is 'chase' then @prefs.chaseBulletAvoid else @prefs.seekBulletAvoid
-		for id, p of server.game.bullets
-			head = p.points[p.points.length-1]
-			d = (head[0]-x)*(head[0]-x) + (head[1]-y)*(head[1]-y)
-			d2 = g / (d * Math.sqrt(d))
-			ax -= (x-head[0]) * d2
-			ay -= (y-head[1]) * d2
+		grav = gravityEscape(server.game.bullets, g, ((bullet) ->
+			p = bullet.points[bullet.points.length-1]
+			{x: p[0], y: p[1]}))
+		ax += grav.x
+		ay += grav.y
 
 		@face({x: ax + x, y: ay + y})
 		@ship.ahead()
