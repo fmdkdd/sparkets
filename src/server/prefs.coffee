@@ -79,19 +79,19 @@ exports.bot =
 		seekPlanetAvoid: [-500, -50]
 
 		# Negative gravity from mines when seeking.
-		seekMineAvoid: [-500, -200]
+		seekMineAvoid: [-1000, -500]
 
 		# Negative gravity from bullets when seeking.
-		seekBulletAvoid: [-500, -200]
+		seekBulletAvoid: [-2000, -500]
 
 		# Negative gravity from planets when chasing.
-		chasePlanetAvoid: [-100, 0]
+		chasePlanetAvoid: [-200, 0]
 
 		# Negative gravity from mines when chasing.
-		chaseMineAvoid: [-200, 0]
+		chaseMineAvoid: [-500, 0]
 
 		# Negative gravity from bullets when chasing.
-		chaseBulletAvoid: [-200, 0]
+		chaseBulletAvoid: [-500, 0]
 
 		# Distance threshold to go grab a bonus when seeking.
 		grabBonusDistance: [200, 400]
@@ -115,9 +115,9 @@ exports.bot =
 		firePower: 3
 		fireSight: .2
 
-		seekPlanetAvoid: -100
-		seekMineAvoid: -200
-		seekBulletAvoid: -200
+		seekPlanetAvoid: -500
+		seekMineAvoid: -2000
+		seekBulletAvoid: -2000
 
 		chasePlanetAvoid: 0
 		chaseMineAvoid: 0
@@ -152,8 +152,8 @@ exports.bot =
 		fireSight: .2
 
 		seekPlanetAvoid: -50
-		seekMineAvoid: -200
-		seekBulletAvoid: -200
+		seekMineAvoid: -1000
+		seekBulletAvoid: -2000
 
 		chasePlanetAvoid: -100
 		chaseMineAvoid: -200
