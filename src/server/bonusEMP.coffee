@@ -3,6 +3,8 @@ prefs = require './prefs'
 EMP = require('./EMP').EMP
 
 class BonusEMP
+	type: 'EMP'
+
 	constructor: (@ship) ->
 		@used = no
 

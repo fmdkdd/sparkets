@@ -69,7 +69,17 @@ class Bot extends Player
 							@state = 'acquire'
 							break
 
-				@negativeGravityMove()
+				# Try to grab a bonus
+				@targetBonus = null
+				for id, bonus of server.game.bonuses
+					if near(bonus.pos, @prefs.grabBonusDistance)
+						@targetBonus = bonus.pos
+						break
+
+				if @targetBonus?
+					@negativeGravityMove(@targetBonus)
+				else
+					@negativeGravityMove()
 
 			# Fire at target, but do not chase yet.
 			when 'acquire'
@@ -94,6 +104,13 @@ class Bot extends Player
 
 				@negativeGravityMove(@targetGhost)
 				@fire() if @inSight(@targetGhost, @prefs.fireSight)
+
+		@ship.useBonus() if @ship.bonus? and @shouldUseBonus()
+
+	shouldUseBonus: () ->
+		prefName = @state + utils.capitalize(@ship.bonus.type) + 'Use'
+		useProbability = if @prefs[prefName]? then @prefs[prefName] else 0
+		return Math.random() < useProbability
 
 	inSight: ({x, y}, angle) ->
 		targetDir = Math.atan2(y - @ship.pos.y, x - @ship.pos.x)
@@ -132,21 +149,21 @@ class Bot extends Player
 			ax = ay = 0
 
 		# Try to avoid planets and mines using a negative field motion.
-		g = if target? then @prefs.chasePlanetAvoid else @prefs.seekPlanetAvoid
+		g = if @state is 'chase' then @prefs.chasePlanetAvoid else @prefs.seekPlanetAvoid
 		for id, p of server.game.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 			d2 = g * p.force / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
 			ay -= (y-p.pos.y) * d2
 
-		g = if target? then @prefs.chaseMineAvoid else @prefs.seekMineAvoid
+		g = if @state is 'chase' then @prefs.chaseMineAvoid else @prefs.seekMineAvoid
 		for id, p of server.game.mines
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 			d2 = g / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
 			ay -= (y-p.pos.y) * d2
 
-		g = if target? then @prefs.chaseBulletAvoid else @prefs.seekBulletAvoid
+		g = if @state is 'chase' then @prefs.chaseBulletAvoid else @prefs.seekBulletAvoid
 		for id, p of server.game.bullets
 			head = p.points[p.points.length-1]
 			d = (head[0]-x)*(head[0]-x) + (head[1]-y)*(head[1]-y)

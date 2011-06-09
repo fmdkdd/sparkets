@@ -2,6 +2,8 @@ server = require './server'
 prefs = require './prefs'
 
 class BonusBoost
+	type: 'boost'
+
 	constructor: (@ship) ->
 		@boostFactor = 0
 		@used = no

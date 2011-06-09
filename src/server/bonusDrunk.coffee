@@ -2,6 +2,8 @@ server = require './server'
 prefs = require './prefs'
 
 class BonusDrunk
+	type: 'drunk'
+
 	constructor: (@ship) ->
 		@used = no
 		@evil = yes

@@ -76,7 +76,7 @@ exports.bot =
 		fireSight: [.2, Math.PI/4]
 
 		# Negative gravity from planets when seeking.
-		seekPlanetAvoid: [-100, -20]
+		seekPlanetAvoid: [-500, -50]
 
 		# Negative gravity from mines when seeking.
 		seekMineAvoid: [-500, -200]
@@ -92,6 +92,36 @@ exports.bot =
 
 		# Negative gravity from bullets when chasing.
 		chaseBulletAvoid: [-200, 0]
+
+		# Distance threshold to go grab a bonus when seeking.
+		grabBonusDistance: [200, 400]
+
+		# Probability, for each state, of using each bonus.
+		# Defaults to zero when no correspondin parameter is present.
+		# Probability is checked at every update.
+		acquireEMPUse: [.005, .05]
+
+		chaseMineUse: [.001, .01]
+		chaseEMPUse: [.001, .01]
+		chaseBoostUse: [.01, 1]
+
+	# Non aggressive, used for tests.
+	cameoPersona:
+		name: 'Cameo'
+
+		acquireDistance: 0
+		chaseDistance: 0
+
+		firePower: 3
+		fireSight: .2
+
+		seekPlanetAvoid: -100
+		seekMineAvoid: -200
+		seekBulletAvoid: -200
+
+		chasePlanetAvoid: 0
+		chaseMineAvoid: 0
+		chaseBulletAvoid: 0
 
 	# Killing machine, easy to crash into planets.
 	boskoopPersona:

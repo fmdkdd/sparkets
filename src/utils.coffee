@@ -64,3 +64,7 @@ exports.color = (hsl, alpha = 1.0) ->
 
 exports.randomColor = () ->
 	[Math.round(Math.random()*360), Math.round(40 + Math.random()*30), Math.round(20 + Math.random()*50)]
+
+# Uppercase first letter of word.
+exports.capitalize = (word) ->
+	word[0].toUpperCase() + word.substring(1)
