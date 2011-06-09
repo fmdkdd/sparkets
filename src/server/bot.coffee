@@ -33,7 +33,7 @@ class Bot extends Player
 		return if not @ship?
 
 		# Automatically respawn.
-		if @ship.isDead()
+		if @ship.isDead() and not @ship.isExploding()
 			@state = 'seek'
 			@ship.spawn()
 
