@@ -61,11 +61,73 @@ exports.bot =
 	# Number of bots on server.
 	count: 1
 
-	# Distance threshold to begin firing at a target.
-	acquireDistance: 500
+	# Default parameters for bots.
+	defaultPersona:
+		# Distance threshold to begin firing at a target.
+		acquireDistance: [400, 500]
 
-	# Distance threshold to begin chasing an acquired target.
-	chaseDistance: 500
+		# Distance threshold to begin chasing an acquired target.
+		chaseDistance: [200, 500]
+
+		# Threshold at which to fire.
+		firePower: [2.5, 3]
+
+		# Angle with target at which to fire (radians).
+		fireSight: [.2, Math.PI/4]
+
+		# Negative gravity from planets when seeking.
+		seekPlanetAvoid: [-100, -20]
+
+		# Negative gravity from mines when seeking.
+		seekMineAvoid: [-500, -200]
+
+		# Negative gravity from bullets when seeking.
+		seekBulletAvoid: [-500, -200]
+
+		# Negative gravity from planets when chasing.
+		chasePlanetAvoid: [-100, 0]
+
+		# Negative gravity from mines when chasing.
+		chaseMineAvoid: [-200, 0]
+
+		# Negative gravity from bullets when chasing.
+		chaseBulletAvoid: [-200, 0]
+
+	# Killing machine, easy to crash into planets.
+	boskoopPersona:
+		name: 'Boskoop'
+
+		acquireDistance: 500
+		chaseDistance: 200
+
+		firePower: 3
+		fireSight: .2
+
+		seekPlanetAvoid: -20
+		seekMineAvoid: -200
+		seekBulletAvoid: -200
+
+		chasePlanetAvoid: 0
+		chaseMineAvoid: 0
+		chaseBulletAvoid: 0
+
+	# Smarter navigation, reduced accuracy.
+	ladyPinkPersona:
+		name: 'Lady Pink'
+
+		acquireDistance: 500
+		chaseDistance: 500
+
+		firePower: 3
+		fireSight: .2
+
+		seekPlanetAvoid: -50
+		seekMineAvoid: -200
+		seekBulletAvoid: -200
+
+		chasePlanetAvoid: -100
+		chaseMineAvoid: -200
+		chaseBulletAvoid: -200
 
 exports.planet =
 	# Number of planets on the map. Satellites don't count here.

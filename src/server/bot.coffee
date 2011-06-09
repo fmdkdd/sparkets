@@ -4,10 +4,30 @@ utils = require('../utils')
 Player = require('./player').Player
 
 class Bot extends Player
-	constructor: (id) ->
+	constructor: (id, persona) ->
 		super(id)
 
+		@initPersona(persona)
+
 		@state = 'seek'
+
+	initPersona: (persona) ->
+		@prefs = {}
+
+		roll = (val) ->
+			if Array.isArray(val)
+				val[0] + (val[1] - val[0]) * Math.random()
+			else
+				val
+
+		# Set default values
+		for name, val of prefs.bot.defaultPersona
+			@prefs[name] = roll(val)
+
+		# Override default with persona specific values
+		@persona = persona
+		for name, val of prefs.bot[persona]
+			@prefs[name] = roll(val)
 
 	update: () ->
 		return if not @ship?
@@ -43,7 +63,7 @@ class Bot extends Player
 				for id, p of server.game.players
 					if id != @id and p.ship? and alive(p.ship)
 						ghost = closestGhost(p.ship)
-						if near(ghost, prefs.bot.acquireDistance)
+						if near(ghost, @prefs.acquireDistance)
 							@target = p.ship
 							@targetGhost = ghost
 							@state = 'acquire'
@@ -54,27 +74,32 @@ class Bot extends Player
 			# Fire at target, but do not chase yet.
 			when 'acquire'
 				@targetGhost = closestGhost(@target)
-				if not alive(@target) or not near(@targetGhost, prefs.bot.acquireDistance)
+				if not alive(@target) or not near(@targetGhost, @prefs.acquireDistance)
 					@state = 'seek'
 					return
 
 				@face(@targetGhost)
-				@fireHard()
+				@fire() if @inSight(@targetGhost, @prefs.fireSight)
 
 				# Near enough, go after it!
-				if near(@targetGhost, prefs.bot.chaseDistance)
+				if near(@targetGhost, @prefs.chaseDistance)
 					@state = 'chase'
 
 			# Chase, fire, kill.
 			when 'chase'
 				@targetGhost = closestGhost(@target)
-				if not alive(@target) or not near(@targetGhost, prefs.bot.acquireDistance)
+				if not alive(@target) or not near(@targetGhost, @prefs.acquireDistance)
 					@state = 'seek'
 					return
 
-				@face(@targetGhost)
-				@ship.ahead()
-				@fireHard()
+				@negativeGravityMove(@targetGhost)
+				@fire() if @inSight(@targetGhost, @prefs.fireSight)
+
+	inSight: ({x, y}, angle) ->
+		targetDir = Math.atan2(y - @ship.pos.y, x - @ship.pos.x)
+		targetDir = utils.relativeAngle(targetDir - @ship.dir)
+
+		return Math.abs(targetDir) < angle
 
 	face: ({x,y}) ->
 		targetDir = Math.atan2(y - @ship.pos.y, x - @ship.pos.x)
@@ -88,31 +113,48 @@ class Bot extends Player
 			else
 				@ship.turnRight()
 
-	fireHard: () ->
-		# Always fire at max power.
-		if @ship.firePower < prefs.ship.maxFirepower
+	fire: () ->
+		# Charge before firing.
+		if @ship.firePower < @prefs.firePower
 			@ship.chargeFire()
 		else
 			@ship.fire()
 
-	negativeGravityMove: () ->
+	negativeGravityMove: (target) ->
 		{x, y} = @ship.pos
-		ax = ay = 0
+		if target?
+			ax = target.x - x
+			ay = target.y - y
+			norm = Math.sqrt(ax*ax + ay*ay)
+			ax /= norm
+			ay /= norm
+		else
+			ax = ay = 0
 
 		# Try to avoid planets and mines using a negative field motion.
+		g = if target? then @prefs.chasePlanetAvoid else @prefs.seekPlanetAvoid
 		for id, p of server.game.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-			d2 = -20 * p.force / (d * Math.sqrt(d))
+			d2 = g * p.force / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
 			ay -= (y-p.pos.y) * d2
 
+		g = if target? then @prefs.chaseMineAvoid else @prefs.seekMineAvoid
 		for id, p of server.game.mines
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-			d2 = -200 / (d * Math.sqrt(d))
+			d2 = g / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
 			ay -= (y-p.pos.y) * d2
 
-		@face({x: ax + @ship.pos.x, y: ay + @ship.pos.y})
+		g = if target? then @prefs.chaseBulletAvoid else @prefs.seekBulletAvoid
+		for id, p of server.game.bullets
+			head = p.points[p.points.length-1]
+			d = (head[0]-x)*(head[0]-x) + (head[1]-y)*(head[1]-y)
+			d2 = g / (d * Math.sqrt(d))
+			ax -= (x-head[0]) * d2
+			ay -= (y-head[1]) * d2
+
+		@face({x: ax + x, y: ay + y})
 		@ship.ahead()
 
 exports.Bot = Bot
