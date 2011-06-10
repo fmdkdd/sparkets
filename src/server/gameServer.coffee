@@ -158,16 +158,23 @@ class GameServer
 			gridObj.object = obj
 			gridObj.offset = {x: xOff, y: yOff}
 
-		# First place object in the cell containing (x,y)
-		insert(ox, oy)
+		# Place the object in all cells containing its bounding box.
+		# We go through the bounding box in increments lower than either
+		# side of the box to avoid skipping a grid cell.
+		halfSide = obj.hitRadius
+		incr = 2 * halfSide
 
-		# Now place it in adjacent squares
-		r = obj.hitRadius
+		# Find right increment.
+		until incr < Math.min(w, h)
+			incr /= 2
 
-		insert(ox-r, oy-r)
-		insert(ox-r, oy+r)
-		insert(ox+r, oy-r)
-		insert(ox+r, oy+r)
+		cellX = -halfSide
+		while cellX <= halfSide
+			cellY = -halfSide
+			while cellY <= halfSide
+				insert(ox + cellX, oy + cellY)
+				cellY += incr
+			cellX += incr
 
 	updateObjects: (objects) ->
 		# Move all objects
