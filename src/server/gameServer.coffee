@@ -168,13 +168,15 @@ class GameServer
 		until incr < Math.min(w, h)
 			incr /= 2
 
-		cellX = -halfSide
-		while cellX <= halfSide
-			cellY = -halfSide
-			while cellY <= halfSide
-				insert(ox + cellX, oy + cellY)
-				cellY += incr
-			cellX += incr
+		# Zero hit radius: can't collide, don't insert.
+		if incr > 0
+			cellX = -halfSide
+			while cellX <= halfSide
+				cellY = -halfSide
+				while cellY <= halfSide
+					insert(ox + cellX, oy + cellY)
+					cellY += incr
+				cellX += incr
 
 	updateObjects: (objects) ->
 		# Move all objects
