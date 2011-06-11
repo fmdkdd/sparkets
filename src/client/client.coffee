@@ -155,9 +155,12 @@ update = (time, sinceUpdate) ->
 	# Update and cleanup visual effects.
 	for i in [0...window.effects.length]
 		e = window.effects[i]
-		e.update()
-		if e.deletable()
-			window.effects.splice(i, 1)
+		# Splicing dead effects decrease the array size,
+		# but effects.lengh is only checked at the start.
+		if e?
+			e.update()
+			if e.deletable()
+				window.effects.splice(i, 1)
 
 	# Draw scene.
 	redraw(window.ctxt)
