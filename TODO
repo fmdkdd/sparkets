@@ -23,10 +23,6 @@
       (different explosion visual).
    - Drunk mode
       Convert to offensive bonus.
-       
-o [alpha-3] Add fun to solo play
-   - Basic AI? Based on tracker pathing. Training.
-   - Shoot moving asteroids for score. Repetitive.
 
 * Scale with number of players.
    Should scale : bonus drop, map size, planet density?
@@ -44,16 +40,13 @@ o [alpha-3] Add fun to solo play
 o [alpha-3] Current bonus visual clue.
    Without polluting the UI. À la Mario Kart: floating around ship? Dragging behind the ship?
 
-* Enhance ship boost visual feedback.
-   Ghost image of ship trailing behind.
-
 * Leave some ephemeral traces of fight on planets.
    Ships and bullets splatters their colors. À la paintball.
 
 * Add debugging facilities.
    Display messages dropped...
 
-= Cleanup =
+= Core =
       
 * Get rid of evil global variables.
    Use closures where relevant, pass arguments when convenient.
@@ -61,15 +54,19 @@ o [alpha-3] Current bonus visual clue.
 * Tune collisions.
    - Immobile objects need not to be reinserted in the grid (planets).
    - Don't check collisions between objects that can't collide gameplay-wise.
+
+* Refactor gravity code.
+   - Delegate to server
+   - Should only consider nearby planets, and take torus into account.
    
 o [alpha-3] Refactor client clode
    What a mess.
 
 o [alpha-3] Rework client drawing.
-   - Replace homebrew transformations by scale(), translate(), rotate.
-      Especially all the offset passing in drawInfinity and view centering.
-   - Use save() and restore(). Every object should set its own lineWidth.
-   - Find out why Core2 with puny graphic chipset can handle the client fullscreen
-     when beefier hardware can't.
+   Find out why Core2 with puny graphic chipset can handle the client fullscreen
+   when beefier hardware can't.
 
 o [alpha-3] Share prefs file with client.
+
+* Send full game update to reconnecting / out of sync clients.
+   Client should clean everything and start anew from this update.
