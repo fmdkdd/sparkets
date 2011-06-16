@@ -13,7 +13,7 @@ exports.collisions =
 			ship.bonus = new bonus.bonusEffect(ship)
 			ship.useBonus() if ship.bonus.evil?
 			bonus.nextState()
-			bonus.holder = ship
+			bonus.holderId = ship.id
 
 	'ship-bullet': (ship, bullet) ->
 		# Immunity to own bullets for a set time.

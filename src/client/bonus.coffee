@@ -12,7 +12,7 @@ class Bonus
 	inView: (offset = {x:0, y:0}) ->
 		(@state isnt 'incoming') and
 			window.boxInView(@pos.x + offset.x,
-				@pos.y + offset.y, @modelSize)
+				@pos.y + offset.y, 20)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
@@ -27,7 +27,7 @@ class Bonus
 		ctxt.strokeStyle = color @color
 		ctxt.lineWidth = 2
 
-		s = @modelSize
+		s = 20
 
 		ctxt.save()
 		ctxt.translate(x, y)
@@ -65,6 +65,14 @@ class Bonus
 				ctxt.restore()
 
 		ctxt.restore()
+
+		# Draw a link between the ship and the bonus.
+		if @state is 'claimed'
+			holder = window.gameObjects[@holderId]
+			ctxt.beginPath()
+			ctxt.moveTo(holder.pos.x, holder.pos.y)
+			ctxt.lineTo(x, y)
+			ctxt.stroke()
 
 	drawArrow: (ctxt) ->
 		ctxt.beginPath()

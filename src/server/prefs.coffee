@@ -249,9 +249,6 @@ exports.bonus =
 	# 
 	draggingDistance: 30
 
-	# Drawing size on client.
-	modelSize: 20
-
 	states:
 		'incoming':
 			countdown: 2000

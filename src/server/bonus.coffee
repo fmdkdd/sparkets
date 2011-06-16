@@ -14,16 +14,14 @@ class Bonus extends ChangingObject
 		@watchChanges 'state'
 		@watchChanges 'countdown'
 		@watchChanges 'color'
-		@watchChanges 'modelSize'
 		@watchChanges 'pos'
-		@watchChanges 'vel'
+		@watchChanges 'holderId'
 		@watchChanges 'serverDelete'
 		@watchChanges 'bonusType'
 
 		@type = 'bonus'
 
 		@hitRadius = prefs.bonus.hitRadius
-		@modelSize = prefs.bonus.modelSize
 
 		@spawn(bonusType)
 
@@ -34,10 +32,7 @@ class Bonus extends ChangingObject
 		@pos =
 			x: Math.random() * prefs.server.mapSize.w
 			y: Math.random() * prefs.server.mapSize.h
-		@vel =
-			x: 0
-			y: 0
-		@holder = null
+		@holderId = null
 		@color = utils.randomColor()
 		@empty = yes
 
@@ -75,15 +70,16 @@ class Bonus extends ChangingObject
 	move: () ->
 		if @state is 'claimed'
 
-			dist = utils.distance(@pos.x, @pos.y, @holder.pos.x, @holder.pos.y)
+			holder = server.game.gameObjects[@holderId]
+			dist = utils.distance(@pos.x, @pos.y, holder.pos.x, holder.pos.y)
 			diff = dist - prefs.bonus.draggingDistance
 
 			# Add enough velocity along the direction from the bonus to the
 			# ship so that the distance constraint is enforced.
 			if diff > 0
 				ratio = diff / dist
-				@pos.x += ratio * (@holder.pos.x - @pos.x)
-				@pos.y += ratio * (@holder.pos.y - @pos.y)
+				@pos.x += ratio * (holder.pos.x - @pos.x)
+				@pos.y += ratio * (holder.pos.y - @pos.y)
 			
 				@changed 'pos'
 
