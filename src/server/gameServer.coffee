@@ -313,6 +313,23 @@ class GameServer
 		return false if Object.keys(@bonuses).length >= prefs.bonus.maxCount
 		@newGameObject( (id) =>
 			@bonuses[id] = new Bonus(id, bonusType) )
+	
+	# Return the position of the closest ghost of a game object from position [x,y].
+	closestGhost: (x, y, obj) ->
+		return null if not obj?
+
+		# Choose the closest ghost of the object.
+		bestDistance = Infinity
+		for i in [-1..1]
+			for j in [-1..1]
+				ox = obj.pos.x + i * prefs.server.mapSize.w
+				oy = obj.pos.y + j * prefs.server.mapSize.h
+				d = utils.distance(x, y, ox, oy)
+				if d < bestDistance
+					bestDistance = d
+					bestPos = {x: ox, y: oy}
+
+		return bestPos
 
 	addBots: () ->
 		for i in [0...prefs.bot.count]

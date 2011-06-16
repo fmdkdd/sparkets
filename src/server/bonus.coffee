@@ -71,15 +71,16 @@ class Bonus extends ChangingObject
 		if @state is 'claimed'
 
 			holder = server.game.gameObjects[@holderId]
-			dist = utils.distance(@pos.x, @pos.y, holder.pos.x, holder.pos.y)
+			ghost = server.game.closestGhost(@pos.x, @pos.y, holder)
+			dist = utils.distance(@pos.x, @pos.y, ghost.x, ghost.y)
 			diff = dist - prefs.bonus.draggingDistance
 
 			# Add enough velocity along the direction from the bonus to the
 			# ship so that the distance constraint is enforced.
 			if diff > 0
 				ratio = diff / dist
-				@pos.x += ratio * (holder.pos.x - @pos.x)
-				@pos.y += ratio * (holder.pos.y - @pos.y)
+				@pos.x += ratio * (ghost.x - @pos.x)
+				@pos.y += ratio * (ghost.y - @pos.y)
 			
 				@changed 'pos'
 
