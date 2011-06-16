@@ -246,15 +246,21 @@ exports.bonus =
 	# Radius of hit circle.
 	hitRadius: 10
 
+	# 
+	draggingDistance: 30
+
 	# Drawing size on client.
 	modelSize: 20
 
 	states:
 		'incoming':
 			countdown: 2000
-			next: 'active'
-		'active':
+			next: 'available'
+		'available':
 			countdown: null
+			next: 'claimed'
+		'claimed':
+			countdown:null
 			next: 'dead'
 		'dead':
 			countdown: null

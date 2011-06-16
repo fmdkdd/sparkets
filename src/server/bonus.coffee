@@ -16,6 +16,7 @@ class Bonus extends ChangingObject
 		@watchChanges 'color'
 		@watchChanges 'modelSize'
 		@watchChanges 'pos'
+		@watchChanges 'vel'
 		@watchChanges 'serverDelete'
 		@watchChanges 'bonusType'
 
@@ -33,6 +34,10 @@ class Bonus extends ChangingObject
 		@pos =
 			x: Math.random() * prefs.server.mapSize.w
 			y: Math.random() * prefs.server.mapSize.h
+		@vel =
+			x: 0
+			y: 0
+		@holder = null
 		@color = utils.randomColor()
 		@empty = yes
 
@@ -56,7 +61,7 @@ class Bonus extends ChangingObject
 		return utils.randomArrayElem roulette
 
 	tangible: () ->
-		@state isnt 'dead'
+		@state isnt 'incoming' and @state isnt 'dead'
 
 	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
 		x += offset.x
@@ -68,7 +73,19 @@ class Bonus extends ChangingObject
 		@countdown = prefs.bonus.states[@state].countdown
 
 	move: () ->
-		true
+		if @state is 'claimed'
+
+			dist = utils.distance(@pos.x, @pos.y, @holder.pos.x, @holder.pos.y)
+			diff = dist - prefs.bonus.draggingDistance
+
+			# Add enough velocity along the direction from the bonus to the
+			# ship so that the distance constraint is enforced.
+			if diff > 0
+				ratio = diff / dist
+				@pos.x += ratio * (@holder.pos.x - @pos.x)
+				@pos.y += ratio * (@holder.pos.y - @pos.y)
+			
+				@changed 'pos'
 
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?

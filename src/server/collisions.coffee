@@ -9,14 +9,15 @@ exports.handle = (obj1, obj2) ->
 
 exports.collisions =
 	'ship-bonus': (ship, bonus) ->
-		if bonus.state is 'active'
+		if bonus.state is 'available'
 			ship.bonus = new bonus.bonusEffect(ship)
 			ship.useBonus() if ship.bonus.evil?
 			bonus.nextState()
+			bonus.holder = ship
 
 	'ship-bullet': (ship, bullet) ->
 		# Immunity to own bullets for a set time.
-		if bullet.state is 'active' and
+		if bullet.state is 'available' and
 				(ship.id isnt bullet.owner.id or
 				bullet.points.length > 3)
 			ship.explode()

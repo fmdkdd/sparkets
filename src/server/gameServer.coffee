@@ -49,7 +49,7 @@ class GameServer
 			cellHeight: prefs.server.mapSize.h / prefs.server.grid.height
 			cells: {}
 
-		@addBots()
+		#@addBots()
 
 		@update()
 
