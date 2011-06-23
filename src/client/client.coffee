@@ -261,7 +261,7 @@ drawInfinity = (ctxt) ->
 
 				# Draw all visible effects
 				for e in window.effects
-					e.draw(ctxt) if e.inView(offset)
+					e.draw(ctxt, offset) if e.inView(offset)
 
 				# Quadrant is done drawing.
 				ctxt.restore()
