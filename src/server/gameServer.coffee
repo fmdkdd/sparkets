@@ -126,7 +126,11 @@ class GameServer
 
 	# Game loop
 	update: () ->
+		# Setup next update.
 		setTimeout(( () => @update() ), prefs.server.timestep)
+
+		# Skip update if no one is connected.
+		return if @noHuman()
 
 		player.update() for id, player of @players
 
@@ -306,6 +310,9 @@ class GameServer
 		return planets
 
 	spawnBonus: (bonusType) ->
+		# Do nothing when no one is connected.
+		return if @noHuman()
+
 		return false if Object.keys(@bonuses).length >= prefs.bonus.maxCount
 		@newGameObject( (id) =>
 			@bonuses[id] = new Bonus(id, bonusType) )
@@ -316,5 +323,8 @@ class GameServer
 			@players[botId] = new Bot(botId)
 			@newGameObject( (id) =>
 				@players[botId].createShip(id) )
+
+	noHuman: () ->
+		return Object.keys(@players).length == prefs.bot.count
 
 exports.GameServer = GameServer
