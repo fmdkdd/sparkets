@@ -126,15 +126,11 @@ class GameServer
 
 	# Game loop
 	update: () ->
-		start = @now = (new Date).getTime()
+		setTimeout(( () => @update() ), prefs.server.timestep)
 
 		player.update() for id, player of @players
 
 		@updateObjects(@gameObjects)
-
-		diff = (new Date).getTime() - start
-		setTimeout(( () => @update() ),
-			prefs.server.timestep - utils.mod(diff, prefs.server.timestep))
 
 	placeObjectInGrid: (obj) ->
 		{w: mapWidth, h: mapHeight} = prefs.server.mapSize
