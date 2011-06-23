@@ -202,9 +202,9 @@ redraw = (ctxt) ->
 	# Draw UI
 	drawRadar(ctxt) if window.localShip? and not window.localShip.isDead()
 
-drawObject = (ctxt, obj) ->
+drawObject = (ctxt, obj, offset) ->
 	ctxt.save()
-	obj.draw(ctxt)
+	obj.draw(ctxt, offset)
 	ctxt.restore()
 	obj.drawHitbox(ctxt) if window.showHitCircles
 
@@ -257,7 +257,7 @@ drawInfinity = (ctxt) ->
 
 				# Draw all visible objects in it.
 				for id, obj of window.gameObjects
-					drawObject(ctxt, obj) if obj.inView(offset)
+					drawObject(ctxt, obj, offset) if obj.inView(offset)
 
 				# Draw all visible effects
 				for e in window.effects
