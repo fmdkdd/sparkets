@@ -3,7 +3,7 @@ prefs = require './prefs'
 utils = require '../utils'
 
 class Mine extends ChangingObject
-	constructor: (ship, @id) ->
+	constructor: (ship, @pos, @id) ->
 		super()
 
 		@watchChanges 'type'
@@ -18,8 +18,8 @@ class Mine extends ChangingObject
 		@state = 'inactive'
 		@countdown = prefs.mine.states[@state].countdown
 		@pos =
-			x: ship.pos.x
-			y: ship.pos.y
+			x: pos.x
+			y: pos.y
 		@color = ship.color
 		@explosionRadius = prefs.mine.explosionRadius
 

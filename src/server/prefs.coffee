@@ -235,7 +235,7 @@ exports.bonus =
 	bonusType:
 		mine:
 			class: BonusMine
-			weight: 3
+			weight: 300
 		boost:
 			class: BonusBoost
 			weight: 2

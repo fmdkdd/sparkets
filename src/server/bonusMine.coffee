@@ -10,7 +10,10 @@ class BonusMine
 
 	use: () ->
 		server.game.newGameObject (id) =>
-			server.game.mines[id] = new Mine(@getHolder(), id)
+			dropPos =
+				x: @getBonus().pos.x
+				y: @getBonus().pos.y
+			server.game.mines[id] = new Mine(@getHolder(), dropPos, id)
 
 		# Decrease mine count.
 		--@mines
