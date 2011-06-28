@@ -3,12 +3,12 @@ prefs = require './prefs'
 Ship = require('./ship').Ship
 
 class Player
-	constructor: (@id) ->
+	constructor: (@id, @game) ->
 		@keys = {}
 		@ship = null
 
 	createShip: (id) ->
-		@ship = new Ship(id, @id, @name, @color)
+		@ship = new Ship(id, @game, @id, @name, @color)
 
 	keyDown: (key) ->
 		@keys[key] = on

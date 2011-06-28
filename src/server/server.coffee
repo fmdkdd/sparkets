@@ -13,17 +13,31 @@ io.configure () ->
 	io.set('transports', ['websocket', 'flashsocket'])
 	io.set('log level', 2)
 
-# Launch game server
-GameServer = require('./gameServer').GameServer
+# Setup global server callbacks
+globalSockets = io.of('')
 
-exports.game = new GameServer(io)
-exports.game.launch()
-console.info 'Server started'
+globalSockets.on 'connection', (socket) ->
+	console.info "Player #{socket.id} joined global server"
+
+	socket.on 'disconnect', () ->
+		console.info "Player #{socket.id} left global server"
+
+console.info 'Global server started'
+
+GameServer = require('./gameServer').GameServer
+createGame = (id) ->
+	console.info "Launching game #{id} ..."
+	game = new GameServer(io.of(id))
+	game.launch()
+	return game
+
+# Default game for all users
+createGame('#play')
 
 # Start the admin REPL and expose game server object.
 repl = require 'webrepl'
 replServ = repl.start(prefs.server.replPort)
-replServ.context.game = exports.game
+replServ.context.createGame = createGame
 replServ.context.stop = () ->
 	httpServer.close()
 	process.exit()

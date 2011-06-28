@@ -1,12 +1,11 @@
 ChangingObject = require('./changingObject').ChangingObject
-server = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 Bullet = require './bullet'
 Mine = require './mine'
 
 class Ship extends ChangingObject
-	constructor: (@id, @playerId, name, color) ->
+	constructor: (@id, @game, @playerId, name, color) ->
 		super()
 
 		@watchChanges(
@@ -54,7 +53,7 @@ class Ship extends ChangingObject
 		@exploFrame = 0
 		@killingAccel = {x: 0, y: 0}
 
-		@spawn() if server.game.collidesWithPlanet(@)
+		@spawn() if @game.collidesWithPlanet(@)
 
 	turnLeft: () ->
 		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
@@ -82,7 +81,7 @@ class Ship extends ChangingObject
 		if prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
-			for id, p of server.game.planets
+			for id, p of @game.planets
 				d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 				d2 = 20 * p.force / (d * Math.sqrt(d))
 				ax -= (x-p.pos.x) * d2
@@ -140,8 +139,8 @@ class Ship extends ChangingObject
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
-		server.game.newGameObject (id) =>
-			server.game.bullets[id] = new Bullet.Bullet(@, id)
+		@game.newGameObject (id) =>
+			@game.bullets[id] = new Bullet.Bullet(@, id, @game)
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown

@@ -8,7 +8,7 @@ collisions = require('./collisions')
 utils = require '../utils'
 
 class GameServer
-	constructor: (@io) ->
+	constructor: (@sockets) ->
 		@now = 0
 
 		@players = {}
@@ -32,7 +32,7 @@ class GameServer
 		setInterval(( () => @spawnBonus() ), prefs.bonus.waitTime)
 
 		# Bind socket events
-		@io.sockets.on 'connection', (socket) =>
+		@sockets.on 'connection', (socket) =>
 			@clientConnect(socket)
 
 			socket.on 'key down', (data) =>
@@ -47,8 +47,8 @@ class GameServer
 			socket.on 'prefs changed', (data) =>
 				@players[data.playerId].changePrefs(data.name, data.color)
 
-		@io.sockets.on 'disconnection', (socket) =>
-			@clientDisconnect(socket)
+			socket.on 'disconnect', () =>
+				@clientDisconnect(socket)
 
 		# Setup space grid
 		@grid =
@@ -66,10 +66,12 @@ class GameServer
 		id = socket.id
 
 		# Add new player to player list.
-		player = @players[id] = new Player(id)
+		player = @players[id] = new Player(id, @)
 
 		socket.emit 'connected',
 			playerId: id
+
+		console.info "Player #{socket.id} joined game #{@sockets.name}"
 
 	createShip: (socket, data) ->
 		id = data.playerId
@@ -105,13 +107,15 @@ class GameServer
 		shipId = @players[playerId].ship?.id
 
 		# Tell everyone.
-		socket.broadcast.emit 'player quits',
+		@sockets.emit 'player quits',
 			playerId: playerId
 			shipId : shipId
 
 		# Purge objects belonging to client.
 		@deleteObject(shipId)
 		delete @players[playerId]
+
+		console.info "Player #{socket.id} left game #{@sockets.name}"
 
 	# Game loop
 	update: () ->
@@ -203,7 +207,7 @@ class GameServer
 
 		# Broadcast changes to all players.
 		if not utils.isEmptyObject allChanges
-			@io.sockets.emit 'objects update',
+			@sockets.emit 'objects update',
 				objects: allChanges
 
 	collidesWithPlanet: (obj) ->
@@ -303,12 +307,12 @@ class GameServer
 
 		return false if Object.keys(@bonuses).length >= prefs.bonus.maxCount
 		@newGameObject( (id) =>
-			@bonuses[id] = new Bonus(id, bonusType) )
+			@bonuses[id] = new Bonus(id, @, bonusType) )
 
 	addBots: () ->
 		for i in [0...prefs.bot.count]
 			botId = 'b' + i
-			@players[botId] = new Bot(botId)
+			@players[botId] = new Bot(botId, @)
 			@newGameObject( (id) =>
 				@players[botId].createShip(id) )
 

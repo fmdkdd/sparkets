@@ -1,12 +1,11 @@
 ChangingObject = require('./changingObject').ChangingObject
-server = require './server'
 BonusMine = require './bonusMine'
 BonusBoost = require './bonusBoost'
 prefs = require './prefs'
 utils = require '../utils'
 
 class Bonus extends ChangingObject
-	constructor: (@id, bonusType) ->
+	constructor: (@id, @game, bonusType) ->
 		super()
 
 		@watchChanges 'type'
@@ -44,7 +43,7 @@ class Bonus extends ChangingObject
 		@bonusEffect = type.constructor
 		@bonusType = type.type
 
-		@spawn(bonusType) if server.game.collidesWithPlanet(@)
+		@spawn(bonusType) if @game.collidesWithPlanet(@)
 
 	randomBonus: () ->
 		roulette = []

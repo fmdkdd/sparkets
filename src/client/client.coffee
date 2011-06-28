@@ -54,10 +54,12 @@ $(document).ready (event) ->
 
 	# Connect to server and set callbacks.
 	window.socket = io.connect()
+	window.socket = window.socket.socket.of(document.location.hash)
 	window.socket.on 'connect', onConnect
 	window.socket.on 'connected', onConnected
 	window.socket.on 'objects update', onObjectsUpdate
 	window.socket.on 'ship created', onShipCreated
+	window.socket.on 'player quits', onPlayerQuits
 	window.socket.on 'disconnect', onDisconnect
 
 	# Setup canvas.
@@ -327,4 +329,3 @@ onShipCreated = (data) ->
 # When another player leaves.
 onPlayerQuits = (data) ->
 	deleteObject data.shipId
-	console.info 'Player #{data.playerId} quits'

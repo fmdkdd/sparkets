@@ -10,7 +10,7 @@ exports.handle = (obj1, obj2) ->
 exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'active'
-			ship.bonus = new bonus.bonusEffect(ship)
+			ship.bonus = new bonus.bonusEffect(ship, bonus.game)
 			ship.useBonus() if ship.bonus.evil?
 			bonus.nextState()
 
