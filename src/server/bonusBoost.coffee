@@ -14,7 +14,6 @@ class BonusBoost
 		@used = yes
 		@ship.boost = prefs.bonus.boost.boostFactor
 		@ship.boostDecay = 0
-		@ship.bonus = null
 
 		# Cancel the previous pending boost decay.
 		if @ship.bonusTimeout['bonusBoost']?
@@ -23,6 +22,10 @@ class BonusBoost
 		@ship.bonusTimeout[exports.type] = setTimeout(( () =>
 			@ship.boostDecay = prefs.bonus.boost.boostDecay ),
 			prefs.bonus.boost.boostDuration)
+
+		# Clean up.
+		@ship.bonus = null
+		server.game.gameObjects[@bonusId].state = 'dead'
 
 exports.BonusBoost = BonusBoost
 exports.constructor = BonusBoost

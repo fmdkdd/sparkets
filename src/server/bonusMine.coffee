@@ -9,13 +9,16 @@ class BonusMine
 		@mines = prefs.bonus.mine.mineCount
 
 	use: () ->
-		return if @mines == 0
-
 		server.game.newGameObject (id) =>
 			server.game.mines[id] = new Mine(@ship, id)
 
+		# Decrease mine count.
 		--@mines
-		@ship.bonus = null if @mines == 0
+
+		# Clean up if there is no more mine.
+		if @mines is 0
+			@ship.bonus = null
+			server.game.gameObjects[@bonusId].state = 'dead'
 
 exports.BonusMine = BonusMine
 exports.constructor = BonusMine

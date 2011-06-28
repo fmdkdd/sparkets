@@ -12,6 +12,7 @@ exports.collisions =
 		if bonus.state is 'available'
 			ship.bonus = bonus
 			bonus.bonusEffect.ship = ship
+			bonus.bonusEffect.bonusId = bonus.id
 			ship.useBonus() if ship.bonus.evil?
 			bonus.nextState()
 			bonus.holderId = ship.id
