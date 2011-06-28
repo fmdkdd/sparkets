@@ -70,6 +70,11 @@ class Ship extends ChangingObject
 	chargeFire: () ->
 		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
 
+	holdBonus: (bonus) ->
+		@bonus = bonus
+		@bonus.holderId = @id
+		@bonus.bonusEffect.ship = @
+
 	useBonus: () ->
 		return if @isDead() or @isExploding() or not @bonus?
 

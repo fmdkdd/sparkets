@@ -43,6 +43,7 @@ class Bonus extends ChangingObject
 		else
 			bonusClass = @randomBonus()
 		@bonusEffect = new bonusClass.constructor()
+		@bonusEffect.bonusId = @id
 		@bonusType = bonusClass.type
 
 		@spawn(bonusType) if server.game.collidesWithPlanet(@)
@@ -91,8 +92,6 @@ class Bonus extends ChangingObject
 				@pos.y = if @pos.y > h then 0 else @pos.y
 
 				@changed 'pos'
-
-		console.info @pos
 
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?
