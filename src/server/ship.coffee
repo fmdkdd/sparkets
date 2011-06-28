@@ -70,13 +70,18 @@ class Ship extends ChangingObject
 	chargeFire: () ->
 		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
 
+	# Attach a bonus to the ship.
 	holdBonus: (bonus) ->
 		@bonus = bonus
 		@bonus.holderId = @id
 
+	# Get rid of the bonus.
+	releaseBonus: () ->
+		@bonus.holderId = null
+		@bonus = null
+
 	useBonus: () ->
 		return if not @bonus? or @isDead() or @isExploding()
-
 		@bonus.use()
 
 	move: () ->

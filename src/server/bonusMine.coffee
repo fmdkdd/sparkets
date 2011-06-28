@@ -20,7 +20,7 @@ class BonusMine
 
 		# Clean up if there is no more mine.
 		if @mines is 0
-			@getHolder().bonus = null
+			@getHolder.releaseBonus()
 			@getBonus().state = 'dead'
 
 	getBonus: () ->

@@ -66,3 +66,10 @@ exports.collisions =
 		# Only exploding mines trigger other mines.
 		mine1.nextState() if mine2.state is 'exploding' and mine1.state is 'active'
 		mine2.nextState() if mine1.state is 'exploding' and mine2.state is 'active'
+
+	'bullet-bonus': (bullet, bonus) ->
+		if bonus.state is 'claimed'
+			bonus.getHolder().releaseBonus()
+			bonus.nextState()
+
+		

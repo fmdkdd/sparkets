@@ -16,7 +16,7 @@ class BonusEMP
 			server.game.EMPs[id] = new EMP(@getHolder(), id)
 
 		# Clean up.
-		@getHolder().bonus = null
+		@getHolder.releaseBonus()
 		@getBonus().state = 'dead'
 
 	getBonus: () ->

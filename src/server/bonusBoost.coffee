@@ -24,7 +24,7 @@ class BonusBoost
 			prefs.bonus.boost.boostDuration)
 
 		# Clean up.
-		@getHolder().bonus = null
+		@getHolder.releaseBonus()
 		@getBonus().state = 'dead'
 
 	getBonus: () ->

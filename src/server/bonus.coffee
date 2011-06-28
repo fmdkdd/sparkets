@@ -76,8 +76,8 @@ class Bonus extends ChangingObject
 			dist = utils.distance(@pos.x, @pos.y, ghost.x, ghost.y)
 			diff = dist - prefs.bonus.draggingDistance
 
-			# Add enough velocity along the direction from the bonus to the
-			# ship so that the distance constraint is enforced.
+			# Enforce the distance constraint between the bonus and the
+			# dragging ship.
 			if diff > 0
 				ratio = diff / dist
 				@pos.x += ratio * (ghost.x - @pos.x)
@@ -106,5 +106,8 @@ class Bonus extends ChangingObject
 
 	use: () ->
 		@bonusEffect.use()
+
+	getHolder: () ->
+		server.game.gameObjects[@holderId]
 
 exports.Bonus = Bonus
