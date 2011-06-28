@@ -68,3 +68,19 @@ exports.randomColor = () ->
 # Uppercase first letter of word.
 exports.capitalize = (word) ->
 	word[0].toUpperCase() + word.substring(1)
+
+exports.closestGhost = (x, y, obj) ->
+	return null if not obj?
+
+	# Choose the closest ghost of the object.
+	bestDistance = Infinity
+	for i in [-1..1]
+		for j in [-1..1]
+			ox = obj.pos.x + i * map.w
+			oy = obj.pos.y + j * map.h
+			d = distance(x, y, ox, oy)
+			if d < bestDistance
+				bestDistance = d
+				bestPos = {x: ox, y: oy}
+
+	return bestPos

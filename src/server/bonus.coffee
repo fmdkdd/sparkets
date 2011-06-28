@@ -81,7 +81,6 @@ class Bonus extends ChangingObject
 				ratio = diff / dist
 				@pos.x += ratio * (ghost.x - @pos.x)
 				@pos.y += ratio * (ghost.y - @pos.y)
-			
 				@changed 'pos'
 
 	update: () ->
@@ -91,9 +90,6 @@ class Bonus extends ChangingObject
 			# The bonus arrival is imminent!
 			when 'incoming'
 				@nextState() if @countdown <= 0
-
-			# The bonus is available.
-			# when 'available'
 
 			# The bonus is of no more use.
 			when 'dead'
