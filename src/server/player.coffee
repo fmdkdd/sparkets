@@ -31,7 +31,7 @@ class Player
 			@ship.useBonus()
 
 	update: () ->
-		return if not @ship?
+		return if not @ship? or @ship.isDead() or @ship.isExploding()
 
 		# Left arrow : rotate to the left.
 		@ship.turnLeft() if @keys[37] is on
