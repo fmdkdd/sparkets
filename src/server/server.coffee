@@ -6,14 +6,17 @@ httpServer = require('./httpServer').server
 httpServer.listen prefs.server.port
 
 # Bind websocket
-socket = require 'socket.io'
+io = require 'socket.io'
 
-socket = socket.listen httpServer
+io = io.listen httpServer
+io.configure () ->
+	io.set('transports', ['websocket', 'flashsocket'])
+	io.set('log level', 2)
 
 # Launch game server
 GameServer = require('./gameServer').GameServer
 
-exports.game = new GameServer(socket)
+exports.game = new GameServer(io)
 exports.game.launch()
 console.info 'Server started'
 

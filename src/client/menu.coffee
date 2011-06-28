@@ -75,8 +75,7 @@ class Menu
 		color = @currentColor
 		name = @nameField.val() if @nameField.val().length > 0
 
-		window.socket.send
-			type: 'prefs changed'
+		window.socket.emit 'prefs changed',
 			playerId: playerId
 			color: color
 			name: name

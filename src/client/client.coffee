@@ -53,10 +53,11 @@ $(document).ready (event) ->
 	window.menu.restoreLocalPreferences()
 
 	# Connect to server and set callbacks.
-	window.socket = new io.Socket null, {port: window.port}
-	window.socket.connect()
-	window.socket.on 'message', onMessage
+	window.socket = io.connect()
 	window.socket.on 'connect', onConnect
+	window.socket.on 'connected', onConnected
+	window.socket.on 'objects update', onObjectsUpdate
+	window.socket.on 'ship created', onShipCreated
 	window.socket.on 'disconnect', onDisconnect
 
 	# Setup canvas.
@@ -85,15 +86,13 @@ setInputHandlers = () ->
 	$(document).keydown ({keyCode}) ->
 		if not window.keys[keyCode]? or window.keys[keyCode] is off
 			window.keys[keyCode] = on
-			window.socket.send
-				type: 'key down'
+			window.socket.emit 'key down',
 				playerId: window.playerId
 				key: keyCode
 
 	$(document).keyup ({keyCode}) ->
 		window.keys[keyCode] = off
-		window.socket.send
-			type: 'key up'
+		window.socket.emit 'key up',
 			playerId: window.playerId
 			key: keyCode
 
@@ -302,36 +301,30 @@ deleteObject = (id) ->
 
 	delete window.gameObjects[id]
 
-onMessage = (msg) ->
-	switch msg.type
+# When receiving world update data.
+onObjectsUpdate = (data) ->
+	for id, obj of data.objects
+		if not window.gameObjects[id]?
+			window.gameObjects[id] = newObject(id, obj.type, obj)
+		else
+			window.gameObjects[id].serverUpdate(obj)
 
-		# When receiving world update data.
-		when 'objects update'
-			for id, obj of msg.objects
-				if not window.gameObjects[id]?
-					window.gameObjects[id] = newObject(id, obj.type, obj)
-				else
-					window.gameObjects[id].serverUpdate(obj)
+# When receiving our id from the server.
+onConnected = (data) ->
+	window.playerId = data.playerId
 
-		# When receiving our id from the server.
-		when 'connected'
-			window.playerId = msg.playerId
+	window.menu.sendPreferences()
 
-			window.menu.sendPreferences()
+	window.socket.emit 'create ship',
+		playerId: window.playerId
 
-			window.socket.send
-				type: 'create ship'
-				playerId: window.playerId
+# When receiving our id from the server.
+onShipCreated = (data) ->
+	window.shipId = data.shipId
+	window.localShip = window.gameObjects[window.shipId]
+	go()
 
-		# When receiving our id from the server.
-		when 'ship created'
-			window.shipId = msg.shipId
-			window.localShip = window.gameObjects[window.shipId]
-			go()
-
-		# When another player leaves.
-		when 'player quits'
-			deleteObject msg.shipId
-			console.info 'Player #{msg.playerId} quits'
-
-	return true
+# When another player leaves.
+onPlayerQuits = (data) ->
+	deleteObject data.shipId
+	console.info 'Player #{data.playerId} quits'

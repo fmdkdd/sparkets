@@ -8,7 +8,7 @@ collisions = require('./collisions')
 utils = require '../utils'
 
 class GameServer
-	constructor: (@socket) ->
+	constructor: (@io) ->
 		@now = 0
 
 		@players = {}
@@ -32,14 +32,23 @@ class GameServer
 		setInterval(( () => @spawnBonus() ), prefs.bonus.waitTime)
 
 		# Bind socket events
-		@socket.on 'clientConnect', (client) =>
-			@clientConnect(client)
+		@io.sockets.on 'connection', (socket) =>
+			@clientConnect(socket)
 
-		@socket.on 'clientMessage', (msg, client) =>
-			@clientMessage(msg, client)
+			socket.on 'key down', (data) =>
+				@players[data.playerId].keyDown(data.key)
 
-		@socket.on 'clientDisconnect', (client) =>
-			@clientDisconnect(client)
+			socket.on 'key up', (data) =>
+				@players[data.playerId].keyUp(data.key)
+
+			socket.on 'create ship', (data) =>
+				@createShip(socket, data)
+
+			socket.on 'prefs changed', (data) =>
+				@players[data.playerId].changePrefs(data.name, data.color)
+
+		@io.sockets.on 'disconnection', (socket) =>
+			@clientDisconnect(socket)
 
 		# Setup space grid
 		@grid =
@@ -53,18 +62,17 @@ class GameServer
 
 		@update()
 
-	clientConnect: (client) ->
-		id = client.sessionId
+	clientConnect: (socket) ->
+		id = socket.id
 
 		# Add new player to player list.
 		player = @players[id] = new Player(id)
 
-		client.send
-			type: 'connected'
+		socket.emit 'connected',
 			playerId: id
 
-	createShip: (client) ->
-		id = client.sessionId
+	createShip: (socket, data) ->
+		id = data.playerId
 		player = @players[id]
 
 		# Create ship.
@@ -74,13 +82,11 @@ class GameServer
 		# Send game objects.
 		objs = @watched(@gameObjects)
 		if not utils.isEmptyObject objs
-			client.send
-				type: 'objects update'
+			socket.emit 'objects update',
 				objects: objs
 
 		# Good news!
-		client.send
-			type: 'ship created'
+		socket.emit 'ship created',
 			playerId: id
 			shipId: player.ship.id
 
@@ -94,29 +100,12 @@ class GameServer
 
 		return allWatched
 
-	clientMessage: (msg, client) ->
-		return if not @players[msg.playerId]?
-
-		switch msg.type
-			when 'key down'
-				@players[msg.playerId].keyDown(msg.key)
-
-			when 'key up'
-				@players[msg.playerId].keyUp(msg.key)
-
-			when 'create ship'
-				@createShip(client)
-
-			when 'prefs changed'
-				@players[msg.playerId].changePrefs(msg.name, msg.color)
-
-	clientDisconnect: (client) ->
-		playerId = client.sessionId
+	clientDisconnect: (socket) ->
+		playerId = socket.id
 		shipId = @players[playerId].ship?.id
 
 		# Tell everyone.
-		client.broadcast
-			type: 'player quits'
+		socket.broadcast.emit 'player quits',
 			playerId: playerId
 			shipId : shipId
 
@@ -214,8 +203,7 @@ class GameServer
 
 		# Broadcast changes to all players.
 		if not utils.isEmptyObject allChanges
-			@socket.broadcast
-				type: 'objects update'
+			@io.sockets.emit 'objects update',
 				objects: allChanges
 
 	collidesWithPlanet: (obj) ->
