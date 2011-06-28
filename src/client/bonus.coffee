@@ -9,10 +9,9 @@ class Bonus
 	update: () ->
 		@clientDelete = @serverDelete
 
-	inView: (offset = {x:0, y:0}) ->
-		(@state isnt 'incoming') and
-			window.boxInView(@pos.x + offset.x,
-				@pos.y + offset.y, 20)
+	inView: (offset = {x:0, y:0}) ->	
+		@state isnt 'incoming' and
+			window.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
