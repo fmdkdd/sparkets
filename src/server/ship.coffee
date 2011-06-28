@@ -73,6 +73,7 @@ class Ship extends ChangingObject
 		@ddebug "thrust"
 
 	chargeFire: () ->
+		return if @cannonHeat > 0
 		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
 		@ddebug "charge fire"
 
