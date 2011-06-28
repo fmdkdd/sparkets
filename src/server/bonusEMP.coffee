@@ -13,11 +13,18 @@ class BonusEMP
 
 		@used = yes
 		server.game.newGameObject (id) =>
-			server.game.EMPs[id] = new EMP(@ship, id)
+			server.game.EMPs[id] = new EMP(@getHolder(), id)
 
 		# Clean up.
-		@ship.bonus = null
-		server.game.gameObjects[@bonusId].state = 'dead'
+		@getHolder().bonus = null
+		@getBonus().state = 'dead'
+
+	getBonus: () ->
+		server.game.gameObjects[@bonusId]
+	
+	getHolder: () ->
+		server.game.gameObjects[@getBonus().holderId]
+
 
 exports.BonusEMP = BonusEMP
 exports.constructor = BonusEMP

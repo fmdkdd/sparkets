@@ -10,15 +10,21 @@ class BonusMine
 
 	use: () ->
 		server.game.newGameObject (id) =>
-			server.game.mines[id] = new Mine(@ship, id)
+			server.game.mines[id] = new Mine(@getHolder(), id)
 
 		# Decrease mine count.
 		--@mines
 
 		# Clean up if there is no more mine.
 		if @mines is 0
-			@ship.bonus = null
-			server.game.gameObjects[@bonusId].state = 'dead'
+			@getHolder().bonus = null
+			@getBonus().state = 'dead'
+
+	getBonus: () ->
+		server.game.gameObjects[@bonusId]
+	
+	getHolder: () ->
+		server.game.gameObjects[@getBonus().holderId]
 
 exports.BonusMine = BonusMine
 exports.constructor = BonusMine

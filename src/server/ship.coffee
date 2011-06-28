@@ -55,7 +55,7 @@ class Ship extends ChangingObject
 		@killingAccel = {x: 0, y: 0}
 
 		@spawn() if server.game.collidesWithPlanet(@)
-
+		console.log @
 	turnLeft: () ->
 		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
 
@@ -73,10 +73,9 @@ class Ship extends ChangingObject
 	holdBonus: (bonus) ->
 		@bonus = bonus
 		@bonus.holderId = @id
-		@bonus.bonusEffect.ship = @
 
 	useBonus: () ->
-		return if @isDead() or @isExploding() or not @bonus?
+		return if not @bonus? or @isDead() or @isExploding()
 
 		@bonus.use()
 

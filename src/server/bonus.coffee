@@ -10,7 +10,6 @@ class Bonus extends ChangingObject
 		super()
 
 		@watchChanges 'type'
-		@watchChanges 'effect'
 		@watchChanges 'hitRadius'
 		@watchChanges 'state'
 		@watchChanges 'countdown'

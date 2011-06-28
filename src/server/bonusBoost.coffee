@@ -9,23 +9,29 @@ class BonusBoost
 		@used = no
 
 	use: () ->
-		return if @used is yes
+		return if @used
 
 		@used = yes
-		@ship.boost = prefs.bonus.boost.boostFactor
-		@ship.boostDecay = 0
+		@getHolder().boost = prefs.bonus.boost.boostFactor
+		@getHolder().boostDecay = 0
 
 		# Cancel the previous pending boost decay.
-		if @ship.bonusTimeout['bonusBoost']?
-			clearTimeout(@ship.bonusTimeout['bonusBoost'])
+		if @getHolder().bonusTimeout.bonusBoost?
+			clearTimeout(@getHolder().bonusTimeout.bonusBoost)
 
-		@ship.bonusTimeout[exports.type] = setTimeout(( () =>
-			@ship.boostDecay = prefs.bonus.boost.boostDecay ),
+		@getHolder().bonusTimeout[exports.type] = setTimeout(( () =>
+			@getHolder().boostDecay = prefs.bonus.boost.boostDecay ),
 			prefs.bonus.boost.boostDuration)
 
 		# Clean up.
-		@ship.bonus = null
-		server.game.gameObjects[@bonusId].state = 'dead'
+		@getHolder().bonus = null
+		@getBonus().state = 'dead'
+
+	getBonus: () ->
+		server.game.gameObjects[@bonusId]
+	
+	getHolder: () ->
+		server.game.gameObjects[@getBonus().holderId]
 
 exports.BonusBoost = BonusBoost
 exports.constructor = BonusBoost

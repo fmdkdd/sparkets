@@ -29,7 +29,7 @@ class GameServer
 				@planets[id] = p
 
 		@spawnBonus()
-		#setInterval(( () => @spawnBonus() ), prefs.bonus.waitTime)
+		setInterval(( () => @spawnBonus() ), prefs.bonus.waitTime)
 
 		# Bind socket events
 		@socket.on 'clientConnect', (client) =>
