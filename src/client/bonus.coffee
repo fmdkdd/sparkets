@@ -3,8 +3,13 @@ class Bonus
 		@serverUpdate(bonus)
 
 	serverUpdate: (bonus) ->
+		state_old = @state
+
 		for field, val of bonus
 			@[field] = val
+
+		if @state is 'exploding' and state_old isnt 'exploding'
+			@explode()
 
 	update: () ->
 		@clientDelete = @serverDelete
@@ -19,6 +24,8 @@ class Bonus
 		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
 	draw: (ctxt) ->
+		return if ['incoming','exploding','dead'].indexOf(@state) > -1
+
 		x = @pos.x
 		y = @pos.y
 
@@ -143,6 +150,12 @@ class Bonus
 		ctxt.rotate(Math.PI/2)
 		ctxt.fillRect(-4, -10, 8, 20)
 		ctxt.restore()
+
+	explode: () ->
+		# Ensure decent fireworks.
+		speed = Math.max(null, 3)
+
+		window.effects.push new ExplosionEffect(@, speed)
 
 # Exports
 window.Bonus = Bonus

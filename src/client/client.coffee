@@ -142,7 +142,7 @@ renderLoop = (callback, showFPS) ->
 
 # Game loop!
 update = (time, sinceUpdate) ->
-	# Update time globals (poor kittens...).
+	# Update time globals
 	window.sinceLastUpdate = sinceUpdate
 	window.now = time
 

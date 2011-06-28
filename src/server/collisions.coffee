@@ -70,6 +70,4 @@ exports.collisions =
 	'bullet-bonus': (bullet, bonus) ->
 		if bonus.state is 'claimed'
 			bonus.getHolder().releaseBonus()
-			bonus.nextState()
-
-		
+			bonus.setState 'exploding'

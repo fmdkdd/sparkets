@@ -78,6 +78,7 @@ class Ship extends ChangingObject
 	# Get rid of the bonus.
 	releaseBonus: () ->
 		@bonus.holderId = null
+		@bonus.setState 'available'
 		@bonus = null
 
 	useBonus: () ->
@@ -159,6 +160,8 @@ class Ship extends ChangingObject
 	explode : () ->
 		@exploding = true
 		@exploFrame = 0
+
+		@releaseBonus() if @bonus?
 
 	updateExplosion : () ->
 		++@exploFrame

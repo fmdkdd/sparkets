@@ -68,36 +68,46 @@ class Bonus extends ChangingObject
 		@state = prefs.bonus.states[@state].next
 		@countdown = prefs.bonus.states[@state].countdown
 
+	setState: (state) ->
+		if prefs.mine.states[state]?
+			@state = state
+			@countdown = prefs.mine.states[state].countdown
+
 	move: () ->
-		if @state is 'claimed'
+		console.log @state
+		return if @state isnt 'claimed'
 
-			holder = server.game.gameObjects[@holderId]
-			ghost = server.game.closestGhost(@pos.x, @pos.y, holder)
-			dist = utils.distance(@pos.x, @pos.y, ghost.x, ghost.y)
-			diff = dist - prefs.bonus.draggingDistance
+		holder = server.game.gameObjects[@holderId]
+		ghost = server.game.closestGhost(@pos.x, @pos.y, holder)
+		dist = utils.distance(@pos.x, @pos.y, ghost.x, ghost.y)
+		diff = dist - prefs.bonus.draggingDistance
 
-			# Enforce the distance constraint between the bonus and the
-			# dragging ship.
-			if diff > 0
-				ratio = diff / dist
-				@pos.x += ratio * (ghost.x - @pos.x)
-				@pos.y += ratio * (ghost.y - @pos.y)
+		# Enforce the distance constraint between the bonus and the
+		# dragging ship.
+		if diff > 0
+			ratio = diff / dist
+			@pos.x += ratio * (ghost.x - @pos.x)
+			@pos.y += ratio * (ghost.y - @pos.y)
 
-				# Warp the bonus around the map.
-				{w, h} = prefs.server.mapSize
-				@pos.x = if @pos.x < 0 then w else @pos.x
-				@pos.x = if @pos.x > w then 0 else @pos.x
-				@pos.y = if @pos.y < 0 then h else @pos.y
-				@pos.y = if @pos.y > h then 0 else @pos.y
+			# Warp the bonus around the map.
+			{w, h} = prefs.server.mapSize
+			@pos.x = if @pos.x < 0 then w else @pos.x
+			@pos.x = if @pos.x > w then 0 else @pos.x
+			@pos.y = if @pos.y < 0 then h else @pos.y
+			@pos.y = if @pos.y > h then 0 else @pos.y
 
-				@changed 'pos'
+			@changed 'pos'
 
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?
 
 		switch @state
-			# The bonus arrival is imminent!
+			# The bonus arrival is imminent.
 			when 'incoming'
+				@nextState() if @countdown <= 0
+
+			# The bonus is exploding.
+			when 'exploding'	
 				@nextState() if @countdown <= 0
 
 			# The bonus is of no more use.

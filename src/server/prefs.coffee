@@ -257,7 +257,10 @@ exports.bonus =
 			countdown: null
 			next: 'claimed'
 		'claimed':
-			countdown:null
+			countdown: null
+			next: null
+		'exploding':
+			countdown: 1000
 			next: 'dead'
 		'dead':
 			countdown: null
