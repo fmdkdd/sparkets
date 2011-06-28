@@ -5,7 +5,7 @@ Mine = require('./mine').Mine
 class BonusMine
 	type: 'mine'
 
-	constructor: (@ship) ->
+	constructor: () ->
 		@mines = prefs.bonus.mine.mineCount
 
 	use: () ->

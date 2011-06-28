@@ -4,7 +4,7 @@ prefs = require './prefs'
 class BonusBoost
 	type: 'boost'
 
-	constructor: (@ship) ->
+	constructor: () ->
 		@boostFactor = 0
 		@used = no
 

@@ -5,7 +5,7 @@ EMP = require('./EMP').EMP
 class BonusEMP
 	type: 'EMP'
 
-	constructor: (@ship) ->
+	constructor: () ->
 		@used = no
 
 	use: () ->

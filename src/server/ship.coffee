@@ -72,6 +72,7 @@ class Ship extends ChangingObject
 
 	useBonus: () ->
 		return if @isDead() or @isExploding() or not @bonus?
+
 		@bonus.use()
 
 	move: () ->

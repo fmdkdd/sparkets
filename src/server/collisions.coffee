@@ -10,7 +10,8 @@ exports.handle = (obj1, obj2) ->
 exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'available'
-			ship.bonus = new bonus.bonusEffect(ship)
+			ship.bonus = bonus
+			bonus.bonusEffect.ship = ship
 			ship.useBonus() if ship.bonus.evil?
 			bonus.nextState()
 			bonus.holderId = ship.id

@@ -10,6 +10,7 @@ class Bonus extends ChangingObject
 		super()
 
 		@watchChanges 'type'
+		@watchChanges 'effect'
 		@watchChanges 'hitRadius'
 		@watchChanges 'state'
 		@watchChanges 'countdown'
@@ -37,12 +38,12 @@ class Bonus extends ChangingObject
 		@empty = yes
 
 		# Choose bonus type.
-		if not bonusType?
-			type = @randomBonus()
+		if bonusType?
+			bonusClass = prefs.bonus.bonusType[bonusType].class
 		else
-			type = prefs.bonus.bonusType[bonusType].class
-		@bonusEffect = type.constructor
-		@bonusType = type.type
+			bonusClass = @randomBonus()
+		@bonusEffect = new bonusClass.constructor()
+		@bonusType = bonusClass.type
 
 		@spawn(bonusType) if server.game.collidesWithPlanet(@)
 
@@ -104,5 +105,8 @@ class Bonus extends ChangingObject
 			# The bonus is of no more use.
 			when 'dead'
 				@serverDelete = yes
+
+	use: () ->
+		@bonusEffect.use()
 
 exports.Bonus = Bonus

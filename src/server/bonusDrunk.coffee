@@ -4,7 +4,7 @@ prefs = require './prefs'
 class BonusDrunk
 	type: 'drunk'
 
-	constructor: (@ship) ->
+	constructor: () ->
 		@used = no
 		@evil = yes
 
