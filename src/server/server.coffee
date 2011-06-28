@@ -1,3 +1,4 @@
+logger = require './logger'
 prefs = require './prefs'
 
 # Start webserver
@@ -17,18 +18,18 @@ io.configure () ->
 globalSockets = io.of('')
 
 globalSockets.on 'connection', (socket) ->
-	console.info "Player #{socket.id} joined global server"
+	logger.info "Player #{socket.id} joined global server"
 
 	socket.on 'disconnect', () ->
-		console.info "Player #{socket.id} left global server"
+		logger.info "Player #{socket.id} left global server"
 
-console.info 'Global server started'
+logger.info 'Global server started'
 
 GameServer = require('./gameServer').GameServer
 createGame = (id) ->
-	console.info "Launching game #{id} ..."
 	game = new GameServer(io.of(id))
 	game.launch()
+	logger.info "Game #{id} started"
 	return game
 
 # Default game for all users

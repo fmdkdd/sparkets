@@ -1,3 +1,4 @@
+logger = require './logger'
 ChangingObject = require('./changingObject').ChangingObject
 prefs = require './prefs'
 utils = require '../utils'
@@ -55,22 +56,29 @@ class Ship extends ChangingObject
 
 		@spawn() if @game.collidesWithPlanet(@)
 
+		@debug "spawned"
+
 	turnLeft: () ->
 		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@ddebug "turn left"
 
 	turnRight: () ->
 		@dir += if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@ddebug "turn right"
 
 	ahead: () ->
 		@vel.x += Math.cos(@dir) * prefs.ship.speed * @boost
 		@vel.y += Math.sin(@dir) * prefs.ship.speed * @boost
 		@thrust = true
+		@ddebug "thrust"
 
 	chargeFire: () ->
 		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
+		@ddebug "charge fire"
 
 	useBonus: () ->
 		return if @isDead() or @isExploding() or not @bonus?
+		@ddebug "use #{@bonus.type} bonus"
 		@bonus.use()
 
 	move: () ->
@@ -140,7 +148,8 @@ class Ship extends ChangingObject
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
 		@game.newGameObject (id) =>
-			@game.bullets[id] = new Bullet.Bullet(@, id, @game)
+			@ddebug "fire bullet ##{id}"
+			return @game.bullets[id] = new Bullet.Bullet(@, id, @game)
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown
@@ -149,6 +158,8 @@ class Ship extends ChangingObject
 		@exploding = true
 		@exploFrame = 0
 
+		@debug "explode"
+
 	updateExplosion : () ->
 		++@exploFrame
 
@@ -156,5 +167,15 @@ class Ship extends ChangingObject
 			@exploding = false
 			@dead = true
 			@exploFrame = 0
+
+	# Prefix message with ship id.
+	log: (type, msg) ->
+		logger.log(type, "(ship ##{@.id}) " + msg)
+
+	error: (msg) -> @log('error', msg)
+	warn: (msg) -> @log('warn', msg)
+	info: (msg) -> @log('info', msg)
+	debug: (msg) -> @log('debug', msg)
+	ddebug: (msg) -> @log('ship', msg)
 
 exports.Ship = Ship

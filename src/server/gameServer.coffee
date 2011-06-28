@@ -1,3 +1,4 @@
+logger = require './logger'
 prefs = require './prefs'
 Player = require('./player').Player
 Bot = require('./bot').Bot
@@ -71,7 +72,7 @@ class GameServer
 		socket.emit 'connected',
 			playerId: id
 
-		console.info "Player #{socket.id} joined game #{@sockets.name}"
+		@info "player #{socket.id} joined"
 
 	createShip: (socket, data) ->
 		id = data.playerId
@@ -115,7 +116,7 @@ class GameServer
 		@deleteObject(shipId)
 		delete @players[playerId]
 
-		console.info "Player #{socket.id} left game #{@sockets.name}"
+		@info "player #{socket.id} left"
 
 	# Game loop
 	update: () ->
@@ -299,6 +300,8 @@ class GameServer
 			if satellite
 				planets.push new Moon(rock, satForce, satGap)
 
+		@debug "#{prefs.planet.count} planets created"
+
 		return planets
 
 	spawnBonus: (bonusType) ->
@@ -307,16 +310,28 @@ class GameServer
 
 		return false if Object.keys(@bonuses).length >= prefs.bonus.maxCount
 		@newGameObject( (id) =>
-			@bonuses[id] = new Bonus(id, @, bonusType) )
+			@bonuses[id] = new Bonus(id, @, bonusType)
+			@debug "spawned new #{@bonuses[id].bonusType} bonus ##{id}"
+			return @bonuses[id] )
 
 	addBots: () ->
 		for i in [0...prefs.bot.count]
 			botId = 'b' + i
 			@players[botId] = new Bot(botId, @)
 			@newGameObject( (id) =>
-				@players[botId].createShip(id) )
+				@debug "bot ##{botId} joined"
+				return @players[botId].createShip(id) )
 
 	noHuman: () ->
 		return Object.keys(@players).length == prefs.bot.count
+
+	# Prefix message with game namespace.
+	log: (type, msg) ->
+		logger.log(type, "(game #{@sockets.name}) " + msg)
+
+	error: (msg) -> @log('error', msg)
+	warn: (msg) -> @log('warn', msg)
+	info: (msg) -> @log('info', msg)
+	debug: (msg) -> @log('debug', msg)
 
 exports.GameServer = GameServer
