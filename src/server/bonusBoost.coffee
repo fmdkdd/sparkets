@@ -24,8 +24,8 @@ class BonusBoost
 			prefs.bonus.boost.boostDuration)
 
 		# Clean up.
-		server.game.gameObjects[@bonusId].setState 'dead'
-		server.game.gameObjects[server.game.gameObjects[@bonusId].holderId].releaseBonus()
+		@getHolder().releaseBonus()
+		@getBonus().setState 'dead'
 
 	getBonus: () ->
 		server.game.gameObjects[@bonusId]

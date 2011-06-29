@@ -20,8 +20,8 @@ class BonusMine
 
 		# Clean up if there is no more mine.
 		if @mines is 0
-			server.game.gameObjects[@bonusId].setState 'dead'
-			server.game.gameObjects[server.game.gameObjects[@bonusId].holderId].releaseBonus()
+			@getHolder().releaseBonus()
+			@getBonus().setState 'dead'
 
 	getBonus: () ->
 		server.game.gameObjects[@bonusId]
