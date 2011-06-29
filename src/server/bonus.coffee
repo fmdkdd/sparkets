@@ -119,4 +119,7 @@ class Bonus extends ChangingObject
 	getHolder: () ->
 		server.game.gameObjects[@holderId]
 
+	isEvil: () ->
+		@bonusEffect.evil?		
+
 exports.Bonus = Bonus

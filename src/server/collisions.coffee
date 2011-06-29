@@ -11,7 +11,7 @@ exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'available'
 			ship.holdBonus(bonus.id)
-			#ship.useBonus() if ship.bonus.evil?
+			ship.useBonus() if bonus.isEvil()
 
 	'ship-bullet': (ship, bullet) ->
 		# Immunity to own bullets for a set time.
