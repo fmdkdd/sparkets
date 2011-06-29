@@ -69,9 +69,9 @@ class Bonus extends ChangingObject
 		@countdown = prefs.bonus.states[@state].countdown
 
 	setState: (state) ->
-		if prefs.mine.states[state]?
+		if prefs.bonus.states[state]?
 			@state = state
-			@countdown = prefs.mine.states[state].countdown
+			@countdown = prefs.bonus.states[state].countdown
 
 	move: () ->
 		return if @state isnt 'claimed' or not @holderId?

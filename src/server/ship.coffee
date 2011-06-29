@@ -44,7 +44,7 @@ class Ship extends ChangingObject
 		@thrust = false
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = 0
-		@bonus = null
+		@bonusId = null
 		@bonusTimeout = {}
 		@boost = 1
 		@boostDecay = 0
@@ -71,20 +71,22 @@ class Ship extends ChangingObject
 		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
 
 	# Attach a bonus to the ship.
-	holdBonus: (bonus) ->
-		@releaseBonus() if @bonus?
-		@bonus = bonus
-		@bonus.holderId = @id
+	holdBonus: (bonusId) ->
+		@releaseBonus() if @bonusId?
+
+		@bonusId = bonusId
+		server.game.gameObjects[bonusId].holderId = @id
+		server.game.gameObjects[bonusId].setState 'claimed'
 
 	# Get rid of the bonus.
 	releaseBonus: () ->
-		@bonus.holderId = null
-		@bonus.setState 'available'
-		@bonus = null
+		server.game.gameObjects[@bonusId].holderId = null
+		server.game.gameObjects[@bonusId].setState 'available'
+		@bonusId = null
 
 	useBonus: () ->
-		return if not @bonus? or @isDead() or @isExploding()
-		@bonus.use()
+		return if not @bonusId? or @isDead() or @isExploding()
+		server.game.gameObjects[@bonusId].use()
 
 	move: () ->
 		return if @isDead() or @isExploding()
@@ -162,7 +164,7 @@ class Ship extends ChangingObject
 		@exploding = true
 		@exploFrame = 0
 
-		@releaseBonus() if @bonus?
+		@releaseBonus() if @bonusId?
 
 	updateExplosion : () ->
 		++@exploFrame

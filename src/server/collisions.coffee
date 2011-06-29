@@ -10,9 +10,8 @@ exports.handle = (obj1, obj2) ->
 exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'available'
-			ship.holdBonus(bonus)
-			ship.useBonus() if ship.bonus.evil?
-			bonus.nextState()
+			ship.holdBonus(bonus.id)
+			#ship.useBonus() if ship.bonus.evil?
 
 	'ship-bullet': (ship, bullet) ->
 		# Immunity to own bullets for a set time.
