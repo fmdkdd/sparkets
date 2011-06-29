@@ -53,10 +53,13 @@ $(document).ready (event) ->
 	window.menu.restoreLocalPreferences()
 
 	# Connect to server and set callbacks.
-	window.socket = new io.Socket null, {port: window.port}
-	window.socket.connect()
-	window.socket.on 'message', onMessage
+	window.socket = io.connect()
+	window.socket = window.socket.socket.of(document.location.hash)
 	window.socket.on 'connect', onConnect
+	window.socket.on 'connected', onConnected
+	window.socket.on 'objects update', onObjectsUpdate
+	window.socket.on 'ship created', onShipCreated
+	window.socket.on 'player quits', onPlayerQuits
 	window.socket.on 'disconnect', onDisconnect
 
 	# Setup canvas.
@@ -85,15 +88,13 @@ setInputHandlers = () ->
 	$(document).keydown ({keyCode}) ->
 		if not window.keys[keyCode]? or window.keys[keyCode] is off
 			window.keys[keyCode] = on
-			window.socket.send
-				type: 'key down'
+			window.socket.emit 'key down',
 				playerId: window.playerId
 				key: keyCode
 
 	$(document).keyup ({keyCode}) ->
 		window.keys[keyCode] = off
-		window.socket.send
-			type: 'key up'
+		window.socket.emit 'key up',
 			playerId: window.playerId
 			key: keyCode
 
@@ -204,9 +205,9 @@ redraw = (ctxt) ->
 	# Draw UI
 	drawRadar(ctxt) if window.localShip? and not window.localShip.isDead()
 
-drawObject = (ctxt, obj) ->
+drawObject = (ctxt, obj, offset) ->
 	ctxt.save()
-	obj.draw(ctxt)
+	obj.draw(ctxt, offset)
 	ctxt.restore()
 	obj.drawHitbox(ctxt) if window.showHitCircles
 
@@ -259,11 +260,11 @@ drawInfinity = (ctxt) ->
 
 				# Draw all visible objects in it.
 				for id, obj of window.gameObjects
-					drawObject(ctxt, obj) if obj.inView(offset)
+					drawObject(ctxt, obj, offset) if obj.inView(offset)
 
 				# Draw all visible effects
 				for e in window.effects
-					e.draw(ctxt) if e.inView(offset)
+					e.draw(ctxt, offset) if e.inView(offset)
 
 				# Quadrant is done drawing.
 				ctxt.restore()
@@ -304,36 +305,29 @@ deleteObject = (id) ->
 
 	delete window.gameObjects[id]
 
-onMessage = (msg) ->
-	switch msg.type
+# When receiving world update data.
+onObjectsUpdate = (data) ->
+	for id, obj of data.objects
+		if not window.gameObjects[id]?
+			window.gameObjects[id] = newObject(id, obj.type, obj)
+		else
+			window.gameObjects[id].serverUpdate(obj)
 
-		# When receiving world update data.
-		when 'objects update'
-			for id, obj of msg.objects
-				if not window.gameObjects[id]?
-					window.gameObjects[id] = newObject(id, obj.type, obj)
-				else
-					window.gameObjects[id].serverUpdate(obj)
+# When receiving our id from the server.
+onConnected = (data) ->
+	window.playerId = data.playerId
 
-		# When receiving our id from the server.
-		when 'connected'
-			window.playerId = msg.playerId
+	window.menu.sendPreferences()
 
-			window.menu.sendPreferences()
+	window.socket.emit 'create ship',
+		playerId: window.playerId
 
-			window.socket.send
-				type: 'create ship'
-				playerId: window.playerId
+# When receiving our id from the server.
+onShipCreated = (data) ->
+	window.shipId = data.shipId
+	window.localShip = window.gameObjects[window.shipId]
+	go()
 
-		# When receiving our id from the server.
-		when 'ship created'
-			window.shipId = msg.shipId
-			window.localShip = window.gameObjects[window.shipId]
-			go()
-
-		# When another player leaves.
-		when 'player quits'
-			deleteObject msg.shipId
-			console.info 'Player #{msg.playerId} quits'
-
-	return true
+# When another player leaves.
+onPlayerQuits = (data) ->
+	deleteObject data.shipId

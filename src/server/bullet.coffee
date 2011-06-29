@@ -1,10 +1,9 @@
 ChangingObject = require('./changingObject').ChangingObject
-server = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 
 class Bullet extends ChangingObject
-	constructor: (@owner, @id) ->
+	constructor: (@owner, @id, @game) ->
 		super()
 
 		@watchChanges 'type'
@@ -44,7 +43,7 @@ class Bullet extends ChangingObject
 
 		# Apply gravity from all planets.
 		g = prefs.bullet.gravityPull
-		for id, p of server.game.planets
+		for id, p of @game.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 			d2 = g * p.force / (d * Math.sqrt(d))
 			ax -= (x-p.pos.x) * d2
@@ -52,7 +51,7 @@ class Bullet extends ChangingObject
 
 		# Apply negative force from all EMPs.
 		g2 = prefs.bullet.EMPPull
-		for id, e of server.game.EMPs
+		for id, e of @game.EMPs
 			d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
 			d2 = g2 * e.force / (d * Math.sqrt(d))
 			ax -= (x-e.pos.x) * d2

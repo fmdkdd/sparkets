@@ -59,7 +59,7 @@ exports.ship =
 
 exports.bot =
 	# Number of bots on server.
-	count: 1
+	count: 0
 
 	# Default parameters for bots.
 	defaultPersona:

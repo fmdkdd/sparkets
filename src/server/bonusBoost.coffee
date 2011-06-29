@@ -1,10 +1,9 @@
-server = require './server'
 prefs = require './prefs'
 
 class BonusBoost
 	type: 'boost'
 
-	constructor: () ->
+	constructor: (@ship, @game) ->
 		@used = no
 		@boostFactor = 0
 
@@ -21,7 +20,7 @@ class BonusBoost
 
 		holderId = @getHolder().id
 		@getHolder().bonusTimeout[exports.type] = setTimeout(( () =>
-			server.game.gameObjects[holderId].boostDecay = prefs.bonus.boost.boostDecay ),
+			@game.gameObjects[holderId].boostDecay = prefs.bonus.boost.boostDecay ),
 			prefs.bonus.boost.boostDuration)
 
 		# Clean up.
@@ -29,10 +28,10 @@ class BonusBoost
 		@getBonus().setState 'dead'
 
 	getBonus: () ->
-		server.game.gameObjects[@bonusId]
+		@game.gameObjects[@bonusId]
 	
 	getHolder: () ->
-		server.game.gameObjects[@getBonus().holderId]
+		@game.gameObjects[@getBonus().holderId]
 
 exports.BonusBoost = BonusBoost
 exports.constructor = BonusBoost

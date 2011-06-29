@@ -27,6 +27,10 @@ class Bullet
 		Math.abs(x1 - x2) > 50 or
 			Math.abs(y1 - y2) > 50
 
+	segmentInView: (x1, y1, x2, y2, offset) ->
+		window.inView(x1 + offset.x, y1 + offset.y) or
+			window.inView(x2  + offset.x, y2 + offset.y)
+
 	drawSegment: (ctxt, x1, y1, x2, y2, alpha1, alpha2) ->
 		gradient = ctxt.createLinearGradient(x1, y1, x2, y2)
 		gradient.addColorStop(0, color(@color, alpha1))
@@ -38,7 +42,7 @@ class Bullet
 		ctxt.lineTo x2, y2
 		ctxt.stroke()
 
-	draw: (ctxt) ->
+	draw: (ctxt, offset = {x:0, y:0}) ->
 		ctxt.lineWidth = 4
 		ctxt.globalCompositeOperation = 'destination-over'
 
@@ -50,7 +54,7 @@ class Bullet
 			x2 = p[i][0]
 			y2 = p[i][1]
 
-			if not @bulletWrap(x1, y1, x2, y2)
+			if not @bulletWrap(x1, y1, x2, y2) and @segmentInView(x1, y1, x2, y2, offset)
 				@drawSegment(ctxt, x1, y1, x2, y2, (i-1)/p.length, i/p.length)
 
 			x1 = x2

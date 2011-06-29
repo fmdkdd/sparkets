@@ -1,3 +1,4 @@
+logger = require './logger'
 prefs = require './prefs'
 Player = require('./player').Player
 Bot = require('./bot').Bot
@@ -8,7 +9,7 @@ collisions = require('./collisions')
 utils = require '../utils'
 
 class GameServer
-	constructor: (@socket) ->
+	constructor: (@sockets) ->
 		@now = 0
 
 		@players = {}
@@ -32,14 +33,23 @@ class GameServer
 		setInterval(( () => @spawnBonus() ), prefs.bonus.waitTime)
 
 		# Bind socket events
-		@socket.on 'clientConnect', (client) =>
-			@clientConnect(client)
+		@sockets.on 'connection', (socket) =>
+			@clientConnect(socket)
 
-		@socket.on 'clientMessage', (msg, client) =>
-			@clientMessage(msg, client)
+			socket.on 'key down', (data) =>
+				@players[data.playerId].keyDown(data.key)
 
-		@socket.on 'clientDisconnect', (client) =>
-			@clientDisconnect(client)
+			socket.on 'key up', (data) =>
+				@players[data.playerId].keyUp(data.key)
+
+			socket.on 'create ship', (data) =>
+				@createShip(socket, data)
+
+			socket.on 'prefs changed', (data) =>
+				@players[data.playerId].changePrefs(data.name, data.color)
+
+			socket.on 'disconnect', () =>
+				@clientDisconnect(socket)
 
 		# Setup space grid
 		@grid =
@@ -53,18 +63,20 @@ class GameServer
 
 		@update()
 
-	clientConnect: (client) ->
-		id = client.sessionId
+	clientConnect: (socket) ->
+		logger.info 'yeaaaah!'
+		id = socket.id
 
 		# Add new player to player list.
-		player = @players[id] = new Player(id)
+		player = @players[id] = new Player(id, @)
 
-		client.send
-			type: 'connected'
+		socket.emit 'connected',
 			playerId: id
 
-	createShip: (client) ->
-		id = client.sessionId
+		@info "player #{socket.id} joined"
+
+	createShip: (socket, data) ->
+		id = data.playerId
 		player = @players[id]
 
 		# Create ship.
@@ -74,13 +86,11 @@ class GameServer
 		# Send game objects.
 		objs = @watched(@gameObjects)
 		if not utils.isEmptyObject objs
-			client.send
-				type: 'objects update'
+			socket.emit 'objects update',
 				objects: objs
 
 		# Good news!
-		client.send
-			type: 'ship created'
+		socket.emit 'ship created',
 			playerId: id
 			shipId: player.ship.id
 
@@ -94,29 +104,12 @@ class GameServer
 
 		return allWatched
 
-	clientMessage: (msg, client) ->
-		return if not @players[msg.playerId]?
-
-		switch msg.type
-			when 'key down'
-				@players[msg.playerId].keyDown(msg.key)
-
-			when 'key up'
-				@players[msg.playerId].keyUp(msg.key)
-
-			when 'create ship'
-				@createShip(client)
-
-			when 'prefs changed'
-				@players[msg.playerId].changePrefs(msg.name, msg.color)
-
-	clientDisconnect: (client) ->
-		playerId = client.sessionId
+	clientDisconnect: (socket) ->
+		playerId = socket.id
 		shipId = @players[playerId].ship?.id
 
 		# Tell everyone.
-		client.broadcast
-			type: 'player quits'
+		@sockets.emit 'player quits',
 			playerId: playerId
 			shipId : shipId
 
@@ -124,17 +117,19 @@ class GameServer
 		@deleteObject(shipId)
 		delete @players[playerId]
 
+		@info "player #{socket.id} left"
+
 	# Game loop
 	update: () ->
-		start = @now = (new Date).getTime()
+		# Setup next update.
+		setTimeout(( () => @update() ), prefs.server.timestep)
+
+		# Skip update if no one is connected.
+		return if @noHuman()
 
 		player.update() for id, player of @players
 
 		@updateObjects(@gameObjects)
-
-		diff = (new Date).getTime() - start
-		setTimeout(( () => @update() ),
-			prefs.server.timestep - utils.mod(diff, prefs.server.timestep))
 
 	placeObjectInGrid: (obj) ->
 		{w: mapWidth, h: mapHeight} = prefs.server.mapSize
@@ -214,8 +209,7 @@ class GameServer
 
 		# Broadcast changes to all players.
 		if not utils.isEmptyObject allChanges
-			@socket.broadcast
-				type: 'objects update'
+			@sockets.emit 'objects update',
 				objects: allChanges
 
 	collidesWithPlanet: (obj) ->
@@ -307,12 +301,19 @@ class GameServer
 			if satellite
 				planets.push new Moon(rock, satForce, satGap)
 
+		@debug "#{prefs.planet.count} planets created"
+
 		return planets
 
 	spawnBonus: (bonusType) ->
+		# Do nothing when no one is connected.
+		return if @noHuman()
+
 		return false if Object.keys(@bonuses).length >= prefs.bonus.maxCount
 		@newGameObject( (id) =>
-			@bonuses[id] = new Bonus(id, bonusType) )
+			@bonuses[id] = new Bonus(id, @, bonusType)
+			@debug "spawned new #{@bonuses[id].bonusType} bonus ##{id}"
+			return @bonuses[id] )
 	
 	# Return the position of the closest ghost of a game object from position [x,y].
 	closestGhost: (x, y, obj) ->
@@ -334,8 +335,21 @@ class GameServer
 	addBots: () ->
 		for i in [0...prefs.bot.count]
 			botId = 'b' + i
-			@players[botId] = new Bot(botId)
+			@players[botId] = new Bot(botId, @)
 			@newGameObject( (id) =>
-				@players[botId].createShip(id) )
+				@debug "bot ##{botId} joined"
+				return @players[botId].createShip(id) )
+
+	noHuman: () ->
+		return Object.keys(@players).length == prefs.bot.count
+
+	# Prefix message with game namespace.
+	log: (type, msg) ->
+		logger.log(type, "(game #{@sockets.name}) " + msg)
+
+	error: (msg) -> @log('error', msg)
+	warn: (msg) -> @log('warn', msg)
+	info: (msg) -> @log('info', msg)
+	debug: (msg) -> @log('debug', msg)
 
 exports.GameServer = GameServer

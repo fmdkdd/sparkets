@@ -1,11 +1,10 @@
-server = require('./server')
 prefs = require('./prefs')
 utils = require('../utils')
 Player = require('./player').Player
 
 class Bot extends Player
-	constructor: (id, persona) ->
-		super(id)
+	constructor: (id, game, persona) ->
+		super(id, game)
 
 		@initPersona(persona)
 
@@ -60,7 +59,7 @@ class Bot extends Player
 		switch @state
 			# Find a target around.
 			when 'seek'
-				for id, p of server.game.players
+				for id, p of @game.players
 					if id != @id and p.ship? and alive(p.ship)
 						ghost = closestGhost(p.ship)
 						if near(ghost, @prefs.acquireDistance)
@@ -71,7 +70,7 @@ class Bot extends Player
 
 				# Try to grab a bonus
 				@targetBonus = null
-				for id, bonus of server.game.bonuses
+				for id, bonus of @game.bonuses
 					if near(bonus.pos, @prefs.grabBonusDistance)
 						@targetBonus = bonus.pos
 						break
@@ -160,17 +159,17 @@ class Bot extends Player
 
 		# Try to avoid planets and mines using a negative field motion.
 		g = if @state is 'chase' then @prefs.chasePlanetAvoid else @prefs.seekPlanetAvoid
-		grav = gravityEscape(server.game.planets, g)
+		grav = gravityEscape(@game.planets, g)
 		ax += grav.x
 		ay += grav.y
 
 		g = if @state is 'chase' then @prefs.chaseMineAvoid else @prefs.seekMineAvoid
-		grav = gravityEscape(server.game.mines, g)
+		grav = gravityEscape(@game.mines, g)
 		ax += grav.x
 		ay += grav.y
 
 		g = if @state is 'chase' then @prefs.chaseBulletAvoid else @prefs.seekBulletAvoid
-		grav = gravityEscape(server.game.bullets, g, ((bullet) ->
+		grav = gravityEscape(@game.bullets, g, ((bullet) ->
 			p = bullet.points[bullet.points.length-1]
 			{x: p[0], y: p[1]}))
 		ax += grav.x

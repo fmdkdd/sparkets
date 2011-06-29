@@ -1,12 +1,12 @@
+logger = require './logger'
 ChangingObject = require('./changingObject').ChangingObject
-server = require './server'
 prefs = require './prefs'
 utils = require '../utils'
 Bullet = require './bullet'
 Mine = require './mine'
 
 class Ship extends ChangingObject
-	constructor: (@id, @playerId, name, color) ->
+	constructor: (@id, @game, @playerId, name, color) ->
 		super()
 
 		@watchChanges(
@@ -54,21 +54,28 @@ class Ship extends ChangingObject
 		@exploFrame = 0
 		@killingAccel = {x: 0, y: 0}
 
-		@spawn() if server.game.collidesWithPlanet(@)
-		console.log @
+		@spawn() if @game.collidesWithPlanet(@)
+
+		@debug "spawned"
+
 	turnLeft: () ->
 		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@ddebug "turn left"
 
 	turnRight: () ->
 		@dir += if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@ddebug "turn right"
 
 	ahead: () ->
 		@vel.x += Math.cos(@dir) * prefs.ship.speed * @boost
 		@vel.y += Math.sin(@dir) * prefs.ship.speed * @boost
 		@thrust = true
+		@ddebug "thrust"
 
 	chargeFire: () ->
+		return if @cannonHeat > 0
 		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
+		@ddebug "charge fire"
 
 	# Attach a bonus to the ship.
 	holdBonus: (bonusId) ->
@@ -86,7 +93,8 @@ class Ship extends ChangingObject
 
 	useBonus: () ->
 		return if not @bonusId? or @isDead() or @isExploding()
-		server.game.gameObjects[@bonusId].use()
+		@ddebug "use #{@bonus.type} bonus"
+		@game.gameObjects[@bonusId].use()
 
 	move: () ->
 		return if @isDead() or @isExploding()
@@ -96,7 +104,7 @@ class Ship extends ChangingObject
 		if prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
-			for id, p of server.game.planets
+			for id, p of @game.planets
 				d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 				d2 = 20 * p.force / (d * Math.sqrt(d))
 				ax -= (x-p.pos.x) * d2
@@ -154,8 +162,9 @@ class Ship extends ChangingObject
 	fire : () ->
 		return if @isDead() or @isExploding() or @cannonHeat > 0
 
-		server.game.newGameObject (id) =>
-			server.game.bullets[id] = new Bullet.Bullet(@, id)
+		@game.newGameObject (id) =>
+			@ddebug "fire bullet ##{id}"
+			return @game.bullets[id] = new Bullet.Bullet(@, id, @game)
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown
@@ -166,6 +175,8 @@ class Ship extends ChangingObject
 
 		@releaseBonus() if @bonusId?
 
+		@debug "explode"
+
 	updateExplosion : () ->
 		++@exploFrame
 
@@ -173,5 +184,15 @@ class Ship extends ChangingObject
 			@exploding = false
 			@dead = true
 			@exploFrame = 0
+
+	# Prefix message with ship id.
+	log: (type, msg) ->
+		logger.log(type, "(ship ##{@.id}) " + msg)
+
+	error: (msg) -> @log('error', msg)
+	warn: (msg) -> @log('warn', msg)
+	info: (msg) -> @log('info', msg)
+	debug: (msg) -> @log('debug', msg)
+	ddebug: (msg) -> @log('ship', msg)
 
 exports.Ship = Ship

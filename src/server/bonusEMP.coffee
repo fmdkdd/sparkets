@@ -1,30 +1,29 @@
-server = require './server'
 prefs = require './prefs'
 EMP = require('./EMP').EMP
 
 class BonusEMP
 	type: 'EMP'
 
-	constructor: () ->
+	constructor: (@game) ->
 		@used = no
 
 	use: () ->
 		return if @used is yes
 
 		@used = yes
-		server.game.newGameObject (id) =>
-			server.game.EMPs[id] = new EMP(@getHolder(), id)
+
+		@game.newGameObject (id) =>
+			@game.EMPs[id] = new EMP(@getHolder(), id)
 
 		# Clean up.
 		@getHolder().releaseBonus()
 		@getBonus().setState 'dead'
 
 	getBonus: () ->
-		server.game.gameObjects[@bonusId]
+		@game.gameObjects[@bonusId]
 	
 	getHolder: () ->
-		server.game.gameObjects[@getBonus().holderId]
-
+		@gameObjects[@getBonus().holderId]
 
 exports.BonusEMP = BonusEMP
 exports.constructor = BonusEMP

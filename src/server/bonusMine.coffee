@@ -1,20 +1,21 @@
-server = require './server'
 prefs = require './prefs'
 Mine = require('./mine').Mine
 
 class BonusMine
 	type: 'mine'
 
-	constructor: () ->
+	constructor: (@ship, @game) ->
 		@used = no
 		@mines = prefs.bonus.mine.mineCount
 
 	use: () ->
-		server.game.newGameObject (id) =>
+		return if mine is 0
+
+		@game.newGameObject (id) =>
 			dropPos =
 				x: @getBonus().pos.x
 				y: @getBonus().pos.y
-			server.game.mines[id] = new Mine(@getHolder(), dropPos, id)
+			@game.mines[id] = new Mine(@getHolder(), dropPos, id)
 
 		# Decrease mine count.
 		--@mines
@@ -25,10 +26,10 @@ class BonusMine
 			@getBonus().setState 'dead'
 
 	getBonus: () ->
-		server.game.gameObjects[@bonusId]
+		@game.gameObjects[@bonusId]
 	
 	getHolder: () ->
-		server.game.gameObjects[@getBonus().holderId]
+		@game.gameObjects[@getBonus().holderId]
 
 exports.BonusMine = BonusMine
 exports.constructor = BonusMine

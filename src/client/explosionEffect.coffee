@@ -38,10 +38,11 @@ class ExplosionEffect
 	inView: (offset = {x:0, y:0}) ->
 		true
 
-	draw: (ctxt) ->
+	draw: (ctxt, offset = {x:0, y:0}) ->
 		ctxt.fillStyle = color(@color, (window.maxExploFrame-@frame)/window.maxExploFrame)
 		for b in @bits
-			ctxt.fillRect(b.x, b.y, b.size, b.size)
+			if window.inView(b.x + offset.x, b.y + offset.y)
+				ctxt.fillRect(b.x, b.y, b.size, b.size)
 
 # Exports
 window.ExplosionEffect = ExplosionEffect

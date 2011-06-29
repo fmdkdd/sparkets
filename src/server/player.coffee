@@ -3,12 +3,12 @@ prefs = require './prefs'
 Ship = require('./ship').Ship
 
 class Player
-	constructor: (@id) ->
+	constructor: (@id, @game) ->
 		@keys = {}
 		@ship = null
 
 	createShip: (id) ->
-		@ship = new Ship(id, @id, @name, @color)
+		@ship = new Ship(id, @game, @id, @name, @color)
 
 	keyDown: (key) ->
 		@keys[key] = on
@@ -31,7 +31,7 @@ class Player
 			@ship.useBonus()
 
 	update: () ->
-		return if not @ship?
+		return if not @ship? or @ship.isDead() or @ship.isExploding()
 
 		# Left arrow : rotate to the left.
 		@ship.turnLeft() if @keys[37] is on
