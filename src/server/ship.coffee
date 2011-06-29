@@ -72,6 +72,7 @@ class Ship extends ChangingObject
 
 	# Attach a bonus to the ship.
 	holdBonus: (bonus) ->
+		@releaseBonus() if @bonus?
 		@bonus = bonus
 		@bonus.holderId = @id
 
