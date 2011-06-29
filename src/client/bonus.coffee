@@ -73,7 +73,7 @@ class Bonus
 		ctxt.restore()
 
 		# Draw a rope to the ship.
-		if @state is 'claimed'
+		if @state is 'claimed' and @holderId?
 			holder = window.gameObjects[@holderId]
 			ghost = window.closestGhost(@pos.x, @pos.y, holder)
 			ctxt.beginPath()

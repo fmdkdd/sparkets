@@ -74,8 +74,7 @@ class Bonus extends ChangingObject
 			@countdown = prefs.mine.states[state].countdown
 
 	move: () ->
-		console.log @state
-		return if @state isnt 'claimed'
+		return if @state isnt 'claimed' or not @holderId?
 
 		holder = server.game.gameObjects[@holderId]
 		ghost = server.game.closestGhost(@pos.x, @pos.y, holder)
