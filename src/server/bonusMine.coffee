@@ -6,6 +6,7 @@ class BonusMine
 	type: 'mine'
 
 	constructor: () ->
+		@used = no
 		@mines = prefs.bonus.mine.mineCount
 
 	use: () ->

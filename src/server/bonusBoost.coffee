@@ -5,8 +5,8 @@ class BonusBoost
 	type: 'boost'
 
 	constructor: () ->
-		@boostFactor = 0
 		@used = no
+		@boostFactor = 0
 
 	use: () ->
 		return if @used
@@ -19,8 +19,9 @@ class BonusBoost
 		if @getHolder().bonusTimeout.bonusBoost?
 			clearTimeout(@getHolder().bonusTimeout.bonusBoost)
 
+		holderId = @getHolder().id
 		@getHolder().bonusTimeout[exports.type] = setTimeout(( () =>
-			@getHolder().boostDecay = prefs.bonus.boost.boostDecay ),
+			server.game.gameObjects[holderId].boostDecay = prefs.bonus.boost.boostDecay ),
 			prefs.bonus.boost.boostDuration)
 
 		# Clean up.

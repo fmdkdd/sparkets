@@ -242,6 +242,9 @@ exports.bonus =
 		EMP:
 			class: BonusEMP
 			weight: 1
+		drunk:
+			class: BonusDrunk
+			weight: 1
 
 	# Radius of hit circle.
 	hitRadius: 10

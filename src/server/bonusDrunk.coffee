@@ -12,16 +12,26 @@ class BonusDrunk
 		return if @used is yes
 
 		@used = yes
-		@ship.inverseTurn = yes
-		@ship.bonus = null
+		@getHolder().inverseTurn = yes
 
 		# Cancel all pending bonus timeouts.
-		for type, timeout of @ship.bonusTimeout
+		for type, timeout of @getHolder().bonusTimeout
 			clearTimeout(timeout)
 
-		@ship.bonusTimeout[exports.type] = setTimeout(( () =>
-			@ship.inverseTurn = no ),
+		holderId = @getHolder().id
+		@getHolder().bonusTimeout[exports.type] = setTimeout(( () =>
+			server.game.gameObjects[holderId].inverseTurn = no ),
 			prefs.bonus.drunk.duration)
+
+		#Clean up.
+		@getHolder().releaseBonus()
+		@getBonus().setState 'dead'
+
+	getBonus: () ->
+		server.game.gameObjects[@bonusId]
+	
+	getHolder: () ->
+		server.game.gameObjects[@getBonus().holderId]
 
 exports.BonusDrunk = BonusDrunk
 exports.constructor = BonusDrunk
