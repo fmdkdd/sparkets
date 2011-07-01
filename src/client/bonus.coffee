@@ -156,6 +156,7 @@ class Bonus
 		speed = Math.max(null, 3)
 
 		window.effects.push new ExplosionEffect(@, speed)
+		window.effects.push new OpenEffect({x:@pos.x,y:@pos.y}, 20, @color)
 
 # Exports
 window.Bonus = Bonus

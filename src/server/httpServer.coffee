@@ -20,6 +20,7 @@ webFiles = {
 	'/js/client/explosionEffect.js',
 	'/js/client/menu.js',
 	'/js/client/mine.js',
+	'/js/client/openEffect.js',
 	'/js/client/planet.js',
 	'/js/client/ship.js',
 	'/js/utils.js',
