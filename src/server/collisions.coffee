@@ -102,3 +102,5 @@ exports.collisions =
 		if bonus.state is 'claimed'
 			bonus.getHolder().releaseBonus()
 			bonus.setState 'exploding'
+		if bonus.state is 'available'
+			bonus.setState 'exploding'
