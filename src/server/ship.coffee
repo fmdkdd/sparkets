@@ -82,18 +82,18 @@ class Ship extends ChangingObject
 		@releaseBonus() if @bonusId?
 
 		@bonusId = bonusId
-		server.game.gameObjects[bonusId].holderId = @id
-		server.game.gameObjects[bonusId].setState 'claimed'
+		@game.gameObjects[bonusId].holderId = @id
+		@game.gameObjects[bonusId].setState 'claimed'
 
 	# Get rid of the bonus.
 	releaseBonus: () ->
-		server.game.gameObjects[@bonusId].holderId = null
-		server.game.gameObjects[@bonusId].setState 'available'
+		@game.gameObjects[@bonusId].holderId = null
+		@game.gameObjects[@bonusId].setState 'available'
 		@bonusId = null
 
 	useBonus: () ->
 		return if not @bonusId? or @isDead() or @isExploding()
-		@ddebug "use #{@bonus.type} bonus"
+		@ddebug "use #{@game.gameObjects[@bonusId].type} bonus"
 		@game.gameObjects[@bonusId].use()
 
 	move: () ->

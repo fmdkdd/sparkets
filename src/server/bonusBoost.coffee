@@ -3,7 +3,7 @@ prefs = require './prefs'
 class BonusBoost
 	type: 'boost'
 
-	constructor: (@ship, @game) ->
+	constructor: (@game) ->
 		@used = no
 		@boostFactor = 0
 
@@ -29,7 +29,7 @@ class BonusBoost
 
 	getBonus: () ->
 		@game.gameObjects[@bonusId]
-	
+
 	getHolder: () ->
 		@game.gameObjects[@getBonus().holderId]
 

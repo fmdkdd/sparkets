@@ -4,13 +4,11 @@ Mine = require('./mine').Mine
 class BonusMine
 	type: 'mine'
 
-	constructor: (@ship, @game) ->
+	constructor: (@game) ->
 		@used = no
 		@mines = prefs.bonus.mine.mineCount
 
 	use: () ->
-		return if mine is 0
-
 		@game.newGameObject (id) =>
 			dropPos =
 				x: @getBonus().pos.x
@@ -27,7 +25,7 @@ class BonusMine
 
 	getBonus: () ->
 		@game.gameObjects[@bonusId]
-	
+
 	getHolder: () ->
 		@game.gameObjects[@getBonus().holderId]
 

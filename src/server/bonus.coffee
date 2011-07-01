@@ -40,7 +40,7 @@ class Bonus extends ChangingObject
 			bonusClass = prefs.bonus.bonusType[bonusType].class
 		else
 			bonusClass = @randomBonus()
-		@bonusEffect = new bonusClass.constructor()
+		@bonusEffect = new bonusClass.constructor(@game)
 		@bonusEffect.bonusId = @id
 		@bonusType = bonusClass.type
 
@@ -75,8 +75,8 @@ class Bonus extends ChangingObject
 	move: () ->
 		return if @state isnt 'claimed' or not @holderId?
 
-		holder = server.game.gameObjects[@holderId]
-		ghost = server.game.closestGhost(@pos.x, @pos.y, holder)
+		holder = @game.gameObjects[@holderId]
+		ghost = @game.closestGhost(@pos.x, @pos.y, holder)
 		dist = utils.distance(@pos.x, @pos.y, ghost.x, ghost.y)
 		diff = dist - prefs.bonus.draggingDistance
 
@@ -105,7 +105,7 @@ class Bonus extends ChangingObject
 				@nextState() if @countdown <= 0
 
 			# The bonus is exploding.
-			when 'exploding'	
+			when 'exploding'
 				@nextState() if @countdown <= 0
 
 			# The bonus is of no more use.
@@ -116,9 +116,9 @@ class Bonus extends ChangingObject
 		@bonusEffect.use()
 
 	getHolder: () ->
-		server.game.gameObjects[@holderId]
+		@game.gameObjects[@holderId]
 
 	isEvil: () ->
-		@bonusEffect.evil?		
+		@bonusEffect.evil?
 
 exports.Bonus = Bonus

@@ -21,9 +21,9 @@ class BonusEMP
 
 	getBonus: () ->
 		@game.gameObjects[@bonusId]
-	
+
 	getHolder: () ->
-		@gameObjects[@getBonus().holderId]
+		@game.gameObjects[@getBonus().holderId]
 
 exports.BonusEMP = BonusEMP
 exports.constructor = BonusEMP
