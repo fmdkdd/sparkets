@@ -179,8 +179,6 @@ window.inView = (x, y) ->
 redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, window.canvasSize.w, window.canvasSize.h)
 
-	ctxt.strokeRect(-view.x, -view.y, map.w, map.h)
- 
 	# Draw everything centered around the player.
 	centerView()
 	ctxt.save()

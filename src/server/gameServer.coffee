@@ -64,7 +64,6 @@ class GameServer
 		@update()
 
 	clientConnect: (socket) ->
-		logger.info 'yeaaaah!'
 		id = socket.id
 
 		# Add new player to player list.
