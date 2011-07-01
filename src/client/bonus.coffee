@@ -152,10 +152,7 @@ class Bonus
 		ctxt.restore()
 
 	explode: () ->
-		# Ensure decent fireworks.
-		speed = Math.max(null, 3)
-
-		window.effects.push new ExplosionEffect(@, speed)
+		window.effects.push new ExplosionEffect(@pos, @color, 50, 8)
 		window.effects.push new OpenEffect({x:@pos.x,y:@pos.y}, 20, @color)
 
 # Exports

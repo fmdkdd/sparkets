@@ -1,23 +1,23 @@
 class ExplosionEffect
-	constructor: (@target, @speed = {x:0, y:0}) ->
+	constructor: (@pos, @color, @density = 100, @bitSize = 10, @speed = 1) ->
 		@init()
 
 	init: () ->
 		@bits = []
 		@frame = 0
-		@color = @target.color
+		@maxExploFrame = 50
 
 		# Ensure decent fireworks.
 		@speed = Math.max(@speed, 3)
 
 		# Create explosion particles.
-		for i in [0..200]
+		for i in [0..@density]
 			particle =
-				x: @target.pos.x
-				y: @target.pos.y
+				x: @pos.x
+				y: @pos.y
 				vx: .35 * @speed*(2*Math.random()-1)
 				vy: .35 * @speed*(2*Math.random()-1)
-				size: Math.random()*10
+				size: Math.random() * @bitSize
 
 			angle = Math.atan2(particle.vy, particle.vx)
 			particle.vx *= Math.abs(Math.cos angle)
@@ -33,13 +33,13 @@ class ExplosionEffect
 		++@frame
 
 	deletable: () ->
-		@frame > window.maxExploFrame
+		@frame > @maxExploFrame
 
 	inView: (offset = {x:0, y:0}) ->
 		true
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
-		ctxt.fillStyle = color(@color, (window.maxExploFrame-@frame)/window.maxExploFrame)
+		ctxt.fillStyle = color(@color, (@maxExploFrame-@frame)/@maxExploFrame)
 		for b in @bits
 			if window.inView(b.x + offset.x, b.y + offset.y)
 				ctxt.fillRect(b.x, b.y, b.size, b.size)

@@ -155,7 +155,7 @@ class Ship
 		# Ensure decent fireworks.
 		speed = Math.max(speed, 3)
 
-		window.effects.push new ExplosionEffect(@, speed)
+		window.effects.push new ExplosionEffect(@pos, @color, 200, 10, speed)
 
 	drawOnRadar: (ctxt) ->
 		# Select the closest ship among the real one and its ghosts.
