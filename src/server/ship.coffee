@@ -124,11 +124,7 @@ class Ship extends ChangingObject
 			@pos.y += @vel.y
 
 		# Warp the ship around the map
-		{w, h} = prefs.server.mapSize
-		@pos.x = if @pos.x < 0 then w else @pos.x
-		@pos.x = if @pos.x > w then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then h else @pos.y
-		@pos.y = if @pos.y > h then 0 else @pos.y
+		@warp()
 
 		@vel.x *= prefs.ship.frictionDecay
 		@vel.y *= prefs.ship.frictionDecay
@@ -137,6 +133,13 @@ class Ship extends ChangingObject
 				Math.abs(@pos.y-y) > .05
 			@changed 'pos'
 			@changed 'vel'
+
+	warp: () ->
+		{w, h} = prefs.server.mapSize
+		@pos.x = if @pos.x < 0 then w else @pos.x
+		@pos.x = if @pos.x > w then 0 else @pos.x
+		@pos.y = if @pos.y < 0 then h else @pos.y
+		@pos.y = if @pos.y > h then 0 else @pos.y
 
 	tangible: () ->
 		not @dead and not @exploding

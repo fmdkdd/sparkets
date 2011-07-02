@@ -75,6 +75,13 @@ class Bonus extends ChangingObject
 	move: () ->
 		true
 
+	warp: () ->
+		{w, h} = prefs.server.mapSize
+		@pos.x = if @pos.x < 0 then w else @pos.x
+		@pos.x = if @pos.x > w then 0 else @pos.x
+		@pos.y = if @pos.y < 0 then h else @pos.y
+		@pos.y = if @pos.y > h then 0 else @pos.y
+
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?
 

@@ -61,7 +61,10 @@ class Rope extends ChangingObject
 				cur.pos.y = if cur.pos.y < 0 then h else cur.pos.y
 				cur.pos.y = if cur.pos.y > h then 0 else cur.pos.y
 
+		# Notify that the dragged object position has changed.
 		chain[chain.length-1].changed 'pos'
+		chain[chain.length-1].warp()
+
 		@changed 'nodes'
 
 	update: () ->
