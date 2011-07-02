@@ -291,6 +291,8 @@ newObject = (i, type, obj) ->
 			new Planet(obj)
 		when 'moon'
 			new Planet(obj)
+		when 'rope'
+				new Rope(obj)
 
 deleteObject = (id) ->
 	type = window.gameObjects[id].type

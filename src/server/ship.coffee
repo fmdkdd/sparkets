@@ -1,9 +1,9 @@
 logger = require './logger'
-ChangingObject = require('./changingObject').ChangingObject
 prefs = require './prefs'
 utils = require '../utils'
-Bullet = require './bullet'
-Mine = require './mine'
+ChangingObject = require('./changingObject').ChangingObject
+Bullet = require('./bullet').Bullet
+Rope = require('./rope').Rope
 
 class Ship extends ChangingObject
 	constructor: (@id, @game, @playerId, name, color) ->
@@ -85,6 +85,10 @@ class Ship extends ChangingObject
 		@game.gameObjects[bonusId].holderId = @id
 		@game.gameObjects[bonusId].setState 'claimed'
 
+		# Attach the ship and the bonus with a rope.
+		@game.newGameObject (id) =>
+			new Rope(@game, id, @, @game.gameObjects[@bonusId], 100, 3)
+
 	# Get rid of the bonus.
 	releaseBonus: () ->
 		@game.gameObjects[@bonusId].holderId = null
@@ -164,7 +168,7 @@ class Ship extends ChangingObject
 
 		@game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"
-			return @game.bullets[id] = new Bullet.Bullet(@, id, @game)
+			return @game.bullets[id] = new Bullet(@, id, @game)
 
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = prefs.ship.cannonCooldown

@@ -19,6 +19,7 @@ class ExplosionEffect
 				vy: .35 * @speed*(2*Math.random()-1)
 				size: Math.random() * @bitSize
 
+			# Circular repartition.
 			angle = Math.atan2(particle.vy, particle.vx)
 			particle.vx *= Math.abs(Math.cos angle)
 			particle.vy *= Math.abs(Math.sin angle)

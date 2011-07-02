@@ -73,28 +73,7 @@ class Bonus extends ChangingObject
 			@countdown = prefs.bonus.states[state].countdown
 
 	move: () ->
-		return if @state isnt 'claimed' or not @holderId?
-
-		holder = @game.gameObjects[@holderId]
-		ghost = @game.closestGhost(@pos.x, @pos.y, holder)
-		dist = utils.distance(@pos.x, @pos.y, ghost.x, ghost.y)
-		diff = dist - prefs.bonus.draggingDistance
-
-		# Enforce the distance constraint between the bonus and the
-		# dragging ship.
-		if diff > 0
-			ratio = diff / dist
-			@pos.x += ratio * (ghost.x - @pos.x)
-			@pos.y += ratio * (ghost.y - @pos.y)
-
-			# Warp the bonus around the map.
-			{w, h} = prefs.server.mapSize
-			@pos.x = if @pos.x < 0 then w else @pos.x
-			@pos.x = if @pos.x > w then 0 else @pos.x
-			@pos.y = if @pos.y < 0 then h else @pos.y
-			@pos.y = if @pos.y > h then 0 else @pos.y
-
-			@changed 'pos'
+		true
 
 	update: () ->
 		@countdown -= prefs.server.timestep if @countdown?

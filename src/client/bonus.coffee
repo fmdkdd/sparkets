@@ -72,15 +72,6 @@ class Bonus
 
 		ctxt.restore()
 
-		# Draw a rope to the ship.
-		if @state is 'claimed' and @holderId?
-			holder = window.gameObjects[@holderId]
-			ghost = window.closestGhost(@pos.x, @pos.y, holder)
-			ctxt.beginPath()
-			ctxt.moveTo(ghost.x, ghost.y)
-			ctxt.lineTo(x, y)
-			ctxt.stroke()
-
 	drawArrow: (ctxt) ->
 		ctxt.beginPath()
 		ctxt.moveTo(5, 0)

@@ -22,6 +22,7 @@ webFiles = {
 	'/js/client/mine.js',
 	'/js/client/openEffect.js',
 	'/js/client/planet.js',
+	'/js/client/rope.js',
 	'/js/client/ship.js',
 	'/js/utils.js',
 	'/favicon.ico',
