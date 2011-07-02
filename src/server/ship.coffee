@@ -87,7 +87,7 @@ class Ship extends ChangingObject
 
 		# Attach the ship and the bonus with a rope.
 		@game.newGameObject (id) =>
-			new Rope(@game, id, @, @game.gameObjects[@bonusId], 100, 3)
+			new Rope(@game, id, @, @game.gameObjects[@bonusId], 100, 4)
 
 	# Get rid of the bonus.
 	releaseBonus: () ->

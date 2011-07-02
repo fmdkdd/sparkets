@@ -69,16 +69,16 @@ exports.randomColor = () ->
 exports.capitalize = (word) ->
 	word[0].toUpperCase() + word.substring(1)
 
-exports.closestGhost = (x, y, obj) ->
-	return null if not obj?
-
-	# Choose the closest ghost of the object.
+# Return the closest position of 'targetPos' from 'sourcePos'.
+exports.closestGhost = (sourcePos, targetPos) ->
+	bestPos = null
 	bestDistance = Infinity
+
 	for i in [-1..1]
 		for j in [-1..1]
-			ox = obj.pos.x + i * map.w
-			oy = obj.pos.y + j * map.h
-			d = distance(x, y, ox, oy)
+			ox = targetPos.x + i * window.map.w
+			oy = targetPos.y + j * window.map.h
+			d = distance(sourcePos.x, sourcePos.y, ox, oy)
 			if d < bestDistance
 				bestDistance = d
 				bestPos = {x: ox, y: oy}

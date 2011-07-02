@@ -304,6 +304,22 @@ class GameServer
 
 		return planets
 
+	# Return the closest position of 'targetPos' from 'sourcePos'.
+	closestGhost: (sourcePos, targetPos) ->
+		bestPos = null
+		bestDistance = Infinity
+
+		for i in [-1..1]
+			for j in [-1..1]
+				ox = targetPos.x + i * prefs.server.mapSize.w
+				oy = targetPos.y + j * prefs.server.mapSize.h
+				d = utils.distance(sourcePos.x, sourcePos.y, ox, oy)
+				if d < bestDistance
+					bestDistance = d
+					bestPos = {x: ox, y: oy}
+
+		return bestPos
+
 	spawnBonus: (bonusType) ->
 		# Do nothing when no one is connected.
 		return if @noHuman()
@@ -314,23 +330,6 @@ class GameServer
 			@debug "spawned new #{@bonuses[id].bonusType} bonus ##{id}"
 			return @bonuses[id] )
 	
-	# Return the position of the closest ghost of a game object from position [x,y].
-	closestGhost: (x, y, obj) ->
-		return null if not obj?
-
-		# Choose the closest ghost of the object.
-		bestDistance = Infinity
-		for i in [-1..1]
-			for j in [-1..1]
-				ox = obj.pos.x + i * prefs.server.mapSize.w
-				oy = obj.pos.y + j * prefs.server.mapSize.h
-				d = utils.distance(x, y, ox, oy)
-				if d < bestDistance
-					bestDistance = d
-					bestPos = {x: ox, y: oy}
-
-		return bestPos
-
 	addBots: () ->
 		for i in [0...prefs.bot.count]
 			botId = 'b' + i

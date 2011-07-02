@@ -46,12 +46,13 @@ class Rope extends ChangingObject
 			cur = chain[i]
 			next = chain[i+1]
 
-			dist = utils.distance(cur.pos.x, cur.pos.y, next.pos.x, next.pos.y)
+			ghost = @game.closestGhost(cur.pos, next.pos)
+			dist = utils.distance(cur.pos.x, cur.pos.y, ghost.x, ghost.y)
 			diff = dist - @segmentLength
 			if diff > 0
 				ratio = diff / dist
-				next.pos.x += ratio * (cur.pos.x - next.pos.x)
-				next.pos.y += ratio * (cur.pos.y - next.pos.y)
+				next.pos.x += ratio * (cur.pos.x - ghost.x)
+				next.pos.y += ratio * (cur.pos.y - ghost.y)
 
 				# Warp around the map.
 				{w, h} = prefs.server.mapSize
