@@ -10,6 +10,12 @@ class Rope
 		@clientDelete = @serverDelete
 
 	draw: (ctxt) ->
+		obj1 = window.gameObjects[@object1Id]
+		obj2 = window.gameObjects[@object2Id]
+
+		# Exit if one of the two linked object is destroyed.
+		return if not obj1? or not obj2?
+
 		chain = [window.gameObjects[@object1Id]].concat(@nodes).concat([window.gameObjects[@object2Id]])
 
 		# Draw lines from neighbor to neighbor.
@@ -19,7 +25,6 @@ class Rope
 			ctxt.beginPath()
 			ctxt.moveTo(cur.pos.x, cur.pos.y)
 			g = closestGhost(cur.pos, next.pos)
-			console.info g
 			ctxt.lineTo(g.x, g.y)
 			ctxt.stroke()
 

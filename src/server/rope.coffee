@@ -68,6 +68,7 @@ class Rope extends ChangingObject
 		@changed 'nodes'
 
 	update: () ->
-		true
+		# Delete the rope when one of its two objects does not exist anymore.
+		@serverDelete = (not @object1?) or (not @object2?)
 
 exports.Rope = Rope
