@@ -19,45 +19,50 @@ class Rope
 		# Draw a bezier curve passing through a set of points.
 		# Partly borrowed from : http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
 
+		# Build a chain of objects and nodes, then convert them to closest positions.
 		chain = [window.gameObjects[@object1Id]].concat(@nodes).concat([window.gameObjects[@object2Id]])
+		for i in [1...chain.length]
+			chain[i] = closestGhost(chain[0].pos, chain[i].pos)
+		chain[0] = chain[0].pos
 
 		smooth = 0.75
 		ctxt.strokeStyle = 'black'
 		ctxt.beginPath()
-		ctxt.moveTo(chain[0].pos.x, chain[0].pos.y)		
+		ctxt.moveTo(chain[0].x, chain[0].y)		
 
+		x = Math.random() < 0.05
 		for i in [0...chain.length-1]
-			prev = chain[i-1] # Previous node.
-			cur = chain[i] # Current node.
-			next = chain[i+1] # Next node.
-			nnext = chain[i+2] # Node after the next node.
+			prev = chain[i-1] # Position of previous node.
+			cur = chain[i] # Position of current node.
+			next = chain[i+1] # Position of next node.
+			nnext = chain[i+2] # Position of next next node.
 
 			# Compute a weighted symmetric to the previous node with respect
 			# to the current one.
 			if prev?
 				sprev =
-					x: cur.pos.x - (prev.pos.x - cur.pos.x) * smooth / 2
-					y: cur.pos.y - (prev.pos.y - cur.pos.y) * smooth / 2
+					x: cur.x - (prev.x - cur.x) * smooth / 2
+					y: cur.y - (prev.y - cur.y) * smooth / 2
 			else
 				sprev =
-					x: cur.pos.x
-					y: cur.pos.y
+					x: cur.x
+					y: cur.y
 
-			# Compute a weighted symmetric to the nnext node with respect to
-			# the next one.
+			# Compute a weighted symmetric to the next next node with
+			# respect to the next one.
 			if nnext?
 				snnext =
-					x: next.pos.x - (nnext.pos.x - next.pos.x) * smooth / 2
-					y: next.pos.y - (nnext.pos.y - next.pos.y) * smooth / 2
+					x: next.x - (nnext.x - next.x) * smooth / 2
+					y: next.y - (nnext.y - next.y) * smooth / 2
 			else
 				snnext =
-					x: next.pos.x
-					y: next.pos.y
+					x: next.x
+					y: next.y
 
 			# Center of the current segment.
 			middle = 
-				x: cur.pos.x + (next.pos.x - cur.pos.x) / 2
-				y: cur.pos.y + (next.pos.y - cur.pos.y) / 2
+				x: cur.x + (next.x - cur.x) / 2
+				y: cur.y + (next.y - cur.y) / 2
 
 			# First control point : half of the distance between the first
 			# symmetric and the middle point.
@@ -71,8 +76,8 @@ class Rope
 				x: snnext.x + (middle.x - snnext.x) / 2
 				y: snnext.y + (middle.y - snnext.y) / 2
 
-			ctxt.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, next.pos.x, next.pos.y)
-
+			ctxt.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, next.x, next.y)
+			if x then console.log i+' '+cur.y+' '+next.y
 		ctxt.stroke()
 
 	inView: (offset = {x:0, y:0}) ->
