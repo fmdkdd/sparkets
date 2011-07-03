@@ -20,7 +20,7 @@ class Rope
 			@chain[i] = closestGhost(@chain[0], @chain[i])
 
 		smooth = 0.75
-		ctxt.strokeStyle = 'black'
+		ctxt.strokeStyle = color @color
 		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.beginPath()
 		ctxt.moveTo(@chain[0].x, @chain[0].y)		
