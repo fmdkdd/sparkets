@@ -23,17 +23,22 @@ globalSockets.on 'connection', (socket) ->
 	socket.on 'disconnect', () ->
 		logger.info "Player #{socket.id} left global server"
 
+	socket.on 'get game list', () ->
+		socket.emit 'game list',
+			list: Object.keys(gameList)
+
 logger.info 'Global server started'
 
 GameServer = require('./gameServer').GameServer
+gameList = {}
 createGame = (id) ->
 	game = new GameServer(io.of(id))
 	game.launch()
 	logger.info "Game #{id} started"
-	return game
+	return gameList[id] = game
 
 # Default game for all users
-createGame('#play')
+createGame('#test')
 
 # Start the admin REPL and expose game server object.
 repl = require 'webrepl'

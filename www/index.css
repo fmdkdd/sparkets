@@ -1,0 +1,95 @@
+* { margin: 0; padding: 0; }
+
+body {
+	 font-family: sans;
+	 font-size: 12pt;
+
+	 color: hsl(0, 0%, 30%);
+}
+
+/**
+ * Forms.
+ */
+
+#forms {
+	 margin: 5em;
+	 min-width: 600px;
+
+	 background-color: hsl(-100, 10%, 80%);
+	 border-radius: 2em;
+	 border: 1em solid hsl(-100, 10%, 45%);
+}
+
+#forms h2 {
+	 margin: .5em 0;
+}
+
+#createDiv, #joinDiv {
+	 padding: 0 1em;
+	 width: 44%;
+	 height: 300px;
+}
+
+#createDiv { float: left; }
+#joinDiv { float: right; }
+#footer { clear: both; }
+
+#createDiv [value="Create"] {
+	 padding: .2em .5em;
+	 margin: 1em auto;
+
+	 display: block;
+
+	 /* Necessary for centering in Chrome */
+	 width: 5em;
+
+	 font-size: 14pt;
+
+	 color: white;
+	 border-radius: .3em;
+	 border-width: 3px;
+	 border-style: solid;
+}
+
+#createDiv [value="Create"]:hover {
+	 cursor: pointer;
+}
+
+/**
+ * Create column.
+ */
+
+#createDiv [value="Create"] {
+	 background-color: hsl(20, 60%, 60%);
+	 border-color: hsl(20, 60%, 45%);
+}
+
+#createDiv [value="Create"]:hover {
+	 background-color: hsl(20, 60%, 75%);
+	 border-color: hsl(20, 60%, 55%);
+}
+
+/**
+ * Join column.
+ */
+
+#gameList {
+	 height: 10em;
+	 overflow-y: scroll;
+	 padding: .2em 0 .2em .5em;
+
+	 list-style-position: inside;
+	 list-style-type: circle;
+
+	 background-color: white;
+	 border-radius: .3em;
+	 border-width: 2px;
+	 border-style: solid;
+	 border-color: hsl(-150, 30%, 45%);
+}
+
+#gameList a {
+	 text-decoration: none;
+
+	 color: hsl(-150, 60%, 45%);
+}

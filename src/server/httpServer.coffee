@@ -10,14 +10,16 @@ mime = (path) ->
 	return 'image/svg+xml' if path.match(/svg$/)
 
 webFiles = {
-	'/' : '/client.html',
-	'/client.html',
+	'/' : '/index.html',
+	'/play/' : '/client.html',
 	'/client.css',
+	'/index.css',
 	'/js/client/bonus.js',
 	'/js/client/bullet.js',
 	'/js/client/client.js',
 	'/js/client/EMP.js',
 	'/js/client/explosionEffect.js',
+	'/js/client/index.js',
 	'/js/client/menu.js',
 	'/js/client/mine.js',
 	'/js/client/planet.js',
