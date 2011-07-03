@@ -10,14 +10,12 @@ class Rope extends ChangingObject
 		@watchChanges 'hitRadius'
 		@watchChanges 'color'
 		@watchChanges 'serverDelete'
-		@watchChanges 'nodes'
-		@watchChanges 'segmentLength'
-		@watchChanges 'object1Id'
-		@watchChanges 'object2Id'
-
+		@watchChanges 'chain'
+		
 		@type = 'rope'
 		@hitRadius = 0
 
+		@chain = []
 		@nodes = []
 		@segmentLength = @ropeLength / @segments
 		for i in [0...@segments-1]
@@ -25,9 +23,6 @@ class Rope extends ChangingObject
 				pos:
 					x: @object1.pos.x + (i+1) * (@object2.pos.x - @object1.pos.x) / @segments
 					y: @object1.pos.y + (i+1) * (@object2.pos.y - @object1.pos.y) / @segments
-
-		@object1Id = @object1.id
-		@object2Id = @object2.id
 
 	tangible: () ->
 		no
@@ -38,14 +33,16 @@ class Rope extends ChangingObject
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	move: () ->
+		return if not @object1? or not @object2?
+
 		# Build a chain starting from the first object, containing all
 		# nodes and ending with the second object.
-		chain = [@object1].concat(@nodes).concat([@object2])
+		rope = [@object1].concat(@nodes).concat([@object2])
 
 		# Enforce the distance constraints.
-		for i in [0...chain.length-1]
-			cur = chain[i]
-			next = chain[i+1]
+		for i in [0...rope.length-1]
+			cur = rope[i]
+			next = rope[i+1]
 
 			ghost = @game.closestGhost(cur.pos, next.pos)
 			dist = utils.distance(cur.pos.x, cur.pos.y, ghost.x, ghost.y)
@@ -63,16 +60,20 @@ class Rope extends ChangingObject
 				cur.pos.y = if cur.pos.y > h then 0 else cur.pos.y
 
 		# Notify that the dragged object position has changed.
-		chain[chain.length-1].changed 'pos'
-		chain[chain.length-1].warp()
+		rope[rope.length-1].changed 'pos'
+		rope[rope.length-1].warp()
 
-		@changed 'nodes'
+		# Prepare the chain which will be sent to the client.
+		@chain = []
+		for n in rope
+			@chain.push n.pos
+		@changed 'chain'
 
 	update: () ->
-		@serverDelete = (not @object1Id?) or (not @object2Id?)
+		@serverDelete = (not @object1?) or (not @object2?)
 
 	detach: () ->
-		@object1Id = null
-		@object2Id = null
+		@object1 = null
+		@object2 = null
 
 exports.Rope = Rope

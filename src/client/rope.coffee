@@ -10,33 +10,26 @@ class Rope
 		@clientDelete = @serverDelete
 
 	draw: (ctxt) ->
-		obj1 = window.gameObjects[@object1Id]
-		obj2 = window.gameObjects[@object2Id]
-
-		# Exit if one of the two linked object is destroyed.
-		return if not obj1? or not obj2?
-
 		# Draw a bezier curve passing through a set of points.
 		# Partly borrowed from : http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
 
-		# Build a chain of objects and nodes, then convert them to closest positions.
-		chain = [window.gameObjects[@object1Id]].concat(@nodes).concat([window.gameObjects[@object2Id]])
-		for i in [1...chain.length]
-			chain[i] = closestGhost(chain[0].pos, chain[i].pos)
-		chain[0] = chain[0].pos
+		return if @chain.length is 0
+
+		# Check for map warping.
+		for i in [1...@chain.length]
+			@chain[i] = closestGhost(@chain[0], @chain[i])
 
 		smooth = 0.75
 		ctxt.strokeStyle = 'black'
 		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.beginPath()
-		ctxt.moveTo(chain[0].x, chain[0].y)		
+		ctxt.moveTo(@chain[0].x, @chain[0].y)		
 
-		x = Math.random() < 0.05
-		for i in [0...chain.length-1]
-			prev = chain[i-1] # Position of previous node.
-			cur = chain[i] # Position of current node.
-			next = chain[i+1] # Position of next node.
-			nnext = chain[i+2] # Position of next next node.
+		for i in [0...@chain.length-1]
+			prev = @chain[i-1] # Position of previous node.
+			cur = @chain[i] # Position of current node.
+			next = @chain[i+1] # Position of next node.
+			nnext = @chain[i+2] # Position of next next node.
 
 			# Compute a weighted symmetric to the previous node with respect
 			# to the current one.
