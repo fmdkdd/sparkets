@@ -29,7 +29,7 @@ class Bonus
 		x = @pos.x
 		y = @pos.y
 
-		ctxt.fillStyle = color @color
+		ctxt.fillStyle = 'white'
 		ctxt.strokeStyle = color @color
 		ctxt.lineWidth = 2
 
@@ -37,7 +37,10 @@ class Bonus
 
 		ctxt.save()
 		ctxt.translate(x, y)
+		ctxt.fillRect(-s/2, -s/2, s, s)
 		ctxt.strokeRect(-s/2, -s/2, s, s)
+
+		ctxt.fillStyle = color @color
 
 		switch @bonusType
 			when 'bonusMine'

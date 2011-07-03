@@ -27,6 +27,7 @@ class Rope
 
 		smooth = 0.75
 		ctxt.strokeStyle = 'black'
+		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.beginPath()
 		ctxt.moveTo(chain[0].x, chain[0].y)		
 
@@ -77,8 +78,10 @@ class Rope
 				y: snnext.y + (middle.y - snnext.y) / 2
 
 			ctxt.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, next.x, next.y)
-			if x then console.log i+' '+cur.y+' '+next.y
+
 		ctxt.stroke()
+
+		ctxt.globalCompositeOperation = 'source-over'
 
 	inView: (offset = {x:0, y:0}) ->
 		true
