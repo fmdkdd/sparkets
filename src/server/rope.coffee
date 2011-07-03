@@ -11,6 +11,7 @@ class Rope extends ChangingObject
 		@watchChanges 'color'
 		@watchChanges 'serverDelete'
 		@watchChanges 'nodes'
+		@watchChanges 'segmentLength'
 		@watchChanges 'object1Id'
 		@watchChanges 'object2Id'
 
@@ -69,6 +70,6 @@ class Rope extends ChangingObject
 
 	update: () ->
 		# Delete the rope when one of its two objects does not exist anymore.
-		@serverDelete = (not @object1?) or (not @object2?)
+		@serverDelete = not (@object1.pos? and @object2.pos?)
 
 exports.Rope = Rope
