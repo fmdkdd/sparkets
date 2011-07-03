@@ -3,7 +3,7 @@ prefs = require './prefs'
 class BonusDrunk
 	type: 'drunk'
 
-	constructor: (@game) ->
+	constructor: (@game, @bonus) ->
 		@used = no
 		@evil = yes
 
@@ -11,26 +11,20 @@ class BonusDrunk
 		return if @used is yes
 
 		@used = yes
-		@getHolder().inverseTurn = yes
+		@bonus.holder.inverseTurn = yes
 
 		# Cancel all pending bonus timeouts.
-		for type, timeout of @getHolder().bonusTimeout
+		for type, timeout of @bonus.holder.bonusTimeout
 			clearTimeout(timeout)
 
-		holderId = @getHolder().id
-		@getHolder().bonusTimeout[exports.type] = setTimeout(( () =>
+		holderId = @bonus.holder.id
+		@bonus.holder.bonusTimeout[exports.type] = setTimeout(( () =>
 			@game.gameObjects[holderId].inverseTurn = no ),
 			prefs.bonus.drunk.duration)
 
-		#Clean up.
-		@getHolder().releaseBonus()
-		@getBonus().setState 'dead'
-
-	getBonus: () ->
-		@game.gameObjects[@bonusId]
-	
-	getHolder: () ->
-		@game.gameObjects[@getBonus().holderId]
+		# Clean up.
+		@bonus.holder.releaseBonus()
+		@bonus.setState 'dead'
 
 exports.BonusDrunk = BonusDrunk
 exports.constructor = BonusDrunk

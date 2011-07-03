@@ -1,8 +1,9 @@
-ChangingObject = require('./changingObject').ChangingObject
-BonusMine = require './bonusMine'
-BonusBoost = require './bonusBoost'
 prefs = require './prefs'
 utils = require '../utils'
+BonusMine = require './bonusMine'
+BonusBoost = require './bonusBoost'
+ChangingObject = require('./changingObject').ChangingObject
+Rope = require('./rope').Rope
 
 class Bonus extends ChangingObject
 	constructor: (@id, @game, bonusType) ->
@@ -14,7 +15,6 @@ class Bonus extends ChangingObject
 		@watchChanges 'countdown'
 		@watchChanges 'color'
 		@watchChanges 'pos'
-		@watchChanges 'holderId'
 		@watchChanges 'serverDelete'
 		@watchChanges 'bonusType'
 
@@ -31,17 +31,18 @@ class Bonus extends ChangingObject
 		@pos =
 			x: Math.random() * prefs.server.mapSize.w
 			y: Math.random() * prefs.server.mapSize.h
-		@holderId = null
 		@color = utils.randomColor()
 		@empty = yes
+
+		@holder = null
+		@rope = null
 
 		# Choose bonus type.
 		if bonusType?
 			bonusClass = prefs.bonus.bonusType[bonusType].class
 		else
 			bonusClass = @randomBonus()
-		@bonusEffect = new bonusClass.constructor(@game)
-		@bonusEffect.bonusId = @id
+		@bonusEffect = new bonusClass.constructor(@game, @)
 		@bonusType = bonusClass.type
 
 		@spawn(bonusType) if @game.collidesWithPlanet(@)
@@ -101,8 +102,22 @@ class Bonus extends ChangingObject
 	use: () ->
 		@bonusEffect.use()
 
-	getHolder: () ->
-		@game.gameObjects[@holderId]
+	attach: (ship) ->
+		@holder = ship
+		@setState 'claimed'
+
+		# Attach the bonus to the ship with a rope.
+		@game.newGameObject (id) =>
+			@rope = new Rope(@game, id, @holder, @, 60, 4)
+
+	release: () ->
+		@holder = null
+		@setState 'available'
+
+		# We don't need the rope anymore.
+		if @rope?
+			@rope.detach()
+			@rope = null				
 
 	isEvil: () ->
 		@bonusEffect.evil?

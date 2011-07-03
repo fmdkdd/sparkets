@@ -3,7 +3,6 @@ prefs = require './prefs'
 utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
 Bullet = require('./bullet').Bullet
-Rope = require('./rope').Rope
 
 class Ship extends ChangingObject
 	constructor: (@id, @game, @playerId, name, color) ->
@@ -44,7 +43,7 @@ class Ship extends ChangingObject
 		@thrust = false
 		@firePower = prefs.ship.minFirepower
 		@cannonHeat = 0
-		@bonusId = null
+		@bonus = null
 		@bonusTimeout = {}
 		@boost = 1
 		@boostDecay = 0
@@ -78,27 +77,22 @@ class Ship extends ChangingObject
 		@ddebug "charge fire"
 
 	# Attach a bonus to the ship.
-	holdBonus: (bonusId) ->
-		@releaseBonus() if @bonusId?
+	holdBonus: (bonus) ->
+		@releaseBonus() if @bonus?
 
-		@bonusId = bonusId
-		@game.gameObjects[bonusId].holderId = @id
-		@game.gameObjects[bonusId].setState 'claimed'
-
-		# Attach the ship and the bonus with a rope.
-		@game.newGameObject (id) =>
-			new Rope(@game, id, @, @game.gameObjects[@bonusId], 60, 4)
+		@bonus = bonus
+		@bonus.attach(@)
 
 	# Get rid of the bonus.
 	releaseBonus: () ->
-		@game.gameObjects[@bonusId].holderId = null
-		@game.gameObjects[@bonusId].setState 'available'
-		@bonusId = null
+		@bonus.release()
+		@bonus = null
 
 	useBonus: () ->
-		return if not @bonusId? or @isDead() or @isExploding()
-		@ddebug "use #{@game.gameObjects[@bonusId].type} bonus"
-		@game.gameObjects[@bonusId].use()
+		return if not @bonus? or @isDead() or @isExploding()
+
+		@ddebug "use #{@bonus.type} bonus"
+		@bonus.use()
 
 	move: () ->
 		return if @isDead() or @isExploding()
@@ -180,7 +174,7 @@ class Ship extends ChangingObject
 		@exploding = true
 		@exploFrame = 0
 
-		@releaseBonus() if @bonusId?
+		@releaseBonus() if @bonus?
 
 		@debug "explode"
 

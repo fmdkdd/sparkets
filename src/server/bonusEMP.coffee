@@ -4,7 +4,7 @@ EMP = require('./EMP').EMP
 class BonusEMP
 	type: 'EMP'
 
-	constructor: (@game) ->
+	constructor: (@game, @bonus) ->
 		@used = no
 
 	use: () ->
@@ -13,17 +13,11 @@ class BonusEMP
 		@used = yes
 
 		@game.newGameObject (id) =>
-			@game.EMPs[id] = new EMP(@getHolder(), id)
+			@game.EMPs[id] = new EMP(@bonus.holder, id)
 
 		# Clean up.
-		@getHolder().releaseBonus()
-		@getBonus().setState 'dead'
-
-	getBonus: () ->
-		@game.gameObjects[@bonusId]
-
-	getHolder: () ->
-		@game.gameObjects[@getBonus().holderId]
+		@bonus.holder.releaseBonus()
+		@bonus.setState 'dead'
 
 exports.BonusEMP = BonusEMP
 exports.constructor = BonusEMP

@@ -4,30 +4,24 @@ Mine = require('./mine').Mine
 class BonusMine
 	type: 'mine'
 
-	constructor: (@game) ->
+	constructor: (@game, @bonus) ->
 		@used = no
 		@mines = prefs.bonus.mine.mineCount
 
 	use: () ->
 		@game.newGameObject (id) =>
 			dropPos =
-				x: @getBonus().pos.x
-				y: @getBonus().pos.y
-			@game.mines[id] = new Mine(@getHolder(), dropPos, id)
+				x: @bonus.pos.x
+				y: @bonus.pos.y
+			@game.mines[id] = new Mine(@bonus.holder, dropPos, id)
 
 		# Decrease mine count.
 		--@mines
 
 		# Clean up if there is no more mine.
 		if @mines is 0
-			@getHolder().releaseBonus()
-			@getBonus().setState 'dead'
-
-	getBonus: () ->
-		@game.gameObjects[@bonusId]
-
-	getHolder: () ->
-		@game.gameObjects[@getBonus().holderId]
+			@bonus.holder.releaseBonus()
+			@bonus.setState 'dead'
 
 exports.BonusMine = BonusMine
 exports.constructor = BonusMine
