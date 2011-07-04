@@ -31,6 +31,9 @@ class Rope extends ChangingObject
 				pos:
 					x: @object1.pos.x + (i+1) * (@object2.pos.x - @object1.pos.x) / @segments
 					y: @object1.pos.y + (i+1) * (@object2.pos.y - @object1.pos.y) / @segments
+				vel:
+					x: 0
+					y: 0
 
 	tangible: () ->
 		no
@@ -43,6 +46,18 @@ class Rope extends ChangingObject
 	move: () ->
 		return if not @object1? or not @object2?
 
+		# Update each node position.
+		for n in @nodes
+			n.pos.x += n.vel.x
+			n.pos.y += n.vel.y
+
+			# Warp around the map.
+			{w, h} = prefs.server.mapSize
+			n.pos.x = if n.pos.x < 0 then w else n.pos.x
+			n.pos.x = if n.pos.x > w then 0 else n.pos.x
+			n.pos.y = if n.pos.y < 0 then h else n.pos.y
+			n.pos.y = if n.pos.y > h then 0 else n.pos.y
+
 		# Build a chain starting from the first object, containing all
 		# nodes and ending with the second object.
 		rope = [@object1].concat(@nodes).concat([@object2])
@@ -51,25 +66,16 @@ class Rope extends ChangingObject
 		for i in [0...rope.length-1]
 			cur = rope[i]
 			next = rope[i+1]
-
+			next.vel = {x:0,y:0}
 			ghost = @game.closestGhost(cur.pos, next.pos)
 			dist = utils.distance(cur.pos.x, cur.pos.y, ghost.x, ghost.y)
-			diff = dist - @segmentLength
-			if diff > 0
-				ratio = diff / dist
-				next.pos.x += ratio * (cur.pos.x - ghost.x)
-				next.pos.y += ratio * (cur.pos.y - ghost.y)
-
-				# Warp around the map.
-				{w, h} = prefs.server.mapSize
-				cur.pos.x = if cur.pos.x < 0 then w else cur.pos.x
-				cur.pos.x = if cur.pos.x > w then 0 else cur.pos.x
-				cur.pos.y = if cur.pos.y < 0 then h else cur.pos.y
-				cur.pos.y = if cur.pos.y > h then 0 else cur.pos.y
-
-		# Notify that the dragged object position has changed.
-		rope[rope.length-1].changed 'pos'
-		rope[rope.length-1].warp()
+			if dist > @segmentLength
+				ratio = (dist - @segmentLength) / dist
+				next.vel.x += ratio * (cur.pos.x - ghost.x)
+				next.vel.y += ratio * (cur.pos.y - ghost.y)
+			
+			#next.vel.x *= prefs.ship.frictionDecay
+			#next.vel.y *= prefs.ship.frictionDecay
 
 		# Prepare the chain which will be sent to the client.
 		@chain = []

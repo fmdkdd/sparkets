@@ -15,6 +15,7 @@ class Bonus extends ChangingObject
 		@watchChanges 'countdown'
 		@watchChanges 'color'
 		@watchChanges 'pos'
+		@watchChanges 'vel'
 		@watchChanges 'serverDelete'
 		@watchChanges 'bonusType'
 
@@ -31,6 +32,9 @@ class Bonus extends ChangingObject
 		@pos =
 			x: Math.random() * prefs.server.mapSize.w
 			y: Math.random() * prefs.server.mapSize.h
+		@vel =
+			x: 0
+			y: 0
 		@color = utils.randomColor()
 		@empty = yes
 
@@ -74,7 +78,14 @@ class Bonus extends ChangingObject
 			@countdown = prefs.bonus.states[state].countdown
 
 	move: () ->
-		true
+		@pos.x += @vel.x
+		@pos.y += @vel.y
+		@warp()
+
+		@vel.x *= prefs.ship.frictionDecay
+		@vel.y *= prefs.ship.frictionDecay
+
+		@changed 'pos'
 
 	warp: () ->
 		{w, h} = prefs.server.mapSize

@@ -117,7 +117,7 @@ class Ship extends ChangingObject
 			@pos.x += @vel.x
 			@pos.y += @vel.y
 
-		# Warp the ship around the map
+		# Warp the ship around the map.
 		@warp()
 
 		@vel.x *= prefs.ship.frictionDecay
