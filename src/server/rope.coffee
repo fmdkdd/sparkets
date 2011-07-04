@@ -21,7 +21,6 @@ class Rope extends ChangingObject
 			@color = @object2.color
 		else
 			@color = 'black'
-		console.info @color
 
 		@chain = []
 		@nodes = []

@@ -14,6 +14,7 @@ webFiles = {
 	'/client.html',
 	'/client.css',
 	'/js/client/bonus.js',
+	'/js/client/boostEffect.js',
 	'/js/client/bullet.js',
 	'/js/client/client.js',
 	'/js/client/EMP.js',

@@ -5,10 +5,11 @@ class BonusMine
 	type: 'mine'
 
 	constructor: (@game, @bonus) ->
-		@used = no
 		@mines = prefs.bonus.mine.mineCount
 
 	use: () ->
+		return if @mines <= 0
+
 		@game.newGameObject (id) =>
 			dropPos =
 				x: @bonus.pos.x

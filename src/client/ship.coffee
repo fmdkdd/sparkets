@@ -8,6 +8,7 @@ class Ship
 	serverUpdate: (ship) ->
 		thrust_old = @thrust
 		exploding_old = @exploding
+		boost_old = @boost
 
 		for field, val of ship
 			@[field] = val
@@ -21,26 +22,14 @@ class Ship
 			@explode()
 
 		# Start the boost animation if the ship just boosted.
-		###
-		if @boost > 1 and not @ghosts?
-			@ghosts = []
-		###
+		if boost_old < @boost
+			window.effects.push new BoostEffect(@, 3000, 5, 0.4)
 
 	update: () ->
-
 		# Update the engine animation countdown.
 		if @engineAnimFor?
 			@engineAnimFor -= window.sinceLastUpdate
 			@engineAnimFor = null if @engineAnimFor <= 0
-
-		# Update the ghosts trail.
-		if @ghosts and (@ghosts.length is 0 or now-@ghosts[@ghosts.length-1].t > 0)
-			@ghosts.push
-				x: @pos.x
-				y: @pos.y
-				dir: @dir
-				t: now
-			@ghosts.shift() if @ghosts.length > 5
 
 	inView: (offset = {x:0, y:0}) ->
 		window.boxInView(@pos.x + offset.x,

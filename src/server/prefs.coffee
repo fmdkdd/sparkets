@@ -238,7 +238,7 @@ exports.bonus =
 			weight: 3
 		boost:
 			class: BonusBoost
-			weight: 2
+			weight: 20000
 		EMP:
 			class: BonusEMP
 			weight: 1
@@ -248,9 +248,6 @@ exports.bonus =
 
 	# Radius of hit circle.
 	hitRadius: 10
-
-	# 
-	draggingDistance: 30
 
 	states:
 		'incoming':
