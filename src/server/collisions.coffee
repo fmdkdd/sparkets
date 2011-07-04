@@ -104,3 +104,7 @@ exports.collisions =
 			bonus.setState 'exploding'
 		if bonus.state is 'available'
 			bonus.setState 'exploding'
+
+	'bonus-planet': (bonus, planet) ->
+		if bonus.state is 'available'
+			bonus.setState 'exploding'
