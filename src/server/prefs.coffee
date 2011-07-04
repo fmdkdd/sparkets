@@ -238,7 +238,7 @@ exports.bonus =
 			weight: 3
 		boost:
 			class: BonusBoost
-			weight: 20000
+			weight: 2
 		EMP:
 			class: BonusEMP
 			weight: 1
