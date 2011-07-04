@@ -21,10 +21,10 @@ class Ship
 			@explode()
 
 		# Start the boost animation if the ship just boosted.
+		###
 		if @boost > 1 and not @ghosts?
 			@ghosts = []
-		else if @boost <= 1 and @ghosts?
-			delete @ghosts
+		###
 
 	update: () ->
 
@@ -42,17 +42,6 @@ class Ship
 				t: now
 			@ghosts.shift() if @ghosts.length > 5
 
-	isExploding: () ->
-		return @exploding
-
-	isDead: () ->
-		return @dead
-
-	draw: (ctxt, offset) ->
-		return if @exploding or @dead
-
-		@drawShip(ctxt, offset)
-
 	inView: (offset = {x:0, y:0}) ->
 		window.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, 10)
@@ -62,35 +51,36 @@ class Ship
 		ctxt.lineWidth = 1
 		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
-	drawShip: (ctxt) ->
-		x = @pos.x
-		y = @pos.y
+	draw: (ctxt, offset) ->
+		return if @exploding or @dead
 
-		cos = Math.cos @dir
-		sin = Math.sin @dir
+		# Draw the basic model.
+		ctxt.save()
+		ctxt.translate(@pos.x, @pos.y)
+		ctxt.rotate(@dir)
+		@drawModel(ctxt, color(@color))
+		ctxt.restore()
 
-		# Draw hull.
+		# Color the hull depending on the cannon heat.
 		if @cannonHeat > 0
 			fillAlpha = @cannonHeat/window.cannonCooldown
 		else if @firePower > 0
 			fillAlpha = (@firePower-window.minPower)/(window.maxPower-window.minPower)
 
-		ctxt.lineJoin = 'round'
-		@drawShipModel(ctxt, x, y, @dir, 1, fillAlpha)
-
-		# Draw ghosts trail.
-		if @ghosts?
-			for i of @ghosts
-				@drawShipModel(ctxt,
-						@ghosts[i].x,
-						@ghosts[i].y,
-						@ghosts[i].dir,
-						0.1,
-						0)
+		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
+		ctxt.save()
+		ctxt.translate(@pos.x, @pos.y)
+		ctxt.rotate(@dir)
+		ctxt.fillStyle = color(@color, fillAlpha)
+		ctxt.beginPath()
+		for p in points
+			ctxt.lineTo(p[0], p[1])
+		ctxt.closePath()
+		ctxt.fill()
+		ctxt.restore()
 
 		# Draw engine fire.
 		if @thrust or @engineAnimFor?
-
 			alpha = 1
 			if @engineAnimFor? and @thrust
 				alpha = 1-@engineAnimFor/@engineAnimDelay
@@ -98,17 +88,17 @@ class Ship
 				alpha = @engineAnimFor/@engineAnimDelay
 
 			ctxt.strokeStyle = color(@color, alpha)
-			enginePoints = [[-8,-5], [-18,0], [-8,5]]
+			points = [[-8,-5], [-18,0], [-8,5]]
 			ctxt.lineWidth = 2
 			ctxt.save()
-			ctxt.translate(x, y)
+			ctxt.translate(@pos.x, @pos.y)
 			ctxt.rotate(@dir)
 			ctxt.scale(1, Math.max(0.85,alpha))
 			if @boost > 1
 				boostScale = @boost-1
 				ctxt.scale(1 + .15*boostScale, 1 + .3*boostScale)
 			ctxt.beginPath()
-			for p in enginePoints
+			for p in points
 				ctxt.lineTo(p[0], p[1])
 			ctxt.stroke()
 			ctxt.restore()
@@ -116,28 +106,23 @@ class Ship
 		# Draw the player's name.
 		if 	@name?  and @ isnt window.localShip and
 				(displayNames is on or
-				window.localShip.isExploding() or window.localShip.isDead())
+				window.localShip.exploding or window.localShip.dead)
 			ctxt.fillStyle = '#666'
 			ctxt.font = '15px sans'
-			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)
+			ctxt.fillText(@name, @pos.x - ctxt.measureText(@name).width/2, @pos.y - 25)
 
-	drawShipModel: (ctxt, x, y, dir, strokeAlpha, fillAlpha) ->
+	drawModel: (ctxt, col) ->
 		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
 
-		ctxt.fillStyle = color(@color, fillAlpha)
-		ctxt.strokeStyle = color(@color, strokeAlpha)
+		ctxt.strokeStyle = col
+		ctxt.lineJoin = 'round'
 		ctxt.lineWidth = 4
 
-		ctxt.save()
-		ctxt.translate(x, y)
-		ctxt.rotate(@dir)
 		ctxt.beginPath()
 		for p in points
 			ctxt.lineTo(p[0], p[1])
 		ctxt.closePath()
 		ctxt.stroke()
-		ctxt.fill()
-		ctxt.restore()
 
 	explode: () ->
 		# Initial particle speed is derived from ship speed at death
@@ -185,7 +170,7 @@ class Ship
 			radius = 10
 			alpha = 1
 
-			if @isExploding()
+			if @exploding
 				animRatio = @exploFrame / window.maxExploFrame
 				radius -= animRatio * 10
 				alpha -= animRatio

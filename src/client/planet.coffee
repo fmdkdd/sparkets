@@ -38,12 +38,12 @@ class Planet
 		ctxt.fillText(@id, @pos.x - ctxt.measureText(@id).width/2, @pos.y)
 
 	draw: (ctxt) ->
-		x = @pos.x
-		y = @pos.y
-		f = @force;
+		ctxt.save()
+		ctxt.translate(@pos.x - @force, @pos.y - @force)
+		@drawModel(ctxt, null)
+		ctxt.restore()
 
-		# Fix jiggling planets?
-		ctxt.translate(x-f, y-f)
+	drawModel: (ctxt, col) ->
 		ctxt.drawImage(@sprite, 0, 0)
 
 # Exports

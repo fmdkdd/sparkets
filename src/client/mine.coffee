@@ -25,30 +25,32 @@ class Mine
 		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
 	drawMine: (ctxt) ->
-		x = @pos.x
-		y = @pos.y
-		r = 5
-		hr = @hitRadius
-
-		# Make the mine grow during the activation process.
-		r -= r * @countdown/1000 if @state is 'inactive'
 
 		# Draw the body of the mine.
-		ctxt.fillStyle = color @color
 		ctxt.save()
-		ctxt.translate(x, y)
-		ctxt.fillRect(-r, -r, r*2, r*2)
-		ctxt.rotate(Math.PI/4)
-		ctxt.fillRect(-r, -r, r*2, r*2)
+		ctxt.translate(@pos.x, @pos.y)
+		scaleFactor = if @state is 'inactive' then 1 - @countdown/1000 else 1
+		ctxt.scale(scaleFactor, scaleFactor)
+		@drawModel(ctxt, color(@color))
 		ctxt.restore()
 
 		# Draw the sensor wave when the mine is active.
 		if @state is 'active'
+			ctxt.save()
 			ctxt.lineWidth = 3
 			ctxt.strokeStyle = color(@color, 1-@hitRadius/50)
+			ctxt.translate(@pos.x, @pos.y)
 			ctxt.beginPath()
-			ctxt.arc(x, y, @hitRadius, 0, 2*Math.PI, false)
+			ctxt.arc(0, 0, @hitRadius, 0, 2*Math.PI, false)
 			ctxt.stroke()
+			ctxt.restore()
+
+	drawModel: (ctxt, col) ->
+		r = 5
+		ctxt.fillStyle = col
+		ctxt.fillRect(-r, -r, r*2, r*2)
+		ctxt.rotate(Math.PI/4)
+		ctxt.fillRect(-r, -r, r*2, r*2)
 
 	drawExplosion: (ctxt) ->
 		x = @pos.x

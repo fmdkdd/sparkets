@@ -26,28 +26,33 @@ class Bonus
 	draw: (ctxt) ->
 		return if ['incoming','exploding','dead'].indexOf(@state) > -1
 
-		x = @pos.x
-		y = @pos.y
+		ctxt.save()
+		ctxt.translate(@pos.x, @pos.y)
+		@drawModel(ctxt, color(@color))
+		ctxt.restore()
 
+	drawModel: (ctxt, col) ->
+
+		ctxt.strokeStyle = col
 		ctxt.fillStyle = 'white'
-		ctxt.strokeStyle = color @color
 		ctxt.lineWidth = 2
 
 		s = 20
 
-		ctxt.save()
-		ctxt.translate(x, y)
 		ctxt.fillRect(-s/2, -s/2, s, s)
 		ctxt.strokeRect(-s/2, -s/2, s, s)
 
-		ctxt.fillStyle = color @color
+		ctxt.fillStyle = col
 
 		switch @bonusType
 			when 'bonusMine'
+				ctxt.save()
 				r = 5
-				ctxt.fillRect(-r, -r, r*2, r*2)
+				r2 = r*2
+				ctxt.fillRect(-r, -r, r2, r2)
 				ctxt.rotate(Math.PI/4)
-				ctxt.fillRect(-r, -r, r*2, r*2)
+				ctxt.fillRect(-r, -r, r2, r2)
+				ctxt.restore()
 
 			when 'bonusBoost'
 				ctxt.save()
@@ -71,9 +76,6 @@ class Bonus
 				ctxt.rotate(Math.PI)
 				@drawArrow(ctxt)
 				ctxt.restore()
-				ctxt.restore()
-
-		ctxt.restore()
 
 	drawArrow: (ctxt) ->
 		ctxt.beginPath()
