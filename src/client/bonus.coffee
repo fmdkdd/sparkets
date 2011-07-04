@@ -72,7 +72,6 @@ class Bonus
 				ctxt.translate(0, -3)
 				@drawArrow(ctxt)
 				ctxt.translate(0, 6)
-				ctxt.save()
 				ctxt.rotate(Math.PI)
 				@drawArrow(ctxt)
 				ctxt.restore()
