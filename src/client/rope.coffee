@@ -21,6 +21,7 @@ class Rope
 
 		smooth = 0.75
 		ctxt.strokeStyle = color @color
+		ctxt.lineWidth = 2
 		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.beginPath()
 		ctxt.moveTo(@chain[0].x, @chain[0].y)		
