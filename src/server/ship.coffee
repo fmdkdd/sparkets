@@ -31,6 +31,10 @@ class Ship extends ChangingObject
 		@color = if color? then color else utils.randomColor()
 		@hitRadius = prefs.ship.hitRadius
 
+		@stats =
+			kills: 0
+			deaths: 0
+
 		@spawn()
 
 	spawn: () ->
@@ -158,6 +162,8 @@ class Ship extends ChangingObject
 	explode : () ->
 		@exploding = true
 		@exploFrame = 0
+
+		@stats.deaths++
 
 		@debug "explode"
 
