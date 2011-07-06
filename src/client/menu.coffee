@@ -20,9 +20,6 @@ class Menu
 
 		@setInputHandlers()
 
-		@updateScores()
-		setInterval(( () => @updateScores() ), 3000)
-
 	setInputHandlers: () ->
 		@wheelBox.click (event) =>
 			return if event.which is not 1 # Only left click triggers.
@@ -68,6 +65,8 @@ class Menu
 		if @isOpen() then @close() else @open()
 
 	open: () ->
+		@updateScores()
+
 		@menu.removeClass('hidden')
 		@menu.addClass('visible')
 
@@ -142,8 +141,6 @@ class Menu
 		return [hDeg, 60, l]
 
 	updateScores: () ->
-		return if not @isOpen()
-
 		@scoreTable.empty()
 
 		for id, ship of window.ships
