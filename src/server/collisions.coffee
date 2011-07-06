@@ -26,7 +26,7 @@ exports.collisions =
 				(ship.id isnt bullet.owner.id or
 				bullet.points.length > 3)
 			ship.explode()
-			bullet.owner.stats.kills++
+			bullet.owner.addStat('kills', 1)
 			ship.killingAccel = bullet.accel
 			bullet.state = 'dead'
 

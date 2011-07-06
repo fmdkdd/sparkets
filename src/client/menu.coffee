@@ -2,6 +2,9 @@ class Menu
 	constructor: () ->
 
 		@menu = $('#menu')
+		@closeButton = $('#closeButton')
+
+		# Customization panel.
 		@wheelBox = $('#colorWheelBox')
 		@shipPreview = $('#shipPreview')
 		@wheel = $('#colorWheel')
@@ -9,19 +12,24 @@ class Menu
 		@form = $('#nameForm')
 		@nameField = $('#name')
 		@displayNamesCheck = $('#displayNamesCheck')
-		@closeButton = $('#closeButton')
+
+		# Scores panel.
+		@scoreTable = $('#scores table tbody')
 
 		@currentColor = null
 
 		@setInputHandlers()
 
+		@updateScores()
+		setInterval(( () => @updateScores() ), 3000)
+
 	setInputHandlers: () ->
 		@wheelBox.click (event) =>
-			return if event.which is not 1 # Only left click triggers
+			return if event.which is not 1 # Only left click triggers.
 
 			@currentColor = c = @readColor(event)
 
-			# Change the color of the center of the wheel.
+			# Change the color of the ship preview.
 			style = @shipPreview.attr('style')
 			style = style.replace(/stroke: [^\n]+/,
 				'stroke: hsl('+c[0]+','+c[1]+'%,'+c[2]+'%);')
@@ -132,6 +140,22 @@ class Menu
 			top: y - @colorCursor.height()/2
 
 		return [hDeg, 60, l]
+
+	updateScores: () ->
+		return if not @isOpen()
+
+		@scoreTable.empty()
+
+		for id, ship of window.ships
+			col = ship.color
+			name = ship.name or 'unnamed'
+			deaths = ship.stats.deaths or 0
+			kills = ship.stats.kills or 0
+
+			@scoreTable.append(
+					'<tr><td><ul style="color:hsl(' + col[0] + ',' + col[1] + '%,' + col[2] + '%)"><li><span>' + name + '</span></li></ul></td>' +
+					'<td>' +	deaths + '</td>' +
+					'<td>' +	kills + '</td><tr>')
 
 # Exports
 window.Menu = Menu

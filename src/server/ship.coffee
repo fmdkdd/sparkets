@@ -1,6 +1,6 @@
 logger = require './logger'
-ChangingObject = require('./changingObject').ChangingObject
 utils = require '../utils'
+ChangingObject = require('./changingObject').ChangingObject
 Bullet = require './bullet'
 Mine = require './mine'
 
@@ -8,22 +8,22 @@ class Ship extends ChangingObject
 	constructor: (@id, @game, @playerId, name, color) ->
 		super()
 
-		@watchChanges(
-			'type',
-			'name',
-			'color',
-			'hitRadius',
-			'pos',
-			'vel',
-			'dir',
-			'thrust',
-			'firePower',
-			'cannonHeat',
-			'dead',
-			'exploding',
-			'exploFrame',
-			'killingAccel',
-			'boost' )
+		@watchChanges 'type'
+		@watchChanges 'name'
+		@watchChanges 'color'
+		@watchChanges 'stats'
+		@watchChanges 'hitRadius'
+		@watchChanges 'pos'
+		@watchChanges 'vel'
+		@watchChanges 'dir'
+		@watchChanges 'thrust'
+		@watchChanges 'firePower'
+		@watchChanges 'cannonHeat'
+		@watchChanges 'dead'
+		@watchChanges 'exploding'
+		@watchChanges 'exploFrame'
+		@watchChanges 'killingAccel'
+		@watchChanges 'boost'
 
 		@type = 'ship'
 		@name = if name? then name else null
@@ -162,7 +162,7 @@ class Ship extends ChangingObject
 		@exploding = true
 		@exploFrame = 0
 
-		@stats.deaths++
+		@addStat('deaths', 1)
 
 		@debug "explode"
 
@@ -173,6 +173,10 @@ class Ship extends ChangingObject
 			@exploding = false
 			@dead = true
 			@exploFrame = 0
+
+	addStat: (field, increment) ->
+		@stats[field] += increment
+		@changed 'stats'
 
 	# Prefix message with ship id.
 	log: (type, msg) ->
