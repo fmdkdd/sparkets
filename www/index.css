@@ -3,8 +3,65 @@
 body {
 	 font-family: sans;
 	 font-size: 12pt;
+	 padding: 0.5em;
 
 	 color: hsl(0, 0%, 30%);
+}
+
+.footer { clear: both; }
+
+/**
+ * Title.
+ */
+
+#title h1 {
+		float: left;
+		margin-left: 1em;
+}
+
+#title h2 {
+		float: right;
+		margin-right: 2em;
+		padding-top: 0.9em;
+
+		font-size: medium;
+}
+
+/**
+ * Info.
+ */
+
+#info {
+	 margin: 2em;
+	 padding: 1em;
+	 min-width: 600px;
+
+	 background-color: hsl(-100, 10%, 80%);
+	 border-radius: 2em;
+	 border: 0.4em solid hsl(-100, 10%, 45%);
+}
+
+#controls, #about {
+		display: block;
+		width: 44%;
+}
+
+#controls ul, #about ul {
+		list-style-position: inside;
+		list-style-type: circle;
+}
+
+#controls {
+		float: left;
+}
+
+#about {
+		float: right;
+}
+
+#about a {
+		text-decoration: underline;
+		color: hsl(0, 0%, 20%);
 }
 
 /**
@@ -12,27 +69,21 @@ body {
  */
 
 #forms {
-	 margin: 5em;
+	 margin: 2em;
+	 padding: 1em;
 	 min-width: 600px;
 
 	 background-color: hsl(-100, 10%, 80%);
 	 border-radius: 2em;
-	 border: 1em solid hsl(-100, 10%, 45%);
-}
-
-#forms h2 {
-	 margin: .5em 0;
+	 border: 0.4em solid hsl(-100, 10%, 45%);
 }
 
 #createDiv, #joinDiv {
-	 padding: 0 1em;
 	 width: 44%;
-	 height: 300px;
 }
 
 #createDiv { float: left; }
 #joinDiv { float: right; }
-#footer { clear: both; }
 
 #createDiv [value="Create"] {
 	 padding: .2em .5em;

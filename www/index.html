@@ -10,21 +10,63 @@
 </head>
 
 <body>
- <div id="forms">
-  <div id="createDiv">
-	 <h2>Create</h2>
-  <form id="createForm">
-	 <p>Todo ...</p>
-	 <input type="submit" value="Create" />
-  </form>
-  </div>
+	<div id="title">
+		<h1>Spacewar!</h1>
+		<h2>A frenetic multiplayer space shooter.</h2>
+		<div class="footer"></div>
+	</div>
 
-  <div id="joinDiv">
-	 <h2>Join</h2>
-	 <ul id="gameList">
-	 </ul>
-  </div>
-  <div id="footer"></div>
- </div>
+	<div id="info">
+		<div id="controls">
+			<h2>Player controls</h2>
+			<p><ul>
+					<li>&uarr; to thrust forward.</li>
+					<li>&larr; and &rarr; to rotate the ship.</li>
+					<li>A to shoot (hold for stronger bullets).</li>
+					<li>Z to use bonus (can only hold one).</li>
+			</ul></p>
+			<br/>
+			<p>Shoot other ships before they shoot you.</p>
+		</div>
+
+		<div id="about">
+			<h2>How</h2>
+			<p><ul>
+					<li><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/">HTML5</a>
+						<a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html">canvas</a>
+						and <a href="http://dev.w3.org/html5/websockets/">WebSocket</a></li>
+					<li><a href="http://nodejs.org/">Node.js</a>
+						with <a href="http://socket.io">Socket.IO</a></li>
+					<li><a href="http://www.gnu.org/software/emacs/">GNU Emacs</a></li>
+					<li><a href="http://github.com/fmdkdd/spacewar">Source</a> hosted on <a href="http://github.com/">Github</a></li>
+			</ul></p>
+			<br/>
+			<h2>Who</h2>
+			<p><ul>
+					<li><a href="http://www.github.com/fmdkdd">fmdkdd</a></li>
+					<li><a href="http://www.github.com/merwaaan">merwaaan</a></li>
+			</ul></p>
+		</div>
+
+		<div class="footer"></div>
+	</div>
+
+	<div id="forms">
+		<div id="createDiv">
+			<h2>Create</h2>
+			<form id="createForm">
+				<p>Todo ...</p>
+				<input type="submit" value="Create" />
+			</form>
+		</div>
+		
+		<div id="joinDiv">
+			<h2>Join</h2>
+			<ul id="gameList">
+			</ul>
+		</div>
+
+		<div class="footer"></div>
+	</div>
 </body>
 </html>
