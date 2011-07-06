@@ -68,3 +68,18 @@ exports.randomColor = () ->
 # Uppercase first letter of word.
 exports.capitalize = (word) ->
 	word[0].toUpperCase() + word.substring(1)
+
+# Merge `obj' properties with `target' existing properties.
+# No new property is created in `target'.
+exports.safeDeepMerge = (target, obj) ->
+	for name, val of obj
+		# Only merge existing properties.
+		if target[name]?
+
+			# Recurse for object properties.
+			if typeof target[name] is 'object'
+				exports.safeDeepMerge(target[name], obj[name])
+			else
+				target[name] = val
+
+	return target

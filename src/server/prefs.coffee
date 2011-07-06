@@ -1,3 +1,4 @@
+utils = require '../utils'
 BonusBoost = require './bonusBoost'
 BonusMine = require './bonusMine'
 BonusEMP = require './bonusEMP'
@@ -11,6 +12,10 @@ class ServerPreferences
 	replPort: 54321
 
 class GamePreferences
+	constructor: (prefs = {}) ->
+		# Override default values by those provided in `prefs'.
+		utils.safeDeepMerge(@, prefs)
+
 	# ms between two server updates.
 	timestep: 20
 

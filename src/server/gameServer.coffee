@@ -9,7 +9,7 @@ collisions = require('./collisions')
 utils = require '../utils'
 
 class GameServer
-	constructor: (@sockets) ->
+	constructor: (@sockets, gamePrefs) ->
 		@now = 0
 
 		@players = {}
@@ -23,7 +23,7 @@ class GameServer
 		@gameObjects = {}
 		@gameObjectCount = 0
 
-		@prefs = new GamePreferences()
+		@prefs = new GamePreferences(gamePrefs)
 
 	launch: () ->
 		for p in @initPlanets()

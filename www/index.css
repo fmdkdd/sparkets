@@ -110,6 +110,14 @@ body {
  * Create column.
  */
 
+#createDiv ul {
+	 list-style-position: inside;
+}
+
+#createDiv input[type="range"] {
+	 width: 5em;
+}
+
 #createDiv [value="Create"] {
 	 background-color: hsl(20, 60%, 60%);
 	 border-color: hsl(20, 60%, 45%);

@@ -30,12 +30,20 @@ globalSockets.on 'connection', (socket) ->
 		socket.emit 'game list',
 			list: Object.keys(gameList)
 
+	socket.on 'create game', (data) ->
+		gameId = data.id
+		delete data.id
+		createGame(gameId, data)
+
+		globalSockets.emit 'game list'
+			list: Object.keys(gameList)
+
 logger.info 'Global server started'
 
 GameServer = require('./gameServer').GameServer
 gameList = {}
-createGame = (id) ->
-	game = new GameServer(io.of(id))
+createGame = (id, gamePrefs) ->
+	game = new GameServer(io.of(id), gamePrefs)
 	game.launch()
 	logger.info "Game #{id} started"
 	return gameList[id] = game
