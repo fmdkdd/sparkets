@@ -1,5 +1,4 @@
 ChangingObject = require('./changingObject').ChangingObject
-prefs = require './prefs'
 utils = require '../utils'
 
 class Bullet extends ChangingObject
@@ -28,7 +27,7 @@ class Bullet extends ChangingObject
 			y: @owner.vel.y + @power*ydir
 
 		@state = 'active'
-		@hitRadius = prefs.bullet.hitRadius
+		@hitRadius = @game.prefs.bullet.hitRadius
 
 		@color = @owner.color
 		@points = [ [@pos.x, @pos.y] ]
@@ -42,7 +41,7 @@ class Bullet extends ChangingObject
 		{x: ax, y: ay} = @accel
 
 		# Apply gravity from all planets.
-		g = prefs.bullet.gravityPull
+		g = @game.prefs.bullet.gravityPull
 		for id, p of @game.planets
 			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 			d2 = g * p.force / (d * Math.sqrt(d))
@@ -50,7 +49,7 @@ class Bullet extends ChangingObject
 			ay -= (y-p.pos.y) * d2
 
 		# Apply negative force from all EMPs.
-		g2 = prefs.bullet.EMPPull
+		g2 = @game.prefs.bullet.EMPPull
 		for id, e of @game.EMPs
 			d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
 			d2 = g2 * e.force / (d * Math.sqrt(d))
@@ -66,7 +65,7 @@ class Bullet extends ChangingObject
 		@lastPoints = [ [@pos.x, @pos.y] ]
 
 		# Warp the bullet around the map.
-		{w, h} = prefs.server.mapSize
+		{w, h} = @game.prefs.mapSize
 		@warp = off
 		if @pos.x < 0
 			@pos.x += w
@@ -92,7 +91,7 @@ class Bullet extends ChangingObject
 		switch @state
 			# Seek and destroy.
 			when 'active'
-				@points.shift() if @points.length > prefs.bullet.tailLength
+				@points.shift() if @points.length > @game.prefs.bullet.tailLength
 
 			# No points left, disappear.
 			when 'dead'
@@ -108,6 +107,6 @@ class Bullet extends ChangingObject
 		[Ax, Ay] = if @warp then @points[@points.length-3] else @points[@points.length-2]
 		[Bx, By] = if @warp then @points[@points.length-2] else @points[@points.length-1]
 
-		return utils.lineInterCircle(Ax,Ay, Bx,By, @hitRadius, x,y,hitRadius, prefs.bullet.checkWidth)?
+		return utils.lineInterCircle(Ax,Ay, Bx,By, @hitRadius, x,y,hitRadius, @game.prefs.bullet.checkWidth)?
 
 exports.Bullet = Bullet

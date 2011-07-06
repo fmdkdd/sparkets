@@ -1,5 +1,3 @@
-prefs = require './prefs'
-
 class BonusDrunk
 	type: 'drunk'
 
@@ -20,7 +18,7 @@ class BonusDrunk
 
 		@ship.bonusTimeout[exports.type] = setTimeout(( () =>
 			@ship.inverseTurn = no ),
-			prefs.bonus.drunk.duration)
+			@game.prefs.bonus.drunk.duration)
 
 exports.BonusDrunk = BonusDrunk
 exports.constructor = BonusDrunk

@@ -1,5 +1,3 @@
-prefs = require './prefs'
-
 class BonusBoost
 	type: 'boost'
 
@@ -11,7 +9,7 @@ class BonusBoost
 		return if @used is yes
 
 		@used = yes
-		@ship.boost = prefs.bonus.boost.boostFactor
+		@ship.boost = @game.prefs.bonus.boost.boostFactor
 		@ship.boostDecay = 0
 		@ship.bonus = null
 
@@ -20,8 +18,8 @@ class BonusBoost
 			clearTimeout(@ship.bonusTimeout['bonusBoost'])
 
 		@ship.bonusTimeout[exports.type] = setTimeout(( () =>
-			@ship.boostDecay = prefs.bonus.boost.boostDecay ),
-			prefs.bonus.boost.boostDuration)
+			@ship.boostDecay = @game.prefs.bonus.boost.boostDecay ),
+			@game.prefs.bonus.boost.boostDuration)
 
 exports.BonusBoost = BonusBoost
 exports.constructor = BonusBoost

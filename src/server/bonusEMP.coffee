@@ -1,4 +1,3 @@
-prefs = require './prefs'
 EMP = require('./EMP').EMP
 
 class BonusEMP
@@ -12,7 +11,7 @@ class BonusEMP
 
 		@used = yes
 		@game.newGameObject (id) =>
-			@game.EMPs[id] = new EMP(@ship, id)
+			@game.EMPs[id] = new EMP(@ship, id, @game)
 		@ship.bonus = null
 
 exports.BonusEMP = BonusEMP

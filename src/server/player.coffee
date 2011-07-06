@@ -1,5 +1,4 @@
 server = require './server'
-prefs = require './prefs'
 Ship = require('./ship').Ship
 
 class Player
