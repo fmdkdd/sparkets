@@ -1,5 +1,5 @@
 logger = require './logger'
-prefs = require './prefs'
+GamePreferences = require('./prefs').GamePreferences
 Player = require('./player').Player
 Bot = require('./bot').Bot
 Bonus = require('./bonus').Bonus
@@ -23,6 +23,8 @@ class GameServer
 		@gameObjects = {}
 		@gameObjectCount = 0
 
+		@prefs = new GamePreferences()
+
 	launch: () ->
 		for p in @initPlanets()
 			@newGameObject (id) =>
@@ -30,7 +32,7 @@ class GameServer
 				@planets[id] = p
 
 		@spawnBonus()
-		setInterval(( () => @spawnBonus() ), prefs.bonus.waitTime)
+		setInterval(( () => @spawnBonus() ), @prefs.bonus.waitTime)
 
 		# Bind socket events
 		@sockets.on 'connection', (socket) =>
@@ -53,10 +55,10 @@ class GameServer
 
 		# Setup space grid
 		@grid =
-			width: prefs.server.grid.width
-			height: prefs.server.grid.height
-			cellWidth: prefs.server.mapSize.w / prefs.server.grid.width
-			cellHeight: prefs.server.mapSize.h / prefs.server.grid.height
+			width: @prefs.grid.width
+			height: @prefs.grid.height
+			cellWidth: @prefs.mapSize.w / @prefs.grid.width
+			cellHeight: @prefs.mapSize.h / @prefs.grid.height
 			cells: {}
 
 		@addBots()
@@ -121,7 +123,7 @@ class GameServer
 	# Game loop
 	update: () ->
 		# Setup next update.
-		setTimeout(( () => @update() ), prefs.server.timestep)
+		setTimeout(( () => @update() ), @prefs.timestep)
 
 		# Skip update if no one is connected.
 		return if @noHuman()
@@ -131,7 +133,7 @@ class GameServer
 		@updateObjects(@gameObjects)
 
 	placeObjectInGrid: (obj) ->
-		{w: mapWidth, h: mapHeight} = prefs.server.mapSize
+		{w: mapWidth, h: mapHeight} = @prefs.mapSize
 		{x: ox, y: oy} = obj.pos
 		w = @grid.cellWidth
 		h = @grid.cellHeight
@@ -254,27 +256,27 @@ class GameServer
 				r2 = p.force
 			return (utils.distance(x, y, x2, y2) < r + r2)
 
-		mapW = prefs.server.mapSize.w
-		mapH = prefs.server.mapSize.h
+		mapW = @prefs.mapSize.w
+		mapH = @prefs.mapSize.h
 
 		# If a planet is overlapping the map, it will appear to be
 		# colliding with its ghosts in drawInfinity.
 		nearBorder = (x, y, r) ->
 			(x - r < 0 or x + r > mapW or y - r < 0 or y + r > mapH)
 
-		min = prefs.planet.minForce
-		marge = prefs.planet.maxForce - min
+		min = @prefs.planet.minForce
+		marge = @prefs.planet.maxForce - min
 
-		satAbsFMin = prefs.planet.satelliteAbsMinForce
-		satFMin = prefs.planet.satelliteMinForce
-		satFMarge = prefs.planet.satelliteMaxForce - satFMin
+		satAbsFMin = @prefs.planet.satelliteAbsMinForce
+		satFMin = @prefs.planet.satelliteMinForce
+		satFMarge = @prefs.planet.satelliteMaxForce - satFMin
 
-		satGMin = prefs.planet.satelliteMinGap
-		satGMarge = prefs.planet.satelliteMaxGap - satGMin
+		satGMin = @prefs.planet.satelliteMinGap
+		satGMarge = @prefs.planet.satelliteMaxGap - satGMin
 
 		# Spawn planets randomly.
-		for [0...prefs.planet.count]
-			satellite = Math.random() < prefs.planet.satelliteChance
+		for [0...@prefs.planet.count]
+			satellite = Math.random() < @prefs.planet.satelliteChance
 			colliding = yes
 			# Ensure none are colliding (no do .. while in Coffee)
 			while colliding
@@ -298,9 +300,9 @@ class GameServer
 			rock = new Planet(x, y, force)
 			planets.push rock
 			if satellite
-				planets.push new Moon(rock, satForce, satGap)
+				planets.push new Moon(rock, satForce, satGap, @)
 
-		@debug "#{prefs.planet.count} planets created"
+		@debug "#{@prefs.planet.count} planets created"
 
 		return planets
 
@@ -308,14 +310,14 @@ class GameServer
 		# Do nothing when no one is connected.
 		return if @noHuman()
 
-		return false if Object.keys(@bonuses).length >= prefs.bonus.maxCount
+		return false if Object.keys(@bonuses).length >= @prefs.bonus.maxCount
 		@newGameObject( (id) =>
 			@bonuses[id] = new Bonus(id, @, bonusType)
 			@debug "spawned new #{@bonuses[id].bonusType} bonus ##{id}"
 			return @bonuses[id] )
 
 	addBots: () ->
-		for i in [0...prefs.bot.count]
+		for i in [0...@prefs.bot.count]
 			botId = 'b' + i
 			@players[botId] = new Bot(botId, @)
 			@newGameObject( (id) =>
@@ -323,7 +325,7 @@ class GameServer
 				return @players[botId].createShip(id) )
 
 	noHuman: () ->
-		return Object.keys(@players).length == prefs.bot.count
+		return Object.keys(@players).length == @prefs.bot.count
 
 	# Prefix message with game namespace.
 	log: (type, msg) ->

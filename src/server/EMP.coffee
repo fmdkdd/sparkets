@@ -1,8 +1,7 @@
 ChangingObject = require('./changingObject').ChangingObject
-prefs = require './prefs'
 
 class EMP extends ChangingObject
-	constructor: (ship, @id) ->
+	constructor: (ship, @id, @game) ->
 		super()
 
 		@watchChanges 'type'
@@ -18,7 +17,7 @@ class EMP extends ChangingObject
 			y: ship.pos.y
 
 		@color = ship.color
-		@force = prefs.bonus.emp.initialForce
+		@force = @game.prefs.bonus.emp.initialForce
 
 	tangible: () ->
 		no
@@ -26,8 +25,8 @@ class EMP extends ChangingObject
 	move: () ->
 
 	update: () ->
-		@force += prefs.bonus.emp.forceIncrease
+		@force += @game.prefs.bonus.emp.forceIncrease
 
-		@serverDelete = yes if @force >= prefs.bonus.emp.maxForce
+		@serverDelete = yes if @force >= @game.prefs.bonus.emp.maxForce
 
 exports.EMP = EMP

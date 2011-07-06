@@ -1,4 +1,3 @@
-prefs = require('./prefs')
 utils = require('../utils')
 Player = require('./player').Player
 
@@ -20,12 +19,12 @@ class Bot extends Player
 				val
 
 		# Set default values
-		for name, val of prefs.bot.defaultPersona
+		for name, val of @game.prefs.bot.defaultPersona
 			@prefs[name] = roll(val)
 
 		# Override default with persona specific values
 		@persona = persona
-		for name, val of prefs.bot[persona]
+		for name, val of @game.prefs.bot[persona]
 			@prefs[name] = roll(val)
 
 	update: () ->
@@ -40,8 +39,8 @@ class Bot extends Player
 			bestDistance = Infinity
 			for i in [-1..1]
 				for j in [-1..1]
-					x = ship.pos.x + i * prefs.server.mapSize.w
-					y = ship.pos.y + j * prefs.server.mapSize.h
+					x = ship.pos.x + i * @game.prefs.mapSize.w
+					y = ship.pos.y + j * @game.prefs.mapSize.h
 					d = utils.distance(x, y, @ship.pos.x, @ship.pos.y)
 
 					if d < bestDistance
@@ -122,7 +121,7 @@ class Bot extends Player
 		targetDir = utils.relativeAngle(targetDir - @ship.dir)
 
 		# Bother turning?
-		if Math.abs(targetDir) > prefs.ship.dirInc
+		if Math.abs(targetDir) > @game.prefs.ship.dirInc
 			# Face target
 			if targetDir < 0
 				@ship.turnLeft()

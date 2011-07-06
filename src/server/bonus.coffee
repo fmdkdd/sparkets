@@ -1,7 +1,6 @@
 ChangingObject = require('./changingObject').ChangingObject
 BonusMine = require './bonusMine'
 BonusBoost = require './bonusBoost'
-prefs = require './prefs'
 utils = require '../utils'
 
 class Bonus extends ChangingObject
@@ -20,18 +19,18 @@ class Bonus extends ChangingObject
 
 		@type = 'bonus'
 
-		@hitRadius = prefs.bonus.hitRadius
-		@modelSize = prefs.bonus.modelSize
+		@hitRadius = @game.prefs.bonus.hitRadius
+		@modelSize = @game.prefs.bonus.modelSize
 
 		@spawn(bonusType)
 
 	spawn: (bonusType) ->
 		@state = 'incoming'
-		@countdown = prefs.bonus.states[@state].countdown
+		@countdown = @game.prefs.bonus.states[@state].countdown
 
 		@pos =
-			x: Math.random() * prefs.server.mapSize.w
-			y: Math.random() * prefs.server.mapSize.h
+			x: Math.random() * @game.prefs.mapSize.w
+			y: Math.random() * @game.prefs.mapSize.h
 		@color = utils.randomColor()
 		@empty = yes
 
@@ -39,7 +38,7 @@ class Bonus extends ChangingObject
 		if not bonusType?
 			type = @randomBonus()
 		else
-			type = prefs.bonus.bonusType[bonusType].class
+			type = @game.prefs.bonus.bonusType[bonusType].class
 		@bonusEffect = type.constructor
 		@bonusType = type.type
 
@@ -47,7 +46,7 @@ class Bonus extends ChangingObject
 
 	randomBonus: () ->
 		roulette = []
-		for type, bonus of prefs.bonus.bonusType
+		for type, bonus of @game.prefs.bonus.bonusType
 			i = 0
 			while i < bonus.weight
 				roulette.push(bonus.class)
@@ -63,14 +62,14 @@ class Bonus extends ChangingObject
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
-		@state = prefs.bonus.states[@state].next
-		@countdown = prefs.bonus.states[@state].countdown
+		@state = @game.prefs.bonus.states[@state].next
+		@countdown = @game.prefs.bonus.states[@state].countdown
 
 	move: () ->
 		true
 
 	update: () ->
-		@countdown -= prefs.server.timestep if @countdown?
+		@countdown -= @game.prefs.timestep if @countdown?
 
 		switch @state
 			# The bonus arrival is imminent!

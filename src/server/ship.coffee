@@ -1,6 +1,5 @@
 logger = require './logger'
 ChangingObject = require('./changingObject').ChangingObject
-prefs = require './prefs'
 utils = require '../utils'
 Bullet = require './bullet'
 Mine = require './mine'
@@ -29,7 +28,7 @@ class Ship extends ChangingObject
 		@type = 'ship'
 		@name = if name? then name else null
 		@color = if color? then color else utils.randomColor()
-		@hitRadius = prefs.ship.hitRadius
+		@hitRadius = @game.prefs.ship.hitRadius
 
 		@stats =
 			kills: 0
@@ -39,14 +38,14 @@ class Ship extends ChangingObject
 
 	spawn: () ->
 		@pos =
-			x: Math.random() * prefs.server.mapSize.w
-			y: Math.random() * prefs.server.mapSize.h
+			x: Math.random() * @game.prefs.mapSize.w
+			y: Math.random() * @game.prefs.mapSize.h
 		@vel =
 			x: 0
 			y: 0
 		@dir = Math.random() * 2*Math.PI
 		@thrust = false
-		@firePower = prefs.ship.minFirepower
+		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = 0
 		@bonus = null
 		@bonusTimeout = {}
@@ -63,22 +62,22 @@ class Ship extends ChangingObject
 		@debug "spawned"
 
 	turnLeft: () ->
-		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@dir -= if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
 		@ddebug "turn left"
 
 	turnRight: () ->
-		@dir += if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@dir += if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
 		@ddebug "turn right"
 
 	ahead: () ->
-		@vel.x += Math.cos(@dir) * prefs.ship.speed * @boost
-		@vel.y += Math.sin(@dir) * prefs.ship.speed * @boost
+		@vel.x += Math.cos(@dir) * @game.prefs.ship.speed * @boost
+		@vel.y += Math.sin(@dir) * @game.prefs.ship.speed * @boost
 		@thrust = true
 		@ddebug "thrust"
 
 	chargeFire: () ->
 		return if @cannonHeat > 0
-		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
+		@firePower = Math.min(@firePower + @game.prefs.ship.firepowerInc, @game.prefs.ship.maxFirepower)
 		@ddebug "charge fire"
 
 	useBonus: () ->
@@ -91,7 +90,7 @@ class Ship extends ChangingObject
 
 		{x, y} = @pos
 
-		if prefs.ship.enableGravity
+		if @game.prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
 			for id, p of @game.planets
@@ -110,14 +109,14 @@ class Ship extends ChangingObject
 			@pos.y += @vel.y
 
 		# Warp the ship around the map
-		{w, h} = prefs.server.mapSize
+		{w, h} = @game.prefs.mapSize
 		@pos.x = if @pos.x < 0 then w else @pos.x
 		@pos.x = if @pos.x > w then 0 else @pos.x
 		@pos.y = if @pos.y < 0 then h else @pos.y
 		@pos.y = if @pos.y > h then 0 else @pos.y
 
-		@vel.x *= prefs.ship.frictionDecay
-		@vel.y *= prefs.ship.frictionDecay
+		@vel.x *= @game.prefs.ship.frictionDecay
+		@vel.y *= @game.prefs.ship.frictionDecay
 
 		if Math.abs(@pos.x-x) > .05 or
 				Math.abs(@pos.y-y) > .05
@@ -156,8 +155,8 @@ class Ship extends ChangingObject
 			@ddebug "fire bullet ##{id}"
 			return @game.bullets[id] = new Bullet.Bullet(@, id, @game)
 
-		@firePower = prefs.ship.minFirepower
-		@cannonHeat = prefs.ship.cannonCooldown
+		@firePower = @game.prefs.ship.minFirepower
+		@cannonHeat = @game.prefs.ship.cannonCooldown
 
 	explode : () ->
 		@exploding = true
@@ -170,7 +169,7 @@ class Ship extends ChangingObject
 	updateExplosion : () ->
 		++@exploFrame
 
-		if @exploFrame > prefs.ship.maxExploFrame
+		if @exploFrame > @game.prefs.ship.maxExploFrame
 			@exploding = false
 			@dead = true
 			@exploFrame = 0

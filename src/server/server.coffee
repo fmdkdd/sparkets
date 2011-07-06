@@ -1,10 +1,13 @@
 logger = require './logger'
-prefs = require './prefs'
+ServerPreferences = require('./prefs').ServerPreferences
+
+# Init preferences
+prefs = new ServerPreferences()
 
 # Start webserver
 httpServer = require('./httpServer').server
 
-httpServer.listen prefs.server.port
+httpServer.listen prefs.port
 
 # Bind websocket
 io = require 'socket.io'
@@ -42,7 +45,7 @@ createGame('#test')
 
 # Start the admin REPL and expose game server object.
 repl = require 'webrepl'
-replServ = repl.start(prefs.server.replPort)
+replServ = repl.start(prefs.replPort)
 replServ.context.createGame = createGame
 replServ.context.stop = () ->
 	httpServer.close()

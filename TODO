@@ -27,13 +27,19 @@
 * Scale with number of players.
    Should scale : bonus drop, map size, planet density?
 
-* Add scores ... someday?
-   Not sure it is necessary right now. The gratuitous space combat is
-   satisfying enough.
+* Add scores
+   Count kills and deaths.
+   Other statistics could be gathered: longest survival, kill chain,
+   mines used, etc.
 
 * Tighten ship collision box.
 
 = Interface =
+
+* Add web interface for game creation.
+
+* Move 'About Spacewar' stuff from menu to front page
+   Leave space for scoreboard.
 
 = Graphics =
 
@@ -47,7 +53,7 @@ o [alpha-3] Current bonus visual clue.
    Display messages dropped...
 
 = Core =
-      
+
 * Get rid of evil global variables.
    Use closures where relevant, pass arguments when convenient.
 
