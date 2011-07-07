@@ -152,6 +152,7 @@ class Ship
 		window.effects.push new ExplosionEffect(@, speed)
 
 	drawOnRadar: (ctxt) ->
+		console.info 'rad'
 		# Select the closest ship position.
 		bestDistance = Infinity
 		for j in [-1..1]

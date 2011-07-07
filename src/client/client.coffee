@@ -205,7 +205,7 @@ redraw = (ctxt) ->
 	ctxt.restore()
 
 	# Draw UI
-	drawRadar(ctxt) if window.localShip? and not window.localShip.isDead()
+	drawRadar(ctxt) if window.localShip? and window.localShip.state is 'alive'
 
 drawObject = (ctxt, obj, offset) ->
 	ctxt.save()
@@ -227,7 +227,7 @@ centerView = () ->
 
 drawRadar = (ctxt) ->
 	for id, ship of window.ships
-		if id isnt window.shipId and not ship.isDead()
+		if id isnt window.shipId and ship.state isnt 'dead'
 			ctxt.save()
 			ship.drawOnRadar(ctxt)
 			ctxt.restore()
