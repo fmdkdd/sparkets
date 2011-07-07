@@ -150,15 +150,17 @@ class Menu
 				color: ship.color
 				deaths: ship.stats.deaths
 				kills: ship.stats.kills
+				score: ship.stats.kills - ship.stats.deaths
 
 		# Sort scores.
-		scores.sort( (a, b) -> b.kills - a.kills)
+		scores.sort( (a, b) -> b.score - a.score)
 
 		for s in scores
 			@scoreTable.append(
 					'<tr><td><ul style="color:hsl(' + s.color[0] + ',' + s.color[1] + '%,' + s.color[2] + '%)"><li><span>' + s.name + '</span></li></ul></td>' +
 					'<td>' +	s.deaths + '</td>' +
-					'<td>' +	s.kills + '</td><tr>')
+					'<td>' +	s.kills + '</td>' +
+					'<td>' + s.score + '</td></tr>')
 
 # Exports
 window.Menu = Menu
