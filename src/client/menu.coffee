@@ -143,16 +143,22 @@ class Menu
 	updateScores: () ->
 		@scoreTable.empty()
 
+		scores = []
 		for id, ship of window.ships
-			col = ship.color
-			name = ship.name or 'unnamed'
-			deaths = ship.stats.deaths or 0
-			kills = ship.stats.kills or 0
+			scores.push
+				name: ship.name or 'unnamed'
+				color: ship.color
+				deaths: ship.stats.deaths
+				kills: ship.stats.kills
 
+		# Sort scores.
+		scores.sort( (a, b) -> b.kills - a.kills)
+
+		for s in scores
 			@scoreTable.append(
-					'<tr><td><ul style="color:hsl(' + col[0] + ',' + col[1] + '%,' + col[2] + '%)"><li><span>' + name + '</span></li></ul></td>' +
-					'<td>' +	deaths + '</td>' +
-					'<td>' +	kills + '</td><tr>')
+					'<tr><td><ul style="color:hsl(' + s.color[0] + ',' + s.color[1] + '%,' + s.color[2] + '%)"><li><span>' + s.name + '</span></li></ul></td>' +
+					'<td>' +	s.deaths + '</td>' +
+					'<td>' +	s.kills + '</td><tr>')
 
 # Exports
 window.Menu = Menu
