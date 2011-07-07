@@ -7,7 +7,7 @@ class Ship
 
 	serverUpdate: (ship) ->
 		thrust_old = @thrust
-		exploding_old = @exploding
+		state_old = @state
 
 		for field, val of ship
 			@[field] = val
@@ -17,7 +17,7 @@ class Ship
 			@engineAnimFor = @engineAnimDelay
 
 		# Launch an explosion animation if the ship just exploded.
-		if @exploding and exploding_old isnt @exploding
+		if @state is 'exploding' and state_old is 'alive'
 			@explode()
 
 		# Start the boost animation if the ship just boosted.
@@ -42,14 +42,8 @@ class Ship
 				t: now
 			@ghosts.shift() if @ghosts.length > 5
 
-	isExploding: () ->
-		return @exploding
-
-	isDead: () ->
-		return @dead
-
 	draw: (ctxt, offset) ->
-		return if @exploding or @dead
+		return if @state is 'exploding' or @state is 'dead'
 
 		@drawShip(ctxt, offset)
 
@@ -116,7 +110,7 @@ class Ship
 		# Draw the player's name.
 		if 	@name?  and @ isnt window.localShip and
 				(displayNames is on or
-				window.localShip.isExploding() or window.localShip.isDead())
+				window.localShip.state is 'exploding' or window.localShip.state is 'dead')
 			ctxt.fillStyle = '#666'
 			ctxt.font = '15px sans'
 			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)
@@ -158,7 +152,7 @@ class Ship
 		window.effects.push new ExplosionEffect(@, speed)
 
 	drawOnRadar: (ctxt) ->
-		# Select the closest ship among the real one and its ghosts.
+		# Select the closest ship position.
 		bestDistance = Infinity
 		for j in [-1..1]
 			for k in [-1..1]
@@ -185,8 +179,8 @@ class Ship
 			radius = 10
 			alpha = 1
 
-			if @isExploding()
-				animRatio = @exploFrame / window.maxExploFrame
+			if @state is 'exploding'
+				animRatio = 1 - @countdown / window.maxExploFrame
 				radius -= animRatio * 10
 				alpha -= animRatio
 

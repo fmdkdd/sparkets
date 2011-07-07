@@ -31,6 +31,17 @@ class GamePreferences
 		height: 10
 
 	ship:
+		states:
+			'alive':
+				next: 'exploding'
+				countdown: null
+			'exploding':
+				next: 'dead'
+				countdown: 1000
+			'dead':
+				next: 'alive'
+				countdown: null
+
 		# Radius of hit circle.
 		hitRadius: 9
 

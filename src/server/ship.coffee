@@ -13,23 +13,23 @@ class Ship extends ChangingObject
 		@watchChanges 'color'
 		@watchChanges 'stats'
 		@watchChanges 'hitRadius'
+		@watchChanges 'state'
+		@watchChanges 'countdown'
 		@watchChanges 'pos'
 		@watchChanges 'vel'
 		@watchChanges 'dir'
 		@watchChanges 'thrust'
 		@watchChanges 'firePower'
 		@watchChanges 'cannonHeat'
-		@watchChanges 'dead'
-		@watchChanges 'exploding'
-		@watchChanges 'exploFrame'
 		@watchChanges 'killingAccel'
 		@watchChanges 'boost'
 
 		@type = 'ship'
-		@name = if name? then name else null
-		@color = if color? then color else utils.randomColor()
+		@name = name or null
+		@color = color or utils.randomColor()
 		@hitRadius = @game.prefs.ship.hitRadius
 
+		# Session stats.
 		@stats =
 			kills: 0
 			deaths: 0
@@ -37,6 +37,8 @@ class Ship extends ChangingObject
 		@spawn()
 
 	spawn: () ->
+		@state = 'alive'
+
 		@pos =
 			x: Math.random() * @game.prefs.mapSize.w
 			y: Math.random() * @game.prefs.mapSize.h
@@ -44,6 +46,7 @@ class Ship extends ChangingObject
 			x: 0
 			y: 0
 		@dir = Math.random() * 2*Math.PI
+
 		@thrust = false
 		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = 0
@@ -52,9 +55,6 @@ class Ship extends ChangingObject
 		@boost = 1
 		@boostDecay = 0
 		@inverseTurn = no
-		@dead = false
-		@exploding = false
-		@exploFrame = 0
 		@killingAccel = {x: 0, y: 0}
 
 		@spawn() if @game.collidesWithPlanet(@)
@@ -77,19 +77,22 @@ class Ship extends ChangingObject
 
 	chargeFire: () ->
 		return if @cannonHeat > 0
+
 		@firePower = Math.min(@firePower + @game.prefs.ship.firepowerInc, @game.prefs.ship.maxFirepower)
 		@ddebug "charge fire"
 
 	useBonus: () ->
-		return if @isDead() or @isExploding() or not @bonus?
+		return if @state is 'exploding' or @state is 'dead' or not @bonus?
+
 		@ddebug "use #{@bonus.type} bonus"
 		@bonus.use()
 
 	move: () ->
-		return if @isDead() or @isExploding()
+		return if @state is 'exploding' or @state is 'dead'
 
 		{x, y} = @pos
 
+		# With gravity enabled.
 		if @game.prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
@@ -104,6 +107,7 @@ class Ship extends ChangingObject
 			@vel.x = ax
 			@vel.y = ay
 
+		# Without gravity.
 		else
 			@pos.x += @vel.x
 			@pos.y += @vel.y
@@ -118,38 +122,38 @@ class Ship extends ChangingObject
 		@vel.x *= @game.prefs.ship.frictionDecay
 		@vel.y *= @game.prefs.ship.frictionDecay
 
+		# Only update if the change in position is noticeable.
 		if Math.abs(@pos.x-x) > .05 or
 				Math.abs(@pos.y-y) > .05
 			@changed 'pos'
 			@changed 'vel'
 
 	tangible: () ->
-		not @dead and not @exploding
+		@state is 'alive'
 
 	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
 		x += offset.x
 		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
-	isExploding: () ->
-		@exploding
-
-	isDead: () ->
-		@dead
+	nextState: () ->
+		@state = @game.prefs.ship.states[@state].next
+		@countdown = @game.prefs.ship.states[@state].countdown
 
 	update: () ->
-		return if @isDead()
+		if @countdown?
+			@countdown -= @game.prefs.timestep
+			@nextState() if @countdown <= 0
 
-		if @isExploding()
-			@updateExplosion()
-		else
-			--@cannonHeat if @cannonHeat > 0
+		switch @state
+			when 'alive'
+				--@cannonHeat if @cannonHeat > 0
 
-			@boost -= @boostDecay if @boost > 1
-			@boost = 1 if @boost < 1
+				@boost -= @boostDecay if @boost > 1
+				@boost = 1 if @boost < 1
 
 	fire : () ->
-		return if @isDead() or @isExploding() or @cannonHeat > 0
+		return if @state is 'exploding' or @state is 'dead' or @cannonHeat > 0
 
 		@game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"
@@ -159,20 +163,9 @@ class Ship extends ChangingObject
 		@cannonHeat = @game.prefs.ship.cannonCooldown
 
 	explode : () ->
-		@exploding = true
-		@exploFrame = 0
-
+		@nextState()
 		@addStat('deaths', 1)
-
 		@debug "explode"
-
-	updateExplosion : () ->
-		++@exploFrame
-
-		if @exploFrame > @game.prefs.ship.maxExploFrame
-			@exploding = false
-			@dead = true
-			@exploFrame = 0
 
 	addStat: (field, increment) ->
 		@stats[field] += increment
