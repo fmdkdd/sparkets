@@ -10,6 +10,10 @@ body {
 
 .footer { clear: both; }
 
+h2 {
+		margin-bottom: 0.4em;
+}
+
 /**
  * Title.
  */
@@ -36,8 +40,8 @@ body {
 	 padding: 1em;
 	 min-width: 600px;
 
-	 background-color: hsl(-100, 10%, 80%);
-	 border-radius: 2em;
+	 background-color: lightgrey;
+	 border-radius: 0.9em;
 	 border: 0.4em solid hsl(-100, 10%, 45%);
 }
 
@@ -55,13 +59,21 @@ body {
 		float: left;
 }
 
+#controls .key {
+		color: hsl(0, 0%, 20%);
+}
+
 #about {
 		float: right;
 }
 
 #about a {
-		text-decoration: underline;
+		text-decoration: none;
 		color: hsl(0, 0%, 20%);
+}
+
+#about a:hover {
+		text-decoration: underline;
 }
 
 /**
@@ -73,8 +85,8 @@ body {
 	 padding: 1em;
 	 min-width: 600px;
 
-	 background-color: hsl(-100, 10%, 80%);
-	 border-radius: 2em;
+	 background-color: lightgrey;
+	 border-radius: 0.9em;
 	 border: 0.4em solid hsl(-100, 10%, 45%);
 }
 
