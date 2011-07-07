@@ -1,8 +1,9 @@
-prefs = require './prefs'
 utils = require '../utils'
+ChangingObject = require('./changingObject').ChangingObject
 BonusMine = require './bonusMine'
 BonusBoost = require './bonusBoost'
-ChangingObject = require('./changingObject').ChangingObject
+BonusEMP = require './bonusEMP'
+BonusDrunk = require './bonusDrunk'
 Rope = require('./rope').Rope
 
 class Bonus extends ChangingObject
@@ -21,20 +22,21 @@ class Bonus extends ChangingObject
 
 		@type = 'bonus'
 
-		@hitRadius = prefs.bonus.hitRadius
+		@hitRadius = @game.prefs.bonus.hitRadius
 
 		@spawn(bonusType)
 
 	spawn: (bonusType) ->
 		@state = 'incoming'
-		@countdown = prefs.bonus.states[@state].countdown
+		@countdown = @game.prefs.bonus.states[@state].countdown
 
 		@pos =
-			x: Math.random() * prefs.server.mapSize.w
-			y: Math.random() * prefs.server.mapSize.h
+			x: Math.random() * @game.prefs.mapSize.w
+			y: Math.random() * @game.prefs.mapSize.h
 		@vel =
 			x: 0
 			y: 0
+
 		@color = utils.randomColor()
 		@empty = yes
 
@@ -43,7 +45,7 @@ class Bonus extends ChangingObject
 
 		# Choose bonus type.
 		if bonusType?
-			bonusClass = prefs.bonus.bonusType[bonusType].class
+			bonusClass = @game.prefs.bonus.bonusType[bonusType].class
 		else
 			bonusClass = @randomBonus()
 		@bonusEffect = new bonusClass.constructor(@game, @)
@@ -53,7 +55,7 @@ class Bonus extends ChangingObject
 
 	randomBonus: () ->
 		roulette = []
-		for type, bonus of prefs.bonus.bonusType
+		for type, bonus of @game.prefs.bonus.bonusType
 			i = 0
 			while i < bonus.weight
 				roulette.push(bonus.class)
@@ -69,33 +71,33 @@ class Bonus extends ChangingObject
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
-		@state = prefs.bonus.states[@state].next
-		@countdown = prefs.bonus.states[@state].countdown
+		@state = @game.prefs.bonus.states[@state].next
+		@countdown = @game.prefs.bonus.states[@state].countdown
 
 	setState: (state) ->
-		if prefs.bonus.states[state]?
+		if @game.prefs.bonus.states[state]?
 			@state = state
-			@countdown = prefs.bonus.states[state].countdown
+			@countdown = @game.prefs.bonus.states[state].countdown
 
 	move: () ->
 		@pos.x += @vel.x
 		@pos.y += @vel.y
 		@warp()
 
-		@vel.x *= prefs.ship.frictionDecay
-		@vel.y *= prefs.ship.frictionDecay
+		@vel.x *= @game.prefs.ship.frictionDecay
+		@vel.y *= @game.prefs.ship.frictionDecay
 
 		@changed 'pos'
 
 	warp: () ->
-		{w, h} = prefs.server.mapSize
+		{w, h} = @game.prefs.mapSize
 		@pos.x = if @pos.x < 0 then w else @pos.x
 		@pos.x = if @pos.x > w then 0 else @pos.x
 		@pos.y = if @pos.y < 0 then h else @pos.y
 		@pos.y = if @pos.y > h then 0 else @pos.y
 
 	update: () ->
-		@countdown -= prefs.server.timestep if @countdown?
+		@countdown -= @game.prefs.timestep if @countdown?
 
 		switch @state
 			# The bonus arrival is imminent.

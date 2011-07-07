@@ -1,18 +1,19 @@
-prefs = require './prefs'
-
 class BonusBoost
 	type: 'boost'
 
-	constructor: (@game, @bonus) ->
+	constructor: (@game, bonus) ->
+		@boostFactor = 0
+
 		@used = no
 		@boostFactor = 0
 
 	use: () ->
 		return if @used
 
-		@used = yes
-		@bonus.holder.boost = prefs.bonus.boost.boostFactor
+		@bonus.holder.boost = @game.prefs.bonus.boost.boostFactor
 		@bonus.holder.boostDecay = 0
+
+		@used = yes
 
 		# Cancel the previous pending boost decay.
 		if @bonus.holder.bonusTimeout.bonusBoost?
@@ -20,8 +21,8 @@ class BonusBoost
 
 		holderId = @bonus.holder.id
 		@bonus.holder.bonusTimeout[exports.type] = setTimeout(( () =>
-			@game.gameObjects[holderId].boostDecay = prefs.bonus.boost.boostDecay ),
-			prefs.bonus.boost.boostDuration)
+			@game.gameObjects[holderId].boostDecay =@game. prefs.bonus.boost.boostDecay ),
+			@game.prefs.bonus.boost.boostDuration)
 
 		# Clean up.
 		@bonus.holder.releaseBonus()

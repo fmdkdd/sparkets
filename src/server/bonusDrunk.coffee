@@ -1,5 +1,3 @@
-prefs = require './prefs'
-
 class BonusDrunk
 	type: 'drunk'
 
@@ -8,10 +6,10 @@ class BonusDrunk
 		@evil = yes
 
 	use: () ->
-		return if @used is yes
+		return if @used
 
-		@used = yes
 		@bonus.holder.inverseTurn = yes
+		@used = yes
 
 		# Cancel all pending bonus timeouts.
 		for type, timeout of @bonus.holder.bonusTimeout
@@ -20,7 +18,7 @@ class BonusDrunk
 		holderId = @bonus.holder.id
 		@bonus.holder.bonusTimeout[exports.type] = setTimeout(( () =>
 			@game.gameObjects[holderId].inverseTurn = no ),
-			prefs.bonus.drunk.duration)
+			@game.prefs.bonus.drunk.duration)
 
 		# Clean up.
 		@bonus.holder.releaseBonus()

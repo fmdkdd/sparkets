@@ -1,16 +1,20 @@
+utils = require '../utils'
 BonusBoost = require './bonusBoost'
 BonusMine = require './bonusMine'
 BonusEMP = require './bonusEMP'
 BonusDrunk = require './bonusDrunk'
 
-# Server constants.
-
-exports.server =
+class ServerPreferences
 	# HTTP server port.
 	port: 12345
 
 	# Port of the web REPL.
 	replPort: 54321
+
+class GamePreferences
+	constructor: (prefs = {}) ->
+		# Override default values by those provided in `prefs'.
+		utils.safeDeepMerge(@, prefs)
 
 	# ms between two server updates.
 	timestep: 20
@@ -26,270 +30,284 @@ exports.server =
 		width: 10
 		height: 10
 
-exports.ship =
-	# Radius of hit circle.
-	hitRadius: 9
+	ship:
+		states:
+			'alive':
+				next: 'exploding'
+				countdown: null
+			'exploding':
+				next: 'dead'
+				countdown: 1000
+			'dead':
+				next: 'alive'
+				countdown: null
 
-	# Rotation increase at input update.
-	dirInc: 0.12
+		# Radius of hit circle.
+		hitRadius: 9
 
-	# Velocity increase at input update
-	speed: 0.3
+		# Rotation increase at input update.
+		dirInc: 0.12
 
-	# Inertia decay at ship update.
-	frictionDecay: 0.97
+		# Velocity increase at input update
+		speed: 0.3
 
-	# Lowest initial bullet speed.
-	minFirepower: 1.3
+		# Inertia decay at ship update.
+		frictionDecay: 0.97
 
-	# Increase in firepower at each update.
-	firepowerInc: 0.1
+		# Lowest initial bullet speed.
+		minFirepower: 1.3
 
-	# Highest initial bullet speed.
-	maxFirepower: 3
+		# Increase in firepower at each update.
+		firepowerInc: 0.1
 
-	# Number of frames to wait before firing again.
-	cannonCooldown: 20
+		# Highest initial bullet speed.
+		maxFirepower: 3
 
-	# Duration of explosion animation in frames.
-	maxExploFrame: 50
+		# Number of frames to wait before firing again.
+		cannonCooldown: 20
 
-	# If true, planets gravity affect ships.
-	enableGravity: false
+		# Duration of explosion animation in frames.
+		maxExploFrame: 50
 
-exports.bot =
-	# Number of bots on server.
-	count: 0
+		# If true, planets gravity affect ships.
+		enableGravity: false
 
-	# Default parameters for bots.
-	defaultPersona:
-		# Distance threshold to begin firing at a target.
-		acquireDistance: [400, 500]
+	bot:
+		# Number of bots on server.
+		count: 0
 
-		# Distance threshold to begin chasing an acquired target.
-		chaseDistance: [200, 500]
+		# Default parameters for bots.
+		defaultPersona:
+			# Distance threshold to begin firing at a target.
+			acquireDistance: [400, 500]
 
-		# Threshold at which to fire.
-		firePower: [2.5, 3]
+			# Distance threshold to begin chasing an acquired target.
+			chaseDistance: [200, 500]
 
-		# Angle with target at which to fire (radians).
-		fireSight: [.2, Math.PI/4]
+			# Threshold at which to fire.
+			firePower: [2.5, 3]
 
-		# Negative gravity from planets when seeking.
-		seekPlanetAvoid: [-500, -50]
+			# Angle with target at which to fire (radians).
+			fireSight: [.2, Math.PI/4]
 
-		# Negative gravity from mines when seeking.
-		seekMineAvoid: [-1000, -500]
+			# Negative gravity from planets when seeking.
+			seekPlanetAvoid: [-500, -50]
 
-		# Negative gravity from bullets when seeking.
-		seekBulletAvoid: [-2000, -500]
+			# Negative gravity from mines when seeking.
+			seekMineAvoid: [-1000, -500]
 
-		# Negative gravity from planets when chasing.
-		chasePlanetAvoid: [-200, 0]
+			# Negative gravity from bullets when seeking.
+			seekBulletAvoid: [-2000, -500]
 
-		# Negative gravity from mines when chasing.
-		chaseMineAvoid: [-500, 0]
+			# Negative gravity from planets when chasing.
+			chasePlanetAvoid: [-200, 0]
 
-		# Negative gravity from bullets when chasing.
-		chaseBulletAvoid: [-500, 0]
+			# Negative gravity from mines when chasing.
+			chaseMineAvoid: [-500, 0]
 
-		# Distance threshold to go grab a bonus when seeking.
-		grabBonusDistance: [200, 400]
+			# Negative gravity from bullets when chasing.
+			chaseBulletAvoid: [-500, 0]
 
-		# Probability, for each state, of using each bonus.
-		# Defaults to zero when no correspondin parameter is present.
-		# Probability is checked at every update.
-		acquireEMPUse: [.005, .05]
+			# Distance threshold to go grab a bonus when seeking.
+			grabBonusDistance: [200, 400]
 
-		chaseMineUse: [.001, .01]
-		chaseEMPUse: [.001, .01]
-		chaseBoostUse: [.01, 1]
+			# Probability, for each state, of using each bonus.
+			# Defaults to zero when no correspondin parameter is present.
+			# Probability is checked at every update.
+			acquireEMPUse: [.005, .05]
 
-	# Non aggressive, used for tests.
-	cameoPersona:
-		name: 'Cameo'
+			chaseMineUse: [.001, .01]
+			chaseEMPUse: [.001, .01]
+			chaseBoostUse: [.01, 1]
 
-		acquireDistance: 0
-		chaseDistance: 0
+		# Non aggressive, used for tests.
+		cameoPersona:
+			name: 'Cameo'
 
-		firePower: 3
-		fireSight: .2
+			acquireDistance: 0
+			chaseDistance: 0
 
-		seekPlanetAvoid: -500
-		seekMineAvoid: -2000
-		seekBulletAvoid: -2000
+			firePower: 3
+			fireSight: .2
 
-		chasePlanetAvoid: 0
-		chaseMineAvoid: 0
-		chaseBulletAvoid: 0
+			seekPlanetAvoid: -500
+			seekMineAvoid: -2000
+			seekBulletAvoid: -2000
 
-	# Killing machine, easy to crash into planets.
-	boskoopPersona:
-		name: 'Boskoop'
+			chasePlanetAvoid: 0
+			chaseMineAvoid: 0
+			chaseBulletAvoid: 0
 
-		acquireDistance: 500
-		chaseDistance: 200
+		# Killing machine, easy to crash into planets.
+		boskoopPersona:
+			name: 'Boskoop'
 
-		firePower: 3
-		fireSight: .2
+			acquireDistance: 500
+			chaseDistance: 200
 
-		seekPlanetAvoid: -20
-		seekMineAvoid: -200
-		seekBulletAvoid: -200
+			firePower: 3
+			fireSight: .2
 
-		chasePlanetAvoid: 0
-		chaseMineAvoid: 0
-		chaseBulletAvoid: 0
+			seekPlanetAvoid: -20
+			seekMineAvoid: -200
+			seekBulletAvoid: -200
 
-	# Smarter navigation, reduced accuracy.
-	ladyPinkPersona:
-		name: 'Lady Pink'
+			chasePlanetAvoid: 0
+			chaseMineAvoid: 0
+			chaseBulletAvoid: 0
 
-		acquireDistance: 500
-		chaseDistance: 500
+		# Smarter navigation, reduced accuracy.
+		ladyPinkPersona:
+			name: 'Lady Pink'
 
-		firePower: 3
-		fireSight: .2
+			acquireDistance: 500
+			chaseDistance: 500
 
-		seekPlanetAvoid: -50
-		seekMineAvoid: -1000
-		seekBulletAvoid: -2000
+			firePower: 3
+			fireSight: .2
 
-		chasePlanetAvoid: -100
-		chaseMineAvoid: -200
-		chaseBulletAvoid: -200
+			seekPlanetAvoid: -50
+			seekMineAvoid: -1000
+			seekBulletAvoid: -2000
 
-exports.planet =
-	# Number of planets on the map. Satellites don't count here.
-	count: 30
+			chasePlanetAvoid: -100
+			chaseMineAvoid: -200
+			chaseBulletAvoid: -200
 
-	# No planet smaller or larger than this.
-	minForce: 30
-	maxForce: 120
+	planet:
+		# Number of planets on the map. Satellites don't count here.
+		count: 30
 
-	# Probability of adding a satellite to each planet.
-	satelliteChance: .3
+		# No planet smaller or larger than this.
+		minForce: 30
+		maxForce: 120
 
-	# Safeguard value (can't draw planets smaller than the line width,
-	# and gravity doesn't bode well with small planets)
-	satelliteAbsMinForce: 10
+		# Probability of adding a satellite to each planet.
+		satelliteChance: .3
 
-	# Range of satellite size (factor of planet force).
-	satelliteMinForce: .1
-	satelliteMaxForce: .3
+		# Safeguard value (can't draw planets smaller than the line width,
+		# and gravity doesn't bode well with small planets)
+		satelliteAbsMinForce: 10
 
-	# Range of gap between planet and satellite (factor of planet force).
-	satelliteMinGap: .2
-	satelliteMaxGap: .6
+		# Range of satellite size (factor of planet force).
+		satelliteMinForce: .1
+		satelliteMaxForce: .3
 
-	# Range of attraction factor of satellites by planets.
-	satellitePullMin: .03
-	satellitePullMax: .2
+		# Range of gap between planet and satellite (factor of planet force).
+		satelliteMinGap: .2
+		satelliteMaxGap: .6
 
-exports.bullet =
-	# Radius of hit circle.
-	hitRadius: 2
+		# Range of attraction factor of satellites by planets.
+		satellitePullMin: .03
+		satellitePullMax: .2
 
-	# Gravity pull factor.
-	gravityPull: 200
+	bullet:
+		# Radius of hit circle.
+		hitRadius: 2
 
-	# EMP repulsive force.
-	EMPPull: -500
+		# Gravity pull factor.
+		gravityPull: 200
 
-	# Bullet points to keep on server.
-	tailLength: 15
+		# EMP repulsive force.
+		EMPPull: -500
 
-	# Gap to leave in the hit line.
-	checkWidth: 4
+		# Bullet points to keep on server.
+		tailLength: 15
 
-exports.mine =
-	# Sensibility radius.
-	maxDetectionRadius: 50
+		# Gap to leave in the hit line.
+		checkWidth: 4
 
-	# Detonation radius.
-	explosionRadius: 80
+	mine:
+		# Sensibility radius.
+		maxDetectionRadius: 50
 
-	states:
-		'inactive':
-			countdown: 100			  # Time (ms) before activation.
-			next: 'active'
-		'active':
-			countdown: null
-			next: 'exploding'
-		'exploding':
-			countdown: 500			  # Length (ms) of explosion.
-			next: 'dead'
-		'dead':
-			countdown: null
-			next: null
+		# Detonation radius.
+		explosionRadius: 80
 
-exports.bonus =
-	# ms before a bonus drop.
-	waitTime: 5000
+		states:
+			'inactive':
+				countdown: 100			  # Time (ms) before activation.
+				next: 'active'
+			'active':
+				countdown: null
+				next: 'exploding'
+			'exploding':
+				countdown: 500			  # Length (ms) of explosion.
+				next: 'dead'
+			'dead':
+				countdown: null
+				next: null
 
-	# Number of allowed simultaneous bonuses.
-	maxCount: 10
+	bonus:
+		states:
+			'incoming':
+				countdown: 2000
+				next: 'available'
+			'available':
+				countdown: null
+				next: 'claimed'
+			'claimed':
+				countdown: null
+				next: null
+			'exploding':
+				countdown: 1000
+				next: 'dead'
+			'dead':
+				countdown: null
+				next: null
 
-	# Type and weight of allowed bonuses.
-	# Heavier bonuses spawn more often.
-	bonusType:
+		# ms before a bonus drop.
+		waitTime: 5000
+
+		# Number of allowed simultaneous bonuses.
+		maxCount: 10
+
+		# Type and weight of allowed bonuses.
+		# Heavier bonuses spawn more often.
+		bonusType:
+			mine:
+				class: BonusMine
+				weight: 3
+			boost:
+				class: BonusBoost
+				weight: 2
+			EMP:
+				class: BonusEMP
+				weight: 1
+
+		# Radius of hit circle.
+		hitRadius: 10
+
+		# Drawing size on client.
+		modelSize: 20
+
 		mine:
-			class: BonusMine
-			weight: 3
+			# Number of held mines.
+			mineCount: 2
+
 		boost:
-			class: BonusBoost
-			weight: 2
-		EMP:
-			class: BonusEMP
-			weight: 1
+			# Initial speed multiplier.
+			boostFactor: 2
+
+			# Duration of initial boost.
+			boostDuration: 1500
+
+			# Decrease boost factor in decay state.
+			boostDecay: 0.02
+
+		emp:
+			# Initial negative force.
+			initialForce: 5
+
+			# Force increase at each update.
+			forceIncrease: .6
+
+			# Max force of the EMP.
+			maxForce: 100
+
 		drunk:
-			class: BonusDrunk
-			weight: 1
+			# Duration of drunk effect in ms.
+			duration: 3000
 
-	# Radius of hit circle.
-	hitRadius: 10
-
-	states:
-		'incoming':
-			countdown: 2000
-			next: 'available'
-		'available':
-			countdown: null
-			next: 'claimed'
-		'claimed':
-			countdown: null
-			next: null
-		'exploding':
-			countdown: 1000
-			next: 'dead'
-		'dead':
-			countdown: null
-			next: null
-
-exports.bonus.mine =
-	# Number of held mines.
-	mineCount: 2
-
-exports.bonus.boost =
-	# Initial speed multiplier.
-	boostFactor: 2
-
-	# Duration of initial boost.
-	boostDuration: 1500
-
-	# Decrease boost factor in decay state.
-	boostDecay: 0.02
-
-exports.bonus.emp =
-	# Initial negative force.
-	initialForce: 5
-
-	# Force increase at each update.
-	forceIncrease: .6
-
-	# Max force of the EMP.
-	maxForce: 100
-
-exports.bonus.drunk =
-	# Duration of drunk effect in ms.
-	duration: 3000
+exports.ServerPreferences = ServerPreferences
+exports.GamePreferences = GamePreferences

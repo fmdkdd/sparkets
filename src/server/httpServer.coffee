@@ -10,15 +10,17 @@ mime = (path) ->
 	return 'image/svg+xml' if path.match(/svg$/)
 
 webFiles = {
-	'/' : '/client.html',
-	'/client.html',
+	'/' : '/index.html',
+	'/play/' : '/client.html',
 	'/client.css',
+	'/index.css',
 	'/js/client/bonus.js',
 	'/js/client/boostEffect.js',
 	'/js/client/bullet.js',
 	'/js/client/client.js',
 	'/js/client/EMP.js',
 	'/js/client/explosionEffect.js',
+	'/js/client/index.js',
 	'/js/client/menu.js',
 	'/js/client/mine.js',
 	'/js/client/openEffect.js',
@@ -29,7 +31,9 @@ webFiles = {
 	'/favicon.ico',
 	'/img/colorWheel.png',
 	'/img/colorCursor.png',
-	'/img/closeButton.svg',
+	'/img/iconClose.svg',
+	'/img/iconDeath.svg',
+	'/img/iconKill.svg',
 	'/img/tutorialMove.svg',
 	'/img/tutorialShoot.svg',
 	'/img/tutorialBonus.svg'
@@ -52,4 +56,3 @@ send404 = (res) ->
 	res.end '<h1>Nothing to see here, move along</h1>'
 
 exports.server = server
-

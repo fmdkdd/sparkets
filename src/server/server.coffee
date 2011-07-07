@@ -1,10 +1,14 @@
 logger = require './logger'
 prefs = require './prefs'
+ServerPreferences = require('./prefs').ServerPreferences
+
+# Init preferences
+prefs = new ServerPreferences()
 
 # Start webserver
 httpServer = require('./httpServer').server
 
-httpServer.listen prefs.server.port
+httpServer.listen prefs.port
 
 # Bind websocket
 io = require 'socket.io'
@@ -23,21 +27,35 @@ globalSockets.on 'connection', (socket) ->
 	socket.on 'disconnect', () ->
 		logger.info "Player #{socket.id} left global server"
 
+	socket.on 'get game list', () ->
+		socket.emit 'game list',
+			list: Object.keys(gameList)
+
+	socket.on 'create game', (data) ->
+		gameId = data.id
+		delete data.id
+		createGame(gameId, data)
+
+		globalSockets.emit 'game list'
+			list: Object.keys(gameList)
+
 logger.info 'Global server started'
 
 GameServer = require('./gameServer').GameServer
-createGame = (id) ->
-	game = new GameServer(io.of(id))
+gameList = {}
+createGame = (id, gamePrefs) ->
+	game = new GameServer(io.of(id), gamePrefs)
 	game.launch()
 	logger.info "Game #{id} started"
-	return game
+	return gameList[id] = game
 
 # Default game for all users
-createGame('#play')
+createGame('#test')
 
 # Start the admin REPL and expose game server object.
 repl = require 'webrepl'
-replServ = repl.start(prefs.server.replPort)
+replServ = repl.start(prefs.replPort)
+
 replServ.context.createGame = createGame
 replServ.context.stop = () ->
 	httpServer.close()

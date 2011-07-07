@@ -27,13 +27,18 @@
 * Scale with number of players.
    Should scale : bonus drop, map size, planet density?
 
-* Add scores ... someday?
-   Not sure it is necessary right now. The gratuitous space combat is
-   satisfying enough.
+* Add scores
+   Count kills and deaths.
+   Other statistics could be gathered: longest survival, kill chain,
+   mines used, etc.
 
 * Tighten ship collision box.
 
 = Interface =
+
+* Add web interface for game creation.
+   - Sanitize input (unique game id, out of range values ...)
+   - Further style the list of params
 
 = Graphics =
 
@@ -47,7 +52,11 @@ o [alpha-3] Current bonus visual clue.
    Display messages dropped...
 
 = Core =
-      
+
+* Freeze games without players
+
+* Expire finished and deserted games 
+
 * Get rid of evil global variables.
    Use closures where relevant, pass arguments when convenient.
 

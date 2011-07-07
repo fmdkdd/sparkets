@@ -1,11 +1,10 @@
-prefs = require './prefs'
 Mine = require('./mine').Mine
 
 class BonusMine
 	type: 'mine'
 
 	constructor: (@game, @bonus) ->
-		@mines = prefs.bonus.mine.mineCount
+		@mines = @game.prefs.bonus.mine.mineCount
 
 	use: () ->
 		return if @mines <= 0
@@ -14,7 +13,7 @@ class BonusMine
 			dropPos =
 				x: @bonus.pos.x
 				y: @bonus.pos.y
-			@game.mines[id] = new Mine(@bonus.holder, dropPos, id)
+			@game.mines[id] = new Mine(@bonus.holder, dropPos, id, @game)
 
 		# Decrease mine count.
 		--@mines

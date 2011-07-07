@@ -54,7 +54,8 @@ $(document).ready (event) ->
 
 	# Connect to server and set callbacks.
 	window.socket = io.connect()
-	window.socket = window.socket.socket.of(document.location.hash)
+	window.socket = window.socket.socket.of(window.location.hash)
+
 	window.socket.on 'connect', onConnect
 	window.socket.on 'connected', onConnected
 	window.socket.on 'objects update', onObjectsUpdate
@@ -91,6 +92,10 @@ setInputHandlers = () ->
 			window.socket.emit 'key down',
 				playerId: window.playerId
 				key: keyCode
+
+		# Open/Close the menu when 'M' is pressed.
+		if keyCode is 77
+			window.menu.toggle()
 
 	$(document).keyup ({keyCode}) ->
 		window.keys[keyCode] = off
@@ -201,7 +206,7 @@ redraw = (ctxt) ->
 	ctxt.restore()
 
 	# Draw UI
-	drawRadar(ctxt) if window.localShip? and not window.localShip.dead
+	drawRadar(ctxt) if window.localShip? and window.localShip.state is 'alive'
 
 drawObject = (ctxt, obj, offset) ->
 	ctxt.save()
@@ -223,7 +228,7 @@ centerView = () ->
 
 drawRadar = (ctxt) ->
 	for id, ship of window.ships
-		if id isnt window.shipId and not ship.dead
+		if id isnt window.shipId and ship.state isnt 'dead'
 			ctxt.save()
 			ship.drawOnRadar(ctxt)
 			ctxt.restore()

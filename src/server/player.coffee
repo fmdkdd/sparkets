@@ -1,5 +1,4 @@
 server = require './server'
-prefs = require './prefs'
 Ship = require('./ship').Ship
 
 class Player
@@ -16,9 +15,9 @@ class Player
 	keyUp: (key) ->
 		@keys[key] = off
 
-		# Fire the bullet or respawn if the spacebar is released.
+		# Fire the bullet or respawn if the spacebar or A is released.
 		if key is 32 or key is 65
-			if @ship.isDead()
+			if @ship.state is 'dead'
 				@ship.spawn()
 			else
 				@ship.fire()
@@ -31,7 +30,7 @@ class Player
 			@ship.useBonus()
 
 	update: () ->
-		return if not @ship? or @ship.isDead() or @ship.isExploding()
+		return if not @ship? or @ship.state is 'exploding' or @state is 'dead'
 
 		# Left arrow : rotate to the left.
 		@ship.turnLeft() if @keys[37] is on

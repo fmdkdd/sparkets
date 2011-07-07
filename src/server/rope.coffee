@@ -1,4 +1,3 @@
-prefs = require './prefs'
 utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
 
@@ -51,7 +50,7 @@ class Rope extends ChangingObject
 			n.pos.y += n.vel.y
 
 			# Warp around the map.
-			{w, h} = prefs.server.mapSize
+			{w, h} = @game.prefs.mapSize
 			n.pos.x = if n.pos.x < 0 then w else n.pos.x
 			n.pos.x = if n.pos.x > w then 0 else n.pos.x
 			n.pos.y = if n.pos.y < 0 then h else n.pos.y
@@ -73,8 +72,8 @@ class Rope extends ChangingObject
 				next.vel.x += ratio * (cur.pos.x - ghost.x)
 				next.vel.y += ratio * (cur.pos.y - ghost.y)
 			
-			#next.vel.x *= prefs.ship.frictionDecay
-			#next.vel.y *= prefs.ship.frictionDecay
+			#next.vel.x *= @game.prefs.ship.frictionDecay
+			#next.vel.y *= @game.prefs.ship.frictionDecay
 
 		# Prepare the chain which will be sent to the client.
 		@chain = []

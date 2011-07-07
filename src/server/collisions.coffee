@@ -14,8 +14,8 @@ exports.handle = (obj1, obj2) ->
 exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'available'
-			ship.holdBonus(bonus)
 			ddebug "ship ##{ship.id} picked up #{bonus.bonusType} bonus ##{bonus.id}"
+			ship.holdBonus(bonus)
 			ship.useBonus() if bonus.isEvil()
 
 	'ship-bullet': (ship, bullet) ->
@@ -24,6 +24,7 @@ exports.collisions =
 				(ship.id isnt bullet.owner.id or
 				bullet.points.length > 3)
 			ship.explode()
+			bullet.owner.addStat('kills', 1)
 			ship.killingAccel = bullet.accel
 			bullet.state = 'dead'
 

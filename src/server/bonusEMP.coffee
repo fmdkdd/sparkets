@@ -1,4 +1,3 @@
-prefs = require './prefs'
 EMP = require('./EMP').EMP
 
 class BonusEMP
@@ -10,10 +9,10 @@ class BonusEMP
 	use: () ->
 		return if @used is yes
 
-		@used = yes
-
 		@game.newGameObject (id) =>
-			@game.EMPs[id] = new EMP(@bonus.holder, id)
+			@game.EMPs[id] = new EMP(@bonus.holder, id, @game)
+
+		@used = yes
 
 		# Clean up.
 		@bonus.holder.releaseBonus()

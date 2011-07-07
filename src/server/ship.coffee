@@ -1,6 +1,5 @@
-logger = require './logger'
-prefs = require './prefs'
 utils = require '../utils'
+logger = require './logger'
 ChangingObject = require('./changingObject').ChangingObject
 Bullet = require('./bullet').Bullet
 
@@ -8,49 +7,53 @@ class Ship extends ChangingObject
 	constructor: (@id, @game, @playerId, name, color) ->
 		super()
 
-		@watchChanges(
-			'type',
-			'name',
-			'color',
-			'hitRadius',
-			'pos',
-			'vel',
-			'dir',
-			'thrust',
-			'firePower',
-			'cannonHeat',
-			'dead',
-			'exploding',
-			'exploFrame',
-			'killingAccel',
-			'boost' )
+		@watchChanges 'type'
+		@watchChanges 'name'
+		@watchChanges 'color'
+		@watchChanges 'stats'
+		@watchChanges 'hitRadius'
+		@watchChanges 'state'
+		@watchChanges 'countdown'
+		@watchChanges 'pos'
+		@watchChanges 'vel'
+		@watchChanges 'dir'
+		@watchChanges 'thrust'
+		@watchChanges 'firePower'
+		@watchChanges 'cannonHeat'
+		@watchChanges 'killingAccel'
+		@watchChanges 'boost'
 
 		@type = 'ship'
-		@name = if name? then name else null
-		@color = if color? then color else utils.randomColor()
-		@hitRadius = prefs.ship.hitRadius
+		@name = name or null
+		@color = color or utils.randomColor()
+		@hitRadius = @game.prefs.ship.hitRadius
+
+		# Session stats.
+		@stats =
+			kills: 0
+			deaths: 0
 
 		@spawn()
 
 	spawn: () ->
+		@state = 'alive'
+
 		@pos =
-			x: Math.random() * prefs.server.mapSize.w
-			y: Math.random() * prefs.server.mapSize.h
+			x: Math.random() * @game.prefs.mapSize.w
+			y: Math.random() * @game.prefs.mapSize.h
 		@vel =
 			x: 0
 			y: 0
 		@dir = Math.random() * 2*Math.PI
+
 		@thrust = false
-		@firePower = prefs.ship.minFirepower
+		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = 0
 		@bonus = null
 		@bonusTimeout = {}
 		@boost = 1
 		@boostDecay = 0
 		@inverseTurn = no
-		@dead = false
-		@exploding = false
-		@exploFrame = 0
 		@killingAccel = {x: 0, y: 0}
 
 		@spawn() if @game.collidesWithPlanet(@)
@@ -58,22 +61,23 @@ class Ship extends ChangingObject
 		@debug "spawned"
 
 	turnLeft: () ->
-		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@dir -= if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
 		@ddebug "turn left"
 
 	turnRight: () ->
-		@dir += if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@dir += if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
 		@ddebug "turn right"
 
 	ahead: () ->
-		@vel.x += Math.cos(@dir) * prefs.ship.speed * @boost
-		@vel.y += Math.sin(@dir) * prefs.ship.speed * @boost
+		@vel.x += Math.cos(@dir) * @game.prefs.ship.speed * @boost
+		@vel.y += Math.sin(@dir) * @game.prefs.ship.speed * @boost
 		@thrust = true
 		@ddebug "thrust"
 
 	chargeFire: () ->
 		return if @cannonHeat > 0
-		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
+
+		@firePower = Math.min(@firePower + @game.prefs.ship.firepowerInc, @game.prefs.ship.maxFirepower)
 		@ddebug "charge fire"
 
 	# Attach a bonus to the ship.
@@ -89,17 +93,18 @@ class Ship extends ChangingObject
 		@bonus = null
 
 	useBonus: () ->
-		return if not @bonus? or @isDead() or @isExploding()
+		return if @state is 'exploding' or @state is 'dead' or not @bonus?
 
 		@ddebug "use #{@bonus.type} bonus"
 		@bonus.use()
 
 	move: () ->
-		return if @isDead() or @isExploding()
+		return if @state is 'exploding' or @state is 'dead'
 
 		{x, y} = @pos
 
-		if prefs.ship.enableGravity
+		# With gravity enabled.
+		if @game.prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
 			for id, p of @game.planets
@@ -113,6 +118,7 @@ class Ship extends ChangingObject
 			@vel.x = ax
 			@vel.y = ay
 
+		# Without gravity.
 		else
 			@pos.x += @vel.x
 			@pos.y += @vel.y
@@ -120,71 +126,66 @@ class Ship extends ChangingObject
 		# Warp the ship around the map.
 		@warp()
 
-		@vel.x *= prefs.ship.frictionDecay
-		@vel.y *= prefs.ship.frictionDecay
+		@vel.x *= @game.prefs.ship.frictionDecay
+		@vel.y *= @game.prefs.ship.frictionDecay
 
+		# Only update if the change in position is noticeable.
 		if Math.abs(@pos.x-x) > .05 or
 				Math.abs(@pos.y-y) > .05
 			@changed 'pos'
 			@changed 'vel'
 
 	warp: () ->
-		{w, h} = prefs.server.mapSize
+		{w, h} = @game.prefs.mapSize
 		@pos.x = if @pos.x < 0 then w else @pos.x
 		@pos.x = if @pos.x > w then 0 else @pos.x
 		@pos.y = if @pos.y < 0 then h else @pos.y
 		@pos.y = if @pos.y > h then 0 else @pos.y
 
 	tangible: () ->
-		not @dead and not @exploding
+		@state is 'alive'
 
 	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
 		x += offset.x
 		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
-	isExploding: () ->
-		@exploding
-
-	isDead: () ->
-		@dead
+	nextState: () ->
+		@state = @game.prefs.ship.states[@state].next
+		@countdown = @game.prefs.ship.states[@state].countdown
 
 	update: () ->
-		return if @isDead()
+		if @countdown?
+			@countdown -= @game.prefs.timestep
+			@nextState() if @countdown <= 0
 
-		if @isExploding()
-			@updateExplosion()
-		else
-			--@cannonHeat if @cannonHeat > 0
+		switch @state
+			when 'alive'
+				--@cannonHeat if @cannonHeat > 0
 
-			@boost -= @boostDecay if @boost > 1
-			@boost = 1 if @boost < 1
+				@boost -= @boostDecay if @boost > 1
+				@boost = 1 if @boost < 1
 
 	fire : () ->
-		return if @isDead() or @isExploding() or @cannonHeat > 0
+		return if @state is 'exploding' or @state is 'dead' or @cannonHeat > 0
 
 		@game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"
 			return @game.bullets[id] = new Bullet(@, id, @game)
 
-		@firePower = prefs.ship.minFirepower
-		@cannonHeat = prefs.ship.cannonCooldown
+		@firePower = @game.prefs.ship.minFirepower
+		@cannonHeat = @game.prefs.ship.cannonCooldown
 
 	explode : () ->
-		@exploding = true
-		@exploFrame = 0
-
 		@releaseBonus() if @bonus?
 
+		@nextState()
+		@addStat('deaths', 1)
 		@debug "explode"
 
-	updateExplosion : () ->
-		++@exploFrame
-
-		if @exploFrame > prefs.ship.maxExploFrame
-			@exploding = false
-			@dead = true
-			@exploFrame = 0
+	addStat: (field, increment) ->
+		@stats[field] += increment
+		@changed 'stats'
 
 	# Prefix message with ship id.
 	log: (type, msg) ->
