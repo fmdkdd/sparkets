@@ -28,7 +28,8 @@ webFiles = {
 	'/favicon.ico',
 	'/img/colorWheel.png',
 	'/img/colorCursor.png',
-	'/img/closeButton.svg',
+	'/img/iconClose.svg',
+	'/img/iconDeath.svg',
 	'/img/tutorialMove.svg',
 	'/img/tutorialShoot.svg',
 	'/img/tutorialBonus.svg'
@@ -51,4 +52,3 @@ send404 = (res) ->
 	res.end '<h1>Nothing to see here, move along</h1>'
 
 exports.server = server
-
