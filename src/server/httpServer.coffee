@@ -30,6 +30,7 @@ webFiles = {
 	'/img/colorCursor.png',
 	'/img/iconClose.svg',
 	'/img/iconDeath.svg',
+	'/img/iconKill.svg',
 	'/img/tutorialMove.svg',
 	'/img/tutorialShoot.svg',
 	'/img/tutorialBonus.svg'
