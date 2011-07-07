@@ -5,12 +5,12 @@
 					y="10"
 					width="14"
 					height="80"
-					fill="white"/>
+					fill="rgb(30%, 30%, 30%)"/>
 		<rect transform="rotate(-45, 50, 50)"
 					x="43"
 					y="10"
 					width="14"
 					height="80"
-					fill="white"/>
+					fill="rgb(30%, 30%, 30%)"/>
 	</g>
 </svg>

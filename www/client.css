@@ -25,11 +25,14 @@
 	 position: relative;
 	 padding: 20px;
 
-	 border-radius: 5px;
-	 color: white;
+	 color: hsl(0, 0%, 30%);
+	 background-color: lightgrey;
+	 border-radius: 0.9em;
+	 border: 0.4em solid hsl(-100, 10%, 45%);
+
 	 font-size: 17px;
 	 font-family: sans;
-	 background: hsla(-90, 15%, 50%, .97); }
+}
 
 #menu.hidden {
 	 opacity: 0;
@@ -172,5 +175,6 @@
 }
 
 #scores li span {
-		color: white;
+	 color: hsl(0, 0%, 30%);
 }
+

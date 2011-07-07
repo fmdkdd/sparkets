@@ -7,7 +7,7 @@
 		</mask>
 	</defs>
 	<g>
-		<use xlink:href="#boom" mask="url(#boomMask)" fill="white"/>
-		<use xlink:href="#boom" transform="translate(65,60) scale(0.35)" fill="white"/>
+		<use xlink:href="#boom" mask="url(#boomMask)" fill="rgb(30%, 30%, 30%)"/>
+		<use xlink:href="#boom" transform="translate(65,60) scale(0.35)" fill="rgb(30%, 30%, 30%)"/>
 	</g>
 </svg>
