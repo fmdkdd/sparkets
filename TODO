@@ -38,7 +38,10 @@
 
 * Add web interface for game creation.
    - Sanitize input (unique game id, out of range values ...)
-   - Further style the list of params
+
+* More info in game list.
+   - Number of players / max allowed
+   - Time left
 
 = Graphics =
 
@@ -80,6 +83,8 @@ o [alpha-3] Rework client drawing.
    when beefier hardware can't.
 
 o [alpha-3] Share prefs file with client.
+   All game-specific prefs (mapsize, min/max power, ..) should be sent
+   on game join.
 
 * Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.
