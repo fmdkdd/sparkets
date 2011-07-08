@@ -64,6 +64,7 @@ o [alpha-3] Current bonus visual clue.
    Use closures where relevant, pass arguments when convenient.
 
 * Tune collisions.
+   - Properly handle more than circle on circle collisions.
    - Immobile objects need not to be reinserted in the grid (planets).
    - Don't check collisions between objects that can't collide gameplay-wise.
 
