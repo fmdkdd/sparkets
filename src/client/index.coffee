@@ -5,11 +5,17 @@ window.socket.on 'connect', () ->
 	window.socket.emit 'get game list'
 
 window.socket.on 'game list', (data) ->
+	# Update list of running games.
 	$('#gameList').empty()
 
 	for id in data.list
 		href = '/play/#' + id
 		$('#gameList').append('<li><a href="' + href + '">' + id + '</a></li>')
+
+	window.gameListRegexp = new RegExp(data.list.join('|'))
+
+window.socket.on 'game already exists', () ->
+	$('#id-error').html('Name already exists')
 
 # Setup form handler
 $(document).ready () ->
@@ -37,12 +43,21 @@ $(document).ready () ->
 		return values
 
 
+	$('input[name="id"]').keyup (event) ->
+		if @.value.match(window.gameListRegexp)
+			$('#id-error').html('Name already exists')
+		else
+			$('#id-error').html('')
+
 	$('#createForm').submit (event) ->
 		event.preventDefault()
 		prefs = gatherValues(@)
-		console.log prefs
 
-		window.socket.emit 'create game', prefs
+		window.socket.emit 'create game', prefs, () ->
+			# Clear and unfocus game name input on creation.
+			nameInput = $('input[name="id"]')
+			nameInput.val('')
+			nameInput.blur()
 
 	$('ul.collapse h3').click (event) ->
 		$(@).next().toggle()

@@ -122,8 +122,19 @@ h2 {
  * Create column.
  */
 
+.error {
+	 font-size: .8em;
+	 color: hsl(0, 70%, 50%);
+
+	 display: inline;
+}
+
 #createDiv ul {
 	 list-style-position: inside;
+}
+
+#createDiv input[type="text"] {
+	 width: 10em;
 }
 
 #createDiv input[type="range"] {

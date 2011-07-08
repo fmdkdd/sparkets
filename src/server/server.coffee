@@ -33,10 +33,16 @@ globalSockets.on 'connection', (socket) ->
 	socket.on 'create game', (data) ->
 		gameId = data.id
 		delete data.id
-		createGame(gameId, data)
 
-		globalSockets.emit 'game list'
-			list: Object.keys(gameList)
+		# Game with ID already exists, don't create.
+		if gameList[gameId]?
+			socket.emit 'game already exists'
+
+		else
+			createGame(gameId, data)
+
+			globalSockets.emit 'game list'
+				list: Object.keys(gameList)
 
 logger.info 'Global server started'
 
