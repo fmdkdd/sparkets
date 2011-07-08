@@ -18,7 +18,7 @@ window.maxBulletLength = 15
 # Game logic
 window.minPower = 1.3
 window.maxPower = 3
-window.maxExploFrame = 50
+window.explosionDuration = 1000
 window.maxBullets = 10
 window.cannonCooldown = 20
 

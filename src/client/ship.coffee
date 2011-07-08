@@ -180,7 +180,7 @@ class Ship
 			alpha = 1
 
 			if @state is 'exploding'
-				animRatio = 1 - @countdown / window.maxExploFrame
+				animRatio = 1 - @countdown / window.explosionDuration
 				radius -= animRatio * 10
 				alpha -= animRatio
 
