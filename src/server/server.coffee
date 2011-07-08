@@ -49,7 +49,7 @@ createGame = (id, gamePrefs) ->
 	return gameList[id] = game
 
 # Default game for all users
-createGame('#test')
+createGame('test')
 
 # Start the admin REPL and expose game server object.
 repl = require 'webrepl'

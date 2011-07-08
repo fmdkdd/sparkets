@@ -8,7 +8,7 @@ window.socket.on 'game list', (data) ->
 	$('#gameList').empty()
 
 	for id in data.list
-		href = '/play/' + id
+		href = '/play/#' + id
 		$('#gameList').append('<li><a href="' + href + '">' + id + '</a></li>')
 
 # Setup form handler
