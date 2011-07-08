@@ -136,6 +136,12 @@ class Ship extends ChangingObject
 		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
+	isDead: () ->
+		@state is 'dead'
+
+	isExploding: () ->
+		@state is 'exploding'
+
 	nextState: () ->
 		@state = @game.prefs.ship.states[@state].next
 		@countdown = @game.prefs.ship.states[@state].countdown
