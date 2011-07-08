@@ -53,6 +53,9 @@ o [alpha-3] Current bonus visual clue.
 
 = Core =
 
+* Factorize gravity from planet computations
+   Consider only surrounding planets, wrt the torus.
+
 * Freeze games without players
 
 * Expire finished and deserted games 
