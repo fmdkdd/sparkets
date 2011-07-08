@@ -129,8 +129,43 @@ h2 {
 	 display: inline;
 }
 
-#createDiv ul {
-	 list-style-position: inside;
+#createDiv h3 {
+	 font-size: 1em;
+
+	 margin-top: 1em;
+}
+
+ul.collapse {
+	 list-style-image: url('/img/triangle.svg');
+}
+
+ul.collapse h3:hover {
+	 cursor: pointer;
+	 background-color: hsl(-100, 5%, 75%);
+}
+
+.tooltip {
+	 font-size: .8em;
+	 padding: .2em;
+	 
+	 color: white;
+	 background-color: hsl(0, 0%, 45%);
+	 border-radius: 10%;
+	 box-shadow: 1px 1px 2px #888;
+
+	 cursor: default;
+}
+
+#createForm > ul {
+	 margin-left: 1em;
+}
+
+#createDiv ul ul {
+	 list-style: none;
+}
+
+#createDiv ul ul li {
+	 margin: .3em 0;
 }
 
 #createDiv input[type="text"] {
@@ -138,7 +173,9 @@ h2 {
 }
 
 #createDiv input[type="range"] {
-	 width: 5em;
+	 width: 8em;
+
+	 float: right;
 }
 
 #createDiv [value="Create"] {

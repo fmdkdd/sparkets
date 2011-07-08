@@ -61,3 +61,73 @@ $(document).ready () ->
 
 	$('ul.collapse h3').click (event) ->
 		$(@).next().toggle()
+
+	# Hide ship prefs menu at start.
+	$('#shipPrefs').next().hide()
+
+	# Tooltip to indicate current value for range input.
+	# Created at mouse down and detached on mouse up, the tooltip
+	# follows the mouse pointer on mouse move.
+	attachTooltip = (element) ->
+		tooltip = null
+
+		# Inexact floats have to be pretty-printed. The plan is to
+		# convert them using toFixed(2) for 2 decimal places.
+		# Integers stay as they are.
+		prettyNumber = (str) ->
+			isInt = (string) ->
+				parseInt(string) == parseFloat(string)
+
+			if isInt(str)
+				str
+			else
+				str = parseFloat(str).toFixed(2)
+
+		element.mousedown (event) ->
+			return if event.which isnt 1
+
+			createTooltip = () =>
+				# With enough clicking around you can avoid a mouse up
+				# event. Clear any previously created tooltip to avoid
+				# duplicates.
+				$(tooltip).detach() if tooltip?
+
+				tooltip = document.createElement('span')
+				tooltip.className = 'tooltip'
+				tooltip.innerHTML = prettyNumber(@.value)
+				$(tooltip).css('position', 'absolute')
+				$(tooltip).css('top', $(@).offset().top - $(@).height())
+				$(tooltip).css('left', event.pageX)
+				$(@).after(tooltip)
+
+			# Delay tooltip creation after the value has been updated in
+			# the browser. Otherwise, clicking away from the slider
+			# cursor will move the cursor to the mouse but @.value won't
+			# be updated.
+			setTimeout(createTooltip, 1)
+
+		# Update tooltip value and follow pointer.
+		element.mousemove (event) ->
+			return if event.which isnt 1
+			return if not tooltip?
+
+			$(tooltip).html(prettyNumber(@.value))
+
+			# Constrain to input element width.
+			xOff = event.pageX
+			left = $(@).offset().left
+			xOff = offset.left if xOff < left
+			right = left + $(@).innerWidth()
+			xOff = right if xOff > right
+
+			$(tooltip).css('left', xOff)
+
+		# Delete tooltip.
+		element.mouseup (event) ->
+			return if event.which isnt 1
+			return if not tooltip?
+
+			$(tooltip).detach()
+
+	$('input[type="range"]').each () ->
+		attachTooltip($(@))
