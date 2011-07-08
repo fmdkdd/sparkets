@@ -63,6 +63,10 @@ h2 {
 		color: hsl(0, 0%, 20%);
 }
 
+#goal {
+	 font-style: italic;
+}
+
 #about {
 		float: right;
 }
