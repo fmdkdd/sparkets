@@ -71,6 +71,14 @@ $(document).ready () ->
 	attachTooltip = (element) ->
 		tooltip = null
 
+		updateTooltip = (val) ->
+			# Delay tooltip value update after the value has been updated
+			# in the browser. Otherwise, clicking away from the slider
+			# cursor will move the cursor to the mouse but @.value won't
+			# be updated.
+			setTimeout( (() ->
+				tooltip.innerHTML = val ), 1)
+
 		# Inexact floats have to be pretty-printed. The plan is to
 		# convert them using toFixed(2) for 2 decimal places.
 		# Integers stay as they are.
@@ -86,32 +94,24 @@ $(document).ready () ->
 		element.mousedown (event) ->
 			return if event.which isnt 1
 
-			createTooltip = () =>
-				# With enough clicking around you can avoid a mouse up
-				# event. Clear any previously created tooltip to avoid
-				# duplicates.
-				$(tooltip).detach() if tooltip?
+			# With enough clicking around you can avoid a mouse up
+			# event. Clear any previously created tooltip to avoid
+			# duplicates.
+			$(tooltip).detach() if tooltip?
+			tooltip = document.createElement('span')
+			tooltip.className = 'tooltip'
 
-				tooltip = document.createElement('span')
-				tooltip.className = 'tooltip'
-				tooltip.innerHTML = prettyNumber(@.value)
-				$(tooltip).css('position', 'absolute')
-				$(tooltip).css('top', $(@).offset().top - $(@).height())
-				$(tooltip).css('left', event.pageX)
-				$(@).after(tooltip)
+			$(tooltip).css('position', 'absolute')
+			$(tooltip).css('top', $(@).offset().top - $(@).height())
+			$(tooltip).css('left', event.pageX)
+			$(@).after(tooltip)
 
-			# Delay tooltip creation after the value has been updated in
-			# the browser. Otherwise, clicking away from the slider
-			# cursor will move the cursor to the mouse but @.value won't
-			# be updated.
-			setTimeout(createTooltip, 1)
+			updateTooltip(prettyNumber(@.value))
 
 		# Update tooltip value and follow pointer.
 		element.mousemove (event) ->
 			return if event.which isnt 1
 			return if not tooltip?
-
-			$(tooltip).html(prettyNumber(@.value))
 
 			# Constrain to input element width.
 			xOff = event.pageX
@@ -121,6 +121,8 @@ $(document).ready () ->
 			xOff = right if xOff > right
 
 			$(tooltip).css('left', xOff)
+
+			updateTooltip(prettyNumber(@.value))
 
 		# Delete tooltip.
 		element.mouseup (event) ->
