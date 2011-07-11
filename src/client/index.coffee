@@ -25,7 +25,7 @@ window.socket.on 'game list', (data) ->
 
 	idList = Object.keys(data)
 	if idList.length > 0
-		window.gameListRegexp = new RegExp(idList.join('|'))
+		window.gameListRegexp = new RegExp('^(' + idList.join('|') + '$)')
 	else
 		window.gameListRegexp = null
 
