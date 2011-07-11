@@ -368,8 +368,14 @@ class GameServer
 				@debug "bot ##{botId} joined"
 				return @players[botId].createShip(id) )
 
+	humanCount: () ->
+		Object.keys(@players).length - @prefs.bot.count
+
+	botCount: () ->
+		@prefs.bot.count
+
 	noHuman: () ->
-		return Object.keys(@players).length == @prefs.bot.count
+		@humanCount() is 0
 
 	# Prefix message with game namespace.
 	log: (type, msg) ->
