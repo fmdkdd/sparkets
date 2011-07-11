@@ -1,0 +1,23 @@
+-*- mode: org; -*-
+
+* Menu disappear in Chrome.
+  Open/close the menu enough times, and it will never reappear.
+
+  Pressing Escape, M, and clicking do change the menu class (from
+  hidden to visible and back), but no menu is visible and the canvas
+  is frozen.
+
+  Pressing again Escape or M or clicking outside the menu (invisible)
+  area will unfreeze the game.
+
+  Reproducible in Chromium 13.0.752.0 (83651) but not FF 5.0.
+  System: Ubuntu Linux 11.04.
+  
+  --
+
+  Might be tied to the CSS transition applied when changing the menu
+  visibility.  Or changing the visiblity property itself. We hide the
+  menu to stop the CSS animation from being processed and eating CPU
+  while the menu is only fully transparent.  Maybe we could just stop
+  the CSS animation, and only change the menu opacity, if that will
+  prevent the menu from disappearing.
