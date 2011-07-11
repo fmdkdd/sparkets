@@ -2,18 +2,30 @@ window.socket = {}
 
 window.socket = io.connect()
 window.socket.on 'connect', () ->
-	window.socket.emit 'get game list'
+	window.socket.emit('get game list')
+
+	# Grab the game list every minute.
+	setInterval( (() ->
+		window.socket.emit('get game list')), 60 * 1000)
 
 window.socket.on 'game list', (data) ->
 	# Update list of running games.
 	$('#gameList').empty()
 
-	for id in data.list
-		href = '/play/#' + id
-		$('#gameList').append('<li><a href="' + href + '">' + id + '</a></li>')
+	minutesLeft = (start, duration) ->
+		new Date(duration - (Date.now() - start)).getMinutes()
 
-	if data.list.length > 0
-		window.gameListRegexp = new RegExp(data.list.join('|'))
+	for id, game of data
+		href = '/play/#' + id
+		$('#gameList').append('<tr>
+			<td><a href="' + href + '">' + id + '</a></td>
+			<td>' + game.players + '</td>
+			<td>' + minutesLeft(game.startTime, game.duration * 1000) + ' min</td>
+			</tr>')
+
+	idList = Object.keys(data)
+	if idList.length > 0
+		window.gameListRegexp = new RegExp(idList.join('|'))
 	else
 		window.gameListRegexp = null
 

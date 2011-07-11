@@ -208,19 +208,34 @@ ul.collapse h3:hover {
  * Join column.
  */
 
-#gameList {
-	 height: 10em;
-	 overflow-y: scroll;
-	 padding: .2em 0 .2em .5em;
+#gameListTable {
+	 width: 100%;
 
-	 list-style-position: inside;
-	 list-style-type: circle;
+	 border-collapse: collapse;
 
 	 background-color: white;
-	 border-radius: .3em;
 	 border-width: 2px;
 	 border-style: solid;
 	 border-color: hsl(-150, 30%, 45%);
+}
+
+#gameListTable th {
+	 padding: .3em;
+
+	 text-align: left;
+	 font-weight: bold;
+}
+
+#gameList tr {
+	 background-color: white;
+}
+
+#gameList tr:nth-child(odd) {
+	 background-color: hsl(-150, 30%, 92%);
+}
+
+#gameList td {
+	 padding: .3em;
 }
 
 #gameList a {
