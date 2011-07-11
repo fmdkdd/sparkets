@@ -21,3 +21,24 @@
   while the menu is only fully transparent.  Maybe we could just stop
   the CSS animation, and only change the menu opacity, if that will
   prevent the menu from disappearing.
+
+  --
+
+  Not reproducible on Chromium 14.0.803.0 (90483). Instead, when
+  opening and closing the menu rapidly with M, the colorwheel SVG
+  image is replaced by a screenshot of the menu, and recursively for a
+  nice Escher effect.
+
+  Zooming out changes the SVG to other graphics: the close button, and
+  icons, until a black rectangle fill the colorwheel box. It stays
+  that way after that, and no amount of opening/closing the menu or
+  zooming in or out seem to affect the black rectangle.
+
+  I'll assume this was a Chromium 13 beta bug, and attribute the strange
+  behavior with the colorwheel SVG to the dev build.
+
+  On another note, it definitely looks like Chromium 14 antialiases the
+  canvas. Not quite like FF, as the satellite borders are still acting
+  funny, but it's on good track. The FPS counter clocks at 130 now
+  ... even though VSync is enabled. Spacewar reports a solid 63, which
+  is more likely and also very good.
