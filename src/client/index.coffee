@@ -133,7 +133,7 @@ $(document).ready () ->
 			# Constrain to input element width.
 			xOff = event.pageX
 			left = $(@).offset().left
-			xOff = offset.left if xOff < left
+			xOff = left if xOff < left
 			right = left + $(@).innerWidth()
 			xOff = right if xOff > right
 
