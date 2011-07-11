@@ -169,6 +169,11 @@ class Menu
 					'<td>' + s.score + '</td></tr>')
 
 	updateTime: () ->
+		if window.gameEnded
+			clearInterval(@clockInterval)
+			$('#timeLeft').html("The game has ended!")
+			return
+
 		# Compute in ms since Epoch.
 		elapsed = Date.now() - window.gameStartTime
 		remaining = window.gameDuration * 60 * 1000 - elapsed

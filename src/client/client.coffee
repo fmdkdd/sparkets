@@ -340,4 +340,5 @@ onPlayerQuits = (data) ->
 	deleteObject data.shipId
 
 onGameEnd = () ->
+	window.gameEnded = yes
 	window.menu.open()
