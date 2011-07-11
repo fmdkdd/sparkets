@@ -27,8 +27,7 @@ globalSockets.on 'connection', (socket) ->
 		logger.info "Player #{socket.id} left global server"
 
 	socket.on 'get game list', () ->
-		socket.emit 'game list',
-			list: Object.keys(gameList)
+		sendGameList(socket)
 
 	socket.on 'create game', (data) ->
 		gameId = data.id
@@ -41,20 +40,29 @@ globalSockets.on 'connection', (socket) ->
 		else
 			createGame(gameId, data)
 
-			globalSockets.emit 'game list'
-				list: Object.keys(gameList)
+			sendGameList(globalSockets)
 
 logger.info 'Global server started'
 
-GameServer = require('./gameServer').GameServer
 gameList = {}
+sendGameList = (socket) ->
+	msg = {}
+
+	for id, game of gameList
+		msg[id] =
+			players: game.humanCount() + game.botCount()
+			startTime: game.startTime
+			duration: game.prefs.duration
+
+	socket.emit('game list', msg)
+
+GameServer = require('./gameServer').GameServer
 createGame = (id, gamePrefs) ->
 	endGame = () ->
 		game.end()
 		delete gameList[id]
 
-		globalSockets.emit 'game list'
-			list: Object.keys(gameList)
+		sendGameList(globalSockets)
 
 	game = new GameServer(io.of(id), gamePrefs)
 	game.launch()
