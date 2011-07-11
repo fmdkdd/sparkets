@@ -20,7 +20,8 @@ exports.collisions =
 
 	'ship-bullet': (ship, bullet) ->
 		# Immunity to own bullets for a set time.
-		if bullet.state is 'available' and
+		if ship.state is 'alive' and
+				bullet.state is 'available' and
 				(ship.id isnt bullet.owner.id or
 				bullet.points.length > 3)
 			ship.explode()

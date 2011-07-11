@@ -94,7 +94,7 @@ class Ship extends ChangingObject
 		@bonus = null
 
 	useBonus: () ->
-		return if @state is 'exploding' or @state is 'dead' or not @bonus?
+		return if not @bonus? or @state isnt 'alive'
 
 		@ddebug "use #{@bonus.type} bonus"
 		@bonus.use()
@@ -168,10 +168,7 @@ class Ship extends ChangingObject
 				@boost = 1 if @boost < 1
 
 	fire : () ->
-		return if @state is 'spawned' or
-				@state is 'exploding' or
-				@state is 'dead' or
-				@cannonHeat > 0
+		return if @state isnt 'alive' or @cannonHeat > 0
 
 		@game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"
