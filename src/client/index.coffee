@@ -46,8 +46,10 @@ $(document).ready () ->
 	$('input[name="id"]').keyup (event) ->
 		if @.value.match(window.gameListRegexp)
 			$('#id-error').html('Name already exists')
+			$('input[value="Create"]').attr('disabled', 'disabled')
 		else
 			$('#id-error').html('')
+			$('input[value="Create"]').removeAttr('disabled')
 
 	$('#createForm').submit (event) ->
 		event.preventDefault()
