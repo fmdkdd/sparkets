@@ -28,7 +28,6 @@
    Should scale : bonus drop, map size, planet density?
 
 * Add scores
-   Count kills and deaths.
    Other statistics could be gathered: longest survival, kill chain,
    mines used, etc.
 
@@ -79,3 +78,7 @@ o [alpha-3] Share prefs file with client.
 
 * Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.
+
+* Move static attributes to prototypes.
+
+* Rework collision handling.
