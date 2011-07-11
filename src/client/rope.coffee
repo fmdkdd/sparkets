@@ -98,12 +98,15 @@ class Rope
 		# away from the center.
 		edges = []		
 		for i in [0...@chain.length-1]
-			edges.push
+			pos =
 				x: @chain[i].x + (@chain[i+1].x - @chain[i].x)/2
 				y: @chain[i].y + (@chain[i+1].y - @chain[i].y)/2
+			edges.push
+				x: pos.x
+				y: pos.y
 				r: Math.atan2(@chain[i+1].y - @chain[i].y, @chain[i+1].x - @chain[i].x)
-				vx: (@chain[i].x + (@chain[i+1].x - @chain[i].x)/2 - center.x) * 0.05
-				vy: (@chain[i].y + (@chain[i+1].y - @chain[i].y)/2 - center.y) * 0.05
+				vx: (pos.x - center.x) * 0.05
+				vy: (pos.y - center.y) * 0.05
 				vr: (Math.random()*2-1) * 0.05
 				size: window.distance(@chain[i].x, @chain[i].y, @chain[i+1].x, @chain[i+1].y)
 		window.effects.push new DislocateEffect(edges, @color, 1000)
