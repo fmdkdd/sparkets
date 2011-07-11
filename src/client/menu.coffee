@@ -67,12 +67,18 @@ class Menu
 	open: () ->
 		@updateScores()
 
+		@updateTime()
+		@clockInterval = setInterval( (() =>
+			@updateTime()), 1000)
+
 		@menu.removeClass('hidden')
 		@menu.addClass('visible')
 
 	close: () ->
 		@menu.removeClass('visible')
 		@menu.addClass('hidden')
+
+		clearInterval(@clockInterval)
 
 	isOpen: () ->
 		@menu.hasClass('visible')
@@ -161,6 +167,19 @@ class Menu
 					'<td>' +	s.deaths + '</td>' +
 					'<td>' +	s.kills + '</td>' +
 					'<td>' + s.score + '</td></tr>')
+
+	updateTime: () ->
+		# Compute in ms since Epoch.
+		elapsed = Date.now() - window.gameStartTime
+		remaining = window.gameDuration * 1000 - elapsed
+
+		# Use Date for conversion and pretty printing.
+		timeLeft = new Date(remaining)
+
+		pad = (n) ->
+			if n < 10 then '0'+n else n
+
+		$('#timeLeft').html("#{timeLeft.getMinutes()}:#{pad(timeLeft.getSeconds())} left")
 
 # Exports
 window.Menu = Menu

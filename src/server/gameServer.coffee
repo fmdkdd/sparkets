@@ -62,7 +62,7 @@ class GameServer
 
 		@addBots()
 
-		@startTime = new Date()
+		@startTime = Date.now()
 
 		@frozen = yes
 		@ended = no
@@ -105,8 +105,10 @@ class GameServer
 
 		socket.emit 'connected',
 			playerId: id
+			startTime: @startTime
 			serverPrefs:
 				mapSize: @prefs.mapSize
+				duration: @prefs.duration
 				ship:
 					minPower: @prefs.ship.minFirepower
 					maxPower: @prefs.ship.maxFirepower

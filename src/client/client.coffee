@@ -121,7 +121,7 @@ renderLoop = (callback, showFPS) ->
 		requestAnimFrame(render)
 
 		# For browsers which do not pass the time argument.
-		time ?= (new Date).getTime()
+		time ?= Date.now()
 
 		# Update FPS every second
 		if (time - lastFPSupdate > 1000)
@@ -315,10 +315,13 @@ onObjectsUpdate = (data) ->
 onConnected = (data) ->
 	window.playerId = data.playerId
 
+	window.gameStartTime = data.startTime
+
 	# Copy useful game preferences from the server.
 	window.map = data.serverPrefs.mapSize
 	window.minPower = data.serverPrefs.ship.minPower
 	window.maxPower = data.serverPrefs.ship.maxPower
+	window.gameDuration = data.serverPrefs.duration
 	window.cannonCooldown = data.serverPrefs.ship.cannonCooldown
 
 	window.menu.sendPreferences()
