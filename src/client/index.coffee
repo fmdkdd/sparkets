@@ -20,7 +20,7 @@ window.socket.on 'game list', (data) ->
 		$('#gameList').append('<tr>
 			<td><a href="' + href + '">' + id + '</a></td>
 			<td>' + game.players + '</td>
-			<td>' + minutesLeft(game.startTime, game.duration * 1000) + ' min</td>
+			<td>' + minutesLeft(game.startTime, game.duration * 60 * 1000) + ' min</td>
 			</tr>')
 
 	idList = Object.keys(data)

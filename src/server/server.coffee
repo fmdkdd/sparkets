@@ -68,7 +68,7 @@ createGame = (id, gamePrefs) ->
 	game.launch()
 
 	# Prepare game expiration.
-	setTimeout(endGame, game.prefs.duration * 1000)
+	setTimeout(endGame, game.prefs.duration * 60 * 1000)
 
 	logger.info "Game #{id} started"
 

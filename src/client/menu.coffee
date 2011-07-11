@@ -171,7 +171,7 @@ class Menu
 	updateTime: () ->
 		# Compute in ms since Epoch.
 		elapsed = Date.now() - window.gameStartTime
-		remaining = window.gameDuration * 1000 - elapsed
+		remaining = window.gameDuration * 60 * 1000 - elapsed
 
 		# Use Date for conversion and pretty printing.
 		timeLeft = new Date(remaining)
