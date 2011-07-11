@@ -1,5 +1,5 @@
 class DislocateEffect
-	constructor: (@edges, @pos, @color, @duration) ->
+	constructor: (@edges, @color, @duration) ->
 		@start = now
 		@end = @start + @duration
 

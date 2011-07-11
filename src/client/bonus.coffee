@@ -162,7 +162,7 @@ class Bonus
 				vy: positions[i][1] * 0.1
 				vr: (Math.random()*2-1) * 0.05
 				size: 20
-		window.effects.push new DislocateEffect(edges, {x:@pos.x,y:@pos.y}, @color, 1000)
+		#window.effects.push new DislocateEffect(edges, @color, 1000)
 
 # Exports
 window.Bonus = Bonus
