@@ -65,6 +65,21 @@ class GameServer
 		@startTime = new Date()
 
 		@frozen = yes
+		@ended = no
+
+	end: () ->
+		# It's time! Put your pen down.
+		@freeze()
+
+		@ended = yes
+		@info 'ended'
+
+		# Notify players.
+		@sockets.emit 'game end'
+
+		# Unbind listener for this namespace in case another game with
+		# the same id is created.
+		@sockets.removeAllListeners('connection')
 
 	freeze: () ->
 		clearTimeout(@updateTimeout)
@@ -74,6 +89,8 @@ class GameServer
 		@info 'frozen'
 
 	thaw: () ->
+		@warn 'thawing but game has already ended' if @ended
+
 		@frozen = no
 		@info 'unfrozen'
 

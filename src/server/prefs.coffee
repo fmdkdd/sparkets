@@ -19,6 +19,9 @@ class GamePreferences
 	# ms between two server updates.
 	timestep: 20
 
+	# Duration of the game in seconds.
+	duration: 5 * 60
+
 	# Size of the real map (duh).
 	mapSize:
 		w: 2000

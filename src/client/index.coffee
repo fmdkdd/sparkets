@@ -12,7 +12,10 @@ window.socket.on 'game list', (data) ->
 		href = '/play/#' + id
 		$('#gameList').append('<li><a href="' + href + '">' + id + '</a></li>')
 
-	window.gameListRegexp = new RegExp(data.list.join('|'))
+	if data.list.length > 0
+		window.gameListRegexp = new RegExp(data.list.join('|'))
+	else
+		window.gameListRegexp = null
 
 window.socket.on 'game already exists', () ->
 	$('#id-error').html('Name already exists')
@@ -44,7 +47,7 @@ $(document).ready () ->
 
 
 	$('input[name="id"]').keyup (event) ->
-		if @.value.match(window.gameListRegexp)
+		if window.gameListRegexp? and @.value.match(window.gameListRegexp)
 			$('#id-error').html('Name already exists')
 			$('input[value="Create"]').attr('disabled', 'disabled')
 		else

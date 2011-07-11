@@ -55,6 +55,7 @@ $(document).ready (event) ->
 	window.socket.on 'objects update', onObjectsUpdate
 	window.socket.on 'ship created', onShipCreated
 	window.socket.on 'player quits', onPlayerQuits
+	window.socket.on 'game end', onGameEnd
 	window.socket.on 'disconnect', onDisconnect
 
 	# Setup canvas.
@@ -334,3 +335,6 @@ onShipCreated = (data) ->
 # When another player leaves.
 onPlayerQuits = (data) ->
 	deleteObject data.shipId
+
+onGameEnd = () ->
+	window.menu.open()

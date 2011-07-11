@@ -59,9 +59,7 @@ o [alpha-3] Current bonus visual clue.
 * Factorize gravity from planet computations
    Consider only surrounding planets, wrt the torus.
 
-* Freeze games without players
-
-* Expire finished and deserted games 
+* Expire deserted games 
 
 * Get rid of evil global variables.
    Use closures where relevant, pass arguments when convenient.
@@ -71,6 +69,12 @@ o [alpha-3] Current bonus visual clue.
    - Immobile objects need not to be reinserted in the grid (planets).
    - Don't check collisions between objects that can't collide gameplay-wise.
 
+* Prevent bonus from spawning into other objects (ships, bonuses, satellites)
+   
+* Change planet count to a percentage value relative to map size.
+   Could specify between 30-70% planet fill. Avoid locks when trying
+   to fit 50 planets into a 500*500 map. 
+   
 * Refactor gravity code.
    - Delegate to server
    - Should only consider nearby planets, and take torus into account.
@@ -81,10 +85,6 @@ o [alpha-3] Refactor client clode
 o [alpha-3] Rework client drawing.
    Find out why Core2 with puny graphic chipset can handle the client fullscreen
    when beefier hardware can't.
-
-o [alpha-3] Share prefs file with client.
-   All game-specific prefs (mapsize, min/max power, ..) should be sent
-   on game join.
 
 * Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.

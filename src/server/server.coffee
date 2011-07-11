@@ -49,9 +49,21 @@ logger.info 'Global server started'
 GameServer = require('./gameServer').GameServer
 gameList = {}
 createGame = (id, gamePrefs) ->
+	endGame = () ->
+		game.end()
+		delete gameList[id]
+
+		globalSockets.emit 'game list'
+			list: Object.keys(gameList)
+
 	game = new GameServer(io.of(id), gamePrefs)
 	game.launch()
+
+	# Prepare game expiration.
+	setTimeout(endGame, game.prefs.duration * 1000)
+
 	logger.info "Game #{id} started"
+
 	return gameList[id] = game
 
 # Default game for all users
