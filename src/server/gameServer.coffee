@@ -32,7 +32,6 @@ class GameServer
 				@planets[id] = p
 
 		@spawnBonus()
-		setInterval(( () => @spawnBonus() ), @prefs.bonus.waitTime)
 
 		# Bind socket events
 		@sockets.on 'connection', (socket) =>
@@ -63,7 +62,23 @@ class GameServer
 
 		@addBots()
 
+		@startTime = new Date()
+
+		@frozen = yes
+
+	freeze: () ->
+		clearTimeout(@updateTimeout)
+		clearInterval(@bonusInterval)
+
+		@frozen = yes
+		@info 'frozen'
+
+	thaw: () ->
+		@frozen = no
+		@info 'unfrozen'
+
 		@update()
+		@bonusInterval = setInterval(( () => @spawnBonus() ), @prefs.bonus.waitTime)
 
 	clientConnect: (socket) ->
 		id = socket.id
@@ -81,6 +96,9 @@ class GameServer
 					cannonCooldown: @prefs.ship.cannonCooldown
 
 		@info "player #{socket.id} joined"
+
+		# Human connected, update the game!
+		@thaw() if @frozen
 
 	createShip: (socket, data) ->
 		id = data.playerId
@@ -126,13 +144,17 @@ class GameServer
 
 		@info "player #{socket.id} left"
 
+		# Don't update the game if no one is around.
+		@freeze() if @noHuman()
+
 	# Game loop
 	update: () ->
-		# Setup next update.
-		setTimeout(( () => @update() ), @prefs.timestep)
+		if @frozen
+			@warn 'update skipped: frozen game'
+			return
 
-		# Skip update if no one is connected.
-		return if @noHuman()
+		# Setup next update.
+		@updateTimeout = setTimeout(( () => @update() ), @prefs.timestep)
 
 		player.update() for id, player of @players
 
@@ -313,9 +335,6 @@ class GameServer
 		return planets
 
 	spawnBonus: (bonusType) ->
-		# Do nothing when no one is connected.
-		return if @noHuman()
-
 		return false if Object.keys(@bonuses).length >= @prefs.bonus.maxCount
 		@newGameObject( (id) =>
 			@bonuses[id] = new Bonus(id, @, bonusType)
