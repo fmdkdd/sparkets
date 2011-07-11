@@ -81,6 +81,8 @@ class GamePreferences
 
 		# Default parameters for bots.
 		defaultPersona:
+			name: 'HK-47'
+
 			# Distance threshold to begin firing at a target.
 			acquireDistance: [400, 500]
 

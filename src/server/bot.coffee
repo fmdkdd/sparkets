@@ -27,6 +27,8 @@ class Bot extends Player
 		for name, val of @game.prefs.bot[persona]
 			@prefs[name] = roll(val)
 
+		@name = @prefs.name
+
 	update: () ->
 		return if not @ship?
 
