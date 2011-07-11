@@ -57,9 +57,9 @@ class Menu
 		@menu.click (event) ->
 			event.stopPropagation() if event.which is 1
 
-		# Close the menu when the Escape key is pressed.
+		# Open or close the menu when Escape or 'M' is pressed.
 		$(document).keyup ({keyCode}) =>
-			@toggle() if keyCode is 27
+			@toggle() if keyCode is 27 or keyCode is 77
 
 	toggle: () ->
 		if @isOpen() then @close() else @open()

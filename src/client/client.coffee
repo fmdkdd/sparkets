@@ -88,10 +88,6 @@ setInputHandlers = () ->
 				playerId: window.playerId
 				key: keyCode
 
-		# Open/Close the menu when 'M' is pressed.
-		if keyCode is 77
-			window.menu.toggle()
-
 	$(document).keyup ({keyCode}) ->
 		window.keys[keyCode] = off
 		window.socket.emit 'key up',
