@@ -73,6 +73,12 @@ class GameServer
 
 		socket.emit 'connected',
 			playerId: id
+			serverPrefs:
+				mapSize: @prefs.mapSize
+				ship:
+					minPower: @prefs.ship.minFirepower
+					maxPower: @prefs.ship.maxFirepower
+					cannonCooldown: @prefs.ship.cannonCooldown
 
 		@info "player #{socket.id} joined"
 

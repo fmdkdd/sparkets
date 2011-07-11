@@ -1,11 +1,10 @@
 # Server
-window.port = 12345
-window.socket = {}
+window.socket = null
 
 # Graphics
 window.ctxt = null
 window.canvasSize = {w: 0, h: 0}
-window.map = {w: 2000, h: 2000}
+window.map = null
 window.view = {x: 0, y: 0}
 
 # Time
@@ -16,11 +15,7 @@ window.planetColor = [209,29,61]
 window.maxBulletLength = 15
 
 # Game logic
-window.minPower = 1.3
-window.maxPower = 3
 window.explosionDuration = 1000
-window.maxBullets = 10
-window.cannonCooldown = 20
 
 window.playerId = null
 window.shipId = null
@@ -318,6 +313,12 @@ onObjectsUpdate = (data) ->
 # When receiving our id from the server.
 onConnected = (data) ->
 	window.playerId = data.playerId
+
+	# Copy useful game preferences from the server.
+	window.map = data.serverPrefs.mapSize
+	window.minPower = data.serverPrefs.ship.minPower
+	window.maxPower = data.serverPrefs.ship.maxPower
+	window.cannonCooldown = data.serverPrefs.ship.cannonCooldown
 
 	window.menu.sendPreferences()
 
