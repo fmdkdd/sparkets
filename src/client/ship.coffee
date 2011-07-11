@@ -43,6 +43,9 @@ class Ship
 	draw: (ctxt, offset) ->
 		return if @state is 'exploding' or @state is 'dead'
 
+		# Blink when the ship just spawned.
+		return if @state is 'spawned' and now % 200 < 100
+
 		# Draw the basic model.
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)

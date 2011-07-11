@@ -36,7 +36,8 @@ class Ship extends ChangingObject
 		@spawn()
 
 	spawn: () ->
-		@state = 'alive'
+		@state = 'spawned'
+		@countdown = @game.prefs.ship.states[@state].countdown
 
 		@pos =
 			x: Math.random() * @game.prefs.mapSize.w
@@ -143,7 +144,7 @@ class Ship extends ChangingObject
 		@pos.y = if @pos.y > h then 0 else @pos.y
 
 	tangible: () ->
-		@state is 'alive'
+		@state is 'spawned' or @state is 'alive'
 
 	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
 		x += offset.x
@@ -167,7 +168,10 @@ class Ship extends ChangingObject
 				@boost = 1 if @boost < 1
 
 	fire : () ->
-		return if @state is 'exploding' or @state is 'dead' or @cannonHeat > 0
+		return if @state is 'spawned' or
+				@state is 'exploding' or
+				@state is 'dead' or
+				@cannonHeat > 0
 
 		@game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"
