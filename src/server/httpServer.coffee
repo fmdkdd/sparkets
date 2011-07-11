@@ -23,7 +23,7 @@ webFiles = {
 	'/js/client/index.js',
 	'/js/client/menu.js',
 	'/js/client/mine.js',
-	'/js/client/openEffect.js',
+	'/js/client/dislocateEffect.js',
 	'/js/client/planet.js',
 	'/js/client/rope.js',
 	'/js/client/ship.js',

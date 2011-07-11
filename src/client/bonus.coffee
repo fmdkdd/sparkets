@@ -147,8 +147,22 @@ class Bonus
 		ctxt.restore()
 
 	explode: () ->
-		window.effects.push new ExplosionEffect(@pos, @color, 50, 8)
-		window.effects.push new OpenEffect({x:@pos.x,y:@pos.y}, 20, @color)
+		# Launch explosion effect.
+		#window.effects.push new ExplosionEffect(@pos, @color, 50, 8)
+
+		# Launch box opening effect.
+		positions = [[0, -10], [10, 0], [0, 10], [-10, 0]]
+		edges = []
+		for i in [0..3]
+			edges.push
+				x: @pos.x + positions[i][0]
+				y: @pos.y + positions[i][1]
+				r: Math.PI/2 * i
+				vx: positions[i][0] * 0.1
+				vy: positions[i][1] * 0.1
+				vr: (Math.random()*2-1) * 0.05
+				size: 20
+		window.effects.push new DislocateEffect(edges, {x:@pos.x,y:@pos.y}, @color, 1000)
 
 # Exports
 window.Bonus = Bonus
