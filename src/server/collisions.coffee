@@ -114,6 +114,9 @@ exports.collisions =
 	'tracker-planet' : (tracker, planet) ->
 		tracker.explode()
 
+	'tracker-moon' : (tracker, moon) ->
+		tracker.explode()
+
 	'tracker-ship' : (tracker, ship) ->
 		tracker.explode()
 		ship.explode()
