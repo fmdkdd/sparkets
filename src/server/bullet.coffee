@@ -61,7 +61,7 @@ class Bullet extends ChangingObject
 			else
 				@game.prefs.bullet.gravityPull * obj.force
 
-		return @game.gravityField(@pos, gravityObjs, source, force)
+		return utils.gravityField(@pos, gravityObjs, source, force)
 
 	move: () ->
 		return if @state isnt 'active'

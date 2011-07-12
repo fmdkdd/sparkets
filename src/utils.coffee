@@ -90,7 +90,7 @@ exports.safeDeepMerge = (target, obj) ->
 
 # Return acceleration vector from all gravity-emitting `objects',
 # having center `source' and force `force'.
-gravityField: (pos, objects, source, force) ->
+exports.gravityField = (pos, objects, source, force) ->
 	{x: x1, y: y1} = pos
 
 	# Apply gravity formula.
