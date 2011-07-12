@@ -87,3 +87,27 @@ exports.safeDeepMerge = (target, obj) ->
 				target[name] = val
 
 	return target
+
+# Return acceleration vector from all gravity-emitting `objects',
+# having center `source' and force `force'.
+gravityField: (pos, objects, source, force) ->
+	{x: x1, y: y1} = pos
+
+	# Apply gravity formula.
+	gravity = ({x: x2, y: y2}, g) ->
+		xt = x2-x1
+		yt = y2-y1
+		dist = xt*xt + yt*yt
+		pull = g / (dist * Math.sqrt(dist))
+
+		return {x: xt * pull, y: yt * pull}
+
+	vx = vy = 0
+	for id, obj of objects
+		pull = gravity(source(obj), force(obj))
+
+		# Increase field vector.
+		vx += pull.x
+		vy += pull.y
+
+	return {x: vx, y: vy}

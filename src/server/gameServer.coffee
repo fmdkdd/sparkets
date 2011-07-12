@@ -221,6 +221,74 @@ class GameServer
 					cellY += incr
 				cellX += incr
 
+	# Return all objects in the grid cell (x,y).  `filter' can be used
+	# as a predicate to filter objects.  By default, all objects are
+	# accepted.
+	objectsInCell: (cell, filter = (() -> yes)) ->
+		# The grid leaves empty cells undefined.
+		return {} if not cell?
+
+		objs = {}
+		for id, gridObj of cell
+			objs[id] = gridObj if filter(gridObj.object)
+		return objs
+
+	# Return an array of all objects of the given type in neighboring
+	# grid cells. Useful for gravitation field computation.
+	objectsAround: ({x, y}, filter) ->
+		# Return the offset for the grid cell (gridX, gridY).
+		# If the grid is 10 cells wide, the cell at (-1,0) is really at
+		# (9,0).  But by requesting (-1,0) instead of (9,0) we want
+		# all the objects in (9,0) to behave as if they _were_ in
+		# (-1,0). To do this, we need an extra offset to their position.
+		gridOffset = (gridX, gridY) =>
+			if gridX < 0
+				xOff = -@prefs.mapSize.w
+			else if gridX >= @grid.width
+				xOff = @prefs.mapSize.w
+			else
+				xOff = 0
+
+			if gridY < 0
+				yOff = -@prefs.mapSize.h
+			else if gridY >= @grid.height
+				yOff = @prefs.mapSize.h
+			else
+				yOff = 0
+
+			return {x: xOff, y: yOff}
+
+		# Find the grid coordinate of the cell containing (x,y).
+		gridX = Math.floor(x / @grid.cellWidth)
+		gridY = Math.floor(y / @grid.cellHeight)
+
+		# Gather objects from neighboring cells.
+		objs = []
+		for i in [-1..1]
+			for j in [-1..1]
+				# Relative, non-wrapped cell coordinates.
+				gx = gridX + i
+				gy = gridY + j
+
+				# Offset to give each object in the cell.
+				offset = gridOffset(gx, gy)
+
+				# Absolute, wrapped cell coordinates.
+				gx = utils.mod(gx, @grid.width)
+				gy = utils.mod(gy, @grid.height)
+				cell = @grid.cells[gy * @grid.width + gx]
+
+				# Filter objects in the cell.
+				cellObjs = @objectsInCell(cell, filter)
+
+				# Add our offset. Encapsulation is necessary since we
+				# don't want to polute the grid objects with our offset.
+				objs.push
+					objects: cellObjs
+					relativeOffset: offset
+
+		return objs
+
 	updateObjects: (objects) ->
 		# Move all objects
 		@grid.cells = {}

@@ -18,8 +18,12 @@ class EMP extends ChangingObject
 
 		@color = ship.color
 		@force = @game.prefs.bonus.emp.initialForce
+		@hitRadius = @force
 
 	tangible: () ->
+		yes
+
+	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
 		no
 
 	move: () ->

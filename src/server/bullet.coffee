@@ -33,33 +33,47 @@ class Bullet extends ChangingObject
 		@points = [ [@pos.x, @pos.y] ]
 		@lastPoints = [ [@pos.x, @pos.y] ]
 
+	# Apply gravity from all planets, moons, and EMPs.
+	gravityVector: () ->
+		# Get planets, moons and EMPs.
+		filter = (obj) ->
+			obj.type is 'planet' or obj.type is 'moon' or obj.type is 'EMP'
+
+		# objectsAround() will return the same object for all cells it
+		# appears in. We want to compute their gravity influence only
+		# once! Thus we delete duplicates.
+		gravityObjs = {}
+		for cellObjs in @game.objectsAround(@pos, filter)
+			for id, cellObj of cellObjs.objects
+				gravityObjs[id] =
+					object: cellObj.object
+					relativeOffset: cellObjs.relativeOffset
+
+		# Compute object position with relative offset.
+		source = (obj) ->
+			x: obj.object.pos.x + obj.relativeOffset.x
+			y: obj.object.pos.y + obj.relativeOffset.y
+
+		# Pull factor for each object.
+		force = ({object: obj}) =>
+			if obj.type is 'EMP'
+				@game.prefs.bullet.EMPPull * obj.force
+			else
+				@game.prefs.bullet.gravityPull * obj.force
+
+		return @game.gravityField(@pos, gravityObjs, source, force)
+
 	move: () ->
 		return if @state isnt 'active'
 
 		# Compute new position from acceleration and gravity of all planets.
-		{x, y} = @pos
-		{x: ax, y: ay} = @accel
+		gvec = @gravityVector()
 
-		# Apply gravity from all planets.
-		g = @game.prefs.bullet.gravityPull
-		for id, p of @game.planets
-			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-			d2 = g * p.force / (d * Math.sqrt(d))
-			ax -= (x-p.pos.x) * d2
-			ay -= (y-p.pos.y) * d2
+		@accel.x += gvec.x
+		@accel.y += gvec.y
 
-		# Apply negative force from all EMPs.
-		g2 = @game.prefs.bullet.EMPPull
-		for id, e of @game.EMPs
-			d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
-			d2 = g2 * e.force / (d * Math.sqrt(d))
-			ax -= (x-e.pos.x) * d2
-			ay -= (y-e.pos.y) * d2
-
-		@pos.x = x + ax
-		@pos.y = y + ay
-		@accel.x = ax
-		@accel.y = ay
+		@pos.x += @accel.x
+		@pos.y += @accel.y
 
 		@points.push [@pos.x, @pos.y]
 		@lastPoints = [ [@pos.x, @pos.y] ]
