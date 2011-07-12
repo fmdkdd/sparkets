@@ -54,7 +54,7 @@ class Bonus
 				ctxt.fillRect(-r, -r, r2, r2)
 				ctxt.restore()
 
-			when 'bonusMine'
+			when 'bonusTracker'
 				window.strokeCircle(ctxt, 0, 0, 1)
 				window.strokeCircle(ctxt, 0, 0, 4)
 				window.strokeCircle(ctxt, 0, 0, 7)
