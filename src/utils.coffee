@@ -31,7 +31,11 @@ exports.isEmptyObject = (obj) ->
 
 # Stupid % operator.
 exports.mod = (x, n) ->
-	if x >= 0 then x%n else exports.mod(x+n, n)
+	if isNaN(x)
+		x
+	else if x >= 0
+		x%n
+	else exports.mod(x+n, n)
 
 # Normalize angle between -Pi and +Pi.
 exports.relativeAngle = (a) ->

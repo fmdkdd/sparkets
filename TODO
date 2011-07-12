@@ -28,7 +28,6 @@
    Should scale : bonus drop, map size, planet density?
 
 * Add scores
-   Count kills and deaths.
    Other statistics could be gathered: longest survival, kill chain,
    mines used, etc.
 
@@ -38,10 +37,9 @@
 
 * Add web interface for game creation.
    - Sanitize input (unique game id, out of range values ...)
-
+   
 * More info in game list.
-   - Number of players / max allowed
-   - Time left
+   - Max players allowed
 
 = Graphics =
 
