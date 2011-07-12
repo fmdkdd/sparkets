@@ -76,7 +76,7 @@ class Ship extends ChangingObject
 		@ddebug "thrust"
 
 	chargeFire: () ->
-		return if @cannonHeat > 0
+		return if @cannonHeat > 0 or @state isnt 'alive'
 
 		@firePower = Math.min(@firePower + @game.prefs.ship.firepowerInc, @game.prefs.ship.maxFirepower)
 		@ddebug "charge fire"
