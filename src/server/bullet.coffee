@@ -39,21 +39,6 @@ class Bullet extends ChangingObject
 		filter = (obj) ->
 			obj.type is 'planet' or obj.type is 'moon' or obj.type is 'EMP'
 
-		# objectsAround() will return the same object for all cells it
-		# appears in. We want to compute their gravity influence only
-		# once! Thus we delete duplicates.
-		gravityObjs = {}
-		for cellObjs in @game.objectsAround(@pos, filter)
-			for id, cellObj of cellObjs.objects
-				gravityObjs[id] =
-					object: cellObj.object
-					relativeOffset: cellObjs.relativeOffset
-
-		# Compute object position with relative offset.
-		source = (obj) ->
-			x: obj.object.pos.x + obj.relativeOffset.x
-			y: obj.object.pos.y + obj.relativeOffset.y
-
 		# Pull factor for each object.
 		force = ({object: obj}) =>
 			if obj.type is 'EMP'
@@ -61,7 +46,7 @@ class Bullet extends ChangingObject
 			else
 				@game.prefs.bullet.gravityPull * obj.force
 
-		return utils.gravityField(@pos, gravityObjs, source, force)
+		return @game.gravityFieldAround(@pos, filter, force)
 
 	move: () ->
 		return if @state isnt 'active'

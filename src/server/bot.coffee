@@ -148,33 +148,22 @@ class Bot extends Player
 		else
 			ax = ay = 0
 
-		gravityEscape = (objs, g, source = ((obj) -> obj.pos)) ->
-			gx = gy = 0
-			for id, obj of objs
-				point = source(obj)
-				d = (point.x-x)*(point.x-x) + (point.y-y)*(point.y-y)
-				d2 = g * obj.hitRadius / (d * Math.sqrt(d))
-				gx -= (x-point.x) * d2
-				gy -= (y-point.y) * d2
-			return {x: gx, y: gy}
+		# Get planets, moons and EMPs.
+		filter = (obj) ->
+			obj.type is 'planet' or obj.type is 'moon' or
+				obj.type is 'mine' or obj.type is 'bullet'
+
+		# Pull factor for each object.
+		force = ({object: obj}) =>
+			state = if @state is 'chase' then @state else 'seek'
+			type = if obj.type is 'moon' then 'planet' else obj.type
+			prop = state + utils.capitalize(type) + 'Avoid'
+			return @prefs[prop] * obj.hitRadius
 
 		# Try to avoid planets and mines using a negative field motion.
-		g = if @state is 'chase' then @prefs.chasePlanetAvoid else @prefs.seekPlanetAvoid
-		grav = gravityEscape(@game.planets, g)
-		ax += grav.x
-		ay += grav.y
-
-		g = if @state is 'chase' then @prefs.chaseMineAvoid else @prefs.seekMineAvoid
-		grav = gravityEscape(@game.mines, g)
-		ax += grav.x
-		ay += grav.y
-
-		g = if @state is 'chase' then @prefs.chaseBulletAvoid else @prefs.seekBulletAvoid
-		grav = gravityEscape(@game.bullets, g, ((bullet) ->
-			p = bullet.points[bullet.points.length-1]
-			{x: p[0], y: p[1]}))
-		ax += grav.x
-		ay += grav.y
+		gvec = @game.gravityFieldAround(@ship.pos, filter, force)
+		ax += gvec.x
+		ay += gvec.y
 
 		@face({x: ax + x, y: ay + y})
 		@ship.ahead()
