@@ -97,6 +97,9 @@ class Bullet extends ChangingObject
 			when 'dead'
 				@serverDelete = yes
 
+	explode: () ->
+		@state = 'dead'
+
 	tangible: ->
 		@state is 'active'
 

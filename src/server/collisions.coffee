@@ -110,3 +110,19 @@ exports.collisions =
 	'bonus-planet': (bonus, planet) ->
 		if bonus.state is 'available'
 			bonus.setState 'exploding'
+
+	'tracker-planet' : (tracker, planet) ->
+		tracker.explode()
+
+	'tracker-ship' : (tracker, ship) ->
+		tracker.explode()
+		ship.explode()
+
+	'tracker-bullet' : (tracker, bullet) ->
+		tracker.explode()
+		bullet.explode()
+
+	'tracker-mine' : (tracker, mine) ->
+		tracker.explode()
+		mine.explode()
+

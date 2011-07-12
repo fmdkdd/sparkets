@@ -1,8 +1,9 @@
 utils = require '../utils'
 BonusBoost = require './bonusBoost'
-BonusMine = require './bonusMine'
-BonusEMP = require './bonusEMP'
 BonusDrunk = require './bonusDrunk'
+BonusEMP = require './bonusEMP'
+BonusMine = require './bonusMine'
+BonusTracker = require './bonusTracker'
 
 class ServerPreferences
 	# HTTP server port.
@@ -74,6 +75,12 @@ class GamePreferences
 
 		# If true, planets gravity affect ships.
 		enableGravity: false
+
+		# Maximum distance from which another ship can be targeted.
+		maxTargetingDistance: 500
+
+		# Successive fields of view used to target enemy ships.
+		targetingFOVs: [30, 60, 90, 180]
 
 	bot:
 		# Number of bots on server.
@@ -241,6 +248,24 @@ class GamePreferences
 				countdown: null
 				next: null
 
+	tracker:
+		
+		hitRadius: 5
+		speed: 0.55
+		frictionDecay: 0.95
+		turnSpeed: 20
+	
+		states:
+			'deploying':
+				countdown: 700 				# Time (ms) before activation.
+				next: 'tracking'
+			'tracking':
+				countdown: null
+				next: 'exploding'
+			'dead':
+				countdown: null
+				next: null
+
 	bonus:
 		states:
 			'incoming':
@@ -271,6 +296,9 @@ class GamePreferences
 			mine:
 				class: BonusMine
 				weight: 3
+			tracker:
+				class: BonusTracker
+				weight: 100
 			boost:
 				class: BonusBoost
 				weight: 2
@@ -279,7 +307,7 @@ class GamePreferences
 				weight: 1
 			drunk:
 				class: BonusDrunk
-				weight: 100
+				weight: 1
 
 		# Radius of hit circle.
 		hitRadius: 10

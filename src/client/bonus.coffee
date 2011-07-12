@@ -54,6 +54,11 @@ class Bonus
 				ctxt.fillRect(-r, -r, r2, r2)
 				ctxt.restore()
 
+			when 'bonusMine'
+				window.strokeCircle(ctxt, 0, 0, 1)
+				window.strokeCircle(ctxt, 0, 0, 4)
+				window.strokeCircle(ctxt, 0, 0, 7)
+
 			when 'bonusBoost'
 				ctxt.save()
 				ctxt.rotate(Math.PI/2)
@@ -148,7 +153,7 @@ class Bonus
 
 	explode: () ->
 		# Launch explosion effect.
-		#window.effects.push new ExplosionEffect(@pos, @color, 50, 8)
+		window.effects.push new ExplosionEffect(@pos, @color, 50, 8)
 
 		# Launch box opening effect.
 		positions = [[0, -10], [10, 0], [0, 10], [-10, 0]]
@@ -162,7 +167,7 @@ class Bonus
 				vy: positions[i][1] * 0.1
 				vr: (Math.random()*2-1) * 0.05
 				size: 20
-		#window.effects.push new DislocateEffect(edges, @color, 1000)
+		window.effects.push new DislocateEffect(edges, @color, 1000)
 
 # Exports
 window.Bonus = Bonus

@@ -27,6 +27,7 @@ webFiles = {
 	'/js/client/planet.js',
 	'/js/client/rope.js',
 	'/js/client/ship.js',
+	'/js/client/tracker.js',
 	'/js/utils.js',
 	'/favicon.ico',
 	'/img/colorWheel.png',

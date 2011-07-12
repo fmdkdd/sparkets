@@ -99,6 +99,41 @@ class Ship extends ChangingObject
 		@ddebug "use #{@bonus.type} bonus"
 		@bonus.use()
 
+	target: () ->
+
+		# Select closest ships.
+		near = {}
+		for i, p of @game.players
+			s = p.ship
+			if s.id isnt @id and s.state is 'alive'
+				shipPos = @game.closestGhost(@pos, s.pos)
+				dist = utils.distance(@pos.x, @pos.y, shipPos.x, shipPos.y)
+
+				if dist < @game.prefs.ship.maxTargetingDistance
+					near[s.id] =
+						distance: dist
+						angle: utils.relativeAngle(Math.atan2(-(s.pos.y-@pos.y), s.pos.x-@pos.x) + @dir) * 180/Math.PI
+
+		# Select the more "facing" ship among those lying within the
+		# detection radius.
+		for f in @game.prefs.ship.targetingFOVs
+			inFOV = {}
+			for i, s of near
+				if -f < s.angle < f
+					inFOV[i] = near[i]
+
+			# Return the closest ship.
+			if Object.keys(inFOV).length > 0
+				bestDist = Infinity
+				idBest = null
+				for i, s of inFOV
+					if s.distance < bestDist
+						bestDist = s.distance
+						idBest = i
+				return @game.gameObjects[idBest]
+
+		return null
+
 	move: () ->
 		return if @state is 'exploding' or @state is 'dead'
 
