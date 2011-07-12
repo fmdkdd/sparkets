@@ -277,6 +277,9 @@ class GamePreferences
 			EMP:
 				class: BonusEMP
 				weight: 1
+			drunk:
+				class: BonusDrunk
+				weight: 100
 
 		# Radius of hit circle.
 		hitRadius: 10

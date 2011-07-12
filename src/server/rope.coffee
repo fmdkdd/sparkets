@@ -82,10 +82,11 @@ class Rope extends ChangingObject
 		@changed 'chain'
 
 	update: () ->
-		@serverDelete = (not @object1?) or (not @object2?)
 
 	detach: () ->
 		@object1 = null
 		@object2 = null
+
+		@serverDelete = yes
 
 exports.Rope = Rope

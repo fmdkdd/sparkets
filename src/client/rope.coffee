@@ -83,6 +83,8 @@ class Rope
 		true
 
 	explode: () ->
+		return if @chain.length is 0
+
 		# Launch disintegration effect.
 
 		# Compute the "center" of the rope.

@@ -2,14 +2,10 @@ class BonusDrunk
 	type: 'drunk'
 
 	constructor: (@game, @bonus) ->
-		@used = no
 		@evil = yes
 
 	use: () ->
-		return if @used
-
 		@bonus.holder.inverseTurn = yes
-		@used = yes
 
 		# Cancel all pending bonus timeouts.
 		for type, timeout of @bonus.holder.bonusTimeout
