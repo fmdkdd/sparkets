@@ -8,7 +8,10 @@ class Tracker
 		for field, val of tracker
 			this[field] = val
 
-		@explode() if state_old isnt @state and @state is 'dead'
+		if state_old isnt @state and @state is 'tracking'
+			window.effects.push new TrailEffect(@, 2, 30, 3)
+		if state_old isnt @state and @state is 'dead'
+			@explode()
 
 	update: () ->
 		@clientDelete = @serverDelete

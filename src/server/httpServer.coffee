@@ -28,6 +28,7 @@ webFiles = {
 	'/js/client/rope.js',
 	'/js/client/ship.js',
 	'/js/client/tracker.js',
+	'/js/client/trailEffect.js',
 	'/js/utils.js',
 	'/favicon.ico',
 	'/img/colorWheel.png',

@@ -105,7 +105,7 @@ class Ship extends ChangingObject
 		near = {}
 		for i, p of @game.players
 			s = p.ship
-			if s.id isnt @id and s.state is 'alive'
+			if s.state is 'alive'
 				shipPos = @game.closestGhost(@pos, s.pos)
 				dist = utils.distance(@pos.x, @pos.y, shipPos.x, shipPos.y)
 
