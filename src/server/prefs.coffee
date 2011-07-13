@@ -5,11 +5,26 @@ BonusEMP = require './bonusEMP'
 BonusDrunk = require './bonusDrunk'
 
 class ServerPreferences
+	constructor: (prefs = {}) ->
+		# Override default values by those provided in `prefs'.
+		utils.safeDeepMerge(@, prefs)
+
 	# HTTP server port.
 	port: 12345
 
 	# Port of the web REPL.
 	replPort: 54321
+
+	log: ['error', 'warn', 'info', 'debug']
+
+	# Socket.io options.
+	io:
+		# Allowed transports.
+		# Only WebSocket and FlashSocket are fast and stable enough for Spacewar.
+		transports: ['websocket', 'flashsocket']
+
+		# Detail of log output: error (0), warn, info, debug (3)
+		logLevel: 2
 
 class GamePreferences
 	constructor: (prefs = {}) ->

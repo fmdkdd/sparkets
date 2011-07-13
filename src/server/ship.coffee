@@ -1,4 +1,4 @@
-logger = require '../logger'
+logger = require('../logger').static
 utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
 Bullet = require './bullet'

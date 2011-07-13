@@ -8,7 +8,15 @@ all: $(CLIENT_JS) $(SERVER_JS)
 build/%.js: src/%.coffee
 	coffee -o $(dir $@) -c $<
 
+test/build/%.js: test/src/%.coffee
+	coffee -bo $(dir $@) -c $<
+
+test: all
+	vows test/*.coffee
+
 clean:
 	rm -f build/*.js
 	rm -f build/client/*.js
 	rm -f build/server/*.js
+
+.PHONY: all clean test
