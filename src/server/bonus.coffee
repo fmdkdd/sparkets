@@ -48,7 +48,7 @@ class Bonus extends ChangingObject
 			bonusClass = @game.prefs.bonus.bonusType[bonusType].class
 		else
 			bonusClass = @randomBonus()
-		@bonusEffect = new bonusClass.constructor(@game, @)
+		@effect = new bonusClass.constructor(@game, @)
 		@bonusType = bonusClass.type
 
 		@spawn(bonusType) if @game.collidesWithPlanet(@)
@@ -113,7 +113,7 @@ class Bonus extends ChangingObject
 				@serverDelete = yes
 
 	use: () ->
-		@bonusEffect.use()
+		@effect.use()
 
 	attach: (ship) ->
 		@holder = ship
@@ -133,6 +133,6 @@ class Bonus extends ChangingObject
 			@rope = null				
 
 	isEvil: () ->
-		@bonusEffect.evil?
+		@effect.evil?
 
 exports.Bonus = Bonus

@@ -31,7 +31,7 @@ class Bot extends Player
 		return if not @ship?
 
 		# Automatically respawn.
-		if @ship.isDead() and not @ship.isExploding()
+		if @ship.state is 'dead'
 			@state = 'seek'
 			@ship.spawn()
 
@@ -53,7 +53,7 @@ class Bot extends Player
 			utils.distance(x, y, @ship.pos.x, @ship.pos.y) < dist
 
 		alive = (ship) ->
-			not (ship.isDead() or ship.isExploding())
+			ship.state is 'spawned' or ship.state is 'alive'
 
 		switch @state
 			# Find a target around.
@@ -106,8 +106,9 @@ class Bot extends Player
 		@ship.useBonus() if @ship.bonus? and @shouldUseBonus()
 
 	shouldUseBonus: () ->
-		prefName = @state + utils.capitalize(@ship.bonus.type) + 'Use'
+		prefName = @state + utils.capitalize(@ship.bonus.effect.type) + 'Use'
 		useProbability = if @prefs[prefName]? then @prefs[prefName] else 0
+		console.info prefName+' '+useProbability
 		return Math.random() < useProbability
 
 	inSight: ({x, y}, angle) ->

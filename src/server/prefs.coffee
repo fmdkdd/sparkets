@@ -129,6 +129,7 @@ class GamePreferences
 			chaseMineUse: [.001, .01]
 			chaseEMPUse: [.001, .01]
 			chaseBoostUse: [.01, 1]
+			chaseTrackerUse: [.001, .01]
 
 		# Non aggressive, used for tests.
 		cameoPersona:
@@ -298,7 +299,7 @@ class GamePreferences
 				weight: 3
 			tracker:
 				class: BonusTracker
-				weight: 1
+				weight: 100
 			boost:
 				class: BonusBoost
 				weight: 2

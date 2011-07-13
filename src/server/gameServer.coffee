@@ -61,7 +61,7 @@ class GameServer
 			cellHeight: @prefs.mapSize.h / @prefs.grid.height
 			cells: {}
 
-		#@addBots()
+		@addBots()
 
 		@update()
 
@@ -336,7 +336,7 @@ class GameServer
 			return @bonuses[id] )
 
 	addBots: () ->
-		for i in [0...@prefs.bot.count]
+		for i in [0...20] #@prefs.bot.count]
 			botId = 'b' + i
 			@players[botId] = new Bot(botId, @)
 			@newGameObject( (id) =>
