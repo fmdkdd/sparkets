@@ -54,8 +54,9 @@ exports.start = (prefs, callback) ->
 	# Bind websocket
 	io = io.listen httpServer
 	io.configure () ->
-		io.set('transports', prefs.io.transports)
+		# XXX: Log level can be set only when called first.
 		io.set('log level', prefs.io.logLevel)
+		io.set('transports', prefs.io.transports)
 
 	# Setup global server callbacks
 	globalSockets = io.of('')
@@ -67,6 +68,7 @@ exports.start = (prefs, callback) ->
 			logger.info "Player #{socket.id} left global server"
 
 		socket.on 'get game list', () ->
+			logger.info "requested game list"
 			sendGameList(socket)
 
 		socket.on 'create game', (data) ->
