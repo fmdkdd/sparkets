@@ -48,16 +48,7 @@ class Menu
 				@close()
 				event.stopPropagation()
 
-		# Toggle the menu when a left click is detected in the document.
-		$(document).click (event) =>
-			@toggle() if event.which is 1
-
-		# But don't toggle if the click is inside the menu.
-		# Clicking is expected on name input box and links.
-		@menu.click (event) ->
-			event.stopPropagation() if event.which is 1
-
-		# Open or close the menu when Escape or 'M' is pressed.
+		# Open or close the menu when Escape or M is pressed.
 		$(document).keyup ({keyCode}) =>
 			@toggle() if keyCode is 27 or keyCode is 77
 
