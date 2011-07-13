@@ -1,3 +1,5 @@
+exports ?= window
+
 ## Logger with ANSI colors
 # Borrowed from Socket.IO logger
 

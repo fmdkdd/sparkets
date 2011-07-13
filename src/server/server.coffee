@@ -1,4 +1,4 @@
-logger = require './logger'
+logger = require '../logger'
 ServerPreferences = require('./prefs').ServerPreferences
 
 # Init preferences

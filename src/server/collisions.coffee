@@ -1,4 +1,4 @@
-logger = require './logger'
+logger = require '../logger'
 
 ddebug = (msg) -> logger.log 'collisions', msg
 

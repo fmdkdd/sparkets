@@ -1,4 +1,4 @@
-logger = require './logger'
+logger = require '../logger'
 GamePreferences = require('./prefs').GamePreferences
 Player = require('./player').Player
 Bot = require('./bot').Bot
