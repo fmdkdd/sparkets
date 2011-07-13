@@ -6,6 +6,7 @@ window.ctxt = null
 window.canvasSize = {w: 0, h: 0}
 window.map = null
 window.view = {x: 0, y: 0}
+window.mouse = {x: 0, y: 0}
 
 # Time
 window.now = null
@@ -80,8 +81,8 @@ go = () ->
 	renderLoop(update, window.showFPS)
 
 setInputHandlers = () ->
-	# Send key presses and key releases to the server.
 	$(document).keydown ({keyCode}) ->
+		# Send key presses and key releases to the server.
 		if not window.keys[keyCode]? or window.keys[keyCode] is off
 			window.keys[keyCode] = on
 			window.socket.emit 'key down',
@@ -93,6 +94,21 @@ setInputHandlers = () ->
 		window.socket.emit 'key up',
 			playerId: window.playerId
 			key: keyCode
+
+	$(document).mousemove ({pageX, pageY}) ->
+		window.mouse.x = pageX
+		window.mouse.y = pageY
+
+	$(document).mousedown () ->
+		if window.localShip.state is 'dead'
+			window.mouseDownInterval = setInterval( (() ->
+					center = {x: window.canvasSize.w/2, y: window.canvasSize.h/2}
+					view.x += (mouse.x-center.x)/50
+					view.y += (mouse.y-center.y)/50),
+					5)
+
+	$(document).mouseup () ->
+		clearInterval(window.mouseDownInterval)
 
 renderLoop = (callback, showFPS) ->
 	# RequestAnimationFrame API
@@ -175,8 +191,10 @@ window.inView = (x, y) ->
 redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, window.canvasSize.w, window.canvasSize.h)
 
-	# Draw everything centered around the player.
-	centerView()
+	# Draw everything centered around the player when he's alive.
+	if window.localShip.state isnt 'dead'
+		centerView(window.localShip)
+
 	ctxt.save()
 	ctxt.translate(-view.x, -view.y)
 
@@ -212,10 +230,9 @@ drawMapBounds = (ctxt) ->
 	ctxt.strokeRect(0, 0, window.map.w, window.map.h)
 	ctxt.restore()
 
-centerView = () ->
-	if window.localShip?
-		window.view.x = window.localShip.pos.x - window.canvasSize.w/2
-		window.view.y = window.localShip.pos.y - window.canvasSize.h/2
+centerView = (obj) ->
+	window.view.x = obj.pos.x - window.canvasSize.w/2
+	window.view.y = obj.pos.y - window.canvasSize.h/2
 
 drawRadar = (ctxt) ->
 	for id, ship of window.ships
