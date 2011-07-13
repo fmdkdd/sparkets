@@ -45,7 +45,7 @@ server = http.createServer (req, res) ->
 		# are in www/
 		fs.readFile __dirname + '/../../www' + webFiles[path], (err, data) ->
 			return send404(res) if err?
-			res.writeHead 200, 'Content-Type': mime(path)
+			res.writeHead 200, 'Content-Type': mime(webFiles[path])
 			res.write data, 'utf8'
 			res.end()
 	else send404(res)
