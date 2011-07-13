@@ -1,33 +1,49 @@
 vows = require('vows')
 assert = require('assert')
 
-test = vows.describe('HTTP server').addBatch
-	'GET /':
+# Setup
+http = require('http')
+server = require('../../build/server/httpServer').create()
+
+port = 15000
+
+# Tests
+
+exports.suite = vows.describe('HTTP server')
+
+exports.suite.addBatch
+	'Listen':
 		topic: () ->
-			require('http').get
-				host: 'localhost'
-				port: 12345
-				path: '/', @callback
+			server.listen(port, @callback)
 			return
 
-		'should respond OK (200)': (res, err) ->
-			assert.equal(res.statusCode, 200)
+		'GET /':
+			topic: () ->
+				http.get
+					host: 'localhost'
+					port: port
+					path: '/', @callback
+				return
 
-		'should serve HTML': (res, err) ->
-			assert.equal(res.headers['content-type'], 'text/html')
+			'should respond OK (200)': (res, err) ->
+				assert.equal(res.statusCode, 200)
 
-	'GET /img/colorWheel.png':
-		topic: () ->
-			require('http').get
-				host: 'localhost'
-				port: 12345
-				path: '/img/colorWheel.png', @callback
-			return
+			'should serve HTML': (res, err) ->
+				assert.equal(res.headers['content-type'], 'text/html')
 
-		'should respond OK (200)': (res, err) ->
-			assert.equal(res.statusCode, 200)
+		'GET /img/colorWheel.png':
+			topic: () ->
+				http.get
+					host: 'localhost'
+					port: port
+					path: '/img/colorWheel.png', @callback
+				return
 
-		'should server PNG': (res, err) ->
-			assert.equal(res.headers['content-type'], 'image/png')
+			'should respond OK (200)': (res, err) ->
+				assert.equal(res.statusCode, 200)
 
-test.run()
+			'should server PNG': (res, err) ->
+				assert.equal(res.headers['content-type'], 'image/png')
+
+		'teardown': () ->
+			server.close()
