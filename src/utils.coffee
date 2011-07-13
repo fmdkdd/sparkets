@@ -81,7 +81,7 @@ exports.safeDeepMerge = (target, obj) ->
 		if target[name]?
 
 			# Recurse for object properties.
-			if typeof target[name] is 'object'
+			if typeof target[name] is 'object' and not Array.isArray(target[name])
 				exports.safeDeepMerge(target[name], obj[name])
 			else
 				target[name] = val
