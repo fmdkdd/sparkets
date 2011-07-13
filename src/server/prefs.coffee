@@ -5,6 +5,10 @@ BonusEMP = require './bonusEMP'
 BonusDrunk = require './bonusDrunk'
 
 class ServerPreferences
+	constructor: (prefs = {}) ->
+		# Override default values by those provided in `prefs'.
+		utils.safeDeepMerge(@, prefs)
+
 	# HTTP server port.
 	port: 12345
 

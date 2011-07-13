@@ -38,7 +38,11 @@ webFiles = {
 	'/img/tutorialBonus.svg'
 }
 
-server = http.createServer (req, res) ->
+send404 = (res) ->
+	res.writeHead 404, 'Content-Type': 'text/html'
+	res.end '<h1>Nothing to see here, move along</h1>'
+
+handleRequest = (req, res) ->
 	path = url.parse(req.url).pathname
 	if webFiles[path]?
 		# Server.js file is in build/server and all web files
@@ -50,8 +54,5 @@ server = http.createServer (req, res) ->
 			res.end()
 	else send404(res)
 
-send404 = (res) ->
-	res.writeHead 404, 'Content-Type': 'text/html'
-	res.end '<h1>Nothing to see here, move along</h1>'
-
-exports.server = server
+exports.create = () ->
+	http.createServer(handleRequest)
