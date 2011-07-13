@@ -3,9 +3,8 @@ assert = require('assert')
 
 # Setup
 http = require('http')
-require('../common')
+require('./support/common')
 
-server = require('../../build/server/server')
 port = 15100
 replPort = 15150
 
@@ -17,9 +16,10 @@ console.log = () ->
 exports.suite = vows.describe('Server')
 
 exports.suite.addBatch
-	'start server':
+	'':
 		topic: () ->
-			server.start
+			@server = require('../build/server/server')
+			@server.start
 				port: port
 				replPort: replPort
 				log: []
@@ -28,10 +28,10 @@ exports.suite.addBatch
 
 		'create game':
 			topic: () ->
-				server.createGame('a', {timestep: 123})
+				@server.createGame('a', {timestep: 123})
 
 			'should add to game list': (game) ->
-				assert.include(server.gameList, 'a')
+				assert.include(@server.gameList, 'a')
 
 			'should launch game': (game) ->
 				assert.isNumber(game.startTime)
@@ -61,6 +61,20 @@ exports.suite.addBatch
 			'respond with OK': (res, err) ->
 				assert.equal(res.statusCode, 200)
 
+		teardown: () ->
+			@server.stop()
+
+exports.suite.addBatch
+	'':
+		topic: () ->
+			@server = require('../build/server/server')
+			@server.start
+				port: port
+				replPort: replPort
+				log: []
+				io: {logLevel: 3}, @callback
+			return
+
 		# Test socket events.
 		'on `create game` event':
 			topic: () ->
@@ -76,11 +90,25 @@ exports.suite.addBatch
 							@callback(packet)
 				return
 
-			'should return game list': (packet, err) ->
+			'should return the game list': (packet, err) ->
 				assert.equal(packet.name, 'game list')
 
 			'should create requested game': (packet, err) ->
 				assert.include(packet.args[0], 'bar')
+
+		teardown: () ->
+			@server.stop()
+
+exports.suite.addBatch
+	'':
+		topic: () ->
+			@server = require('../build/server/server')
+			@server.start
+				port: port
+				replPort: replPort
+				log: []
+				io: {logLevel: 3}, @callback
+			return
 
 		'on `get game list` event':
 			topic: () ->
@@ -88,15 +116,15 @@ exports.suite.addBatch
 				cl.handshake (sid) =>
 					ws = websocket(cl, sid)
 					ws.on 'open', () ->
-						ws.event 'get game list'
+						ws.event 'get game list',
 
 					ws.on 'message', (packet) =>
 						if packet.type is 'event'
 							@callback(packet)
 				return
 
-			'should return game list': (packet, err) ->
+			'should return the game list': (packet, err) ->
 				assert.equal(packet.name, 'game list')
 
-	'teardown': () ->
-		server.stop()
+		teardown: () ->
+			@server.stop()

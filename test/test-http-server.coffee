@@ -3,7 +3,7 @@ assert = require('assert')
 
 # Setup
 http = require('http')
-server = require('../../build/server/httpServer').create()
+server = require('../build/server/httpServer').create()
 
 port = 15000
 
@@ -12,7 +12,7 @@ port = 15000
 exports.suite = vows.describe('HTTP server')
 
 exports.suite.addBatch
-	'Listen':
+	'':
 		topic: () ->
 			server.listen(port, @callback)
 			return
