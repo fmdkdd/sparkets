@@ -1,4 +1,4 @@
-logger = require '../logger'
+logger = require('../logger')
 ServerPreferences = require('./prefs').ServerPreferences
 
 io = require 'socket.io'
@@ -38,6 +38,9 @@ exports.start = (prefs, callback) ->
 	# Init preferences
 	prefs = new ServerPreferences(prefs)
 
+	# Toggle log levels from prefs.
+	logger = logger.set(prefs.log)
+
 	# Start the admin REPL and expose game server object.
 	repl = require 'webrepl'
 	replServ = repl.start(prefs.replPort)
@@ -51,8 +54,8 @@ exports.start = (prefs, callback) ->
 	# Bind websocket
 	io = io.listen httpServer
 	io.configure () ->
-		io.set('transports', ['websocket', 'flashsocket'])
-		io.set('log level', 2)
+		io.set('transports', prefs.io.transports)
+		io.set('log level', prefs.io.logLevel)
 
 	# Setup global server callbacks
 	globalSockets = io.of('')
