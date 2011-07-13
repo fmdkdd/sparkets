@@ -332,11 +332,11 @@ class GameServer
 
 		@newGameObject( (id) =>
 			@bonuses[id] = new Bonus(id, @, bonusType)
-			@debug "spawned new #{@bonuses[id].bonusType} bonus ##{id}"
+			@debug "spawned new #{@bonuses[id].effect.type} bonus ##{id}"
 			return @bonuses[id] )
 
 	addBots: () ->
-		for i in [0...@prefs.bot.count]
+		for i in [0...3] #@prefs.bot.count]
 			botId = 'b' + i
 			@players[botId] = new Bot(botId, @)
 			@newGameObject( (id) =>

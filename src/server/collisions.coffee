@@ -21,13 +21,13 @@ exports.collisions =
 	'ship-bullet': (ship, bullet) ->
 		# Immunity to own bullets for a set time.
 		if ship.state is 'alive' and
-				bullet.state is 'available' and
+				bullet.state is 'active' and
 				(ship.id isnt bullet.owner.id or
 				bullet.points.length > 3)
 			ship.explode()
-			bullet.owner.addStat('kills', 1)
 			ship.killingAccel = bullet.accel
-			bullet.state = 'dead'
+			bullet.owner.addStat('kills', 1)
+			bullet.explode()
 
 			ddebug "bullet ##{bullet.id} killed ship ##{ship.id}"
 
@@ -76,12 +76,12 @@ exports.collisions =
 			ddebug "ship ##{ship1.id} and ship ##{ship2.id} crashed"
 
 	'bullet-moon': (bullet, moon) ->
-		bullet.state = 'dead' if bullet.state is 'active'
+		bullet.explode() if bullet.state is 'active'
 
 		ddebug "bullet ##{bullet.id} hit moon ##{moon.id}"
 
 	'bullet-planet': (bullet, planet) ->
-		bullet.state = 'dead' if bullet.state is 'active'
+		bullet.explode() if bullet.state is 'active'
 
 		ddebug "bullet ##{bullet.id} hit planet ##{planet.id}"
 
@@ -101,31 +101,42 @@ exports.collisions =
 			ddebug "mine ##{mine1.id} triggered mine ##{mine2.id}"
 
 	'bullet-bonus': (bullet, bonus) ->
-		if bonus.state is 'claimed'
-			bonus.holder.releaseBonus()
-			bonus.setState 'exploding'
-		if bonus.state is 'available'
-			bonus.setState 'exploding'
+		bonus.holder.releaseBonus() if bonus.state is 'claimed'
+		bonus.setState 'exploding'
+
+		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id}"
 
 	'bonus-planet': (bonus, planet) ->
 		if bonus.state is 'available'
 			bonus.setState 'exploding'
 
+		ddebug "bonus ##{bonus.id} crashed on planet ##{planet.id}"	
+
 	'tracker-planet' : (tracker, planet) ->
 		tracker.explode()
 
+		ddebug "tracker ##{tracker.id} crashed on planet ##{planet.id}"
+
 	'tracker-moon' : (tracker, moon) ->
 		tracker.explode()
+
+		ddebug "tracker ##{tracker.id} crashed on moon ##{moon.id}"
 
 	'tracker-ship' : (tracker, ship) ->
 		tracker.explode()
 		ship.explode()
 
+		ddebug "tracker ##{tracker.id} destroyed ship ##{ship.id}"
+
 	'tracker-bullet' : (tracker, bullet) ->
 		tracker.explode()
 		bullet.explode()
 
+		ddebug "bullet ##{bullet.id} destroyed tracker ##{tracker.id}"
+
 	'tracker-mine' : (tracker, mine) ->
 		tracker.explode()
 		mine.explode()
+
+		ddebug "mine ##{mine.id} destroyed tracker ##{tracker.id}"
 
