@@ -7,46 +7,48 @@
 
 *** Machine gun
 
-		Rapid-fire weapon but takes longer to kill ships. Go against the
-		one shot/one kill principle of the current gameplay. Could be used
-		for other bonuses like slowdown shots. The player launch burst of
-		tiny projectiles and the more the enemy get shot, the slower he
-		gets.
+	 Rapid-fire weapon but takes longer to kill ships. Go against the
+	 one shot/one kill principle of the current gameplay. Could be used
+	 for other bonuses like slowdown shots. The player launch burst of
+	 tiny projectiles and the more the enemy get shot, the slower he
+	 gets.
 
 *** Portable black hole
 
-		Gravity affects bullets and ships.
-		Neat graphical effect required!
+	 Gravity affects bullets and ships.
+	 Neat graphical effect required!
 
 *** EMP/Shield
-		
-		Deflect bullets. Should cover a moving ship, to the detriment of
-		its speed/manoeuvrability.
+	 
+	 Deflect bullets. Should cover a moving ship, to the detriment of
+	 its speed/manoeuvrability.
 
 *** TODO Tracker
 
-		Mercilessly follow a designated target.
+	 Mercilessly follow a designated target.
 
 *** Invisible hull
 
-		Stay invisible while you do not fire or use any other bonus.
+	 Stay invisible while you do not fire or use any other bonus.
 
 *** Big head mode
 
-		Easier to shoot at, harder to slip between planets but kills on
-		contact.
+	 Easier to shoot at, harder to slip between planets but kills on
+	 contact.
 
 *** Paintball mode
 
-		Spray other ships with your colors! Rating 2 and up.
+	 Spray other ships with your colors! Rating 2 and up.
 
 *** Mirror image 
-	
-		Copy of the ship that mirror the player, but turn in opposite
-		directions.  Fires phony bullets, disappear when colliding
-		something (different explosion visual).  - Drunk mode Convert to
-		offensive bonus.
+	 
+	 Copy of the ship that mirror the player, but turn in opposite
+	 directions.  Fires phony bullets, disappear when colliding
+	 something (different explosion visual).
 
+*** Drunk mode
+
+	 Convert to offensive bonus.
 
 ** Statistics
 
@@ -65,7 +67,7 @@
 *** Achievements (everybody loves achievements!)
 
 		- National day : Explode X times.
-		- Rude Goldberg from outer space : Create a chain explosion of X mines.
+		- Rube Goldberg from outer space : Create a chain explosion of X mines.
 		- Anticipating the uprising : Kill X bots.
 		- Seasoned space explorer : Play for X hours.
 		- An apple a day : Kill every type of bot.
@@ -73,8 +75,8 @@
 		- So Roswell : Crash on planets X times.
 		- Hope nobody saw that : Shot yourself.
 		- Rogue leader : Be at the top of the scoreboard X times.
-		...
-		
+	 ...
+	 
 
 * Interface
 
@@ -85,7 +87,7 @@
 
 		- Unique game id.
 		- Out of range values.
-   
+		  
 *** TODO More info in game list.
 
 		- Max players allowed
@@ -106,20 +108,16 @@
 
 ** TODO Current bonus visual clue.
 
-	 Bonus dragging behind the ship. The rope can be cut.
+	Bonus dragging behind the ship. The rope can be cut.
 
 ** Leave some ephemeral traces of fight on planets.
 
    Ships and bullets splatters their colors. À la paintball.
 
-** Add debugging facilities.
-
-	 Display messages dropped.
-
-
 * Core
 
-** Factorize gravity from planet computations
+** DONE Factorize gravity from planet computations
+	 CLOSED: [2011-07-13 Wed 12:20]
 
    Consider only surrounding planets, wrt the torus.
 
@@ -143,10 +141,6 @@
    Could specify between 30-70% planet fill. Avoid locks when trying
    to fit 50 planets into a 500*500 map. 
    
-** Refactor gravity code.
-
-   Should only consider nearby planets, and take torus into account.
-   
 ** TODO Refactor client clode
 
    What a mess.
@@ -159,3 +153,8 @@
 ** Send full game update to reconnecting / out of sync clients.
 
    Client should clean everything and start anew from this update.
+
+** Add debugging facilities.
+
+	Automated tests.
+	Display connection info (ping, fps,  messages dropped ...)
