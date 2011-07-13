@@ -16,6 +16,7 @@ webFiles = {
 	'/index.css',
 	'/js/client/bonus.js',
 	'/js/client/bullet.js',
+	'/js/client/chat.js',
 	'/js/client/client.js',
 	'/js/client/EMP.js',
 	'/js/client/explosionEffect.js',

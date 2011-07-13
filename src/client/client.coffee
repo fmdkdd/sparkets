@@ -32,6 +32,7 @@ window.effects = []
 window.keys = {}
 
 window.menu = null
+window.chat = null
 
 # user preferences
 window.displayNames = no
@@ -48,6 +49,9 @@ $(document).ready (event) ->
 	window.menu = new Menu()
 	window.menu.restoreLocalPreferences()
 
+	# Initialize chat.
+	window.chat = new Chat()
+
 	# Connect to server and set callbacks.
 	window.socket = io.connect()
 	window.socket = window.socket.socket.of(window.location.hash.substring(1))
@@ -55,6 +59,7 @@ $(document).ready (event) ->
 	window.socket.on 'connected', onConnected
 	window.socket.on 'objects update', onObjectsUpdate
 	window.socket.on 'ship created', onShipCreated
+	window.socket.on 'player says', onPlayerMessage
 	window.socket.on 'player quits', onPlayerQuits
 	window.socket.on 'game end', onGameEnd
 	window.socket.on 'disconnect', onDisconnect
@@ -357,6 +362,10 @@ onShipCreated = (data) ->
 	window.shipId = data.shipId
 	window.localShip = window.gameObjects[window.shipId]
 	go()
+
+# When a player sent a chat message.
+onPlayerMessage = (data)->
+	window.chat.receive(data)
 
 # When another player leaves.
 onPlayerQuits = (data) ->

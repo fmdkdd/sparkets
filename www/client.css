@@ -178,3 +178,23 @@
 	 color: hsl(0, 0%, 30%);
 }
 
+/**
+ * Chat.
+ */
+
+#chat {
+		position: absolute;
+		top: 0;
+		left: 0;
+}
+
+#chatInput.hidden {
+	 opacity: 0;
+	 visibility: hidden; }
+
+#chatInput.visible {
+	 opacity: 0.95;
+	 visibility: visible; }
+
+#chat span {
+		display: block; }

@@ -49,6 +49,9 @@ class GameServer
 			socket.on 'prefs changed', (data) =>
 				@players[data.playerId].changePrefs(data.name, data.color)
 
+			socket.on 'message', (data) =>
+				@broadcastMessage(socket, data)
+
 			socket.on 'disconnect', () =>
 				@clientDisconnect(socket)
 
@@ -147,6 +150,14 @@ class GameServer
 				allWatched[id] = objWatched
 
 		return allWatched
+
+	broadcastMessage: (socket, data) ->
+		@sockets.emit 'player says',
+			playerId: data.playerId
+			shipId: @players[data.playerId].ship.id
+			message: data.message
+
+		@info "player #{data.playerId} says: #{data.message}"
 
 	clientDisconnect: (socket) ->
 		playerId = socket.id
