@@ -20,7 +20,7 @@ class BoostEffect
 		@shadows = shadows
 
 		# Add a new shadow if the effect is still running.
-		if @running and @updates % @density is 0
+		if @running and @updates % @density is 0 and @isAlive()
 				@shadows.push
 					x: @object.pos.x
 					y: @object.pos.y
@@ -28,6 +28,9 @@ class BoostEffect
 					alpha: 0.6
 
 		++@updates
+
+	isAlive: () ->
+		@object.state isnt 'dead' and @object.state isnt 'exploding'
 
 	deletable: () ->
 		not @running and @shadows.length is 0
