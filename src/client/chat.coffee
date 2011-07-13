@@ -48,7 +48,15 @@ class Chat
 		name = window.ships[data.shipId].name
 		color = window.ships[data.shipId].color
 
-		@chat.append('<div><span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)")>'+name+'</span> '+message+'</div>')
+		# Append the message to the chat.
+		@chat.append('<div style="display:none"><span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)">'+name+'</span> '+message+'</div>')
+		line = @chat.find('div:last')
+		line.fadeIn(300)
+		
+		# Program its disappearance.
+		setTimeout( (() ->
+			line.animate({opacity: 'hide', height: 'toggle'}, 300, () -> line.detach())),
+			8000)
 
 # Exports
 window.Chat = Chat
