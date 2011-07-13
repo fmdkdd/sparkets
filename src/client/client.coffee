@@ -102,9 +102,19 @@ setInputHandlers = () ->
 	$(document).mousedown () ->
 		if window.localShip.state is 'dead'
 			window.mouseDownInterval = setInterval( (() ->
+
+					# Move the camera towards the position of the mouse.
 					center = {x: window.canvasSize.w/2, y: window.canvasSize.h/2}
 					view.x += (mouse.x-center.x)/50
-					view.y += (mouse.y-center.y)/50),
+					view.y += (mouse.y-center.y)/50
+
+					# Warp the camera.
+					{w, h} = window.map
+					if view.x < 0 then view.x = w
+					if view.x > w then view.x = 0
+					if view.y < 0 then view.y = h
+					if view.y > h then view.y = 0),
+
 					5)
 
 	$(document).mouseup () ->
