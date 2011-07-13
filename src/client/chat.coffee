@@ -39,7 +39,6 @@ class Chat
 		@input.hasClass('visible')
 
 	send: (message) ->
-		console.info message
 		window.socket.emit 'message',
 				playerId: playerId
 				message: message
@@ -49,7 +48,7 @@ class Chat
 		name = window.ships[data.shipId].name
 		color = window.ships[data.shipId].color
 
-		@chat.append('<span>'+name+': '+message+'</span>')
+		@chat.append('<div><span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)")>'+name+'</span> '+message+'</div>')
 
 # Exports
 window.Chat = Chat

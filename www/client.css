@@ -182,19 +182,25 @@
  * Chat.
  */
 
-#chat {
-		position: absolute;
-		top: 0;
-		left: 0;
+#chatInput {
+		display: block;
+		margin: auto;
+		width: 15em;
 }
 
 #chatInput.hidden {
-	 opacity: 0;
-	 visibility: hidden; }
+		opacity: 0;
+		visibility: hidden; }
 
 #chatInput.visible {
-	 opacity: 0.95;
-	 visibility: visible; }
+		opacity: 0.95;
+		visibility: visible; }
 
-#chat span {
-		display: block; }
+#chat {
+		position: absolute;
+		top: 0.5em;
+		left: 0.5em;
+}
+
+#chat div {
+		margin-bottom: 0.2em; }
