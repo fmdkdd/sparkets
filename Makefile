@@ -14,13 +14,13 @@ build/%.js: src/%.coffee
 test/build/%.js: test/src/%.coffee
 	coffee -bo $(dir $@) -c $<
 
+test: all $(TEST_JS)
+	vows test/build/*
+
 clean:
 	rm -f build/*.js
 	rm -f build/client/*.js
 	rm -f build/server/*.js
 	rm -f test/build/*.js
-
-test: $(TEST_JS)
-	node test/build/*.js
 
 .PHONY: all clean test
