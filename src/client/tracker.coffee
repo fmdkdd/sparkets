@@ -10,6 +10,7 @@ class Tracker
 
 		if state_old isnt @state and @state is 'tracking'
 			window.effects.push new TrailEffect(@, 2, 30, 3)
+			window.effects.push new BoostEffect(@, 3, 600)
 		if state_old isnt @state and @state is 'dead'
 			@explode()
 
@@ -33,8 +34,8 @@ class Tracker
 	drawModel: (ctxt, col) ->
 		hr = @hitRadius
 
-		ctxt.fillStyle = color @color
-		ctxt.strokeStyle = color @color
+		ctxt.fillStyle = col
+		ctxt.strokeStyle = col
 		ctxt.lineWidth = 2
 
 		ctxt.save()

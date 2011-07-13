@@ -23,7 +23,7 @@ class Ship
 
 		# Start the boost animation if the ship just boosted.
 		if boost_old < @boost
-			window.effects.push new BoostEffect(@, 3000, 5, 0.4)
+			window.effects.push new BoostEffect(@, 1, 3000)
 
 	update: () ->
 		# Update the engine animation countdown.

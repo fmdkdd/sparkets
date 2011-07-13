@@ -302,7 +302,7 @@ class GamePreferences
 				weight: 100
 			boost:
 				class: BonusBoost
-				weight: 2
+				weight: 100
 			EMP:
 				class: BonusEMP
 				weight: 1
