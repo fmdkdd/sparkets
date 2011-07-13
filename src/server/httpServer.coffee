@@ -28,6 +28,7 @@ webFiles = {
 	'/favicon.ico',
 	'/img/colorWheel.png',
 	'/img/colorCursor.png',
+	'/img/iconBot.svg',
 	'/img/iconClose.svg',
 	'/img/iconDeath.svg',
 	'/img/iconKill.svg',
