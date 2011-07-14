@@ -4,12 +4,29 @@ assert = require('assert')
 # Setup
 http = require('http')
 require('./support/common')
+Server = require('../build/server/server').Server
 
 port = 15100
 replPort = 15150
 
-# Suppress socket.io console output.
-console.log = () ->
+createServer = (port, replPort) ->
+	serv = new Server
+		port: port
+		replPort: replPort
+		log: []
+		io: {logLevel: -1}
+
+	# Suppress socket.io console output.
+	console.log = () ->
+
+	return serv
+
+openSocket = (port, callback) ->
+	cl = client(port)
+	cl.handshake (sid) ->
+		ws = websocket(cl, sid)
+		ws.on 'open', () ->
+			callback(ws)
 
 # Tests
 
@@ -18,12 +35,8 @@ exports.suite = vows.describe('Server')
 exports.suite.addBatch
 	'':
 		topic: () ->
-			@server = require('../build/server/server')
-			@server.start
-				port: port
-				replPort: replPort
-				log: []
-				io: {logLevel: 3}, @callback
+			@server = createServer(port, replPort)
+			@server.start(@callback)
 			return
 
 		'create game':
@@ -38,6 +51,33 @@ exports.suite.addBatch
 
 			'should honor prefs': (game) ->
 				assert.equal(123, game.prefs.timestep)
+
+			'delete game':
+				topic: () ->
+					@server.endGame('a')
+
+				'should remove game from game list': () ->
+					assert.isFalse('a' of @server.gameList)
+
+		'create another game':
+			topic: () ->
+				@server.createGame('b', {timestep: 123})
+
+			'should add to game list': (game) ->
+				assert.include(@server.gameList, 'b')
+
+			'should launch game': (game) ->
+				assert.isNumber(game.startTime)
+
+			'should honor prefs': (game) ->
+				assert.equal(123, game.prefs.timestep)
+
+			'create another game with the same name':
+				topic: () ->
+					@server.createGame('b', {timestep: 10})
+
+				'should preserve existing game': (game) ->
+					assert.equal(123, game.prefs.timestep)
 
 		'should start HTTP server':
 			topic: () ->
@@ -67,26 +107,18 @@ exports.suite.addBatch
 exports.suite.addBatch
 	'':
 		topic: () ->
-			@server = require('../build/server/server')
-			@server.start
-				port: port
-				replPort: replPort
-				log: []
-				io: {logLevel: 3}, @callback
+			@server = createServer(port, replPort)
+			@server.start(@callback)
 			return
 
 		'on `create game` event':
 			topic: () ->
-				cl = client(port)
-				cl.handshake (sid) =>
-					ws = websocket(cl, sid)
-					ws.on 'open', () ->
-						ws.event 'create game',
-							id: 'bar'
+				openSocket port, (ws) =>
+					ws.event 'create game',
+						id: 'bar'
 
 					ws.on 'message', (packet) =>
-						if packet.type is 'event'
-							@callback(packet)
+						@callback(packet) if packet.type is 'event'
 				return
 
 			'should return the game list': (packet, err) ->
@@ -101,25 +133,17 @@ exports.suite.addBatch
 exports.suite.addBatch
 	'':
 		topic: () ->
-			@server = require('../build/server/server')
-			@server.start
-				port: port
-				replPort: replPort
-				log: []
-				io: {logLevel: 3}, @callback
+			@server = createServer(port, replPort)
+			@server.start(@callback)
 			return
 
 		'on `get game list` event':
 			topic: () ->
-				cl = client(port)
-				cl.handshake (sid) =>
-					ws = websocket(cl, sid)
-					ws.on 'open', () ->
-						ws.event 'get game list',
+				openSocket port, (ws) =>
+					ws.event 'get game list'
 
 					ws.on 'message', (packet) =>
-						if packet.type is 'event'
-							@callback(packet)
+						@callback(packet) if packet.type is 'event'
 				return
 
 			'should return the game list': (packet, err) ->
@@ -131,23 +155,16 @@ exports.suite.addBatch
 exports.suite.addBatch
 	'':
 		topic: () ->
-			@server = require('../build/server/server')
-			@server.start
-				port: port
-				replPort: replPort
-				log: []
-				io: {logLevel: 3}, @callback
+			@server = createServer(port, replPort)
+			@server.start(@callback)
 			return
 
 		'created game':
 			topic: () ->
-				cl = client(port)
-				cl.handshake (sid) =>
-					ws = websocket(cl, sid)
-					ws.on 'open', () ->
-						ws.event 'create game',
-							id: 'bar'
-							duration: 0
+				openSocket port, (ws) =>
+					ws.event 'create game',
+						id: 'bar'
+						prefs: {duration: 0}
 
 					msg = 0
 					setTimeout(@callback, 100)
