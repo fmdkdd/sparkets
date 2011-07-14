@@ -1,6 +1,7 @@
-server = require('./server')
+Server = require('./server').Server
 
 # Launch the server.
-server.start {}, () ->
+server = new Server()
+server.start () ->
 	# Default game for all users
 	server.createGame('test')

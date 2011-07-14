@@ -1,94 +1,109 @@
 logger = require('../logger')
 ServerPreferences = require('./prefs').ServerPreferences
 
-io = require 'socket.io'
-httpServer = require('./httpServer')
-globalSockets = null
-
-gameList = exports.gameList = {}
-sendGameList = (socket) ->
-	msg = {}
-
-	for id, game of gameList
-		msg[id] =
-			players: game.humanCount() + game.botCount()
-			startTime: game.startTime
-			duration: game.prefs.duration
-
-	socket.emit('game list', msg)
-
 GameServer = require('./gameServer').GameServer
-createGame = exports.createGame = (id, gamePrefs) ->
-	endGame = () ->
-		game.end()
-		delete gameList[id]
+io = require('socket.io')
+httpServer = require('./httpServer')
+repl = require('webrepl')
 
-		sendGameList(globalSockets)
+class Server
+	constructor: (@prefs) ->
+		@gameList = {}
 
-	game = new GameServer(io.of(id), gamePrefs)
-	game.launch()
+	start: (callback) ->
+		# Init preferences
+		@prefs = new ServerPreferences(@prefs)
 
-	# Prepare game expiration.
-	setTimeout(endGame, game.prefs.duration * 60 * 1000)
+		# Toggle log levels from prefs.
+		@logger = logger.set(@prefs.log)
 
-	logger.info "Game #{id} started"
+		@startRepl()
 
-	return gameList[id] = game
+		@httpServer = httpServer.create()
 
-exports.start = (prefs, callback) ->
-	# Init preferences
-	prefs = new ServerPreferences(prefs)
+		# Bind websocket
+		@io = io.listen(@httpServer)
+		@io.configure () =>
+			# XXX: Log level can be set only when called first.
+			@io.set('log level', @prefs.io.logLevel)
+			@io.set('transports', @prefs.io.transports)
 
-	# Toggle log levels from prefs.
-	logger = logger.set(prefs.log)
+		# Bind global namespace.
+		@globalSockets = @io.of('')
+		@setupCallbacks()
 
-	# Start the admin REPL and expose game server object.
-	repl = require 'webrepl'
-	replServ = repl.start(prefs.replPort)
-	replServ.context.createGame = createGame
-	replServ.context.stop = () ->
-		exports.close()
-		process.exit()
+		# Start listening!
+		@httpServer.listen @prefs.port, () =>
+			@logger.info "Global server started on port #{@prefs.port}"
 
-	httpServer = httpServer.create()
+			callback()
 
-	# Bind websocket
-	io = io.listen httpServer
-	io.configure () ->
-		# XXX: Log level can be set only when called first.
-		io.set('log level', prefs.io.logLevel)
-		io.set('transports', prefs.io.transports)
+	stop: () ->
+		@httpServer.close()
 
-	# Setup global server callbacks
-	globalSockets = io.of('')
+	setupCallbacks: () ->
+		@globalSockets.on 'connection', (socket) =>
+			@logger.info "Player #{socket.id} joined global server"
 
-	globalSockets.on 'connection', (socket) ->
-		logger.info "Player #{socket.id} joined global server"
+			socket.on 'disconnect', () =>
+				@logger.info "Player #{socket.id} left global server"
 
-		socket.on 'disconnect', () ->
-			logger.info "Player #{socket.id} left global server"
+			socket.on 'get game list', () =>
+				@logger.info "game list requested"
+				@sendGameList(socket)
 
-		socket.on 'get game list', () ->
-			logger.info "requested game list"
-			sendGameList(socket)
+			socket.on 'create game', (data) =>
+				@logger.info "game creation requested"
+				if @gameList[data.id]?
+					socket.emit 'game already exists'
+				else
+					@createGame(data.id, data.prefs)
 
-		socket.on 'create game', (data) ->
-			gameId = data.id
-			delete data.id
+	createGame: (id, gamePrefs) ->
+		# Game with ID already exists, don't create.
+		return @gameList[id] if @gameList[id]?
 
-			# Game with ID already exists, don't create.
-			if gameList[gameId]?
-				socket.emit 'game already exists'
+		@gameList[id] = game = new GameServer(@io.of(id), gamePrefs)
+		game.launch()
 
-			else
-				createGame(gameId, data)
+		@logger.info "Game #{id} started"
 
-				sendGameList(globalSockets)
+		# Prepare game expiration.
+		setTimeout( (() =>
+			@endGame(id)), game.prefs.duration * 60 * 1000)
 
-	httpServer.listen prefs.port, () ->
-		logger.info "Global server started on port #{prefs.port}"
+		@sendGameList(@globalSockets)
 
-		callback()
+		return game
 
-exports.stop = () ->
-	httpServer.close()
+	endGame: (id) ->
+		if @gameList[id]?
+			@gameList[id].end()
+			delete @gameList[id]
+
+			@sendGameList(@globalSockets)
+
+	sendGameList: (socket) ->
+		msg = {}
+
+		for id, game of @gameList
+			msg[id] =
+				players: game.humanCount() + game.botCount()
+				startTime: game.startTime
+				duration: game.prefs.duration
+
+		socket.emit('game list', msg)
+
+	startRepl: () ->
+		# Start the admin REPL and expose some utilities.
+		@replServ = repl.start(@prefs.replPort)
+		@replServ.context.createGame = @createGame
+		@replServ.context.gameList = @gameList
+		@replServ.context.stop = () =>
+			@stop()
+
+			# WebREPL creates a HTTP server but does not allow us to
+			# close it.
+			process.exit()
+
+exports.Server = Server

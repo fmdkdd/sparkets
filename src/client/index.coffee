@@ -70,7 +70,13 @@ $(document).ready () ->
 		event.preventDefault()
 		prefs = gatherValues(@)
 
-		window.socket.emit 'create game', prefs, () ->
+		# Prepare game options.
+		opts =
+			id: prefs.id
+			prefs: prefs
+		delete prefs.id
+
+		window.socket.emit 'create game', opts, () ->
 			# Clear and unfocus game name input on creation.
 			nameInput = $('input[name="id"]')
 			nameInput.val('')
