@@ -21,11 +21,28 @@ class Menu
 		@setInputHandlers()
 
 	setInputHandlers: () ->
-		@wheelBox.click (event) =>
-			return if event.which is not 1 # Only left click triggers.
-
+		pickColor = (event) =>
 			@currentColor = @readColor(event)
-			@updateColor()
+			@updatePreview(@currentColor)
+
+		@wheelBox.mousedown (event) =>
+			return if event.which isnt 1 # Only left click triggers.
+
+			event.preventDefault()
+			pickColor(event)
+
+			# Can hold mouse to choose color.
+			@wheelBox.mousemove (event) =>
+				return if event.which isnt 1 # Only left click triggers.
+
+				event.preventDefault()
+				pickColor(event)
+
+		@wheelBox.mouseup (event) =>
+			return if event.which isnt 1 # Only left click triggers.
+
+			# Mouse move can be triggered without any click.
+			@wheelBox.unbind('mousemove')
 
 		# Send users preferences and save them locally.
 		@form.submit (event) =>
@@ -132,13 +149,12 @@ class Menu
 
 		return [hDeg, 60, l]
 
-	updateColor: () ->
+	updatePreview: (color) ->
 		# Change the color of the ship preview.
 		style = @shipPreview.attr('style')
-		c = @currentColor
 
 		style = style.replace(/stroke: [^\n]+/,
-			'stroke: hsl('+c[0]+','+c[1]+'%,'+c[2]+'%);')
+			'stroke: hsl('+color[0]+','+color[1]+'%,'+color[2]+'%);')
 
 		@shipPreview.attr('style', style)
 

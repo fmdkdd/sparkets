@@ -364,7 +364,7 @@ onShipCreated = (data) ->
 
 	# Set the color of the ship preview in menu to our ship color.
 	window.menu.currentColor = window.localShip.color
-	window.menu.updateColor()
+	window.menu.updatePreview(window.localShip.color)
 
 	go()
 
