@@ -361,6 +361,11 @@ onConnected = (data) ->
 onShipCreated = (data) ->
 	window.shipId = data.shipId
 	window.localShip = window.gameObjects[window.shipId]
+
+	# Set the color of the ship preview in menu to our ship color.
+	window.menu.currentColor = window.localShip.color
+	window.menu.updateColor()
+
 	go()
 
 # When a player sent a chat message.

@@ -24,13 +24,8 @@ class Menu
 		@wheelBox.click (event) =>
 			return if event.which is not 1 # Only left click triggers.
 
-			@currentColor = c = @readColor(event)
-
-			# Change the color of the ship preview.
-			style = @shipPreview.attr('style')
-			style = style.replace(/stroke: [^\n]+/,
-				'stroke: hsl('+c[0]+','+c[1]+'%,'+c[2]+'%);')
-			@shipPreview.attr('style', style)
+			@currentColor = @readColor(event)
+			@updateColor()
 
 		# Send users preferences and save them locally.
 		@form.submit (event) =>
@@ -136,6 +131,16 @@ class Menu
 			top: y - @colorCursor.height()/2
 
 		return [hDeg, 60, l]
+
+	updateColor: () ->
+		# Change the color of the ship preview.
+		style = @shipPreview.attr('style')
+		c = @currentColor
+
+		style = style.replace(/stroke: [^\n]+/,
+			'stroke: hsl('+c[0]+','+c[1]+'%,'+c[2]+'%);')
+
+		@shipPreview.attr('style', style)
 
 	updateScores: () ->
 		@scoreTable.empty()
