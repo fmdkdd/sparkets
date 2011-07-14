@@ -60,6 +60,13 @@ class Server
 					@createGame(data.id, data.prefs)
 
 	createGame: (id, gamePrefs) ->
+		valid = (str) ->
+			str.match(/^[A-Za-z0-9]+$/)
+
+		# Sanitize input!
+		if not valid(id)
+			throw "invalid game id: '#{id}'"
+
 		# Game with ID already exists, don't create.
 		return @gameList[id] if @gameList[id]?
 

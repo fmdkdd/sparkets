@@ -101,6 +101,38 @@ exports.suite.addBatch
 			'respond with OK': (res, err) ->
 				assert.equal(res.statusCode, 200)
 
+		# Test game id validation.
+		'create game with empty name': () ->
+			assert.throws (() =>
+				@server.createGame('')), /invalid game id/
+
+		'create game with bogus name': () ->
+			test = (str) =>
+				assert.throws (() =>
+					@server.createGame(str)), /invalid game id/
+
+			test('//')
+			test('/')
+			test('«foo»')
+			test('#')
+			test('#a')
+			test('!')
+			test('!a')
+			test('.')
+			test('*')
+			test('   ')
+			test('ßáíðþ¡ºª’~//œæçó»«’‘€¢–.*#')
+
+		'create game with valid name': () ->
+			test = (str) =>
+				assert.doesNotThrow (() =>
+					@server.createGame(str)), /invalid game id/
+
+			test('foo')
+			test('Foo')
+			test('F00')
+			test('123')
+
 		teardown: () ->
 			@server.stop()
 
