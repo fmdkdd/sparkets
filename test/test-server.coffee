@@ -75,7 +75,6 @@ exports.suite.addBatch
 				io: {logLevel: 3}, @callback
 			return
 
-		# Test socket events.
 		'on `create game` event':
 			topic: () ->
 				cl = client(port)
@@ -125,6 +124,45 @@ exports.suite.addBatch
 
 			'should return the game list': (packet, err) ->
 				assert.equal(packet.name, 'game list')
+
+		teardown: () ->
+			@server.stop()
+
+exports.suite.addBatch
+	'':
+		topic: () ->
+			@server = require('../build/server/server')
+			@server.start
+				port: port
+				replPort: replPort
+				log: []
+				io: {logLevel: 3}, @callback
+			return
+
+		'created game':
+			topic: () ->
+				cl = client(port)
+				cl.handshake (sid) =>
+					ws = websocket(cl, sid)
+					ws.on 'open', () ->
+						ws.event 'create game',
+							id: 'bar'
+							duration: 0
+
+					msg = 0
+					setTimeout(@callback, 100)
+					ws.on 'message', (packet) =>
+						if packet.type is 'event' and packet.name is 'game list'
+							++msg
+							@callback(packet) if msg is 2
+				return
+
+			'should send the game list twice': (packet, err) ->
+				assert.isTrue(packet?)
+
+			'should expire': (packet, err) ->
+				assert.isTrue(packet?)
+				assert.isEmpty(packet.args[0])
 
 		teardown: () ->
 			@server.stop()

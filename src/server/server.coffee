@@ -3,6 +3,7 @@ ServerPreferences = require('./prefs').ServerPreferences
 
 io = require 'socket.io'
 httpServer = require('./httpServer')
+globalSockets = null
 
 gameList = exports.gameList = {}
 sendGameList = (socket) ->

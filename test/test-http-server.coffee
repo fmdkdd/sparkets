@@ -42,8 +42,19 @@ exports.suite.addBatch
 			'should respond OK (200)': (res, err) ->
 				assert.equal(res.statusCode, 200)
 
-			'should server PNG': (res, err) ->
+			'should serve PNG': (res, err) ->
 				assert.equal(res.headers['content-type'], 'image/png')
 
-		'teardown': () ->
+		'GET /zorglub':
+			topic: () ->
+				http.get
+					host: 'localhost'
+					port: port
+					path: '/zorglub', @callback
+				return
+
+			'should respond Not Found (404)': (res, err) ->
+				assert.equal(res.statusCode, 404)
+
+		teardown: () ->
 			server.close()
