@@ -50,6 +50,20 @@
 
 	 Convert to offensive bonus.
 
+
+** Other game modes
+*** Team deathmatch
+*** King of the hill
+    Highlight one area on the map, every second alive in the area
+    gives one point. Change area after some time.
+*** Courrier / Team courrier
+    Pick item at A, bring at B, score. Capture the flag but without
+    bases or carefully designed levels.
+*** The man with the golden ship
+    First player to grab the golden bonus is granted unique powers,
+    others have to shoot him down to grab the bonus and rack up the
+    kills.
+
 ** Statistics
 
 *** Session statistics
