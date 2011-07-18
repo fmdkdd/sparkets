@@ -1,6 +1,6 @@
 class DislocateEffect
-	constructor: (@edges, @color, @duration) ->
-		@start = now
+	constructor: (@client, @edges, @color, @duration) ->
+		@start = @client.now
 		@end = @start + @duration
 
 	update: () ->
@@ -10,13 +10,13 @@ class DislocateEffect
 			e.r += e.vr
 
 	deletable: () ->
-		now > @end
+		@client.now > @end
 
 	inView: (offset = {x:0, y:0}) ->
 		true
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
-		ctxt.strokeStyle = color(@color, 1-(now-@start)/@duration)
+		ctxt.strokeStyle = color(@color, 1-(@client.now-@start)/@duration)
 		ctxt.lineWidth = 2
 		for e in @edges
 			ctxt.save()

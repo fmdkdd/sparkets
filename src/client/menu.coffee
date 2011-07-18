@@ -1,5 +1,5 @@
 class Menu
-	constructor: () ->
+	constructor: (@client) ->
 
 		@menu = $('#menu')
 		@closeButton = $('#closeButton')
@@ -52,7 +52,7 @@ class Menu
 
 		# Toggle the name display option.
 		@displayNamesCheck.change (event) =>
-			window.displayNames = @displayNamesCheck.is(':checked')
+			@client.displayNames = @displayNamesCheck.is(':checked')
 
 		# Close the menu.
 		@closeButton.click (event) =>
@@ -62,7 +62,7 @@ class Menu
 
 		# Toggle the menu when Escape or M is pressed.
 		$(document).keyup ({keyCode}) =>
-			return if window.chat.isOpen()
+			return if @client.chat.isOpen()
 
 			if keyCode is 27
 				@toggle()
@@ -94,10 +94,11 @@ class Menu
 
 	# Send user preferences to the server.
 	sendPreferences: () ->
+		playerId = @client.playerId
 		color = @currentColor
 		name = @nameField.val() if @nameField.val().length > 0
 
-		window.socket.emit 'prefs changed',
+		@client.socket.emit 'prefs changed',
 			playerId: playerId
 			color: color
 			name: name
@@ -168,7 +169,7 @@ class Menu
 		@scoreTable.empty()
 
 		scores = []
-		for id, ship of window.ships
+		for id, ship of @client.ships
 			scores.push
 				name: ship.name or 'unnamed'
 				color: ship.color
@@ -187,14 +188,14 @@ class Menu
 					'<td>' + s.score + '</td></tr>')
 
 	updateTime: () ->
-		if window.gameEnded
+		if @client.gameEnded
 			clearInterval(@clockInterval)
 			$('#timeLeft').html("The game has ended!")
 			return
 
 		# Compute in ms since Epoch.
-		elapsed = Date.now() - window.gameStartTime
-		remaining = window.gameDuration * 60 * 1000 - elapsed
+		elapsed = Date.now() - @client.gameStartTime
+		remaining = @client.gameDuration * 60 * 1000 - elapsed
 
 		# Use Date for conversion and pretty printing.
 		timeLeft = new Date(remaining)

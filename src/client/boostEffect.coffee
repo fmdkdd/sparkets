@@ -1,5 +1,5 @@
 class BoostEffect
-	constructor: (@object, @density = 3, @duration = 1000) ->
+	constructor: (@client, @object, @density = 3, @duration = 1000) ->
 		@shadows = []
 		@updates = 0
 

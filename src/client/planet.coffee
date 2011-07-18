@@ -1,5 +1,5 @@
 class Planet
-	constructor: (planet) ->
+	constructor: (@client, planet) ->
 		@serverUpdate(planet)
 
 		@initSprite() if not @sprite?
@@ -9,7 +9,7 @@ class Planet
 		@sprite.width = @sprite.height = Math.ceil(2*@force)
 
 		c = @sprite.getContext('2d')
-		c.strokeStyle = color window.planetColor
+		c.strokeStyle = color @client.planetColor
 		c.fillStyle = 'white'
 		c.lineWidth = 8
 		c.beginPath()
@@ -22,11 +22,9 @@ class Planet
 			@[field] = val
 
 	update: () ->
-		true
 
 	inView: (offset = {x: 0, y: 0}) ->
-		window.boxInView(@pos.x + offset.x,
-			@pos.y + offset.y, @force)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @force)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'

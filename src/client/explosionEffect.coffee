@@ -1,5 +1,5 @@
 class ExplosionEffect
-	constructor: (@pos, @color, @density = 100, @bitSize = 10, @speed = 1) ->
+	constructor: (@client, @pos, @color, @density = 100, @bitSize = 10, @speed = 1) ->
 		@init()
 
 	init: () ->
@@ -57,7 +57,7 @@ class ExplosionEffect
 	draw: (ctxt, offset = {x:0, y:0}) ->
 		ctxt.fillStyle = color(@color, (@maxExploFrame-@frame)/@maxExploFrame)
 		for b in @bits
-			if window.inView(b.x + offset.x, b.y + offset.y)
+			if @client.inView(b.x + offset.x, b.y + offset.y)
 				if b.life > 0
 					ctxt.fillStyle = color(@color, b.life / (1.5 * b.lifeMax))
 					ctxt.fillRect(b.x, b.y, b.size, b.size)

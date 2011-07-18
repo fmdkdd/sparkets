@@ -1,5 +1,5 @@
 class Chat
-	constructor: () ->
+	constructor: (@client) ->
 
 		@chat = $('#chat')
 		@input = $('#chatInput')
@@ -9,7 +9,7 @@ class Chat
 	setInputHandlers: () ->
 
 		$(document).keyup ({keyCode}) =>
-			return if window.menu.isOpen()
+			return if @client.menu.isOpen()
 
 			# Open the chat when T is pressed.
 			if keyCode is 84 and not @isOpen()
@@ -41,14 +41,14 @@ class Chat
 		@input.hasClass('visible')
 
 	send: (message) ->
-		window.socket.emit 'message',
-				playerId: playerId
+		@client.socket.emit 'message',
+				playerId: @client.playerId
 				message: message
 
 	receive: (data) ->
 		message = data.message
-		name = window.ships[data.shipId].name
-		color = window.ships[data.shipId].color
+		name = @client.ships[data.shipId].name
+		color = @client.ships[data.shipId].color
 
 		# Append the message to the chat.
 		@chat.append('<div style="display:none"><span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)">'+name+'</span> '+message+'</div>')

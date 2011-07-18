@@ -1,5 +1,5 @@
 class EMP
-	constructor: (emp) ->
+	constructor: (@client, emp) ->
 		@serverUpdate(emp)
 
 	serverUpdate: (emp) ->
@@ -10,7 +10,7 @@ class EMP
 		@clientDelete = @serverDelete
 
 	inView: (offset = {x: 0, y: 0}) ->
-		window.boxInView(@pos.x + offset.x,
+		@client.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, @force)
 
 	drawHitbox: (ctxt) ->
@@ -19,7 +19,7 @@ class EMP
 	draw: (ctxt) ->
 		ctxt.lineWidth = 3
 		ctxt.strokeStyle = color @color
-		strokeCircle(ctxt, @pos.x, @pos.y, @force)
+		window.strokeCircle(ctxt, @pos.x, @pos.y, @force)
 
 # Exports
 window.EMP = EMP

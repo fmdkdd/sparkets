@@ -1,5 +1,5 @@
 class Tracker
-	constructor: (tracker) ->
+	constructor: (@client, tracker) ->
 		@serverUpdate(tracker)
 
 	serverUpdate: (tracker) ->
@@ -9,8 +9,8 @@ class Tracker
 			this[field] = val
 
 		if state_old isnt @state and @state is 'tracking'
-			window.effects.push new TrailEffect(@, 2, 30, 3)
-			window.effects.push new BoostEffect(@, 3, 600)
+			@client.effects.push new TrailEffect(@client, @, 2, 30, 3)
+			@client.effects.push new BoostEffect(@client, @, 3, 600)
 		if state_old isnt @state and @state is 'dead'
 			@explode()
 
@@ -67,11 +67,11 @@ class Tracker
 		ctxt.restore()
 
 	inView: (offset = {x:0, y:0}) ->
-		window.boxInView(@pos.x + offset.x,
+		@client.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, @hitRadius)
 
 	explode: () ->
-		window.effects.push new ExplosionEffect(@pos, @color, 100, 5, 0.2)
+		@client.effects.push new ExplosionEffect(@client, @pos, @color, 100, 5, 0.2)
 
 # Exports
 window.Tracker = Tracker

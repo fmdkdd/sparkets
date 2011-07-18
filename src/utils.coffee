@@ -80,8 +80,8 @@ exports.closestGhost = (sourcePos, targetPos) ->
 
 	for i in [-1..1]
 		for j in [-1..1]
-			ox = targetPos.x + i * window.map.w
-			oy = targetPos.y + j * window.map.h
+			ox = targetPos.x + i * window.client.map.w
+			oy = targetPos.y + j * window.client.map.h
 			d = distance(sourcePos.x, sourcePos.y, ox, oy)
 			if d < bestDistance
 				bestDistance = d

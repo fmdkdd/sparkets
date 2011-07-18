@@ -1,5 +1,5 @@
 class Bonus
-	constructor: (bonus) ->
+	constructor: (@client, bonus) ->
 		@serverUpdate(bonus)
 
 	serverUpdate: (bonus) ->
@@ -16,12 +16,12 @@ class Bonus
 
 	inView: (offset = {x:0, y:0}) ->	
 		@state isnt 'incoming' and
-			window.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
+			@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+		window.strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
 	draw: (ctxt) ->
 		return if ['incoming','exploding','dead'].indexOf(@state) > -1
@@ -109,35 +109,35 @@ class Bonus
 		bestDistance = Infinity
 		for j in [-1..1]
 			for k in [-1..1]
-				x = @pos.x + j * window.map.w
-				y = @pos.y + k * window.map.h
-				d = distance(window.localShip.pos.x, window.localShip.pos.y, x, y)
+				x = @pos.x + j * @client.map.w
+				y = @pos.y + k * @client.map.h
+				d = distance(@client.localShip.pos.x, @client.localShip.pos.y, x, y)
 
 				if d < bestDistance
 					bestDistance = d
 					bestPos = {x, y}
 
-		dx = bestPos.x - window.localShip.pos.x
-		dy = bestPos.y - window.localShip.pos.y
+		dx = bestPos.x - @client.localShip.pos.x
+		dy = bestPos.y - @client.localShip.pos.y
 		margin = 20
 
 		# Draw the radar on the edges of the screen if the bonus is too far.
-		if Math.abs(dx) > window.canvasSize.w/2 or Math.abs(dy) > window.canvasSize.h/2
-			rx = Math.max -window.canvasSize.w/2 + margin, dx
-			rx = Math.min window.canvasSize.w/2 - margin, rx
-			ry = Math.max -window.canvasSize.h/2 + margin, dy
-			ry = Math.min window.canvasSize.h/2 - margin, ry
+		if Math.abs(dx) > @client.canvasSize.w/2 or Math.abs(dy) > @client.canvasSize.h/2
+			rx = Math.max -@client.canvasSize.w/2 + margin, dx
+			rx = Math.min @client.canvasSize.w/2 - margin, rx
+			ry = Math.max -@client.canvasSize.h/2 + margin, dy
+			ry = Math.min @client.canvasSize.h/2 - margin, ry
 
 			# The radar is blinking.
 			if @countdown % 500 < 250
-				@drawRadarSymbol(ctxt, window.canvasSize.w/2 + rx, window.canvasSize.h/2 + ry)
+				@drawRadarSymbol(ctxt, @client.canvasSize.w/2 + rx, @client.canvasSize.h/2 + ry)
 
 		# Draw the X on the future bonus position if it lies within the screen.
 		else if @countdown % 500 < 250
-			rx = -window.canvasSize.w/2 + bestPos.x - window.view.x
-			ry = -window.canvasSize.h/2 + bestPos.y - window.view.y
+			rx = -@client.canvasSize.w/2 + bestPos.x - @client.view.x
+			ry = -@client.canvasSize.h/2 + bestPos.y - @client.view.y
 
-			@drawRadarSymbol(ctxt, window.canvasSize.w/2 + rx, window.canvasSize.h/2 + ry)
+			@drawRadarSymbol(ctxt, @client.canvasSize.w/2 + rx, @client.canvasSize.h/2 + ry)
 
 		return true
 
@@ -153,7 +153,7 @@ class Bonus
 
 	explode: () ->
 		# Launch explosion effect.
-		window.effects.push new ExplosionEffect(@pos, @color, 50, 8)
+		@client.effects.push new ExplosionEffect(@client, @pos, @color, 50, 8)
 
 		# Launch box opening effect.
 		positions = [[0, -10], [10, 0], [0, 10], [-10, 0]]
@@ -167,7 +167,7 @@ class Bonus
 				vy: positions[i][1] * 0.1
 				vr: (Math.random()*2-1) * 0.05
 				size: 20
-		window.effects.push new DislocateEffect(edges, @color, 1000)
+		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)
 
 # Exports
 window.Bonus = Bonus

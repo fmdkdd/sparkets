@@ -1,5 +1,5 @@
 class Ship
-	constructor: (ship) ->
+	constructor: (@client, ship) ->
 		@serverUpdate(ship)
 
 		@engineAnimFor = null
@@ -23,17 +23,16 @@ class Ship
 
 		# Start the boost animation if the ship just boosted.
 		if boost_old < @boost
-			window.effects.push new BoostEffect(@, 1, 3000)
+			@client.effects.push new BoostEffect(@client, @, 1, 3000)
 
 	update: () ->
 		# Update the engine animation countdown.
 		if @engineAnimFor?
-			@engineAnimFor -= window.sinceLastUpdate
+			@engineAnimFor -= @client.sinceLastUpdate
 			@engineAnimFor = null if @engineAnimFor <= 0
 
 	inView: (offset = {x:0, y:0}) ->
-		window.boxInView(@pos.x + offset.x,
-			@pos.y + offset.y, 10)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 10)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
@@ -44,7 +43,7 @@ class Ship
 		return if @state is 'exploding' or @state is 'dead'
 
 		# Blink when the ship just spawned.
-		return if @state is 'spawned' and now % 200 < 100
+		return if @state is 'spawned' and @client.now % 200 < 100
 
 		# Draw the basic model.
 		ctxt.save()
@@ -55,9 +54,9 @@ class Ship
 
 		# Color the hull depending on the cannon heat.
 		if @cannonHeat > 0
-			fillAlpha = @cannonHeat/window.cannonCooldown
+			fillAlpha = @cannonHeat/@client.cannonCooldown
 		else if @firePower > 0
-			fillAlpha = (@firePower-window.minPower)/(window.maxPower-window.minPower)
+			fillAlpha = (@firePower-@client.minPower)/(@client.maxPower-@client.minPower)
 
 		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
 		ctxt.save()
@@ -96,9 +95,9 @@ class Ship
 			ctxt.restore()
 
 		# Draw the player's name.
-		if 	@name?  and @ isnt window.localShip and
+		if 	@name?  and @ isnt @client.localShip and
 				(displayNames is on or
-				window.localShip.state is 'exploding' or window.localShip.state is 'dead')
+				@client.localShip.state is 'exploding' or @client.localShip.state is 'dead')
 			ctxt.fillStyle = '#666'
 			ctxt.font = '15px sans'
 			ctxt.fillText(@name, @pos.x - ctxt.measureText(@name).width/2, @pos.y - 25)
@@ -132,32 +131,32 @@ class Ship
 		# Ensure decent fireworks.
 		speed = Math.max(speed, 3)
 
-		window.effects.push new ExplosionEffect(@pos, @color, 200, 10, speed)
+		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
 
 	drawOnRadar: (ctxt) ->
 		# Select the closest ship position.
 		bestDistance = Infinity
 		for j in [-1..1]
 			for k in [-1..1]
-				x = @pos.x + j * map.w
-				y = @pos.y + k * map.h
-				d = distance(window.localShip.pos.x, window.localShip.pos.y, x, y)
+				x = @pos.x + j * @client.map.w
+				y = @pos.y + k * @client.map.h
+				d = distance(@client.localShip.pos.x, @client.localShip.pos.y, x, y)
 
 				if d < bestDistance
 					bestDistance = d
 					bestPos = {x, y}
 
-		dx = bestPos.x - window.localShip.pos.x
-		dy = bestPos.y - window.localShip.pos.y
+		dx = bestPos.x - @client.localShip.pos.x
+		dy = bestPos.y - @client.localShip.pos.y
 
 		# Draw the radar if the ship is outside of the screen bounds.
-		if Math.abs(dx) > window.canvasSize.w/2 or Math.abs(dy) > window.canvasSize.h/2
+		if Math.abs(dx) > @client.canvasSize.w/2 or Math.abs(dy) > @client.canvasSize.h/2
 
 			margin = 20
-			rx = Math.max -window.canvasSize.w/2 + margin, dx
-			rx = Math.min window.canvasSize.w/2 - margin, rx
-			ry = Math.max -window.canvasSize.h/2 + margin, dy
-			ry = Math.min window.canvasSize.h/2 - margin, ry
+			rx = Math.max -@client.canvasSize.w/2 + margin, dx
+			rx = Math.min @client.canvasSize.w/2 - margin, rx
+			ry = Math.max -@client.canvasSize.h/2 + margin, dy
+			ry = Math.min @client.canvasSize.h/2 - margin, ry
 
 			radius = 10
 			alpha = 1
@@ -169,7 +168,7 @@ class Ship
 
 			ctxt.fillStyle = color(@color, alpha)
 			ctxt.beginPath()
-			ctxt.arc(window.canvasSize.w/2 + rx, window.canvasSize.h/2 + ry, radius, 0, 2*Math.PI, false)
+			ctxt.arc(@client.canvasSize.w/2 + rx, @client.canvasSize.h/2 + ry, radius, 0, 2*Math.PI, false)
 			ctxt.fill()
 
 		return true

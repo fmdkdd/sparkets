@@ -1,5 +1,5 @@
 class Bullet
-	constructor: (bullet) ->
+	constructor: (@client, bullet) ->
 		@serverUpdate (bullet)
 
 	serverUpdate: (bullet) ->
@@ -9,7 +9,7 @@ class Bullet
 		@points.push p for p in @lastPoints
 
 	update: () ->
-		@points.shift() if @serverDelete or @points.length > window.maxBulletLength
+		@points.shift() if @serverDelete or @points.length > @client.maxBulletLength
 		@clientDelete = yes if @points.length == 0
 
 	inView: (offset = {x: 0, y: 0}) ->
@@ -28,8 +28,8 @@ class Bullet
 			Math.abs(y1 - y2) > 50
 
 	segmentInView: (x1, y1, x2, y2, offset) ->
-		window.inView(x1 + offset.x, y1 + offset.y) or
-			window.inView(x2  + offset.x, y2 + offset.y)
+		@client.inView(x1 + offset.x, y1 + offset.y) or
+			@client.inView(x2  + offset.x, y2 + offset.y)
 
 	drawSegment: (ctxt, x1, y1, x2, y2, alpha1, alpha2) ->
 		gradient = ctxt.createLinearGradient(x1, y1, x2, y2)

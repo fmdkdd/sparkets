@@ -37,6 +37,7 @@ class GameServer
 		# Bind socket events
 		@sockets.on 'connection', (socket) =>
 			@clientConnect(socket)
+
 			socket.on 'key down', (data) =>
 				@players[data.playerId].keyDown(data.key)
 

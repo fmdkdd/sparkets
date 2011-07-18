@@ -332,13 +332,13 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 3
+				weight: 1
 			tracker:
 				class: BonusTracker
-				weight: 100
+				weight: 1
 			boost:
 				class: BonusBoost
-				weight: 100
+				weight: 1
 			EMP:
 				class: BonusEMP
 				weight: 1

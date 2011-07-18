@@ -1,5 +1,5 @@
 class Rope
-	constructor: (rope) ->
+	constructor: (@client, rope) ->
 		@serverUpdate(rope)
 
 	serverUpdate: (rope) ->
@@ -111,7 +111,7 @@ class Rope
 				vy: (pos.y - center.y) * 0.05
 				vr: (Math.random()*2-1) * 0.05
 				size: window.distance(@chain[i].x, @chain[i].y, @chain[i+1].x, @chain[i+1].y)
-		window.effects.push new DislocateEffect(edges, @color, 1000)
+		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)
 
 # Exports
 window.Rope = Rope

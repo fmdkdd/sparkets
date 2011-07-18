@@ -1,5 +1,5 @@
 class Mine
-	constructor: (mine) ->
+	constructor: (@client, mine) ->
 		@serverUpdate(mine)
 
 	serverUpdate: (mine) ->
@@ -16,7 +16,7 @@ class Mine
 			@drawExplosion(ctxt)
 
 	inView: (offset = {x:0, y:0}) ->
-		window.boxInView(@pos.x + offset.x,
+		@client.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, @hitRadius)
 
 	drawHitbox: (ctxt) ->
@@ -58,7 +58,7 @@ class Mine
 		r = 80
 		a = @countdown/500
 
-		if window.showHitCircles
+		if @client.showHitCircles
 			ctxt.strokeStyle = 'red'
 			ctxt.lineWidth = 1
 			strokeCircle(ctxt, x, y, r)

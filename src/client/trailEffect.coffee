@@ -1,5 +1,5 @@
 class TrailEffect
-	constructor: (@object, @dispersion = 0.5, @life = 30, @size = 5) ->
+	constructor: (@client, @object, @dispersion = 0.5, @life = 30, @size = 5) ->
 		@particles = []
 		
 	update: () ->
