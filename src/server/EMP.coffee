@@ -53,7 +53,9 @@ class EMP extends ChangingObject
 		switch @state
 			when 'active'
 				# Delete EMP when ship dies.
-				@nextState() if @ship.state isnt 'alive'
+				if @ship.state isnt 'alive'
+					@nextState()
+					return
 
 				# Expire EMP after a set amount of time.
 				@nextState() if @countdown <= 0
