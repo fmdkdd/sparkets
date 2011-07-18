@@ -85,6 +85,43 @@ exports.collisions =
 
 		ddebug "bullet ##{bullet.id} hit planet ##{planet.id}"
 
+	'EMP-bullet': (EMP, bullet) ->
+		# EMPs absorb all bullets, except from the user!
+		bullet.explode() if bullet.state is 'active' and bullet.owner isnt EMP.ship
+
+		ddebug "EMP ##{EMP.id} hit bullet ##{bullet.id}"
+
+	'EMP-EMP': (EMP1, EMP2) ->
+		# EMPs cancel each other.
+		EMP1.cancel()
+		EMP2.cancel()
+
+		ddebug "EMP ##{EMP1.id} hit EMP ##{EMP2.id}"
+
+	'EMP-mine': (EMP, mine) ->
+		# EMPs absorb one mine.
+		mine.nextState() if mine.state is 'active'
+		EMP.cancel()
+
+		ddebug "EMP ##{EMP.id} hit mine ##{mine.id}"
+
+	# EMPs do not save ships from moons or planets ...
+
+	'EMP-ship': (EMP, ship) ->
+		# EMPs can't take more than one ship.
+		if EMP.ship isnt ship
+			ship.explode()
+			EMP.cancel()
+
+		ddebug "EMP ##{EMP.id} hit ship ##{ship.id}"
+
+	'EMP-tracker': (EMP, tracker) ->
+		# EMPs absorb one tracker.
+		tracker.explode()
+		EMP.cancel()
+
+		ddebug "EMP ##{EMP.id} hit tracker ##{tracker.id}"
+
 	'mine-bullet': (mine, bullet) ->
 		mine.nextState() if mine.state is 'active'
 
@@ -110,7 +147,7 @@ exports.collisions =
 		if bonus.state is 'available'
 			bonus.setState 'exploding'
 
-		ddebug "bonus ##{bonus.id} crashed on planet ##{planet.id}"	
+		ddebug "bonus ##{bonus.id} crashed on planet ##{planet.id}"
 
 	'tracker-planet' : (tracker, planet) ->
 		tracker.explode()

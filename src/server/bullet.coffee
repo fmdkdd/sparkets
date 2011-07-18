@@ -51,10 +51,11 @@ class Bullet extends ChangingObject
 		# Apply negative force from all EMPs.
 		g2 = @game.prefs.bullet.EMPPull
 		for id, e of @game.EMPs
-			d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
-			d2 = g2 * e.force / (d * Math.sqrt(d))
-			ax -= (x-e.pos.x) * d2
-			ay -= (y-e.pos.y) * d2
+			if e.ship isnt @owner
+				d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
+				d2 = g2 * e.force / (d * Math.sqrt(d))
+				ax -= (x-e.pos.x) * d2
+				ay -= (y-e.pos.y) * d2
 
 		@pos.x = x + ax
 		@pos.y = y + ay

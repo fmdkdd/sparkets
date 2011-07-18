@@ -332,10 +332,10 @@ class GamePreferences
 
 		emp:
 			# Initial negative force.
-			initialForce: 5
+			initialForce: 25
 
 			# Force increase at each update.
-			forceIncrease: .6
+			forceIncrease: 0
 
 			# Max force of the EMP.
 			maxForce: 100
