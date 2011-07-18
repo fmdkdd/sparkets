@@ -60,9 +60,15 @@ class Menu
 				@close()
 				event.stopPropagation()
 
-		# Open or close the menu when Escape or M is pressed.
+		# Toggle the menu when Escape or M is pressed.
 		$(document).keyup ({keyCode}) =>
-			@toggle() if keyCode is 27 or keyCode is 77
+			return if window.chat.isOpen()
+
+			if keyCode is 27
+				@toggle()
+			# Check that we are not typing the letter M in the name field.
+			else if keyCode is 77 and $('#customize input:focus').length is 0
+				@toggle()
 
 	toggle: () ->
 		if @isOpen() then @close() else @open()

@@ -9,6 +9,8 @@ class Chat
 	setInputHandlers: () ->
 
 		$(document).keyup ({keyCode}) =>
+			return if window.menu.isOpen()
+
 			# Open the chat when T is pressed.
 			if keyCode is 84 and not @isOpen()
 				@open()
