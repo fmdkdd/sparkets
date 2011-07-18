@@ -338,6 +338,21 @@ class Client
 
 		delete @gameObjects[id]
 
+	closestGhost: (sourcePos, targetPos) ->
+		bestPos = null
+		bestDistance = Infinity
+
+		for i in [-1..1]
+			for j in [-1..1]
+				ox = targetPos.x + i * @map.w
+				oy = targetPos.y + j * @map.h
+				d = window.distance(sourcePos.x, sourcePos.y, ox, oy)
+				if d < bestDistance
+					bestDistance = d
+					bestPos = {x: ox, y: oy}
+
+		return bestPos
+
 	onConnect: () ->
 		console.info "Connected to server."
 

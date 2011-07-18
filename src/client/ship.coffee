@@ -96,7 +96,7 @@ class Ship
 
 		# Draw the player's name.
 		if 	@name?  and @ isnt @client.localShip and
-				(displayNames is on or
+				(@client.displayNames is on or
 				@client.localShip.state is 'exploding' or @client.localShip.state is 'dead')
 			ctxt.fillStyle = '#666'
 			ctxt.font = '15px sans'
@@ -134,18 +134,7 @@ class Ship
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
 
 	drawOnRadar: (ctxt) ->
-		# Select the closest ship position.
-		bestDistance = Infinity
-		for j in [-1..1]
-			for k in [-1..1]
-				x = @pos.x + j * @client.map.w
-				y = @pos.y + k * @client.map.h
-				d = distance(@client.localShip.pos.x, @client.localShip.pos.y, x, y)
-
-				if d < bestDistance
-					bestDistance = d
-					bestPos = {x, y}
-
+		bestPos = @client.closestGhost(@client.localShip.pos, @pos)
 		dx = bestPos.x - @client.localShip.pos.x
 		dy = bestPos.y - @client.localShip.pos.y
 

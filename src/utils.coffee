@@ -73,22 +73,6 @@ exports.randomColor = () ->
 exports.capitalize = (word) ->
 	word[0].toUpperCase() + word.substring(1)
 
-# Return the closest position of 'targetPos' from 'sourcePos'.
-exports.closestGhost = (sourcePos, targetPos) ->
-	bestPos = null
-	bestDistance = Infinity
-
-	for i in [-1..1]
-		for j in [-1..1]
-			ox = targetPos.x + i * window.client.map.w
-			oy = targetPos.y + j * window.client.map.h
-			d = distance(sourcePos.x, sourcePos.y, ox, oy)
-			if d < bestDistance
-				bestDistance = d
-				bestPos = {x: ox, y: oy}
-
-	return bestPos
-
 # Merge `obj' properties with `target' existing properties.
 # No new property is created in `target'.
 exports.safeDeepMerge = (target, obj) ->

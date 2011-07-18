@@ -105,20 +105,10 @@ class Bonus
 	drawOnRadar: (ctxt) ->
 		return if @state isnt 'incoming'
 
-		# Select the closest bonus among the real one and its ghosts.
-		bestDistance = Infinity
-		for j in [-1..1]
-			for k in [-1..1]
-				x = @pos.x + j * @client.map.w
-				y = @pos.y + k * @client.map.h
-				d = distance(@client.localShip.pos.x, @client.localShip.pos.y, x, y)
-
-				if d < bestDistance
-					bestDistance = d
-					bestPos = {x, y}
-
+		bestPos = @client.closestGhost(@client.localShip.pos, @pos)
 		dx = bestPos.x - @client.localShip.pos.x
 		dy = bestPos.y - @client.localShip.pos.y
+
 		margin = 20
 
 		# Draw the radar on the edges of the screen if the bonus is too far.

@@ -19,7 +19,7 @@ class Rope
 
 		# Check for map warping.
 		for i in [1...@chain.length]
-			@chain[i] = closestGhost(@chain[0], @chain[i])
+			@chain[i] = @client.closestGhost(@chain[0], @chain[i])
 
 		smooth = 0.75
 		ctxt.strokeStyle = color @color
