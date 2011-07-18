@@ -131,6 +131,16 @@
 
 * Core
 
+** Use an event model where needed.
+   Ships could emit 'fire', 'death', 'explosion' events, bonus
+   can register them and act safely upon it instead of relying on
+   polling the ship state.
+
+   Bonus too could benefit by emitting the 'effect wears off' event
+   catched by ships instead of managing the bonusTimeouts explicitly.
+
+   Node provides the EventEmitter prototype for this purpose.
+
 ** DONE Factorize gravity from planet computations
 	 CLOSED: [2011-07-13 Wed 12:20]
 
