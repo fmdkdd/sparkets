@@ -228,6 +228,22 @@ class GamePreferences
 		# Gap to leave in the hit line.
 		checkWidth: 4
 
+	EMP:
+		# Size of EMP around ship.
+		radius: 25
+
+		# Gravity push factor for ships.
+		shipPush: -200
+
+		states:
+			'active':
+				countdown: 5000
+				next: 'dead'
+
+			'dead':
+				countdown: null
+				next: null
+
 	mine:
 		# Sensibility radius.
 		maxDetectionRadius: 50
@@ -250,12 +266,12 @@ class GamePreferences
 				next: null
 
 	tracker:
-		
+
 		hitRadius: 5
 		speed: 0.55
 		frictionDecay: 0.95
 		turnSpeed: 20
-	
+
 		states:
 			'deploying':
 				countdown: 700 				# Time (ms) before activation.
@@ -329,16 +345,6 @@ class GamePreferences
 
 			# Decrease boost factor in decay state.
 			boostDecay: 0.02
-
-		emp:
-			# Initial negative force.
-			initialForce: 25
-
-			# Force increase at each update.
-			forceIncrease: 0
-
-			# Max force of the EMP.
-			maxForce: 100
 
 		drunk:
 			# Duration of drunk effect in ms.

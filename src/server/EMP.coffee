@@ -18,8 +18,11 @@ class EMP extends ChangingObject
 			y: ship.pos.y
 
 		@color = ship.color
-		@force = @game.prefs.bonus.emp.initialForce
+		@force = @game.prefs.EMP.radius
 		@hitRadius = @force
+
+		@state = 'active'
+		@countdown = @game.prefs.EMP.states[@state].countdown
 
 	cancel: () ->
 		@serverDelete = yes
@@ -33,13 +36,29 @@ class EMP extends ChangingObject
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	move: () ->
+		return if @state isnt 'active'
+
 		# Follow ship
 		@pos.x = @ship.pos.x
 		@pos.y = @ship.pos.y
 		@changed 'pos'
 
+	nextState: () ->
+		@state = @game.prefs.EMP.states[@state].next
+		@countdown = @game.prefs.EMP.states[@state].countdown
+
 	update: () ->
-		# Delete EMP when ship dies.
-		@cancel() if @ship.state isnt 'alive'
+		@countdown -= @game.prefs.timestep if @countdown?
+
+		switch @state
+			when 'active'
+				# Delete EMP when ship dies.
+				@nextState() if @ship.state isnt 'alive'
+
+				# Expire EMP after a set amount of time.
+				@nextState() if @countdown <= 0
+
+			when 'dead'
+				@serverDelete = yes
 
 exports.EMP = EMP
