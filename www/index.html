@@ -25,9 +25,10 @@
 					<li><span class="key">A</span> to shoot (hold for stronger bullets).</li>
 					<li><span class="key">Z</span> to use bonus (can only hold one).</li>
 					<li><span class="key">M</span> to open the menu.</li>
+					<li><span class="key">T</span> to chat.</li>
 			</ul></p>
 			<br/>
-			<p>Shoot other ships before they shoot you.</p>
+			<p><span id="goal">Shoot other ships before they shoot you.</span></p>
 		</div>
 
 		<div id="about">
@@ -56,8 +57,18 @@
 		<div id="createDiv">
 			<h2>Create</h2>
 			<form id="createForm">
-			   <input type="text" name="id" placeholder="Name" required />
+			   <input type="text" name="id" placeholder="Game name" required />
+				<p class="error" id="id-error"></p>
 				<ul class="collapse">
+				  <li><h3>Game</h3>
+					 <ul>
+						<li>
+						  <label for="duration">Duration (min)</label>
+						  <input type="range" name="duration" min="3" max="20" step="1" value="5" />
+						</li>
+					 </ul>
+				  </li>
+
 				  <li><h3>Map</h3>
 					 <ul>
 					 <li>
@@ -76,7 +87,51 @@
 					 </li>
 					 </ul>
 				  </li>
-				  <li><h3>Ship</h3>
+
+				  <li><h3>Bonus</h3>
+					 <ul>
+					 <li>
+						<label for="bonus.waitTime">Drop wait (ms)</label>
+						<input type="range" name="bonus.waitTime" min="1000" max="10000" step="1000" value="5000" />
+					 </li>
+
+					 <li>
+						<label for="bonus.states.incoming.countdown">Activation wait (ms)</label>
+						<input type="range" name="bonus.states.incoming.countdown" min="500" max="5000" step="500" value="2000" />
+					 </li>
+
+					 <li>
+						<label for="bonus.maxCount">Max allowed</label>
+						<input type="range" name="bonus.maxCount" min="0" max="20" step="1" value="10" />
+					 </li>
+
+					 <li>
+						<label for="bonus.mine.mineCount">Mines in bonus</label>
+						<input type="range" name="bonus.mine.mineCount" min="1" max="10" step="1" value="2" />
+					 </li>
+					 </ul>
+				  </li>
+					 
+				  <li><h3>Bonus appearance</h3>
+					 <ul>
+					 <li>
+						<label for="bonus.bonusType.mine.weight">Mines weight</label>
+						<input type="range" name="bonus.bonusType.mine.weight" min="0" max="10" step="1" value="3" />
+					 </li>
+
+					 <li>
+						<label for="bonus.bonusType.boost.weight">Boost weight</label>
+						<input type="range" name="bonus.bonusType.boost.weight" min="0" max="10" step="1" value="2" />
+					 </li>
+
+					 <li>
+						<label for="bonus.bonusType.EMP.weight">EMP weight</label>
+						<input type="range" name="bonus.bonusType.EMP.weight" min="0" max="10" step="1" value="1" />
+					 </li>
+					 </ul>
+				  </li>
+
+				  <li><h3 id="shipPrefs">Ship</h3>
 					 <ul>
 					 <li>
 						<label for="ship.speed">Speed</label>
@@ -89,6 +144,7 @@
 					 </li>
 					 </ul>
 				  </li>
+
 				  <li><h3>Bot</h3>
 					 <ul>
 						<li>
@@ -104,8 +160,15 @@
 		
 		<div id="joinDiv">
 			<h2>Join</h2>
-			<ul id="gameList">
-			</ul>
+			<table id="gameListTable">
+			  <thead>
+					<th>Name</th>
+					<th>Players</th>
+					<th>Time left</th>
+			  </thead>
+			  <tbody id="gameList">
+			  </tbody>
+			</table>
 		</div>
 
 		<div class="footer"></div>

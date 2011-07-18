@@ -33,34 +33,32 @@ class Bullet extends ChangingObject
 		@points = [ [@pos.x, @pos.y] ]
 		@lastPoints = [ [@pos.x, @pos.y] ]
 
+	# Apply gravity from all planets, moons, and EMPs.
+	gravityVector: () ->
+		# Get planets, moons and EMPs.
+		filter = (obj) ->
+			obj.type is 'planet' or obj.type is 'moon' or obj.type is 'EMP'
+
+		# Pull factor for each object.
+		force = ({object: obj}) =>
+			if obj.type is 'EMP'
+				@game.prefs.bullet.EMPPull * obj.force
+			else
+				@game.prefs.bullet.gravityPull * obj.force
+
+		return @game.gravityFieldAround(@pos, filter, force)
+
 	move: () ->
 		return if @state isnt 'active'
 
 		# Compute new position from acceleration and gravity of all planets.
-		{x, y} = @pos
-		{x: ax, y: ay} = @accel
+		gvec = @gravityVector()
 
-		# Apply gravity from all planets.
-		g = @game.prefs.bullet.gravityPull
-		for id, p of @game.planets
-			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-			d2 = g * p.force / (d * Math.sqrt(d))
-			ax -= (x-p.pos.x) * d2
-			ay -= (y-p.pos.y) * d2
+		@accel.x += gvec.x
+		@accel.y += gvec.y
 
-		# Apply negative force from all EMPs.
-		g2 = @game.prefs.bullet.EMPPull
-		for id, e of @game.EMPs
-			if e.ship isnt @owner
-				d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
-				d2 = g2 * e.force / (d * Math.sqrt(d))
-				ax -= (x-e.pos.x) * d2
-				ay -= (y-e.pos.y) * d2
-
-		@pos.x = x + ax
-		@pos.y = y + ay
-		@accel.x = ax
-		@accel.y = ay
+		@pos.x += @accel.x
+		@pos.y += @accel.y
 
 		@points.push [@pos.x, @pos.y]
 		@lastPoints = [ [@pos.x, @pos.y] ]

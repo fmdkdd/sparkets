@@ -9,6 +9,7 @@
   <script src="/js/client/bonus.js"></script>
   <script src="/js/client/boostEffect.js"></script>
   <script src="/js/client/bullet.js"></script>
+  <script src="/js/client/chat.js"></script>
   <script src="/js/client/client.js"></script>
   <script src="/js/client/EMP.js"></script>
   <script src="/js/client/explosionEffect.js"></script>
@@ -41,7 +42,6 @@
 									  stroke-linejoin: round;
 									  fill: white" >
 						</path>
-
 					</g>
 				</svg>
 
@@ -63,12 +63,13 @@
 
 		<div id="scores">
 			<h2>Scores</h2>
+			<p id="timeLeft"></p>
 			<table>
 				<thead>
 					<tr>
 						<th></th>
-						<th><img src="/img/iconDeath.svg" width="30"/></th>
-						<th><img src="/img/iconKill.svg" width="30"/></th>
+						<th><img src="/img/iconDeath.svg" alt="Deaths" width="30"/></th>
+						<th><img src="/img/iconKill.svg" alt="Kills" width="30"/></th>
 						<th></th>
 					</tr>
 				</thead>
@@ -79,5 +80,9 @@
 
 		<img id="closeButton" src="/img/iconClose.svg" width="30"/>
 	</div>
+
+	<input id="chatInput" class="hidden"/>
+
+	<div id="chat"></div>
 </body>
 </html>

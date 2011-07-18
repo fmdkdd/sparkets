@@ -1,12 +1,12 @@
 # Server
-window.port = 12345
-window.socket = {}
+window.socket = null
 
 # Graphics
 window.ctxt = null
 window.canvasSize = {w: 0, h: 0}
-window.map = {w: 2000, h: 2000}
+window.map = null
 window.view = {x: 0, y: 0}
+window.mouse = {x: 0, y: 0}
 
 # Time
 window.now = null
@@ -16,11 +16,7 @@ window.planetColor = [209,29,61]
 window.maxBulletLength = 15
 
 # Game logic
-window.minPower = 1.3
-window.maxPower = 3
-window.maxExploFrame = 50
-window.maxBullets = 10
-window.cannonCooldown = 20
+window.explosionDuration = 1000
 
 window.playerId = null
 window.shipId = null
@@ -36,6 +32,7 @@ window.effects = []
 window.keys = {}
 
 window.menu = null
+window.chat = null
 
 # user preferences
 window.displayNames = no
@@ -52,15 +49,20 @@ $(document).ready (event) ->
 	window.menu = new Menu()
 	window.menu.restoreLocalPreferences()
 
+	# Initialize chat.
+	window.chat = new Chat()
+
 	# Connect to server and set callbacks.
 	window.socket = io.connect()
-	window.socket = window.socket.socket.of(window.location.hash)
+	window.socket = window.socket.socket.of(window.location.hash.substring(1))
 
 	window.socket.on 'connect', onConnect
 	window.socket.on 'connected', onConnected
 	window.socket.on 'objects update', onObjectsUpdate
 	window.socket.on 'ship created', onShipCreated
+	window.socket.on 'player says', onPlayerMessage
 	window.socket.on 'player quits', onPlayerQuits
+	window.socket.on 'game end', onGameEnd
 	window.socket.on 'disconnect', onDisconnect
 
 	# Setup canvas.
@@ -85,23 +87,44 @@ go = () ->
 	renderLoop(update, window.showFPS)
 
 setInputHandlers = () ->
-	# Send key presses and key releases to the server.
 	$(document).keydown ({keyCode}) ->
+		# Send key presses and key releases to the server.
 		if not window.keys[keyCode]? or window.keys[keyCode] is off
 			window.keys[keyCode] = on
 			window.socket.emit 'key down',
 				playerId: window.playerId
 				key: keyCode
 
-		# Open/Close the menu when 'M' is pressed.
-		if keyCode is 77
-			window.menu.toggle()
-
 	$(document).keyup ({keyCode}) ->
 		window.keys[keyCode] = off
 		window.socket.emit 'key up',
 			playerId: window.playerId
 			key: keyCode
+
+	$(document).mousemove ({pageX, pageY}) ->
+		window.mouse.x = pageX
+		window.mouse.y = pageY
+
+	$(document).mousedown () ->
+		if window.localShip.state is 'dead'
+			window.mouseDownInterval = setInterval( (() ->
+
+					# Move the camera towards the position of the mouse.
+					center = {x: window.canvasSize.w/2, y: window.canvasSize.h/2}
+					view.x += (mouse.x-center.x)/50
+					view.y += (mouse.y-center.y)/50
+
+					# Warp the camera.
+					{w, h} = window.map
+					if view.x < 0 then view.x = w
+					if view.x > w then view.x = 0
+					if view.y < 0 then view.y = h
+					if view.y > h then view.y = 0),
+
+					5)
+
+	$(document).mouseup () ->
+		clearInterval(window.mouseDownInterval)
 
 renderLoop = (callback, showFPS) ->
 	# RequestAnimationFrame API
@@ -126,7 +149,7 @@ renderLoop = (callback, showFPS) ->
 		requestAnimFrame(render)
 
 		# For browsers which do not pass the time argument.
-		time ?= (new Date).getTime()
+		time ?= Date.now()
 
 		# Update FPS every second
 		if (time - lastFPSupdate > 1000)
@@ -184,8 +207,10 @@ window.inView = (x, y) ->
 redraw = (ctxt) ->
 	ctxt.clearRect(0, 0, window.canvasSize.w, window.canvasSize.h)
 
-	# Draw everything centered around the player.
-	centerView()
+	# Draw everything centered around the player when he's alive.
+	if window.localShip.state isnt 'dead'
+		centerView(window.localShip)
+
 	ctxt.save()
 	ctxt.translate(-view.x, -view.y)
 
@@ -221,10 +246,9 @@ drawMapBounds = (ctxt) ->
 	ctxt.strokeRect(0, 0, window.map.w, window.map.h)
 	ctxt.restore()
 
-centerView = () ->
-	if window.localShip?
-		window.view.x = window.localShip.pos.x - window.canvasSize.w/2
-		window.view.y = window.localShip.pos.y - window.canvasSize.h/2
+centerView = (obj) ->
+	window.view.x = obj.pos.x - window.canvasSize.w/2
+	window.view.y = obj.pos.y - window.canvasSize.h/2
 
 drawRadar = (ctxt) ->
 	for id, ship of window.ships
@@ -324,6 +348,15 @@ onObjectsUpdate = (data) ->
 onConnected = (data) ->
 	window.playerId = data.playerId
 
+	window.gameStartTime = data.startTime
+
+	# Copy useful game preferences from the server.
+	window.map = data.serverPrefs.mapSize
+	window.minPower = data.serverPrefs.ship.minPower
+	window.maxPower = data.serverPrefs.ship.maxPower
+	window.gameDuration = data.serverPrefs.duration
+	window.cannonCooldown = data.serverPrefs.ship.cannonCooldown
+
 	window.menu.sendPreferences()
 
 	window.socket.emit 'create ship',
@@ -333,8 +366,21 @@ onConnected = (data) ->
 onShipCreated = (data) ->
 	window.shipId = data.shipId
 	window.localShip = window.gameObjects[window.shipId]
+
+	# Set the color of the ship preview in menu to our ship color.
+	window.menu.currentColor = window.localShip.color
+	window.menu.updatePreview(window.localShip.color)
+
 	go()
+
+# When a player sent a chat message.
+onPlayerMessage = (data)->
+	window.chat.receive(data)
 
 # When another player leaves.
 onPlayerQuits = (data) ->
 	deleteObject data.shipId
+
+onGameEnd = () ->
+	window.gameEnded = yes
+	window.menu.open()

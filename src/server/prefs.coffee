@@ -6,11 +6,26 @@ BonusMine = require './bonusMine'
 BonusTracker = require './bonusTracker'
 
 class ServerPreferences
+	constructor: (prefs = {}) ->
+		# Override default values by those provided in `prefs'.
+		utils.safeDeepMerge(@, prefs)
+
 	# HTTP server port.
 	port: 12345
 
 	# Port of the web REPL.
 	replPort: 54321
+
+	log: ['error', 'warn', 'info', 'debug']
+
+	# Socket.io options.
+	io:
+		# Allowed transports.
+		# Only WebSocket and FlashSocket are fast and stable enough for Spacewar.
+		transports: ['websocket', 'flashsocket']
+
+		# Detail of log output: error (0), warn, info, debug (3)
+		logLevel: 2
 
 class GamePreferences
 	constructor: (prefs = {}) ->
@@ -19,6 +34,9 @@ class GamePreferences
 
 	# ms between two server updates.
 	timestep: 20
+
+	# Duration of the game in minutes.
+	duration: 5
 
 	# Size of the real map (duh).
 	mapSize:
@@ -88,6 +106,8 @@ class GamePreferences
 
 		# Default parameters for bots.
 		defaultPersona:
+			name: 'HK-47'
+
 			# Distance threshold to begin firing at a target.
 			acquireDistance: [400, 500]
 

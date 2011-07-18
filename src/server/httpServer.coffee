@@ -17,6 +17,7 @@ webFiles = {
 	'/js/client/bonus.js',
 	'/js/client/boostEffect.js',
 	'/js/client/bullet.js',
+	'/js/client/chat.js',
 	'/js/client/client.js',
 	'/js/client/EMP.js',
 	'/js/client/explosionEffect.js',
@@ -33,28 +34,31 @@ webFiles = {
 	'/favicon.ico',
 	'/img/colorWheel.png',
 	'/img/colorCursor.png',
+	'/img/iconBot.svg',
 	'/img/iconClose.svg',
 	'/img/iconDeath.svg',
 	'/img/iconKill.svg',
+	'/img/triangle.svg',
 	'/img/tutorialMove.svg',
 	'/img/tutorialShoot.svg',
 	'/img/tutorialBonus.svg'
 }
 
-server = http.createServer (req, res) ->
+send404 = (res) ->
+	res.writeHead 404, 'Content-Type': 'text/html'
+	res.end '<h1>Nothing to see here, move along</h1>'
+
+handleRequest = (req, res) ->
 	path = url.parse(req.url).pathname
 	if webFiles[path]?
 		# Server.js file is in build/server and all web files
 		# are in www/
 		fs.readFile __dirname + '/../../www' + webFiles[path], (err, data) ->
 			return send404(res) if err?
-			res.writeHead 200, 'Content-Type': mime(path)
+			res.writeHead 200, 'Content-Type': mime(webFiles[path])
 			res.write data, 'utf8'
 			res.end()
 	else send404(res)
 
-send404 = (res) ->
-	res.writeHead 404, 'Content-Type': 'text/html'
-	res.end '<h1>Nothing to see here, move along</h1>'
-
-exports.server = server
+exports.create = () ->
+	http.createServer(handleRequest)

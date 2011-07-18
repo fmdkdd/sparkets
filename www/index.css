@@ -63,6 +63,10 @@ h2 {
 		color: hsl(0, 0%, 20%);
 }
 
+#goal {
+	 font-style: italic;
+}
+
 #about {
 		float: right;
 }
@@ -97,6 +101,66 @@ h2 {
 #createDiv { float: left; }
 #joinDiv { float: right; }
 
+/**
+ * Create column.
+ */
+
+.error {
+	 font-size: .8em;
+	 color: hsl(0, 70%, 50%);
+
+	 display: inline;
+}
+
+#createDiv h3 {
+	 font-size: 1em;
+
+	 margin-top: 1em;
+}
+
+ul.collapse {
+	 list-style-image: url('/img/triangle.svg');
+}
+
+ul.collapse h3:hover {
+	 cursor: pointer;
+	 background-color: hsl(-100, 5%, 75%);
+}
+
+.tooltip {
+	 font-size: .8em;
+	 padding: .2em;
+	 
+	 color: white;
+	 background-color: hsl(0, 0%, 45%);
+	 border-radius: 10%;
+	 box-shadow: 1px 1px 2px #888;
+
+	 cursor: default;
+}
+
+#createForm > ul {
+	 margin-left: 1em;
+}
+
+#createDiv ul ul {
+	 list-style: none;
+}
+
+#createDiv ul ul li {
+	 margin: .3em 0;
+}
+
+#createDiv input[type="text"] {
+	 width: 10em;
+}
+
+#createDiv input[type="range"] {
+	 width: 8em;
+
+	 float: right;
+}
+
 #createDiv [value="Create"] {
 	 padding: .2em .5em;
 	 margin: 1em auto;
@@ -114,49 +178,64 @@ h2 {
 	 border-style: solid;
 }
 
-#createDiv [value="Create"]:hover {
-	 cursor: pointer;
-}
-
-/**
- * Create column.
- */
-
-#createDiv ul {
-	 list-style-position: inside;
-}
-
-#createDiv input[type="range"] {
-	 width: 5em;
-}
-
 #createDiv [value="Create"] {
 	 background-color: hsl(20, 60%, 60%);
 	 border-color: hsl(20, 60%, 45%);
+
+	 transition-property: background-color, border-color;
+	 transition-duration: 150ms;
+	 -webkit-transition-property: background-color, border-color;
+	 -webkit-transition-duration: 150ms;
+	 -moz-transition-property: background-color, border-color;
+	 -moz-transition-duration: 150ms;
 }
 
 #createDiv [value="Create"]:hover {
+	 cursor: pointer;
+
 	 background-color: hsl(20, 60%, 75%);
 	 border-color: hsl(20, 60%, 55%);
+}
+
+#createDiv [value="Create"]:disabled {
+	 cursor: default;
+
+	 background-color: hsl(20, 0%, 75%);
+	 border-color: hsl(20, 0%, 55%);
 }
 
 /**
  * Join column.
  */
 
-#gameList {
-	 height: 10em;
-	 overflow-y: scroll;
-	 padding: .2em 0 .2em .5em;
+#gameListTable {
+	 width: 100%;
 
-	 list-style-position: inside;
-	 list-style-type: circle;
+	 border-collapse: collapse;
 
 	 background-color: white;
-	 border-radius: .3em;
 	 border-width: 2px;
 	 border-style: solid;
 	 border-color: hsl(-150, 30%, 45%);
+}
+
+#gameListTable th {
+	 padding: .3em;
+
+	 text-align: left;
+	 font-weight: bold;
+}
+
+#gameList tr {
+	 background-color: white;
+}
+
+#gameList tr:nth-child(odd) {
+	 background-color: hsl(-150, 30%, 92%);
+}
+
+#gameList td {
+	 padding: .3em;
 }
 
 #gameList a {

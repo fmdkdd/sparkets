@@ -21,16 +21,28 @@ class Menu
 		@setInputHandlers()
 
 	setInputHandlers: () ->
-		@wheelBox.click (event) =>
-			return if event.which is not 1 # Only left click triggers.
+		pickColor = (event) =>
+			@currentColor = @readColor(event)
+			@updatePreview(@currentColor)
 
-			@currentColor = c = @readColor(event)
+		@wheelBox.mousedown (event) =>
+			return if event.which isnt 1 # Only left click triggers.
 
-			# Change the color of the ship preview.
-			style = @shipPreview.attr('style')
-			style = style.replace(/stroke: [^\n]+/,
-				'stroke: hsl('+c[0]+','+c[1]+'%,'+c[2]+'%);')
-			@shipPreview.attr('style', style)
+			event.preventDefault()
+			pickColor(event)
+
+			# Can hold mouse to choose color.
+			@wheelBox.mousemove (event) =>
+				return if event.which isnt 1 # Only left click triggers.
+
+				event.preventDefault()
+				pickColor(event)
+
+		@wheelBox.mouseup (event) =>
+			return if event.which isnt 1 # Only left click triggers.
+
+			# Mouse move can be triggered without any click.
+			@wheelBox.unbind('mousemove')
 
 		# Send users preferences and save them locally.
 		@form.submit (event) =>
@@ -48,18 +60,9 @@ class Menu
 				@close()
 				event.stopPropagation()
 
-		# Toggle the menu when a left click is detected in the document.
-		$(document).click (event) =>
-			@toggle() if event.which is 1
-
-		# But don't toggle if the click is inside the menu.
-		# Clicking is expected on name input box and links.
-		@menu.click (event) ->
-			event.stopPropagation() if event.which is 1
-
-		# Close the menu when the Escape key is pressed.
+		# Open or close the menu when Escape or M is pressed.
 		$(document).keyup ({keyCode}) =>
-			@toggle() if keyCode is 27
+			@toggle() if keyCode is 27 or keyCode is 77
 
 	toggle: () ->
 		if @isOpen() then @close() else @open()
@@ -67,12 +70,18 @@ class Menu
 	open: () ->
 		@updateScores()
 
+		@updateTime()
+		@clockInterval = setInterval( (() =>
+			@updateTime()), 1000)
+
 		@menu.removeClass('hidden')
 		@menu.addClass('visible')
 
 	close: () ->
 		@menu.removeClass('visible')
 		@menu.addClass('hidden')
+
+		clearInterval(@clockInterval)
 
 	isOpen: () ->
 		@menu.hasClass('visible')
@@ -140,6 +149,15 @@ class Menu
 
 		return [hDeg, 60, l]
 
+	updatePreview: (color) ->
+		# Change the color of the ship preview.
+		style = @shipPreview.attr('style')
+
+		style = style.replace(/stroke: [^\n]+/,
+			'stroke: hsl('+color[0]+','+color[1]+'%,'+color[2]+'%);')
+
+		@shipPreview.attr('style', style)
+
 	updateScores: () ->
 		@scoreTable.empty()
 
@@ -161,6 +179,24 @@ class Menu
 					'<td>' +	s.deaths + '</td>' +
 					'<td>' +	s.kills + '</td>' +
 					'<td>' + s.score + '</td></tr>')
+
+	updateTime: () ->
+		if window.gameEnded
+			clearInterval(@clockInterval)
+			$('#timeLeft').html("The game has ended!")
+			return
+
+		# Compute in ms since Epoch.
+		elapsed = Date.now() - window.gameStartTime
+		remaining = window.gameDuration * 60 * 1000 - elapsed
+
+		# Use Date for conversion and pretty printing.
+		timeLeft = new Date(remaining)
+
+		pad = (n) ->
+			if n < 10 then '0'+n else n
+
+		$('#timeLeft').html("#{timeLeft.getMinutes()}:#{pad(timeLeft.getSeconds())} left")
 
 # Exports
 window.Menu = Menu

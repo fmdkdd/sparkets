@@ -31,7 +31,11 @@ exports.isEmptyObject = (obj) ->
 
 # Stupid % operator.
 exports.mod = (x, n) ->
-	if x >= 0 then x%n else exports.mod(x+n, n)
+	if isNaN(x)
+		x
+	else if x >= 0
+		x%n
+	else exports.mod(x+n, n)
 
 # Normalize angle between -Pi and +Pi.
 exports.relativeAngle = (a) ->
@@ -93,9 +97,33 @@ exports.safeDeepMerge = (target, obj) ->
 		if target[name]?
 
 			# Recurse for object properties.
-			if typeof target[name] is 'object'
+			if typeof target[name] is 'object' and not Array.isArray(target[name])
 				exports.safeDeepMerge(target[name], obj[name])
 			else
 				target[name] = val
 
 	return target
+
+# Return acceleration vector from all gravity-emitting `objects',
+# having center `source' and force `force'.
+exports.gravityField = (pos, objects, source, force) ->
+	{x: x1, y: y1} = pos
+
+	# Apply gravity formula.
+	gravity = ({x: x2, y: y2}, g) ->
+		xt = x2-x1
+		yt = y2-y1
+		dist = xt*xt + yt*yt
+		pull = g / (dist * Math.sqrt(dist))
+
+		return {x: xt * pull, y: yt * pull}
+
+	vx = vy = 0
+	for id, obj of objects
+		pull = gravity(source(obj), force(obj))
+
+		# Increase field vector.
+		vx += pull.x
+		vy += pull.y
+
+	return {x: vx, y: vy}

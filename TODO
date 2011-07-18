@@ -1,84 +1,181 @@
-= Gameplay =
+-*- mode: org; -*-
 
-* Add other weapons.
-   - Machine gun
-      Rapid-fire weapon but takes longer to kill ships.
-   - Portable black hole
-      Gravity affects bullets and ships?
-   - EMP/Shield
-      Deflect bullets. Has potential but needs refinement.
-   - Tracker
-      Mercilessly follow a designated target. Needs testing.
+* Gameplay
+	
 
-* Add items
-   - Invisible hull
-      Stay invisible while you do not fire or drop any mine.
-   - Big head mode
-      Easier to shoot at, harder to slip between planets but kills on contact.
-   - Paintball mode
-      Spray other ships with your colors! Rating 2 and up.
-   - Mirror image
-      Copy of the ship that mirror the player, but turn in opposite directions.
-      Fires phony bullets, disappear when colliding something
-      (different explosion visual).
-   - Drunk mode
-      Convert to offensive bonus.
+** New weapons & items
 
-* Scale with number of players.
-   Should scale : bonus drop, map size, planet density?
+*** Machine gun
 
-* Add scores
-   Other statistics could be gathered: longest survival, kill chain,
-   mines used, etc.
+	 Rapid-fire weapon but takes longer to kill ships. Go against the
+	 one shot/one kill principle of the current gameplay. Could be used
+	 for other bonuses like slowdown shots. The player launch burst of
+	 tiny projectiles and the more the enemy get shot, the slower he
+	 gets.
 
-* Tighten ship collision box.
+*** Portable black hole
 
-= Interface =
+	 Gravity affects bullets and ships.
+	 Neat graphical effect required!
 
-* Add web interface for game creation.
-   - Sanitize input (unique game id, out of range values ...)
-   - Further style the list of params
+*** EMP/Shield
+	 
+	 Deflect bullets. Should cover a moving ship, to the detriment of
+	 its speed/manoeuvrability.
 
-= Graphics =
+*** TODO Tracker
 
-o [alpha-3] Current bonus visual clue.
-   Without polluting the UI. À la Mario Kart: floating around ship? Dragging behind the ship?
+	 Mercilessly follow a designated target.
 
-* Leave some ephemeral traces of fight on planets.
+*** Invisible hull
+
+	 Stay invisible while you do not fire or use any other bonus.
+
+*** Big head mode
+
+	 Easier to shoot at, harder to slip between planets but kills on
+	 contact.
+
+*** Paintball mode
+
+	 Spray other ships with your colors! Rating 2 and up.
+
+*** Mirror image 
+	 
+	 Copy of the ship that mirror the player, but turn in opposite
+	 directions.  Fires phony bullets, disappear when colliding
+	 something (different explosion visual).
+
+*** Drunk mode
+
+	 Convert to offensive bonus.
+
+
+** Other game modes
+*** Team deathmatch
+*** King of the hill
+    Highlight one area on the map, every second alive in the area
+    gives one point. Change area after some time.
+*** Courrier / Team courrier
+    Pick item at A, bring at B, score. Capture the flag but without
+    bases or carefully designed levels.
+*** The man with the golden ship
+    First player to grab the golden bonus is granted unique powers,
+    others have to shoot him down to grab the bonus and rack up the
+    kills.
+
+** Statistics
+
+*** Session statistics
+
+		- Kills
+		- Deaths
+		- Score = K - D, compel to avoid kamikazing.
+
+*** Persistent statistics (with account)
+
+		- Total playtime.
+		- Favorite bonuses.
+		- Score progression tracking.
+
+*** Achievements (everybody loves achievements!)
+
+		- National day : Explode X times.
+		- Rube Goldberg from outer space : Create a chain explosion of X mines.
+		- Anticipating the uprising : Kill X bots.
+		- Seasoned space explorer : Play for X hours.
+		- An apple a day : Kill every type of bot.
+		- Heavy drinker : Be drunk for X minutes.
+		- So Roswell : Crash on planets X times.
+		- Hope nobody saw that : Shot yourself.
+		- Rogue leader : Be at the top of the scoreboard X times.
+	 ...
+	 
+
+* Interface
+
+
+** Web interface for game creation.
+
+*** TODO Sanitize input		
+
+		- Unique game id.
+		- Out of range values.
+		  
+*** TODO More info in game list.
+
+		- Max players allowed
+
+*** TODO More options in game creation.
+
+		- Permitted bonuses.
+		- Password.
+
+
+** Communication between players.
+
+	 - Minimalist chat?
+
+** Let the player move the camera around the battlefield after he dies
+
+* Graphics
+
+
+** TODO Current bonus visual clue.
+
+	Bonus dragging behind the ship. The rope can be cut.
+
+** Leave some ephemeral traces of fight on planets.
+
+>>>>>>> next
    Ships and bullets splatters their colors. À la paintball.
 
-* Add debugging facilities.
-   Display messages dropped...
+* Core
 
-= Core =
+** Use an event model where needed.
+   Ships could emit 'fire', 'death', 'explosion' events, bonus
+   can register them and act safely upon it instead of relying on
+   polling the ship state.
 
-* Freeze games without players
+   Bonus too could benefit by emitting the 'effect wears off' event
+   catched by ships instead of managing the bonusTimeouts explicitly.
 
-* Expire finished and deserted games 
+   Node provides the EventEmitter prototype for this purpose.
 
-* Get rid of evil global variables.
+** DONE Factorize gravity from planet computations
+	 CLOSED: [2011-07-13 Wed 12:20]
+
+   Consider only surrounding planets, wrt the torus.
+
+** Expire deserted games 
+
+** Get rid of evil global variables.
+
    Use closures where relevant, pass arguments when convenient.
 
-* Tune collisions.
+** Tune collisions.
+
+   - Properly handle more than circle on circle collisions. Ideally,
+     we should compare hitboxes instead of simple hitradii.
    - Immobile objects need not to be reinserted in the grid (planets).
    - Don't check collisions between objects that can't collide gameplay-wise.
 
-* Refactor gravity code.
-   - Delegate to server
-   - Should only consider nearby planets, and take torus into account.
+** Prevent objects from spawning onto each other.
    
-o [alpha-3] Refactor client clode
+** Change planet count to a percentage value relative to map size.
+
+   Could specify between 30-70% planet fill. Avoid locks when trying
+   to fit 50 planets into a 500*500 map. 
+   
+** TODO Refactor client clode
+
    What a mess.
 
-o [alpha-3] Rework client drawing.
+** TODO Rework client drawing.
+
    Find out why Core2 with puny graphic chipset can handle the client fullscreen
    when beefier hardware can't.
 
-o [alpha-3] Share prefs file with client.
+** Send full game update to reconnecting / out of sync clients.
 
-* Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.
-
-* Move static attributes to prototypes.
-
-* Rework collision handling.

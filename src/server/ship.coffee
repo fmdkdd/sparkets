@@ -1,5 +1,5 @@
 utils = require '../utils'
-logger = require './logger'
+logger = require('../logger').static
 ChangingObject = require('./changingObject').ChangingObject
 Bullet = require('./bullet').Bullet
 
@@ -196,6 +196,12 @@ class Ship extends ChangingObject
 		x += offset.x
 		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
+
+	isDead: () ->
+		@state is 'dead'
+
+	isExploding: () ->
+		@state is 'exploding'
 
 	nextState: () ->
 		@state = @game.prefs.ship.states[@state].next
