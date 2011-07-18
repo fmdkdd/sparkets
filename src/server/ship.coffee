@@ -159,6 +159,16 @@ class Ship extends ChangingObject
 			@pos.x += @vel.x
 			@pos.y += @vel.y
 
+		ax = ay = 0
+		for id, e of @game.EMPs
+			if e.ship isnt @
+				d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
+				d2 = -200 * e.force / (d * Math.sqrt(d))
+				ax += (e.pos.x-x) * d2
+				ay += (e.pos.y-y) * d2
+		@pos.x += ax
+		@pos.y += ay
+
 		# Warp the ship around the map.
 		@warp()
 
