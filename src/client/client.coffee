@@ -135,13 +135,13 @@ class Client
 
 		# RequestAnimationFrame API
 		# http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-		requestAnimFrame = ( () ->
-			@requestAnimationFrame       ||
-			@webkitRequestAnimationFrame ||
-			@mozRequestAnimationFrame    ||
-			@oRequestAnimationFrame      ||
-			@msRequestAnimationFrame     ||
-			(callback, element) -> @setTimeout(callback, 1000 / 60) )()
+		requestAnimFrame = ( () =>
+			window.requestAnimationFrame       or
+			window.webkitRequestAnimationFrame or
+			window.mozRequestAnimationFrame    or
+			window.oRequestAnimationFrame      or
+			window.msRequestAnimationFrame     or
+			(callback, element) -> setTimeout(callback, 1000 / 60) )()
 
 		currentFPS = 0
 		frameCount = 0
