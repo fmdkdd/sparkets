@@ -417,6 +417,13 @@ class Client
 			when 'rope exploded'
 				@gameObjects[event.id].explodingEffect()
 
+			when 'tracker activated'
+				@gameObjects[event.id].trailEffect()
+				@gameObjects[event.id].boostEffect()
+
+			when 'tracker exploded'
+				@gameObjects[event.id].explodingEffect()
+
 	# When a player sent a chat message.
 	onPlayerMessage: (data)->
 		@chat.receiveMessage(data)

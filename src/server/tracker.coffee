@@ -40,9 +40,16 @@ class Tracker extends ChangingObject
 		@countdown = @game.prefs.tracker.states[@state].countdown
 
 	update: () ->
+		state_old = @state
+
 		if @countdown?
 			@countdown -= @game.prefs.timestep
 			@nextState() if @countdown <= 0
+
+		if state_old isnt @state and @state is 'tracking'
+			@game.events.push
+				type: 'tracker activated'
+				id: @id
 
 		# Stop tracking when the target dies.
 		if @target? and @target.state is 'dead'
@@ -86,6 +93,11 @@ class Tracker extends ChangingObject
 
 	explode: () ->
 		@state = 'dead'
+
+		@game.events.push
+			type: 'tracker exploded'
+			id: @id
+
 		@serverDelete = yes
 
 exports.Tracker = Tracker

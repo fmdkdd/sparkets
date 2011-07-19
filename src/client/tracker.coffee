@@ -3,16 +3,8 @@ class Tracker
 		@serverUpdate(tracker)
 
 	serverUpdate: (tracker) ->
-		state_old = @state
-
 		for field, val of tracker
 			this[field] = val
-
-		if state_old isnt @state and @state is 'tracking'
-			@client.effects.push new TrailEffect(@client, @, 2, 30, 3)
-			@client.effects.push new BoostEffect(@client, @, 3, 600)
-		if state_old isnt @state and @state is 'dead'
-			@explode()
 
 	update: () ->
 		@clientDelete = @serverDelete
@@ -70,8 +62,14 @@ class Tracker
 		@client.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, @hitRadius)
 
-	explode: () ->
+	explodingEffect: () ->
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 100, 5, 0.2)
+
+	trailEffect: () ->
+		@client.effects.push new TrailEffect(@client, @, 2, 30, 3)
+	
+	boostEffect: () ->
+			@client.effects.push new BoostEffect(@client, @, 3, 600)
 
 # Exports
 window.Tracker = Tracker
