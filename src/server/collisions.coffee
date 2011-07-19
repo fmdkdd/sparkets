@@ -145,6 +145,10 @@ exports.collisions =
 		bonus.explode()
 		ddebug "bonus ##{bonus.id} crashed on planet ##{planet.id}"
 
+	'bonus-moon': (bonus, moon) ->
+		bonus.explode()
+		ddebug "bonus ##{bonus.id} crashed on moon ##{moon.id}"
+
 	'tracker-planet' : (tracker, planet) ->
 		tracker.explode()
 		ddebug "tracker ##{tracker.id} crashed on planet ##{planet.id}"
