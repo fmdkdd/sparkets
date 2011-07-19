@@ -42,7 +42,10 @@ class Bullet extends ChangingObject
 		# Pull factor for each object.
 		force = ({object: obj}) =>
 			if obj.type is 'EMP'
-				@game.prefs.bullet.EMPPull * obj.force
+				if obj.ship is @owner
+					0
+				else
+					@game.prefs.bullet.EMPPull * obj.force
 			else
 				@game.prefs.bullet.gravityPull * obj.force
 
