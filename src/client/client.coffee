@@ -113,21 +113,20 @@ class Client
 		# Let the player move the camera around when his ship died.
 		$(document).mousedown () =>
 			if @localShip.state is 'dead'
-				@mouseDownInterval = setInterval( (() ->
-
+				recenter = () =>
 					# Move the camera towards the position of the mouse.
 					center = {x: @canvasSize.w/2, y: @canvasSize.h/2}
-					view.x += (mouse.x-center.x)/50
-					view.y += (mouse.y-center.y)/50
+					@view.x += (@mouse.x-center.x)/50
+					@view.y += (@mouse.y-center.y)/50
 
 					# Warp the camera.
 					{w, h} = @map
-					if view.x < 0 then view.x = w
-					if view.x > w then view.x = 0
-					if view.y < 0 then view.y = h
-					if view.y > h then view.y = 0),
+					if @view.x < 0 then @view.x = w
+					if @view.x > w then @view.x = 0
+					if @view.y < 0 then @view.y = h
+					if @view.y > h then @view.y = 0
 
-					5)
+				@mouseDownInterval = setInterval(recenter, 5)
 
 		$(document).mouseup () =>
 			clearInterval(@mouseDownInterval)
