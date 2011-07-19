@@ -3,13 +3,8 @@ class Bonus
 		@serverUpdate(bonus)
 
 	serverUpdate: (bonus) ->
-		state_old = @state
-
 		for field, val of bonus
 			@[field] = val
-
-		if @state is 'dead' and state_old isnt 'dead'
-			@explode()
 
 	update: () ->
 		@clientDelete = @serverDelete
@@ -141,11 +136,12 @@ class Bonus
 		ctxt.fillRect(-4, -10, 8, 20)
 		ctxt.restore()
 
+	# Launch explosion effect.
 	explode: () ->
-		# Launch explosion effect.
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 50, 8)
 
-		# Launch box opening effect.
+	# Launch box opening effect.
+	open: () ->
 		positions = [[0, -10], [10, 0], [0, 10], [-10, 0]]
 		edges = []
 		for i in [0..3]

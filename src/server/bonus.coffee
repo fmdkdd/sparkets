@@ -109,6 +109,10 @@ class Bonus extends ChangingObject
 
 	use: () ->
 		@effect.use()
+		
+		@game.events.push
+			type: 'bonus used'
+			id: @id
 
 	attach: (ship) ->
 		@holder = ship
@@ -126,6 +130,14 @@ class Bonus extends ChangingObject
 		if @rope?
 			@rope.detach()
 			@rope = null				
+
+	explode: () ->
+		@holder.releaseBonus() if @state is 'claimed'
+		@setState 'dead'
+
+		@game.events.push
+			type: 'bonus exploded'
+			id: @id
 
 	isEvil: () ->
 		@effect.evil?

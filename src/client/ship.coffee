@@ -17,10 +17,6 @@ class Ship
 		if @thrust isnt thrust_old
 			@engineAnimFor = @engineAnimDelay
 
-		# Launch an explosion animation if the ship just exploded.
-		if @state is 'exploding' and state_old is 'alive'
-			@explode()
-
 		# Start the boost animation if the ship just boosted.
 		if boost_old < @boost
 			@client.effects.push new BoostEffect(@client, @, 1, 3000)

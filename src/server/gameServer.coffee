@@ -24,6 +24,8 @@ class GameServer
 		@gameObjects = {}
 		@gameObjectCount = 0
 
+		@events = []
+
 		@prefs = new GamePreferences(gamePrefs)
 
 	launch: () ->
@@ -357,6 +359,8 @@ class GameServer
 		if not utils.isEmptyObject allChanges
 			@sockets.emit 'objects update',
 				objects: allChanges
+				events: @events
+		@events = []
 
 	collidesWithPlanet: (obj) ->
 		for id, planet of @planets

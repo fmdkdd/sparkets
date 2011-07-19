@@ -138,20 +138,15 @@ exports.collisions =
 			ddebug "mine ##{mine1.id} triggered mine ##{mine2.id}"
 
 	'bullet-bonus': (bullet, bonus) ->
-		bonus.holder.releaseBonus() if bonus.state is 'claimed'
-		bonus.setState 'dead'
-
+		bonus.explode()
 		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id}"
 
 	'bonus-planet': (bonus, planet) ->
-		if bonus.state is 'available'
-			bonus.setState 'dead'
-
+		bonus.explode()
 		ddebug "bonus ##{bonus.id} crashed on planet ##{planet.id}"
 
 	'tracker-planet' : (tracker, planet) ->
 		tracker.explode()
-
 		ddebug "tracker ##{tracker.id} crashed on planet ##{planet.id}"
 
 	'tracker-moon' : (tracker, moon) ->

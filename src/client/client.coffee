@@ -394,9 +394,25 @@ class Client
 			else
 				@gameObjects[id].serverUpdate(obj)
 
+		for e in data.events
+			@handleEvent(e)
+
+	handleEvent: (event) ->
+		switch event.type
+			when 'ship exploded'
+				@gameObjects[event.id].explode()
+				@chat.receiveEvent(event)
+
+			when 'bonus used'
+				@gameObjects[event.id].open()
+		
+			when 'bonus exploded'
+				@gameObjects[event.id].open()
+				@gameObjects[event.id].explode()
+
 	# When a player sent a chat message.
 	onPlayerMessage: (data)->
-		@chat.receive(data)
+		@chat.receiveMessage(data)
 
 	# When another player leaves.
 	onPlayerQuits: (data) ->

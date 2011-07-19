@@ -232,8 +232,13 @@ class Ship extends ChangingObject
 	explode : () ->
 		@releaseBonus() if @bonus?
 
-		@nextState()
 		@addStat('deaths', 1)
+
+		@game.events.push
+			type: 'ship exploded'
+			id: @id
+
+		@nextState()
 		@debug "explode"
 
 	addStat: (field, increment) ->
