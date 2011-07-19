@@ -54,14 +54,15 @@ class Bot extends Player
 		near = ({x, y}, dist) =>
 			utils.distance(x, y, @ship.pos.x, @ship.pos.y) < dist
 
-		alive = (ship) ->
-			ship.state is 'spawned' or ship.state is 'alive'
+		allowed = (ship) ->
+			(ship.state is 'spawned' or ship.state is 'alive') and
+				not ship.invisible
 
 		switch @state
 			# Find a target around.
 			when 'seek'
 				for id, p of @game.players
-					if id != @id and p.ship? and alive(p.ship)
+					if id != @id and p.ship? and allowed(p.ship)
 						ghost = closestGhost(p.ship)
 						if near(ghost, @prefs.acquireDistance)
 							@target = p.ship
@@ -84,7 +85,7 @@ class Bot extends Player
 			# Fire at target, but do not chase yet.
 			when 'acquire'
 				@targetGhost = closestGhost(@target)
-				if not alive(@target) or not near(@targetGhost, @prefs.acquireDistance)
+				if not allowed(@target) or not near(@targetGhost, @prefs.acquireDistance)
 					@state = 'seek'
 					return
 
@@ -98,7 +99,7 @@ class Bot extends Player
 			# Chase, fire, kill.
 			when 'chase'
 				@targetGhost = closestGhost(@target)
-				if not alive(@target) or not near(@targetGhost, @prefs.acquireDistance)
+				if not allowed(@target) or not near(@targetGhost, @prefs.acquireDistance)
 					@state = 'seek'
 					return
 
