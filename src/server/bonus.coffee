@@ -60,7 +60,7 @@ class Bonus extends ChangingObject
 			while i < bonus.weight
 				roulette.push(bonus.class)
 				++i;
-		return utils.randomArrayElem roulette
+		return Array.random(roulette)
 
 	tangible: () ->
 		@state isnt 'incoming' and @state isnt 'dead'

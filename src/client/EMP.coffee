@@ -15,7 +15,6 @@ class EMP
 
 	drawHitbox: (ctxt) ->
 
-
 	draw: (ctxt) ->
 		ctxt.lineWidth = 3
 		ctxt.strokeStyle = color @color

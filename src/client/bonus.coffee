@@ -24,7 +24,7 @@ class Bonus
 		window.strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
 	draw: (ctxt) ->
-		return if ['incoming','exploding','dead'].indexOf(@state) > -1
+		return if @state isnt 'available' and @state isnt 'claimed'
 
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)

@@ -15,7 +15,7 @@ class DislocateEffect
 	inView: (offset = {x:0, y:0}) ->
 		true
 
-	draw: (ctxt, offset = {x:0, y:0}) ->
+	draw: (ctxt) ->
 		ctxt.strokeStyle = color(@color, 1-(@client.now-@start)/@duration)
 		ctxt.lineWidth = 2
 		for e in @edges

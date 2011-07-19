@@ -17,7 +17,7 @@ class Tracker
 	update: () ->
 		@clientDelete = @serverDelete
 
-	draw: (ctxt, offset = {x: 0, y: 0}) ->
+	draw: (ctxt) ->
 		return if @state is 'dead'
 
 		ctxt.save()

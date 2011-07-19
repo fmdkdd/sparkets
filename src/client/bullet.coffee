@@ -27,7 +27,7 @@ class Bullet
 		Math.abs(x1 - x2) > 50 or
 			Math.abs(y1 - y2) > 50
 
-	segmentInView: (x1, y1, x2, y2, offset) ->
+	segmentInView: (x1, y1, x2, y2, offset = {x: 0, y: 0}) ->
 		@client.inView(x1 + offset.x, y1 + offset.y) or
 			@client.inView(x2  + offset.x, y2 + offset.y)
 

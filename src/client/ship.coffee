@@ -39,7 +39,7 @@ class Ship
 		ctxt.lineWidth = 1
 		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
-	draw: (ctxt, offset) ->
+	draw: (ctxt) ->
 		return if @state is 'exploding' or @state is 'dead'
 
 		# Blink when the ship just spawned.

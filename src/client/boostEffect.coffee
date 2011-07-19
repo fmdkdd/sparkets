@@ -38,7 +38,7 @@ class BoostEffect
 	inView: (offset = {x:0, y:0}) ->
 		true
 
-	draw: (ctxt, offset = {x:0, y:0}) ->
+	draw: (ctxt) ->
 		for s in @shadows
 			ctxt.save()
 			ctxt.translate(s.x, s.y)
