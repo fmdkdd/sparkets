@@ -89,4 +89,8 @@ class Rope extends ChangingObject
 
 		@serverDelete = yes
 
+		@game.events.push
+			type: 'rope exploded'
+			id: @id
+
 exports.Rope = Rope

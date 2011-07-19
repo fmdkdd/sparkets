@@ -7,6 +7,10 @@ class BonusBoost
 		@bonus.holder.boost = @game.prefs.bonus.boost.boostFactor
 		@bonus.holder.boostDecay = 0
 
+		@game.events.push
+			type: 'ship boosted'
+			id: @bonus.holder.id
+
 		@used = yes
 
 		# Cancel the previous pending boost decay.

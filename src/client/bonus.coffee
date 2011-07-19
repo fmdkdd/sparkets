@@ -136,12 +136,10 @@ class Bonus
 		ctxt.fillRect(-4, -10, 8, 20)
 		ctxt.restore()
 
-	# Launch explosion effect.
-	explode: () ->
+	explosionEffect: () ->
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 50, 8)
 
-	# Launch box opening effect.
-	open: () ->
+	openingEffect: () ->
 		positions = [[0, -10], [10, 0], [0, 10], [-10, 0]]
 		edges = []
 		for i in [0..3]

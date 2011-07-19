@@ -7,8 +7,6 @@ class Ship
 
 	serverUpdate: (ship) ->
 		thrust_old = @thrust
-		boost_old = @boost
-		state_old = @state
 
 		for field, val of ship
 			@[field] = val
@@ -16,10 +14,6 @@ class Ship
 		# Start the engine fade-in/out in the ship just started/stopped thrusting.
 		if @thrust isnt thrust_old
 			@engineAnimFor = @engineAnimDelay
-
-		# Start the boost animation if the ship just boosted.
-		if boost_old < @boost
-			@client.effects.push new BoostEffect(@client, @, 1, 3000)
 
 	update: () ->
 		# Update the engine animation countdown.
@@ -111,24 +105,6 @@ class Ship
 		ctxt.closePath()
 		ctxt.stroke()
 
-	explode: () ->
-		# Initial particle speed is derived from ship speed at death
-		# and killing bullet speed.
-		[vx, vy] = [@vel.x, @vel.y]
-		nvel = Math.sqrt(vx*vx + vy*vy)
-
-		if @killingAccel?
-			[ax, ay] = [@killingAccel.x, @killingAccel.y]
-			nacc = Math.sqrt(ax*ax + ay*ay)
-			speed = Math.max nvel, .5*nacc
-		else
-			speed = nvel
-
-		# Ensure decent fireworks.
-		speed = Math.max(speed, 3)
-
-		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
-
 	drawOnRadar: (ctxt) ->
 		bestPos = @client.closestGhost(@client.localShip.pos, @pos)
 		dx = bestPos.x - @client.localShip.pos.x
@@ -157,6 +133,27 @@ class Ship
 			ctxt.fill()
 
 		return true
+
+	boostEffect: () ->
+		@client.effects.push new BoostEffect(@client, @, 1, 3000)
+
+	explosionEffect: () ->
+		# Initial particle speed is derived from ship speed at death
+		# and killing bullet speed.
+		[vx, vy] = [@vel.x, @vel.y]
+		nvel = Math.sqrt(vx*vx + vy*vy)
+
+		if @killingAccel?
+			[ax, ay] = [@killingAccel.x, @killingAccel.y]
+			nacc = Math.sqrt(ax*ax + ay*ay)
+			speed = Math.max nvel, .5*nacc
+		else
+			speed = nvel
+
+		# Ensure decent fireworks.
+		speed = Math.max(speed, 3)
+
+		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
 
 # Exports
 window.Ship = Ship

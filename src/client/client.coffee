@@ -394,21 +394,28 @@ class Client
 			else
 				@gameObjects[id].serverUpdate(obj)
 
-		for e in data.events
-			@handleEvent(e)
+		if data.events?
+			for e in data.events
+				@handleEvent(e)
 
 	handleEvent: (event) ->
 		switch event.type
 			when 'ship exploded'
-				@gameObjects[event.id].explode()
+				@gameObjects[event.id].explosionEffect()
 				@chat.receiveEvent(event)
 
+			when 'ship boosted'
+				@gameObjects[event.id].boostEffect()
+
 			when 'bonus used'
-				@gameObjects[event.id].open()
+				@gameObjects[event.id].openingEffect()
 		
 			when 'bonus exploded'
-				@gameObjects[event.id].open()
-				@gameObjects[event.id].explode()
+				@gameObjects[event.id].openingEffect()
+				@gameObjects[event.id].explosionEffect()
+
+			when 'rope exploded'
+				@gameObjects[event.id].explodingEffect()
 
 	# When a player sent a chat message.
 	onPlayerMessage: (data)->

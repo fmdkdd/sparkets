@@ -9,8 +9,6 @@ class Rope
 	update: () ->
 		@clientDelete = @serverDelete
 
-		@explode() if @clientDelete
-
 	draw: (ctxt) ->
 		# Draw a bezier curve passing through a set of points.
 		# Partly borrowed from : http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
@@ -82,10 +80,8 @@ class Rope
 	inView: (offset = {x:0, y:0}) ->
 		true
 
-	explode: () ->
+	explodingEffect: () ->
 		return if @chain.length is 0
-
-		# Launch disintegration effect.
 
 		# Compute the "center" of the rope.
 		center = {x: 0, y: 0}
@@ -111,6 +107,7 @@ class Rope
 				vy: (pos.y - center.y) * 0.05
 				vr: (Math.random()*2-1) * 0.05
 				size: window.distance(@chain[i].x, @chain[i].y, @chain[i+1].x, @chain[i+1].y)
+
 		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)
 
 # Exports
