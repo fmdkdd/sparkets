@@ -54,8 +54,9 @@ class Mine extends ChangingObject
 
 			# The mine is active.
 			when 'active'
-				++@hitRadius
-				@hitRadius = 0 if @hitRadius is @game.prefs.mine.maxDetectionRadius
+				@hitRadius += @game.prefs.mine.waveSpeed
+				if @hitRadius >= @game.prefs.mine.maxDetectionRadius
+					@hitRadius = @game.prefs.mine.minDetectionRadius
 
 			# The mine is exploding.
 			when 'exploding'

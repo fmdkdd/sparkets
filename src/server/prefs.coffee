@@ -276,8 +276,13 @@ class GamePreferences
 				next: null
 
 	mine:
+
 		# Sensibility radius.
+		minDetectionRadius: 30
 		maxDetectionRadius: 50
+
+		# Speed of wave.
+		waveSpeed: 0.5
 
 		# Detonation radius.
 		explosionRadius: 80
@@ -340,7 +345,7 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 0
+				weight: 1000
 			tracker:
 				class: BonusTracker
 				weight: 0
