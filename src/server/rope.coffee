@@ -14,12 +14,7 @@ class Rope extends ChangingObject
 		@type = 'rope'
 		@hitRadius = 0
 
-		if @object1.color?
-			@color = @object1.color
-		else if @object2.color?
-			@color = @object2.color
-		else
-			@color = 'black'
+		@color = @object1.color or @object2.color or 'black'
 
 		@chain = []
 		@nodes = []
