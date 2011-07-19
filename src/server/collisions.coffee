@@ -33,13 +33,11 @@ exports.collisions =
 
 	'ship-mine': (ship, mine) ->
 		ship.explode()
-		mine.nextState() if mine.state is 'active'
-
+		mine.explode() if mine.state is 'active'
 		ddebug "mine ##{mine.id} killed ship ##{ship.id}"
 
 	'ship-moon': (ship, moon) ->
 		ship.explode()
-
 		ddebug "ship ##{ship.id} crashed on moon ##{moon.id}"
 
 	'ship-planet': (ship, planet) ->
@@ -100,9 +98,8 @@ exports.collisions =
 
 	'EMP-mine': (EMP, mine) ->
 		# EMPs absorb one mine.
-		mine.nextState() if mine.state is 'active'
+		mine.explode() if mine.state is 'active'
 		EMP.cancel()
-
 		ddebug "EMP ##{EMP.id} hit mine ##{mine.id}"
 
 	# EMPs do not save ships from moons or planets ...
@@ -123,18 +120,21 @@ exports.collisions =
 		ddebug "EMP ##{EMP.id} hit tracker ##{tracker.id}"
 
 	'mine-bullet': (mine, bullet) ->
-		mine.nextState() if mine.state is 'active'
-
+		mine.explode() if mine.state is 'active'
 		ddebug "bullet ##{bullet.id} hit mine ##{mine.id}"
+
+	'mine-moon': (mine, moon) ->
+		mine.explode() if mine.state is 'active'
+		ddebug "bullet ##{mine.id} hit moon ##{moon.id}"
 
 	'mine-mine': (mine1, mine2) ->
 		# Only exploding mines trigger other mines.
 		if mine2.state is 'exploding' and mine1.state is 'active'
-			mine1.nextState()
+			mine1.explode()
 			ddebug "mine ##{mine2.id} triggered mine ##{mine1.id}"
 
 		if mine1.state is 'exploding' and mine2.state is 'active'
-			mine2.nextState()
+			mine2.explode()
 			ddebug "mine ##{mine1.id} triggered mine ##{mine2.id}"
 
 	'bullet-bonus': (bullet, bonus) ->
@@ -173,6 +173,5 @@ exports.collisions =
 	'tracker-mine' : (tracker, mine) ->
 		tracker.explode()
 		mine.explode()
-
 		ddebug "mine ##{mine.id} destroyed tracker ##{tracker.id}"
 

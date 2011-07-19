@@ -36,18 +36,23 @@ class Mine extends ChangingObject
 		@state = @game.prefs.mine.states[@state].next
 		@countdown = @game.prefs.mine.states[@state].countdown
 
+	setState: (state) ->
+		if @game.prefs.mine.states[state]?
+			@state = state
+			@countdown = @game.prefs.mine.states[state].countdown
+
 	move: () ->
 		true
 
 	update: () ->
-		@countdown -= @game.prefs.timestep if @countdown?
+		if @countdown?
+			@countdown -= @game.prefs.timestep
+			@nextState() if @countdown <= 0
 
 		# The mine is not yet activated.
 		switch @state
-			when 'inactive'
-				@nextState() if @countdown <= 0
 
-			# The mine is ready.
+			# The mine is active.
 			when 'active'
 				++@hitRadius
 				@hitRadius = 0 if @hitRadius is @game.prefs.mine.maxDetectionRadius
@@ -55,10 +60,12 @@ class Mine extends ChangingObject
 			# The mine is exploding.
 			when 'exploding'
 				@hitRadius = @explosionRadius
-				@nextState() if @countdown <= 0
 
 			# The explosion is over.
 			when 'dead'
 				@serverDelete = yes
+
+	explode: () ->
+		@setState 'exploding'
 
 exports.Mine = Mine
