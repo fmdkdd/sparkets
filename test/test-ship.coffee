@@ -10,6 +10,9 @@ class MockGame
 	constructor: () ->
 		@bullets = {}
 
+		@events =
+			push: () ->
+
 		@prefs =
 			mapSize:
 				w: 2000
@@ -17,6 +20,9 @@ class MockGame
 
 			ship:
 				states:
+					'spawned':
+						next: 'alive'
+						countdown: 1500
 					'alive':
 						next: 'exploding'
 						countdown: null
@@ -40,6 +46,9 @@ class MockGame
 
 			bullet:
 				hitRadius: 2
+
+			EMP:
+				shipPush: -200
 
 	newGameObject: (fun) ->
 		fun(0)
@@ -87,6 +96,7 @@ exports.suite.addBatch
 
 			ship.on 'fired', waiter(@callback)
 			ship.spawn()
+			ship.nextState()
 			ship.fire()
 			return
 
