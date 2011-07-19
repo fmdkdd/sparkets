@@ -9,7 +9,7 @@ class Bonus
 	update: () ->
 		@clientDelete = @serverDelete
 
-	inView: (offset = {x:0, y:0}) ->	
+	inView: (offset = {x:0, y:0}) ->
 		@state isnt 'incoming' and
 			@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
 

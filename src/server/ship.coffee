@@ -22,6 +22,7 @@ class Ship extends ChangingObject
 		@watchChanges 'cannonHeat'
 		@watchChanges 'killingAccel'
 		@watchChanges 'boost'
+		@watchChanges 'invisible'
 
 		@type = 'ship'
 		@name = name or null
@@ -50,12 +51,15 @@ class Ship extends ChangingObject
 		@thrust = false
 		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = 0
+		@killingAccel = {x: 0, y: 0}
+
+		# Drop bonus and cancel all effects.
 		@bonus = null
 		@bonusTimeout = {}
 		@boost = 1
 		@boostDecay = 0
 		@inverseTurn = no
-		@killingAccel = {x: 0, y: 0}
+		@invisible = no
 
 		@spawn() if @game.collidesWithPlanet(@)
 

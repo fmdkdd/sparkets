@@ -4,6 +4,7 @@ BonusDrunk = require './bonusDrunk'
 BonusEMP = require './bonusEMP'
 BonusMine = require './bonusMine'
 BonusTracker = require './bonusTracker'
+BonusStealth = require './bonusStealth'
 
 class ServerPreferences
 	constructor: (prefs = {}) ->
@@ -334,18 +335,21 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 100
+				weight: 0
 			tracker:
 				class: BonusTracker
-				weight: 10
+				weight: 0
 			boost:
 				class: BonusBoost
-				weight: 1
+				weight: 0
 			EMP:
 				class: BonusEMP
-				weight: 1
+				weight: 0
 			drunk:
 				class: BonusDrunk
+				weight: 0
+			stealth:
+				class: BonusStealth
 				weight: 1
 
 		# Radius of hit circle.
@@ -371,6 +375,10 @@ class GamePreferences
 		drunk:
 			# Duration of drunk effect in ms.
 			duration: 3000
+
+		stealth:
+			# Duration of invisiblity in ms.
+			duration: 5000
 
 exports.ServerPreferences = ServerPreferences
 exports.GamePreferences = GamePreferences

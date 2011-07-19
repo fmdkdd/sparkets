@@ -35,18 +35,27 @@ class Ship
 		# Blink when the ship just spawned.
 		return if @state is 'spawned' and @client.now % 200 < 100
 
-		# Draw the basic model.
-		ctxt.save()
-		ctxt.translate(@pos.x, @pos.y)
-		ctxt.rotate(@dir)
-		@drawModel(ctxt, color(@color))
-		ctxt.restore()
+		if @invisible and @ isnt @client.localShip
+			# Maybe draw a stealthy effect instead of the ship.
+			return
+		else
+			# Draw the basic model.
+			ctxt.save()
+			ctxt.translate(@pos.x, @pos.y)
+			ctxt.rotate(@dir)
+			if @invisible
+				@drawModel(ctxt, color(@color, 0.5))
+			else
+				@drawModel(ctxt, color(@color))
+			ctxt.restore()
 
 		# Color the hull depending on the cannon heat.
 		if @cannonHeat > 0
 			fillAlpha = @cannonHeat/@client.cannonCooldown
 		else if @firePower > 0
 			fillAlpha = (@firePower-@client.minPower)/(@client.maxPower-@client.minPower)
+
+		fillAlpha /= 2 if @invisible
 
 		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
 		ctxt.save()
@@ -67,6 +76,8 @@ class Ship
 				alpha = 1-@engineAnimFor/@engineAnimDelay
 			else if @engineAnimFor?
 				alpha = @engineAnimFor/@engineAnimDelay
+
+			alpha /= 2 if @invisible
 
 			ctxt.strokeStyle = color(@color, alpha)
 			points = [[-8,-5], [-18,0], [-8,5]]
@@ -106,6 +117,8 @@ class Ship
 		ctxt.stroke()
 
 	drawOnRadar: (ctxt) ->
+		return if @invisible
+
 		bestPos = @client.closestGhost(@client.localShip.pos, @pos)
 		dx = bestPos.x - @client.localShip.pos.x
 		dy = bestPos.y - @client.localShip.pos.y

@@ -1,6 +1,9 @@
 class ExplosionEffect
-	constructor: (@client, @pos, @color, @density = 100, @bitSize = 10, @speed = 1) ->
+	constructor: (@client, @pos, color, @density = 100, @bitSize = 10, @speed = 1) ->
 		@init()
+
+		# Copy color array since we will modify it.
+		@color = color.slice(0)
 
 	init: () ->
 		@bits = []
