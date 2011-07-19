@@ -58,6 +58,8 @@ class Bot extends Player
 			(ship.state is 'spawned' or ship.state is 'alive') and
 				not ship.invisible
 
+		fireSight = if @ship.invisible then @prefs.fireSightStealthed else @prefs.fireSight
+
 		switch @state
 			# Find a target around.
 			when 'seek'
@@ -90,7 +92,7 @@ class Bot extends Player
 					return
 
 				@face(@targetGhost)
-				@fire() if @inSight(@targetGhost, @prefs.fireSight)
+				@fire() if @inSight(@targetGhost, fireSight)
 
 				# Near enough, go after it!
 				if near(@targetGhost, @prefs.chaseDistance)
@@ -104,7 +106,7 @@ class Bot extends Player
 					return
 
 				@negativeGravityMove(@targetGhost)
-				@fire() if @inSight(@targetGhost, @prefs.fireSight)
+				@fire() if @inSight(@targetGhost, fireSight)
 
 		@ship.useBonus() if @ship.bonus? and @shouldUseBonus()
 

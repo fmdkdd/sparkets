@@ -121,6 +121,9 @@ class GamePreferences
 			# Angle with target at which to fire (radians).
 			fireSight: [.2, Math.PI/4]
 
+			# Angle with target at which to fire when stealthed (radians).
+			fireSightStealthed: [Math.PI/16, Math.PI/8]
+
 			# Negative gravity from planets when seeking.
 			seekPlanetAvoid: [-500, -50]
 
@@ -146,11 +149,13 @@ class GamePreferences
 			# Defaults to zero when no correspondin parameter is present.
 			# Probability is checked at every update.
 			acquireEMPUse: [.005, .05]
+			acquireStealthUse: [.005, .05]
 
 			chaseMineUse: [.001, .01]
 			chaseEMPUse: [.001, .01]
 			chaseBoostUse: [.01, 1]
 			chaseTrackerUse: [.001, .01]
+			chaseStealthUse: [.01, 1]
 
 		# Non aggressive, used for tests.
 		cameoPersona:
