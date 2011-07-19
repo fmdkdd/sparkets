@@ -97,16 +97,11 @@ class Bonus extends ChangingObject
 		@pos.y = if @pos.y > h then 0 else @pos.y
 
 	update: () ->
-		@countdown -= @game.prefs.timestep if @countdown?
+		if @countdown?
+			@countdown -= @game.prefs.timestep
+			@nextState() if @countdown <= 0
 
 		switch @state
-			# The bonus arrival is imminent.
-			when 'incoming'
-				@nextState() if @countdown <= 0
-
-			# The bonus is exploding.
-			when 'exploding'
-				@nextState() if @countdown <= 0
 
 			# The bonus is of no more use.
 			when 'dead'

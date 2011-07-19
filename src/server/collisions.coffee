@@ -139,13 +139,13 @@ exports.collisions =
 
 	'bullet-bonus': (bullet, bonus) ->
 		bonus.holder.releaseBonus() if bonus.state is 'claimed'
-		bonus.setState 'exploding'
+		bonus.setState 'dead'
 
 		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id}"
 
 	'bonus-planet': (bonus, planet) ->
 		if bonus.state is 'available'
-			bonus.setState 'exploding'
+			bonus.setState 'dead'
 
 		ddebug "bonus ##{bonus.id} crashed on planet ##{planet.id}"
 

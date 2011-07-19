@@ -314,9 +314,6 @@ class GamePreferences
 			'claimed':
 				countdown: null
 				next: null
-			'exploding':
-				countdown: 1000
-				next: 'dead'
 			'dead':
 				countdown: null
 				next: null

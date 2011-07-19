@@ -8,7 +8,7 @@ class Bonus
 		for field, val of bonus
 			@[field] = val
 
-		if @state is 'exploding' and state_old isnt 'exploding'
+		if @state is 'dead' and state_old isnt 'dead'
 			@explode()
 
 	update: () ->
