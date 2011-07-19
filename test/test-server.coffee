@@ -84,10 +84,11 @@ exports.suite.addBatch
 				http.get
 					host: 'localhost'
 					port: port
-					path: '/', @callback
+					path: '/', (res) => @callback(null, res)
 				return
 
-			'respond OK': (res, err) ->
+			'respond OK': (err, res) ->
+				assert.isNull(err)
 				assert.equal(res.statusCode, 200)
 
 		'should start REPL':
@@ -95,10 +96,11 @@ exports.suite.addBatch
 				http.get
 					host: 'localhost'
 					port: replPort
-					path: '/', @callback
+					path: '/', (res) => @callback(null, res)
 				return
 
-			'respond with OK': (res, err) ->
+			'respond with OK': (err, res) ->
+				assert.isNull(err)
 				assert.equal(res.statusCode, 200)
 
 		# Test game id validation.
@@ -149,14 +151,17 @@ exports.suite.addBatch
 					ws.event 'create game',
 						id: 'bar'
 
-					ws.on 'message', (packet) =>
-						@callback(packet) if packet.type is 'event'
+					ok = waiter(@callback)
+					ws.on 'message', (packet) ->
+						ok(packet) if packet.type is 'event'
 				return
 
-			'should return the game list': (packet, err) ->
-				assert.equal(packet.name, 'game list')
+			'should return the game list': (err, packet) ->
+				assert.isNull(err)
+				assert.strictEqual(packet.name, 'game list')
 
-			'should create requested game': (packet, err) ->
+			'should create requested game': (err, packet) ->
+				assert.isNull(err)
 				assert.include(packet.args[0], 'bar')
 
 		teardown: () ->
@@ -174,12 +179,14 @@ exports.suite.addBatch
 				openSocket port, (ws) =>
 					ws.event 'get game list'
 
-					ws.on 'message', (packet) =>
-						@callback(packet) if packet.type is 'event'
+					ok = waiter(@callback)
+					ws.on 'message', (packet) ->
+						ok(packet) if packet.type is 'event'
 				return
 
-			'should return the game list': (packet, err) ->
-				assert.equal(packet.name, 'game list')
+			'should return the game list': (err, packet) ->
+				assert.isNull(err)
+				assert.strictEqual(packet.name, 'game list')
 
 		teardown: () ->
 			@server.stop()
@@ -198,18 +205,20 @@ exports.suite.addBatch
 						id: 'bar'
 						prefs: {duration: 0}
 
+					ok = waiter(@callback)
 					msg = 0
-					setTimeout(@callback, 100)
 					ws.on 'message', (packet) =>
 						if packet.type is 'event' and packet.name is 'game list'
 							++msg
-							@callback(packet) if msg is 2
+							ok(packet) if msg is 2
 				return
 
-			'should send the game list twice': (packet, err) ->
+			'should send the game list twice': (err, packet) ->
+				assert.isNull(err)
 				assert.isTrue(packet?)
 
-			'should expire': (packet, err) ->
+			'should expire': (err, packet) ->
+				assert.isNull(err)
 				assert.isTrue(packet?)
 				assert.isEmpty(packet.args[0])
 

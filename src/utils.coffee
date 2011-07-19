@@ -110,3 +110,12 @@ exports.gravityField = (pos, objects, source, force) ->
 		vy += pull.y
 
 	return {x: vx, y: vy}
+
+# Mixins utils from:
+# https://github.com/jashkenas/coffee-script/wiki/FAQ
+exports.extend = (obj, mixin) ->
+  for name, method of mixin
+    obj[name] = method
+
+exports.include = (klass, mixin) ->
+  exports.extend(klass.prototype, mixin)

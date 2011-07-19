@@ -59,6 +59,8 @@ class Ship extends ChangingObject
 
 		@spawn() if @game.collidesWithPlanet(@)
 
+		@emit('spawned', @)
+
 		@debug "spawned"
 
 	turnLeft: () ->
@@ -182,6 +184,8 @@ class Ship extends ChangingObject
 			@changed 'pos'
 			@changed 'vel'
 
+		@emit('moved', @)
+
 	warp: () ->
 		{w, h} = @game.prefs.mapSize
 		@pos.x = if @pos.x < 0 then w else @pos.x
@@ -222,12 +226,14 @@ class Ship extends ChangingObject
 	fire : () ->
 		return if @state isnt 'alive' or @cannonHeat > 0
 
-		@game.newGameObject (id) =>
+		bullet = @game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"
 			return @game.bullets[id] = new Bullet(@, id, @game)
 
 		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = @game.prefs.ship.cannonCooldown
+
+		@emit('fired', @, bullet)
 
 	explode : () ->
 		@releaseBonus() if @bonus?
@@ -239,7 +245,10 @@ class Ship extends ChangingObject
 			id: @id
 
 		@nextState()
-		@debug "explode"
+
+		@debug "exploded"
+
+		@emit('exploded', @)
 
 	addStat: (field, increment) ->
 		@stats[field] += increment
@@ -254,5 +263,9 @@ class Ship extends ChangingObject
 	info: (msg) -> @log('info', msg)
 	debug: (msg) -> @log('debug', msg)
 	ddebug: (msg) -> @log('ship', msg)
+
+
+EventEmitter = require('events').EventEmitter
+utils.include(Ship, EventEmitter.prototype)
 
 exports.Ship = Ship
