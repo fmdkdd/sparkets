@@ -31,7 +31,6 @@ class Client
 		@displayNames = no
 
 		# Game logic
-		@planetColor = [209,29,61]
 		@maxBulletLength = 15
 
 		# Debugging

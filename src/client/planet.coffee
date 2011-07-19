@@ -9,7 +9,7 @@ class Planet
 		@sprite.width = @sprite.height = Math.ceil(2*@force)
 
 		c = @sprite.getContext('2d')
-		c.strokeStyle = color @client.planetColor
+		c.strokeStyle = color @color
 		c.fillStyle = 'white'
 		c.lineWidth = 8
 		c.beginPath()

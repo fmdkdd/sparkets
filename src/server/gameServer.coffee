@@ -448,10 +448,10 @@ class GameServer
 					collides(x, y, totForce, p)
 
 			# Not colliding, can add it
-			rock = new Planet(x, y, force)
+			rock = new Planet(@, x, y, force)
 			planets.push rock
 			if satellite
-				planets.push new Moon(rock, satForce, satGap, @)
+				planets.push new Moon(@, rock, satForce, satGap)
 
 		@debug "#{@prefs.planet.count} planets created"
 

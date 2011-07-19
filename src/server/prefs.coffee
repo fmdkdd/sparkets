@@ -206,6 +206,11 @@ class GamePreferences
 			chaseBulletAvoid: -200
 
 	planet:
+
+		# Colors.
+		color: [209, 29, 61]
+		moonColor: [190, 70, 80]
+
 		# Number of planets on the map. Satellites don't count here.
 		count: 30
 
