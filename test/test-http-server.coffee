@@ -22,13 +22,15 @@ exports.suite.addBatch
 				http.get
 					host: 'localhost'
 					port: port
-					path: '/', @callback
+					path: '/', (res) => @callback(null, res)
 				return
 
-			'should respond OK (200)': (res, err) ->
+			'should respond OK (200)': (err, res) ->
+				assert.isNull(err)
 				assert.equal(res.statusCode, 200)
 
-			'should serve HTML': (res, err) ->
+			'should serve HTML': (err, res) ->
+				assert.isNull(err)
 				assert.equal(res.headers['content-type'], 'text/html')
 
 		'GET /img/colorWheel.png':
@@ -36,13 +38,15 @@ exports.suite.addBatch
 				http.get
 					host: 'localhost'
 					port: port
-					path: '/img/colorWheel.png', @callback
+					path: '/img/colorWheel.png', (res) => @callback(null, res)
 				return
 
-			'should respond OK (200)': (res, err) ->
+			'should respond OK (200)': (err, res) ->
+				assert.isNull(err)
 				assert.equal(res.statusCode, 200)
 
-			'should serve PNG': (res, err) ->
+			'should serve PNG': (err, res) ->
+				assert.isNull(err)
 				assert.equal(res.headers['content-type'], 'image/png')
 
 		'GET /zorglub':
@@ -50,10 +54,11 @@ exports.suite.addBatch
 				http.get
 					host: 'localhost'
 					port: port
-					path: '/zorglub', @callback
+					path: '/zorglub', (res) => @callback(null, res)
 				return
 
-			'should respond Not Found (404)': (res, err) ->
+			'should respond Not Found (404)': (err, res) ->
+				assert.isNull(err)
 				assert.equal(res.statusCode, 404)
 
 		teardown: () ->
