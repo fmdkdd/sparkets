@@ -5,7 +5,7 @@ class Client
 		@socket = null
 
 		# Graphics
-		@ctxt = document.getElementById('canvas').getContext('2d')		
+		@ctxt = document.getElementById('canvas').getContext('2d')
 		@canvasSize = {w: 0, h: 0}
 		@map = null
 		@view = {x: 0, y: 0}
@@ -48,22 +48,22 @@ class Client
 		@socket = @socket.socket.of(window.location.hash.substring(1))
 
 		# Bind socket events.
-		@socket.on 'connect', () => 
+		@socket.on 'connect', () =>
 			@onConnect()
 
-			@socket.on 'connected', (data) => 
+			@socket.on 'connected', (data) =>
 				@onConnected(data)
 
-			@socket.on 'objects update', (data) => 
+			@socket.on 'objects update', (data) =>
 				@onObjectsUpdate(data)
 
-			@socket.on 'ship created', (data) => 
+			@socket.on 'ship created', (data) =>
 				@onShipCreated(data)
 
-			@socket.on 'player says', (data) => 
+			@socket.on 'player says', (data) =>
 				@onPlayerMessage(data)
 
-			@socket.on 'player quits', (data) => 
+			@socket.on 'player quits', (data) =>
 				@onPlayerQuits(data)
 
 			@socket.on 'game end', (data) =>
@@ -410,7 +410,7 @@ class Client
 
 			when 'bonus used'
 				@gameObjects[event.id].openingEffect()
-		
+
 			when 'bonus exploded'
 				@gameObjects[event.id].openingEffect()
 				@gameObjects[event.id].explosionEffect()
