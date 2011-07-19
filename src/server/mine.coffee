@@ -68,4 +68,8 @@ class Mine extends ChangingObject
 	explode: () ->
 		@setState 'exploding'
 
+		@game.events.push
+			type: 'mine exploded'
+			id: @id
+
 exports.Mine = Mine

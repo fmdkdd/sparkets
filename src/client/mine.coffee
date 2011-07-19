@@ -12,8 +12,6 @@ class Mine
 	draw: (ctxt) ->
 		if @state is 'inactive' or @state is 'active'
 			@drawMine(ctxt)
-		else if @state is 'exploding'
-			@drawExplosion(ctxt)
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x,
@@ -52,21 +50,8 @@ class Mine
 		ctxt.rotate(Math.PI/4)
 		ctxt.fillRect(-r, -r, r*2, r*2)
 
-	drawExplosion: (ctxt) ->
-		x = @pos.x
-		y = @pos.y
-		r = 80
-		a = @countdown/500
-
-		if @client.showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, r)
-
-		ctxt.fillStyle = color(@color, a)
-		ctxt.beginPath()
-		ctxt.arc(x, y, r, 0, 2*Math.PI, false)
-		ctxt.fill()
+	explodingEffect: () ->
+		@client.effects.push new FlashEffect(@client, @pos, 80, @color, 500)
 
 # Exports
 window.Mine = Mine

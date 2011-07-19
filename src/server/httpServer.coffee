@@ -21,6 +21,7 @@ webFiles = {
 	'/js/client/client.js',
 	'/js/client/EMP.js',
 	'/js/client/explosionEffect.js',
+	'/js/client/flashEffect.js',
 	'/js/client/index.js',
 	'/js/client/menu.js',
 	'/js/client/mine.js',

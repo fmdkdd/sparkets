@@ -407,6 +407,9 @@ class Client
 			when 'ship boosted'
 				@gameObjects[event.id].boostEffect()
 
+			when 'mine exploded'
+				@gameObjects[event.id].explodingEffect()
+
 			when 'bonus used'
 				@gameObjects[event.id].openingEffect()
 		
