@@ -1,19 +1,5 @@
 exports ?= window
 
-# Console output shortcuts.
-
-exports.log = (msg) ->
-	console.log msg
-
-exports.info = (msg) ->
-	console.info msg
-
-exports.warn = (msg) ->
-	console.warn msg
-
-exports.log = (msg) ->
-	console.error msg
-
 # Array extension
 
 Array.max = (array) ->
@@ -21,6 +7,9 @@ Array.max = (array) ->
 
 Array.min = (array) ->
 	Math.min.apply(Math, array)
+
+Array.random = (array) ->
+	return array[Math.floor(Math.random() * array.length)]
 
 # Euclidean distance between two points.
 exports.distance = (x1, y1, x2, y2) ->
@@ -45,11 +34,22 @@ exports.isEmptyObject = (obj) ->
 
 # Stupid % operator.
 exports.mod = (x, n) ->
-	if x >= 0 then x%n else exports.mod(x+n, n)
+	if isNaN(x)
+		x
+	else if x >= 0
+		x%n
+	else exports.mod(x+n, n)
 
-# Random element in array.
-exports.randomArrayElem = (array) ->
-	array[Math.round(Math.random() * (array.length-1))]
+# Normalize angle between -Pi and +Pi.
+exports.relativeAngle = (a) ->
+	a = exports.mod(a, 2*Math.PI)
+
+	if a > Math.PI
+		a - 2*Math.PI
+	else if a < -Math.PI
+		a + 2*Math.PI
+	else
+		a
 
 exports.randomObjectElem = (obj) ->
 	obj[ exports.randomArrayElem(Object.keys(obj)) ]
@@ -67,3 +67,55 @@ exports.color = (hsl, alpha = 1.0) ->
 
 exports.randomColor = () ->
 	[Math.round(Math.random()*360), Math.round(40 + Math.random()*30), Math.round(20 + Math.random()*50)]
+
+# Uppercase first letter of word.
+exports.capitalize = (word) ->
+	word[0].toUpperCase() + word.substring(1)
+
+# Merge `obj' properties with `target' existing properties.
+# No new property is created in `target'.
+exports.safeDeepMerge = (target, obj) ->
+	for name, val of obj
+		# Only merge existing properties.
+		if target[name]?
+
+			# Recurse for object properties.
+			if typeof target[name] is 'object' and not Array.isArray(target[name])
+				exports.safeDeepMerge(target[name], obj[name])
+			else
+				target[name] = val
+
+	return target
+
+# Return acceleration vector from all gravity-emitting `objects',
+# having center `source' and force `force'.
+exports.gravityField = (pos, objects, source, force) ->
+	{x: x1, y: y1} = pos
+
+	# Apply gravity formula.
+	gravity = ({x: x2, y: y2}, g) ->
+		xt = x2-x1
+		yt = y2-y1
+		dist = xt*xt + yt*yt
+		pull = g / (dist * Math.sqrt(dist))
+
+		return {x: xt * pull, y: yt * pull}
+
+	vx = vy = 0
+	for id, obj of objects
+		pull = gravity(source(obj), force(obj))
+
+		# Increase field vector.
+		vx += pull.x
+		vy += pull.y
+
+	return {x: vx, y: vy}
+
+# Mixins utils from:
+# https://github.com/jashkenas/coffee-script/wiki/FAQ
+exports.extend = (obj, mixin) ->
+  for name, method of mixin
+    obj[name] = method
+
+exports.include = (klass, mixin) ->
+  exports.extend(klass.prototype, mixin)

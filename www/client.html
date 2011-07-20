@@ -4,9 +4,25 @@
   <title>Spacewar!</title>
   <link href="/favicon.ico" rel="shortcut icon" />
   <link href="/client.css" rel="stylesheet" />
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/client.js"></script>
+  <script src="/js/client/bonus.js"></script>
+  <script src="/js/client/boostEffect.js"></script>
+  <script src="/js/client/bullet.js"></script>
+  <script src="/js/client/chat.js"></script>
+  <script src="/js/client/client.js"></script>
+  <script src="/js/client/EMP.js"></script>
+  <script src="/js/client/explosionEffect.js"></script>
+  <script src="/js/client/flashEffect.js"></script>
+  <script src="/js/client/menu.js"></script>
+  <script src="/js/client/mine.js"></script>
+  <script src="/js/client/dislocateEffect.js"></script>
+  <script src="/js/client/planet.js"></script>
+  <script src="/js/client/ship.js"></script>
+  <script src="/js/client/rope.js"></script>
+  <script src="/js/client/tracker.js"></script>
+  <script src="/js/client/trailEffect.js"></script>
+  <script src="/js/utils.js"></script>
 </head>
 <body>
   <canvas id="canvas">Canvas not supported.</canvas>
@@ -26,18 +42,13 @@
 									  stroke: black;
 									  stroke-linejoin: round;
 									  fill: white" >
-						<animateTransform
-							attributeName="transform" attributeType="XML"
-							type="rotate" from="0" to="360"
-							dur="15s" repeatCount="indefinite" />
 						</path>
-
 					</g>
 				</svg>
 
-				<img id="colorWheel" src="img/colorWheel.png"/>
+				<img id="colorWheel" src="/img/colorWheel.png"/>
 
-				<img id="colorCursor" src="img/colorCursor.png"/>
+				<img id="colorCursor" src="/img/colorCursor.png"/>
 			</div>
 
 			<form id="nameForm">
@@ -51,41 +62,28 @@
 			</div>
 		</div>
 
-		<div id="about">
-			<h2>This is Spacewar!</h2>
-			<p>
-			  A frenetic multiplayer space shooter.
-			  <br/>
-			  Shoot other ships before they shoot you.
-			</p>
-
-			<h2>Player controls</h2>
-			<p><ul>
-			  <li>&uarr; to thrust forward.</li>
-			  <li>&larr; and &rarr; to rotate the ship.</li>
-			  <li>A to shoot (hold for stronger bullets).</li>
-			  <li>Z to use bonus (can only hold one).</li>
-			</ul></p>
-
-			<h2>How</h2>
-			<p><ul>
-			  <li><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/">HTML5</a>
-				 <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html">canvas</a>
-				 and <a href="http://dev.w3.org/html5/websockets/">WebSocket</a></li>
-			  <li><a href="http://nodejs.org/">Node.js</a>
-				 with <a href="http://socket.io">Socket.IO</a></li>
-			  <li><a href="http://www.gnu.org/software/emacs/">GNU Emacs</a></li>
-			  <li><a href="http://github.com/fmdkdd/spacewar">Source</a> hosted on <a href="http://github.com/">Github</a></li>
-			</ul></p>
-
-			<h2>Who</h2>
-			<p><ul>
-				 <li><a href="http://www.github.com/fmdkdd">fmdkdd</a></li>
-				 <li><a href="http://www.github.com/merwaaan">merwaaan</a></li>
-			</ul></p>
+		<div id="scores">
+			<h2>Scores</h2>
+			<p id="timeLeft"></p>
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th><img src="/img/iconDeath.svg" alt="Deaths" width="30"/></th>
+						<th><img src="/img/iconKill.svg" alt="Kills" width="30"/></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
 		</div>
-		
-		<img id="closeButton" src="img/closeButton.svg" width="30"/>
+
+		<img id="closeButton" src="/img/iconClose.svg" width="30"/>
 	</div>
+
+	<input id="chatInput" class="hidden"/>
+
+	<div id="chat"></div>
 </body>
 </html>

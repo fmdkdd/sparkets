@@ -1,5 +1,5 @@
 class EMP
-	constructor: (emp) ->
+	constructor: (@client, emp) ->
 		@serverUpdate(emp)
 
 	serverUpdate: (emp) ->
@@ -9,26 +9,16 @@ class EMP
 	update: () ->
 		@clientDelete = @serverDelete
 
-	draw: (ctxt, offset = {x:0, y:0}) ->
-		x = @pos.x + offset.x
-		y = @pos.y + offset.y
-		f = @force
+	inView: (offset = {x: 0, y: 0}) ->
+		@client.boxInView(@pos.x + offset.x,
+			@pos.y + offset.y, @force)
 
-		if not inView(x+f, y+f) and
-				not inView(x+f, y-f) and
-				not inView(x-f, y+f) and
-				not inView(x-f, y-f)
-			return
+	drawHitbox: (ctxt) ->
 
-		x -= view.x
-		y -= view.y
-
-		ctxt.save()
-
+	draw: (ctxt) ->
 		ctxt.lineWidth = 3
 		ctxt.strokeStyle = color @color
-		ctxt.beginPath()
-		ctxt.arc(x, y, f, 0, 2*Math.PI, false)
-		ctxt.stroke()
+		window.strokeCircle(ctxt, @pos.x, @pos.y, @force)
 
-		ctxt.restore()
+# Exports
+window.EMP = EMP

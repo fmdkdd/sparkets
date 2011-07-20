@@ -1,5 +1,5 @@
 class Bonus
-	constructor: (bonus) ->
+	constructor: (@client, bonus) ->
 		@serverUpdate(bonus)
 
 	serverUpdate: (bonus) ->
@@ -9,41 +9,50 @@ class Bonus
 	update: () ->
 		@clientDelete = @serverDelete
 
-	draw: (ctxt, offset = {x:0, y:0}) ->
-		return if @state is 'incoming'
+	inView: (offset = {x:0, y:0}) ->
+		@state isnt 'incoming' and
+			@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
 
-		x = @pos.x + offset.x
-		y = @pos.y + offset.y
-		s = @modelSize
-		r = 5
+	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1
+		window.strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
-		if not inView(x+s, y+s) and
-				not inView(x+s, y-s) and
-				not inView(x-s, y+s) and
-				not inView(x-s, y-s)
-			return
+	draw: (ctxt) ->
+		return if @state isnt 'available' and @state isnt 'claimed'
 
-		x -= view.x
-		y -= view.y
-
-		if showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, @hitRadius)
-
-		ctxt.fillStyle = color @color
-		ctxt.strokeStyle = color @color
-
-		ctxt.lineWidth = 2
 		ctxt.save()
-		ctxt.translate(x, y)
+		ctxt.translate(@pos.x, @pos.y)
+		@drawModel(ctxt, color(@color))
+		ctxt.restore()
+
+	drawModel: (ctxt, col) ->
+
+		ctxt.strokeStyle = col
+		ctxt.fillStyle = 'white'
+		ctxt.lineWidth = 2
+
+		s = 20
+
+		ctxt.fillRect(-s/2, -s/2, s, s)
 		ctxt.strokeRect(-s/2, -s/2, s, s)
+
+		ctxt.fillStyle = col
 
 		switch @bonusType
 			when 'bonusMine'
-				ctxt.fillRect(-r, -r, r*2, r*2)
+				ctxt.save()
+				r = 5
+				r2 = r*2
+				ctxt.fillRect(-r, -r, r2, r2)
 				ctxt.rotate(Math.PI/4)
-				ctxt.fillRect(-r, -r, r*2, r*2)
+				ctxt.fillRect(-r, -r, r2, r2)
+				ctxt.restore()
+
+			when 'bonusTracker'
+				window.strokeCircle(ctxt, 0, 0, 1)
+				window.strokeCircle(ctxt, 0, 0, 4)
+				window.strokeCircle(ctxt, 0, 0, 7)
 
 			when 'bonusBoost'
 				ctxt.save()
@@ -63,13 +72,9 @@ class Bonus
 				ctxt.translate(0, -3)
 				@drawArrow(ctxt)
 				ctxt.translate(0, 6)
-				ctxt.save()
 				ctxt.rotate(Math.PI)
 				@drawArrow(ctxt)
 				ctxt.restore()
-				ctxt.restore()
-
-		ctxt.restore()
 
 	drawArrow: (ctxt) ->
 		ctxt.beginPath()
@@ -95,45 +100,35 @@ class Bonus
 	drawOnRadar: (ctxt) ->
 		return if @state isnt 'incoming'
 
-		# Select the closest bonus among the real one and its ghosts.
-		bestDistance = Infinity
-		for j in [-1..1]
-			for k in [-1..1]
-				x = @pos.x + j * map.w
-				y = @pos.y + k * map.h
-				d = distance(localShip.pos.x, localShip.pos.y, x, y)
+		bestPos = @client.closestGhost(@client.localShip.pos, @pos)
+		dx = bestPos.x - @client.localShip.pos.x
+		dy = bestPos.y - @client.localShip.pos.y
 
-				if d < bestDistance
-					bestDistance = d
-					bestPos = {x, y}
-
-		dx = bestPos.x - localShip.pos.x
-		dy = bestPos.y - localShip.pos.y
 		margin = 20
 
 		# Draw the radar on the edges of the screen if the bonus is too far.
-		if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
-			rx = Math.max -screen.w/2 + margin, dx
-			rx = Math.min screen.w/2 - margin, rx
-			ry = Math.max -screen.h/2 + margin, dy
-			ry = Math.min screen.h/2 - margin, ry
+		if Math.abs(dx) > @client.canvasSize.w/2 or Math.abs(dy) > @client.canvasSize.h/2
+			rx = Math.max -@client.canvasSize.w/2 + margin, dx
+			rx = Math.min @client.canvasSize.w/2 - margin, rx
+			ry = Math.max -@client.canvasSize.h/2 + margin, dy
+			ry = Math.min @client.canvasSize.h/2 - margin, ry
 
 			# The radar is blinking.
 			if @countdown % 500 < 250
-				@drawRadarSymbol(screen.w/2 + rx, screen.h/2 + ry)
+				@drawRadarSymbol(ctxt, @client.canvasSize.w/2 + rx, @client.canvasSize.h/2 + ry)
 
 		# Draw the X on the future bonus position if it lies within the screen.
 		else if @countdown % 500 < 250
-			rx = -screen.w/2 + bestPos.x - view.x
-			ry = -screen.h/2 + bestPos.y - view.y
+			rx = -@client.canvasSize.w/2 + bestPos.x - @client.view.x
+			ry = -@client.canvasSize.h/2 + bestPos.y - @client.view.y
 
-			@drawRadarSymbol(screen.w/2 + rx, screen.h/2 + ry)
+			@drawRadarSymbol(ctxt, @client.canvasSize.w/2 + rx, @client.canvasSize.h/2 + ry)
 
 		return true
 
-	drawRadarSymbol: (x, y) ->
-		ctxt.fillStyle = color @color
+	drawRadarSymbol: (ctxt, x, y) ->
 		ctxt.save()
+		ctxt.fillStyle = color @color
 		ctxt.translate(x, y)
 		ctxt.rotate(Math.PI/4)
 		ctxt.fillRect(-4, -10, 8, 20)
@@ -141,4 +136,22 @@ class Bonus
 		ctxt.fillRect(-4, -10, 8, 20)
 		ctxt.restore()
 
-		return true
+	explosionEffect: () ->
+		@client.effects.push new ExplosionEffect(@client, @pos, @color, 50, 8)
+
+	openingEffect: () ->
+		positions = [[0, -10], [10, 0], [0, 10], [-10, 0]]
+		edges = []
+		for i in [0..3]
+			edges.push
+				x: @pos.x + positions[i][0]
+				y: @pos.y + positions[i][1]
+				r: Math.PI/2 * i
+				vx: positions[i][0] * 0.1
+				vy: positions[i][1] * 0.1
+				vr: (Math.random()*2-1) * 0.05
+				size: 20
+		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)
+
+# Exports
+window.Bonus = Bonus

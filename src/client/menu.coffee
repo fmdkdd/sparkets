@@ -1,7 +1,10 @@
 class Menu
-	constructor: () ->
+	constructor: (@client) ->
 
 		@menu = $('#menu')
+		@closeButton = $('#closeButton')
+
+		# Customization panel.
 		@wheelBox = $('#colorWheelBox')
 		@shipPreview = $('#shipPreview')
 		@wheel = $('#colorWheel')
@@ -9,20 +12,37 @@ class Menu
 		@form = $('#nameForm')
 		@nameField = $('#name')
 		@displayNamesCheck = $('#displayNamesCheck')
-		@closeButton = $('#closeButton')
+
+		# Scores panel.
+		@scoreTable = $('#scores table tbody')
 
 		@currentColor = null
 
-		@wheelBox.click (event) =>
-			return if event.which is not 1 # Only left click triggers
+		@setInputHandlers()
 
-			@currentColor = c = @readColor(event)
+	setInputHandlers: () ->
+		pickColor = (event) =>
+			@currentColor = @readColor(event)
+			@updatePreview(@currentColor)
 
-			# Change the color of the center of the wheel.
-			style = @shipPreview.attr('style')
-			style = style.replace(/stroke: [^\n]+/,
-				'stroke: hsl('+c[0]+','+c[1]+'%,'+c[2]+'%);')
-			@shipPreview.attr('style', style)
+		@wheelBox.mousedown (event) =>
+			return if event.which isnt 1 # Only left click triggers.
+
+			event.preventDefault()
+			pickColor(event)
+
+			# Can hold mouse to choose color.
+			@wheelBox.mousemove (event) =>
+				return if event.which isnt 1 # Only left click triggers.
+
+				event.preventDefault()
+				pickColor(event)
+
+		$(document).mouseup (event) =>
+			return if event.which isnt 1 # Only left click triggers.
+
+			# Mouse move can be triggered without any click.
+			@wheelBox.unbind('mousemove')
 
 		# Send users preferences and save them locally.
 		@form.submit (event) =>
@@ -32,7 +52,7 @@ class Menu
 
 		# Toggle the name display option.
 		@displayNamesCheck.change (event) =>
-			displayNames = @displayNamesCheck.is(':checked')
+			@client.displayNames = @displayNamesCheck.is(':checked')
 
 		# Close the menu.
 		@closeButton.click (event) =>
@@ -40,68 +60,64 @@ class Menu
 				@close()
 				event.stopPropagation()
 
-	focusInputs: () ->
-
-		# Clear all event handlers attached to the document.
-		$(document).unbind()
-
-		# Close the menu when a left click is detected outside of it.
-		$(document).click (event) =>
-			@close() if event.which is 1
-		@menu.click (event) =>
-			event.stopPropagation() if event.which is 1
-
+		# Toggle the menu when Escape or M is pressed.
 		$(document).keyup ({keyCode}) =>
-			switch keyCode
+			return if @client.chat.isOpen()
 
-				# Close the menu when the Escape key is pressed.
-				when 27
-					@close()
+			if keyCode is 27
+				@toggle()
+			# Check that we are not typing the letter M in the name field.
+			else if keyCode is 77 and $('#customize input:focus').length is 0
+				@toggle()
+
+	toggle: () ->
+		if @isOpen() then @close() else @open()
 
 	open: () ->
+		@updateScores()
+
+		@updateTime()
+		@clockInterval = setInterval( (() =>
+			@updateTime()), 1000)
+
 		@menu.removeClass('hidden')
 		@menu.addClass('visible')
-
-		# Use the menu event handler.
-		@focusInputs()
 
 	close: () ->
 		@menu.removeClass('visible')
 		@menu.addClass('hidden')
 
-		# Use the game event handler.
-		@menu.unbind()
-		focusInputs()
-
-		@nameField.blur()
+		clearInterval(@clockInterval)
 
 	isOpen: () ->
 		@menu.hasClass('visible')
 
 	# Send user preferences to the server.
 	sendPreferences: () ->
+		playerId = @client.playerId
 		color = @currentColor
 		name = @nameField.val() if @nameField.val().length > 0
 
-		socket.send
-			type: 'prefs changed'
+		@client.socket.emit 'prefs changed',
 			playerId: playerId
 			color: color
 			name: name
 
 	# Store user preferences in the browser local storage.
 	saveLocalPreferences: () ->
-		localStorage['spacewar.color'] = @currentColor if @currentColor?
-		localStorage['spacewar.name'] = @nameField.val() if @nameField.val().length > 0
+		window.localStorage['spacewar.color'] = @currentColor if @currentColor?
+		window.localStorage['spacewar.name'] = @nameField.val() if @nameField.val().length > 0
 
-		info 'Preferences saved.'
+		console.info 'Preferences saved.'
 
 	# Restores user preferences from browser local storage.
 	restoreLocalPreferences: () ->
-		@currentColor = localStorage['spacewar.color'].split(',') if localStorage['spacewar.color']?
-		@nameField.val(localStorage['spacewar.name']) if localStorage['spacewar.name']
+		if window.localStorage['spacewar.color']?
+			@currentColor = window.localStorage['spacewar.color'].split(',')
+		if window.localStorage['spacewar.name']
+			@nameField.val(window.localStorage['spacewar.name'])
 
-		info 'Preferences restored.'
+		console.info 'Preferences restored.'
 
 	# Return the color chosen from the colorwheel.
 	readColor: (event) ->
@@ -139,3 +155,55 @@ class Menu
 			top: y - @colorCursor.height()/2
 
 		return [hDeg, 60, l]
+
+	updatePreview: (color) ->
+		# Change the color of the ship preview.
+		style = @shipPreview.attr('style')
+
+		style = style.replace(/stroke: [^\n]+/,
+			'stroke: hsl('+color[0]+','+color[1]+'%,'+color[2]+'%);')
+
+		@shipPreview.attr('style', style)
+
+	updateScores: () ->
+		@scoreTable.empty()
+
+		scores = []
+		for id, ship of @client.ships
+			scores.push
+				name: ship.name or 'unnamed'
+				color: ship.color
+				deaths: ship.stats.deaths
+				kills: ship.stats.kills
+				score: ship.stats.kills - ship.stats.deaths
+
+		# Sort scores.
+		scores.sort( (a, b) -> b.score - a.score)
+
+		for s in scores
+			@scoreTable.append(
+					'<tr><td><ul style="color:hsl(' + s.color[0] + ',' + s.color[1] + '%,' + s.color[2] + '%)"><li><span>' + s.name + '</span></li></ul></td>' +
+					'<td>' +	s.deaths + '</td>' +
+					'<td>' +	s.kills + '</td>' +
+					'<td>' + s.score + '</td></tr>')
+
+	updateTime: () ->
+		if @client.gameEnded
+			clearInterval(@clockInterval)
+			$('#timeLeft').html("The game has ended!")
+			return
+
+		# Compute in ms since Epoch.
+		elapsed = Date.now() - @client.gameStartTime
+		remaining = @client.gameDuration * 60 * 1000 - elapsed
+
+		# Use Date for conversion and pretty printing.
+		timeLeft = new Date(remaining)
+
+		pad = (n) ->
+			if n < 10 then '0'+n else n
+
+		$('#timeLeft').html("#{timeLeft.getMinutes()}:#{pad(timeLeft.getSeconds())} left")
+
+# Exports
+window.Menu = Menu

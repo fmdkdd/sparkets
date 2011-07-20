@@ -1,15 +1,14 @@
-ChangingObject = require('./changingObject').ChangingObject
-server = require './server'
-prefs = require './prefs'
 utils = require '../utils'
+ChangingObject = require('./changingObject').ChangingObject
 
 class Bullet extends ChangingObject
-	constructor: (@owner, @id) ->
+	constructor: (@owner, @id, @game) ->
 		super()
 
 		@watchChanges 'type'
 		@watchChanges 'color'
 		@watchChanges 'hitRadius'
+		@watchChanges 'pos'
 		@watchChanges 'points'
 		@watchChanges 'lastPoints'
 		@watchChanges 'serverDelete'
@@ -28,45 +27,47 @@ class Bullet extends ChangingObject
 			y: @owner.vel.y + @power*ydir
 
 		@state = 'active'
-		@hitRadius = prefs.bullet.hitRadius
+		@hitRadius = @game.prefs.bullet.hitRadius
 
 		@color = @owner.color
 		@points = [ [@pos.x, @pos.y] ]
 		@lastPoints = [ [@pos.x, @pos.y] ]
 
+	# Apply gravity from all planets, moons, and EMPs.
+	gravityVector: () ->
+		# Get planets, moons and EMPs.
+		filter = (obj) ->
+			obj.type is 'planet' or obj.type is 'moon' or obj.type is 'EMP'
+
+		# Pull factor for each object.
+		force = ({object: obj}) =>
+			if obj.type is 'EMP'
+				if obj.ship is @owner
+					0
+				else
+					@game.prefs.bullet.EMPPull * obj.force
+			else
+				@game.prefs.bullet.gravityPull * obj.force
+
+		return @game.gravityFieldAround(@pos, filter, force)
+
 	move: () ->
 		return if @state isnt 'active'
 
 		# Compute new position from acceleration and gravity of all planets.
-		{x, y} = @pos
-		{x: ax, y: ay} = @accel
+		gvec = @gravityVector()
 
-		# Apply gravity from all planets.
-		g = prefs.bullet.gravityPull
-		for id, p of server.game.planets
-			d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-			d2 = g * p.force / (d * Math.sqrt(d))
-			ax -= (x-p.pos.x) * d2
-			ay -= (y-p.pos.y) * d2
+		@accel.x += gvec.x
+		@accel.y += gvec.y
 
-		# Apply negative force from all EMPs.
-		g2 = prefs.bullet.EMPPull
-		for id, e of server.game.EMPs
-			d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
-			d2 = g2 * e.force / (d * Math.sqrt(d))
-			ax -= (x-e.pos.x) * d2
-			ay -= (y-e.pos.y) * d2
-
-		@pos.x = x + ax
-		@pos.y = y + ay
-		@accel.x = ax
-		@accel.y = ay
+		@pos.x += @accel.x
+		@pos.y += @accel.y
 
 		@points.push [@pos.x, @pos.y]
 		@lastPoints = [ [@pos.x, @pos.y] ]
 
 		# Warp the bullet around the map.
-		{w, h} = prefs.server.mapSize
+		{w, h} = @game.prefs.mapSize
 		@warp = off
 		if @pos.x < 0
 			@pos.x += w
@@ -86,15 +87,20 @@ class Bullet extends ChangingObject
 			@points.push [@pos.x, @pos.y]
 			@lastPoints.push [@pos.x, @pos.y]
 
+		@changed 'pos'
+
 	update: () ->
 		switch @state
 			# Seek and destroy.
 			when 'active'
-				@points.shift() if @points.length > prefs.bullet.tailLength
+				@points.shift() if @points.length > @game.prefs.bullet.tailLength
 
 			# No points left, disappear.
 			when 'dead'
 				@serverDelete = yes
+
+	explode: () ->
+		@state = 'dead'
 
 	tangible: ->
 		@state is 'active'
@@ -106,6 +112,6 @@ class Bullet extends ChangingObject
 		[Ax, Ay] = if @warp then @points[@points.length-3] else @points[@points.length-2]
 		[Bx, By] = if @warp then @points[@points.length-2] else @points[@points.length-1]
 
-		return utils.lineInterCircle(Ax,Ay, Bx,By, @hitRadius, x,y,hitRadius, prefs.bullet.checkWidth)?
+		return utils.lineInterCircle(Ax,Ay, Bx,By, @hitRadius, x,y,hitRadius, @game.prefs.bullet.checkWidth)?
 
 exports.Bullet = Bullet

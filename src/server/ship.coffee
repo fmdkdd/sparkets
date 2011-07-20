@@ -1,88 +1,155 @@
-ChangingObject = require('./changingObject').ChangingObject
-server = require './server'
-prefs = require './prefs'
 utils = require '../utils'
-Bullet = require './bullet'
-Mine = require './mine'
+logger = require('../logger').static
+ChangingObject = require('./changingObject').ChangingObject
+Bullet = require('./bullet').Bullet
 
 class Ship extends ChangingObject
-	constructor: (@id, @playerId, name, color) ->
+	constructor: (@id, @game, @playerId, name, color) ->
 		super()
 
-		@watchChanges(
-			'type',
-			'name',
-			'color',
-			'hitRadius',
-			'pos',
-			'vel',
-			'dir',
-			'thrust',
-			'firePower',
-			'cannonHeat',
-			'dead',
-			'exploding',
-			'exploFrame',
-			'killingAccel',
-			'boost' )
+		@watchChanges 'type'
+		@watchChanges 'name'
+		@watchChanges 'color'
+		@watchChanges 'stats'
+		@watchChanges 'hitRadius'
+		@watchChanges 'state'
+		@watchChanges 'countdown'
+		@watchChanges 'pos'
+		@watchChanges 'vel'
+		@watchChanges 'dir'
+		@watchChanges 'thrust'
+		@watchChanges 'firePower'
+		@watchChanges 'cannonHeat'
+		@watchChanges 'killingAccel'
+		@watchChanges 'boost'
+		@watchChanges 'invisible'
 
 		@type = 'ship'
-		@name = if name? then name else null
-		@color = if color? then color else utils.randomColor()
-		@hitRadius = prefs.ship.hitRadius
+		@name = name or null
+		@color = color or utils.randomColor()
+		@hitRadius = @game.prefs.ship.hitRadius
+
+		# Session stats.
+		@stats =
+			kills: 0
+			deaths: 0
 
 		@spawn()
 
 	spawn: () ->
+		@state = 'spawned'
+		@countdown = @game.prefs.ship.states[@state].countdown
+
 		@pos =
-			x: Math.random() * prefs.server.mapSize.w
-			y: Math.random() * prefs.server.mapSize.h
+			x: Math.random() * @game.prefs.mapSize.w
+			y: Math.random() * @game.prefs.mapSize.h
 		@vel =
 			x: 0
 			y: 0
 		@dir = Math.random() * 2*Math.PI
+
 		@thrust = false
-		@firePower = prefs.ship.minFirepower
+		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = 0
+		@killingAccel = {x: 0, y: 0}
+
+		# Drop bonus and cancel all effects.
 		@bonus = null
 		@bonusTimeout = {}
 		@boost = 1
 		@boostDecay = 0
 		@inverseTurn = no
-		@dead = false
-		@exploding = false
-		@exploFrame = 0
-		@killingAccel = {x: 0, y: 0}
+		@invisible = no
 
-		@spawn() if server.game.collidesWithPlanet(@)
+		@spawn() if @game.collidesWithPlanet(@)
+
+		@emit('spawned', @)
+
+		@debug "spawned"
 
 	turnLeft: () ->
-		@dir -= if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@dir -= if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
+		@ddebug "turn left"
 
 	turnRight: () ->
-		@dir += if @inverseTurn then -prefs.ship.dirInc else prefs.ship.dirInc
+		@dir += if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
+		@ddebug "turn right"
 
 	ahead: () ->
-		@vel.x += Math.cos(@dir) * prefs.ship.speed * @boost
-		@vel.y += Math.sin(@dir) * prefs.ship.speed * @boost
+		@vel.x += Math.cos(@dir) * @game.prefs.ship.speed * @boost
+		@vel.y += Math.sin(@dir) * @game.prefs.ship.speed * @boost
 		@thrust = true
+		@ddebug "thrust"
 
 	chargeFire: () ->
-		@firePower = Math.min(@firePower + prefs.ship.firepowerInc, prefs.ship.maxFirepower)
+		return if @cannonHeat > 0 or @state isnt 'alive'
+
+		@firePower = Math.min(@firePower + @game.prefs.ship.firepowerInc, @game.prefs.ship.maxFirepower)
+		@ddebug "charge fire"
+
+	# Attach a bonus to the ship.
+	holdBonus: (bonus) ->
+		@releaseBonus() if @bonus?
+
+		@bonus = bonus
+		@bonus.attach(@)
+
+	# Get rid of the bonus.
+	releaseBonus: () ->
+		@bonus.release()
+		@bonus = null
 
 	useBonus: () ->
-		return if @isDead() or @isExploding() or not @bonus?
+		return if not @bonus? or @state isnt 'alive'
+
+		@ddebug "use #{@bonus.type} bonus"
 		@bonus.use()
 
+	target: () ->
+
+		# Select closest ships.
+		near = {}
+		for i, p of @game.players
+			s = p.ship
+			if s.id isnt @id and s.state is 'alive'
+				shipPos = @game.closestGhost(@pos, s.pos)
+				dist = utils.distance(@pos.x, @pos.y, shipPos.x, shipPos.y)
+
+				if dist < @game.prefs.ship.maxTargetingDistance
+					near[s.id] =
+						distance: dist
+						angle: utils.relativeAngle(Math.atan2(-(s.pos.y-@pos.y), s.pos.x-@pos.x) + @dir) * 180/Math.PI
+
+		# Select the more "facing" ship among those lying within the
+		# detection radius.
+		for f in @game.prefs.ship.targetingFOVs
+			inFOV = {}
+			for i, s of near
+				if -f < s.angle < f
+					inFOV[i] = near[i]
+
+			# Return the closest ship.
+			if Object.keys(inFOV).length > 0
+				bestDist = Infinity
+				idBest = null
+				for i, s of inFOV
+					if s.distance < bestDist
+						bestDist = s.distance
+						idBest = i
+				return @game.gameObjects[idBest]
+
+		return null
+
 	move: () ->
-		return if @isDead() or @isExploding()
+		return if @state is 'exploding' or @state is 'dead'
 
 		{x, y} = @pos
 
-		if prefs.ship.enableGravity
+		# With gravity enabled.
+		if @game.prefs.ship.enableGravity
 			{x: ax, y: ay} = @vel
 
-			for id, p of server.game.planets
+			for id, p of @game.planets
 				d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
 				d2 = 20 * p.force / (d * Math.sqrt(d))
 				ax -= (x-p.pos.x) * d2
@@ -93,69 +160,116 @@ class Ship extends ChangingObject
 			@vel.x = ax
 			@vel.y = ay
 
+		# Without gravity.
 		else
 			@pos.x += @vel.x
 			@pos.y += @vel.y
 
-		# Warp the ship around the map
-		{w, h} = prefs.server.mapSize
-		@pos.x = if @pos.x < 0 then w else @pos.x
-		@pos.x = if @pos.x > w then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then h else @pos.y
-		@pos.y = if @pos.y > h then 0 else @pos.y
+		ax = ay = 0
+		g = @game.prefs.EMP.shipPush
+		for id, e of @game.EMPs
+			if e.ship isnt @
+				d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
+				d2 = g * e.force / (d * Math.sqrt(d))
+				ax += (e.pos.x-x) * d2
+				ay += (e.pos.y-y) * d2
+		@pos.x += ax
+		@pos.y += ay
 
-		@vel.x *= prefs.ship.frictionDecay
-		@vel.y *= prefs.ship.frictionDecay
+		# Warp the ship around the map.
+		@warp()
 
+		@vel.x *= @game.prefs.ship.frictionDecay
+		@vel.y *= @game.prefs.ship.frictionDecay
+
+		# Only update if the change in position is noticeable.
 		if Math.abs(@pos.x-x) > .05 or
 				Math.abs(@pos.y-y) > .05
 			@changed 'pos'
 			@changed 'vel'
 
+		@emit('moved', @)
+
+	warp: () ->
+		{w, h} = @game.prefs.mapSize
+		@pos.x = if @pos.x < 0 then w else @pos.x
+		@pos.x = if @pos.x > w then 0 else @pos.x
+		@pos.y = if @pos.y < 0 then h else @pos.y
+		@pos.y = if @pos.y > h then 0 else @pos.y
+
 	tangible: () ->
-		not @dead and not @exploding
+		@state is 'spawned' or @state is 'alive'
 
 	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
 		x += offset.x
 		y += offset.y
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
-	isExploding: () ->
-		@exploding
-
 	isDead: () ->
-		@dead
+		@state is 'dead'
+
+	isExploding: () ->
+		@state is 'exploding'
+
+	nextState: () ->
+		@state = @game.prefs.ship.states[@state].next
+		@countdown = @game.prefs.ship.states[@state].countdown
 
 	update: () ->
-		return if @isDead()
+		if @countdown?
+			@countdown -= @game.prefs.timestep
+			@nextState() if @countdown <= 0
 
-		if @isExploding()
-			@updateExplosion()
-		else
-			--@cannonHeat if @cannonHeat > 0
+		switch @state
+			when 'alive'
+				--@cannonHeat if @cannonHeat > 0
 
-			@boost -= @boostDecay if @boost > 1
-			@boost = 1 if @boost < 1
+				@boost -= @boostDecay if @boost > 1
+				@boost = 1 if @boost < 1
 
 	fire : () ->
-		return if @isDead() or @isExploding() or @cannonHeat > 0
+		return if @state isnt 'alive' or @cannonHeat > 0
 
-		server.game.newGameObject (id) =>
-			server.game.bullets[id] = new Bullet.Bullet(@, id)
+		bullet = @game.newGameObject (id) =>
+			@ddebug "fire bullet ##{id}"
+			return @game.bullets[id] = new Bullet(@, id, @game)
 
-		@firePower = prefs.ship.minFirepower
-		@cannonHeat = prefs.ship.cannonCooldown
+		@firePower = @game.prefs.ship.minFirepower
+		@cannonHeat = @game.prefs.ship.cannonCooldown
+
+		@emit('fired', @, bullet)
 
 	explode : () ->
-		@exploding = true
-		@exploFrame = 0
+		@releaseBonus() if @bonus?
 
-	updateExplosion : () ->
-		++@exploFrame
+		@addStat('deaths', 1)
 
-		if @exploFrame > prefs.ship.maxExploFrame
-			@exploding = false
-			@dead = true
-			@exploFrame = 0
+		@game.events.push
+			type: 'ship exploded'
+			id: @id
+
+		@nextState()
+
+		@debug "exploded"
+
+		@emit('exploded', @)
+
+	addStat: (field, increment) ->
+		@stats[field] += increment
+		@changed 'stats'
+
+	# Prefix message with ship id.
+	log: (type, msg) ->
+		logger.log(type, "(ship ##{@.id}) " + msg)
+
+	error: (msg) -> @log('error', msg)
+	warn: (msg) -> @log('warn', msg)
+	info: (msg) -> @log('info', msg)
+	debug: (msg) -> @log('debug', msg)
+	ddebug: (msg) -> @log('ship', msg)
+
+
+EventEmitter = require('events').EventEmitter
+utils.include(Ship, EventEmitter.prototype)
 
 exports.Ship = Ship

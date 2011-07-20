@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spacewar!</title>
+  <link href="/favicon.ico" rel="shortcut icon" />
+  <link href="/index.css" rel="stylesheet" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/client/index.js"></script>
+</head>
+
+<body>
+	<div id="title">
+		<h1>Spacewar!</h1>
+		<h2>A frenetic multiplayer space shooter.</h2>
+		<div class="footer"></div>
+	</div>
+
+	<div id="info">
+		<div id="controls">
+			<h2>Player controls</h2>
+			<p><ul>
+					<li><span class="key">&uarr;</span> to thrust forward.</li>
+					<li><span class="key">&larr;</span> and <span class="key">&rarr;</span> to rotate the ship.</li>
+					<li><span class="key">A</span> to shoot (hold for stronger bullets).</li>
+					<li><span class="key">Z</span> to use bonus (can only hold one).</li>
+					<li><span class="key">M</span> to open the menu.</li>
+					<li><span class="key">T</span> to chat.</li>
+			</ul></p>
+			<br/>
+			<p><span id="goal">Shoot other ships before they shoot you.</span></p>
+		</div>
+
+		<div id="about">
+			<h2>How</h2>
+			<p><ul>
+					<li><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/">HTML5</a>
+						<a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html">canvas</a>
+						and <a href="http://dev.w3.org/html5/websockets/">WebSocket</a></li>
+					<li><a href="http://nodejs.org/">Node.js</a>
+						with <a href="http://socket.io">Socket.IO</a></li>
+					<li><a href="http://www.gnu.org/software/emacs/">GNU Emacs</a></li>
+					<li><a href="http://github.com/fmdkdd/spacewar">Source</a> hosted on <a href="http://github.com/">Github</a></li>
+			</ul></p>
+			<br/>
+			<h2>Who</h2>
+			<p><ul>
+					<li><a href="http://www.github.com/fmdkdd">fmdkdd</a></li>
+					<li><a href="http://www.github.com/merwaaan">merwaaan</a></li>
+			</ul></p>
+		</div>
+
+		<div class="footer"></div>
+	</div>
+
+	<div id="forms">
+		<div id="createDiv">
+			<h2>Create</h2>
+			<form id="createForm">
+			   <input type="text" name="id" placeholder="Game name" required />
+				<p class="error" id="id-error"></p>
+				<ul class="collapse">
+				  <li><h3>Game</h3>
+					 <ul>
+						<li>
+						  <label for="duration">Duration (min)</label>
+						  <input type="range" name="duration" min="3" max="20" step="1" value="5" />
+						</li>
+					 </ul>
+				  </li>
+
+				  <li><h3>Map</h3>
+					 <ul>
+					 <li>
+						<label for="mapSize.w">Width</label>
+						<input type="range" name="mapSize.w" min="1000" max="5000" step="100" value="2000" />
+					 </li>
+
+					 <li>
+						<label for="mapSize.h">Height</label>
+						<input type="range" name="mapSize.h" min="1000" max="5000" step="100" value="2000" />
+					 </li>
+
+					 <li>
+						<label for="planet.count">Planet count</label>
+						<input type="range" name="planet.count" min="10" max="50" step="5" value="30" />
+					 </li>
+					 </ul>
+				  </li>
+
+				  <li><h3>Bonus</h3>
+					 <ul>
+					 <li>
+						<label for="bonus.waitTime">Drop wait (ms)</label>
+						<input type="range" name="bonus.waitTime" min="1000" max="10000" step="1000" value="5000" />
+					 </li>
+
+					 <li>
+						<label for="bonus.states.incoming.countdown">Activation wait (ms)</label>
+						<input type="range" name="bonus.states.incoming.countdown" min="500" max="5000" step="500" value="2000" />
+					 </li>
+
+					 <li>
+						<label for="bonus.maxCount">Max allowed</label>
+						<input type="range" name="bonus.maxCount" min="0" max="20" step="1" value="10" />
+					 </li>
+
+					 <li>
+						<label for="bonus.mine.mineCount">Mines in bonus</label>
+						<input type="range" name="bonus.mine.mineCount" min="1" max="10" step="1" value="2" />
+					 </li>
+					 </ul>
+				  </li>
+					 
+				  <li><h3>Bonus appearance</h3>
+					 <ul>
+					 <li>
+						<label for="bonus.bonusType.mine.weight">Mines weight</label>
+						<input type="range" name="bonus.bonusType.mine.weight" min="0" max="10" step="1" value="3" />
+					 </li>
+
+					 <li>
+						<label for="bonus.bonusType.boost.weight">Boost weight</label>
+						<input type="range" name="bonus.bonusType.boost.weight" min="0" max="10" step="1" value="2" />
+					 </li>
+
+					 <li>
+						<label for="bonus.bonusType.EMP.weight">EMP weight</label>
+						<input type="range" name="bonus.bonusType.EMP.weight" min="0" max="10" step="1" value="1" />
+					 </li>
+
+					 <li>
+						<label for="bonus.bonusType.stealth.weight">Stealth weight</label>
+						<input type="range" name="bonus.bonusType.stealth.weight" min="0" max="10" step="1" value="1" />
+					 </li>
+					 </ul>
+				  </li>
+
+				  <li><h3 id="shipPrefs">Ship</h3>
+					 <ul>
+					 <li>
+						<label for="ship.speed">Speed</label>
+						<input type="range" name="ship.speed" min="0.1" max="1" step="0.1" value="0.3" />
+					 </li>
+
+					 <li>
+						<label for="ship.frictionDecay">Friction decay</label>
+						<input type="range" name="ship.frictionDecay" min="0" max="1" step="0.01" value="0.97" />
+					 </li>
+					 </ul>
+				  </li>
+
+				  <li><h3>Bot</h3>
+					 <ul>
+						<li>
+						  <label for="bot.count">Count</label>
+						  <input type="range" name="bot.count" min="0" max="10" step="1" value="1" />
+						</li>
+					 </ul>
+				  </li>
+				</ul>
+				<input type="submit" value="Create" />
+			</form>
+		</div>
+		
+		<div id="joinDiv">
+			<h2>Join</h2>
+			<table id="gameListTable">
+			  <thead>
+					<th>Name</th>
+					<th>Players</th>
+					<th>Time left</th>
+			  </thead>
+			  <tbody id="gameList">
+			  </tbody>
+			</table>
+		</div>
+
+		<div class="footer"></div>
+	</div>
+</body>
+</html>

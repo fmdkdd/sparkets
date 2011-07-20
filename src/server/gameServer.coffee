@@ -1,24 +1,32 @@
-prefs = require './prefs'
-Player = require('./player').Player
-Bonus = require('./bonus').Bonus
-Planet = require('./planet').Planet
-collisions = require('./collisions')
 utils = require '../utils'
+logger = require('../logger').static
+collisions = require('./collisions')
+Bot = require('./bot').Bot
+Bonus = require('./bonus').Bonus
+GamePreferences = require('./prefs').GamePreferences
+Moon = require('./moon').Moon
+Planet = require('./planet').Planet
+Player = require('./player').Player
 
 class GameServer
-	constructor: (@socket) ->
+	constructor: (@sockets, gamePrefs) ->
 		@now = 0
 
 		@players = {}
 
 		@bullets = {}
 		@mines = {}
+		@trackers = {}
 		@EMPs = {}
 		@bonuses = {}
 		@planets = {}
 
 		@gameObjects = {}
 		@gameObjectCount = 0
+
+		@events = []
+
+		@prefs = new GamePreferences(gamePrefs)
 
 	launch: () ->
 		for p in @initPlanets()
@@ -27,40 +35,98 @@ class GameServer
 				@planets[id] = p
 
 		@spawnBonus()
-		setInterval(( () => @spawnBonus() ), prefs.server.bonusWait)
 
 		# Bind socket events
-		@socket.on 'clientConnect', (client) =>
-			@clientConnect(client)
+		@sockets.on 'connection', (socket) =>
+			@clientConnect(socket)
 
-		@socket.on 'clientMessage', (msg, client) =>
-			@clientMessage(msg, client)
+			socket.on 'key down', (data) =>
+				@players[data.playerId].keyDown(data.key)
 
-		@socket.on 'clientDisconnect', (client) =>
-			@clientDisconnect(client)
+			socket.on 'key up', (data) =>
+				@players[data.playerId].keyUp(data.key)
+
+			socket.on 'create ship', (data) =>
+				@createShip(socket, data)
+
+			socket.on 'prefs changed', (data) =>
+				@players[data.playerId].changePrefs(data.name, data.color)
+
+			socket.on 'message', (data) =>
+				@broadcastMessage(socket, data)
+
+			socket.on 'disconnect', () =>
+				@clientDisconnect(socket)
 
 		# Setup space grid
 		@grid =
-			width: prefs.server.grid.width
-			height: prefs.server.grid.height
-			cellWidth: prefs.server.mapSize.w / prefs.server.grid.width
-			cellHeight: prefs.server.mapSize.h / prefs.server.grid.height
+			width: @prefs.grid.width
+			height: @prefs.grid.height
+			cellWidth: @prefs.mapSize.w / @prefs.grid.width
+			cellHeight: @prefs.mapSize.h / @prefs.grid.height
 			cells: {}
 
-		@update()
+		@addBots()
 
-	clientConnect: (client) ->
-		id = client.sessionId
+		@startTime = Date.now()
+
+		@frozen = yes
+		@ended = no
+
+	end: () ->
+		# It's time! Put your pen down.
+		@freeze()
+
+		@ended = yes
+		@info 'ended'
+
+		# Notify players.
+		@sockets.emit 'game end'
+
+		# Unbind listener for this namespace in case another game with
+		# the same id is created.
+		@sockets.removeAllListeners('connection')
+
+	freeze: () ->
+		clearTimeout(@updateTimeout)
+		clearInterval(@bonusInterval)
+
+		@frozen = yes
+		@info 'frozen'
+
+	thaw: () ->
+		@warn 'thawing but game has already ended' if @ended
+
+		@frozen = no
+		@info 'unfrozen'
+
+		@update()
+		@bonusInterval = setInterval(( () => @spawnBonus() ), @prefs.bonus.waitTime)
+
+	clientConnect: (socket) ->
+		id = socket.id
 
 		# Add new player to player list.
-		player = @players[id] = new Player(id)
+		player = @players[id] = new Player(id, @)
 
-		client.send
-			type: 'connected'
+		socket.emit 'connected',
 			playerId: id
+			startTime: @startTime
+			serverPrefs:
+				mapSize: @prefs.mapSize
+				duration: @prefs.duration
+				ship:
+					minPower: @prefs.ship.minFirepower
+					maxPower: @prefs.ship.maxFirepower
+					cannonCooldown: @prefs.ship.cannonCooldown
 
-	createShip: (client) ->
-		id = client.sessionId
+		@info "player #{socket.id} joined"
+
+		# Human connected, update the game!
+		@thaw() if @frozen
+
+	createShip: (socket, data) ->
+		id = data.playerId
 		player = @players[id]
 
 		# Create ship.
@@ -70,13 +136,11 @@ class GameServer
 		# Send game objects.
 		objs = @watched(@gameObjects)
 		if not utils.isEmptyObject objs
-			client.send
-				type: 'objects update'
+			socket.emit 'objects update',
 				objects: objs
 
 		# Good news!
-		client.send
-			type: 'ship created'
+		socket.emit 'ship created',
 			playerId: id
 			shipId: player.ship.id
 
@@ -90,29 +154,20 @@ class GameServer
 
 		return allWatched
 
-	clientMessage: (msg, client) ->
-		return if not @players[msg.playerId]?
+	broadcastMessage: (socket, data) ->
+		@sockets.emit 'player says',
+			playerId: data.playerId
+			shipId: @players[data.playerId].ship.id
+			message: data.message
 
-		switch msg.type
-			when 'key down'
-				@players[msg.playerId].keyDown(msg.key)
+		@info "player #{data.playerId} says: #{data.message}"
 
-			when 'key up'
-				@players[msg.playerId].keyUp(msg.key)
-
-			when 'create ship'
-				@createShip(client)
-
-			when 'prefs changed'
-				@players[msg.playerId].changePrefs(msg.name, msg.color)
-
-	clientDisconnect: (client) ->
-		playerId = client.sessionId
+	clientDisconnect: (socket) ->
+		playerId = socket.id
 		shipId = @players[playerId].ship?.id
 
 		# Tell everyone.
-		client.broadcast
-			type: 'player quits'
+		@sockets.emit 'player quits',
 			playerId: playerId
 			shipId : shipId
 
@@ -120,20 +175,26 @@ class GameServer
 		@deleteObject(shipId)
 		delete @players[playerId]
 
+		@info "player #{socket.id} left"
+
+		# Don't update the game if no one is around.
+		@freeze() if @noHuman()
+
 	# Game loop
 	update: () ->
-		start = @now = (new Date).getTime()
+		if @frozen
+			@warn 'update skipped: frozen game'
+			return
+
+		# Setup next update.
+		@updateTimeout = setTimeout(( () => @update() ), @prefs.timestep)
 
 		player.update() for id, player of @players
 
 		@updateObjects(@gameObjects)
 
-		diff = (new Date).getTime() - start
-		setTimeout(( () => @update() ),
-			prefs.server.timestep - utils.mod(diff, prefs.server.timestep))
-
 	placeObjectInGrid: (obj) ->
-		{w: mapWidth, h: mapHeight} = prefs.server.mapSize
+		{w: mapWidth, h: mapHeight} = @prefs.mapSize
 		{x: ox, y: oy} = obj.pos
 		w = @grid.cellWidth
 		h = @grid.cellHeight
@@ -154,16 +215,111 @@ class GameServer
 			gridObj.object = obj
 			gridObj.offset = {x: xOff, y: yOff}
 
-		# First place object in the cell containing (x,y)
-		insert(ox, oy)
+		# Place the object in all cells containing its bounding box.
+		# We go through the bounding box in increments lower than either
+		# side of the box to avoid skipping a grid cell.
+		halfSide = obj.hitRadius
+		incr = 2 * halfSide
 
-		# Now place it in adjacent squares
-		r = obj.hitRadius
+		# Find right increment.
+		until incr < Math.min(w, h)
+			incr /= 2
 
-		insert(ox-r, oy-r)
-		insert(ox-r, oy+r)
-		insert(ox+r, oy-r)
-		insert(ox+r, oy+r)
+		# Zero hit radius: can't collide, don't insert.
+		if incr > 0
+			cellX = -halfSide
+			while cellX <= halfSide
+				cellY = -halfSide
+				while cellY <= halfSide
+					insert(ox + cellX, oy + cellY)
+					cellY += incr
+				cellX += incr
+
+	# Return all objects in the grid cell (x,y).  `filter' can be used
+	# as a predicate to filter objects.  By default, all objects are
+	# accepted.
+	objectsInCell: (cell, filter = (() -> yes)) ->
+		# The grid leaves empty cells undefined.
+		return {} if not cell?
+
+		objs = {}
+		for id, gridObj of cell
+			objs[id] = gridObj if filter(gridObj.object)
+		return objs
+
+	# Return an array of all objects of the given type in neighboring
+	# grid cells. Useful for gravitation field computation.
+	objectsAround: ({x, y}, filter) ->
+		# Return the offset for the grid cell (gridX, gridY).
+		# If the grid is 10 cells wide, the cell at (-1,0) is really at
+		# (9,0).  But by requesting (-1,0) instead of (9,0) we want
+		# all the objects in (9,0) to behave as if they _were_ in
+		# (-1,0). To do this, we need an extra offset to their position.
+		gridOffset = (gridX, gridY) =>
+			if gridX < 0
+				xOff = -@prefs.mapSize.w
+			else if gridX >= @grid.width
+				xOff = @prefs.mapSize.w
+			else
+				xOff = 0
+
+			if gridY < 0
+				yOff = -@prefs.mapSize.h
+			else if gridY >= @grid.height
+				yOff = @prefs.mapSize.h
+			else
+				yOff = 0
+
+			return {x: xOff, y: yOff}
+
+		# Find the grid coordinate of the cell containing (x,y).
+		gridX = Math.floor(x / @grid.cellWidth)
+		gridY = Math.floor(y / @grid.cellHeight)
+
+		# Gather objects from neighboring cells.
+		objs = []
+		for i in [-1..1]
+			for j in [-1..1]
+				# Relative, non-wrapped cell coordinates.
+				gx = gridX + i
+				gy = gridY + j
+
+				# Offset to give each object in the cell.
+				offset = gridOffset(gx, gy)
+
+				# Absolute, wrapped cell coordinates.
+				gx = utils.mod(gx, @grid.width)
+				gy = utils.mod(gy, @grid.height)
+				cell = @grid.cells[gy * @grid.width + gx]
+
+				# Filter objects in the cell.
+				cellObjs = @objectsInCell(cell, filter)
+
+				# Add our offset. Encapsulation is necessary since we
+				# don't want to polute the grid objects with our offset.
+				objs.push
+					objects: cellObjs
+					relativeOffset: offset
+
+		return objs
+
+	gravityFieldAround: (pos, filter, force) ->
+		# objectsAround() will return the same object for all cells it
+		# appears in. We want to compute their gravity influence only
+		# once! Thus we delete duplicates.
+		gravityObjs = {}
+		for cellObjs in @objectsAround(pos, filter)
+			for id, cellObj of cellObjs.objects
+				gravityObjs[id] =
+					object: cellObj.object
+					relativeOffset: cellObjs.relativeOffset
+
+		# Compute object position with relative offset.
+		source = (obj) ->
+			x: obj.object.pos.x + obj.relativeOffset.x
+			y: obj.object.pos.y + obj.relativeOffset.y
+
+		return utils.gravityField(pos, gravityObjs, source, force)
 
 	updateObjects: (objects) ->
 		# Move all objects
@@ -201,9 +357,10 @@ class GameServer
 
 		# Broadcast changes to all players.
 		if not utils.isEmptyObject allChanges
-			@socket.broadcast
-				type: 'objects update'
+			@sockets.emit 'objects update',
 				objects: allChanges
+				events: @events
+		@events = []
 
 	collidesWithPlanet: (obj) ->
 		for id, planet of @planets
@@ -224,7 +381,11 @@ class GameServer
 				delete @bullets[id]
 			when 'mine'
 				delete @mines[id]
+			when 'tracker'
+				delete @trackers[id]
 			when 'planet'
+				delete @planets[id]
+			when 'moon'
 				delete @planets[id]
 			when 'EMP'
 				delete @EMPs[id]
@@ -234,33 +395,116 @@ class GameServer
 	initPlanets: () ->
 		planets = []
 
-		collides = (p1, p2) ->
-			(utils.distance(p1.pos.x, p1.pos.y,
-				p2.pos.x, p2.pos.y) < p1.force + p2.force)
+		# Circle to planet collision predicate.
+		collides = (x, y, r, p) ->
+			if p.type is 'moon'
+				x2 = p.planet.pos.x
+				y2 = p.planet.pos.y
+				r2 = p.dist + p.force
+			else
+				x2 = p.pos.x
+				y2 = p.pos.y
+				r2 = p.force
+			return (utils.distance(x, y, x2, y2) < r + r2)
+
+		mapW = @prefs.mapSize.w
+		mapH = @prefs.mapSize.h
 
 		# If a planet is overlapping the map, it will appear to be
 		# colliding with its ghosts in drawInfinity.
-		nearBorder = ({pos: {x, y}, force}) ->
-			(x - force < 0 or x + force > prefs.server.mapSize.w or
-				y - force < 0 or y + force > prefs.server.mapSize.h)
+		nearBorder = (x, y, r) ->
+			(x - r < 0 or x + r > mapW or y - r < 0 or y + r > mapH)
+
+		min = @prefs.planet.minForce
+		marge = @prefs.planet.maxForce - min
+
+		satAbsFMin = @prefs.planet.satelliteAbsMinForce
+		satFMin = @prefs.planet.satelliteMinForce
+		satFMarge = @prefs.planet.satelliteMaxForce - satFMin
+
+		satGMin = @prefs.planet.satelliteMinGap
+		satGMarge = @prefs.planet.satelliteMaxGap - satGMin
 
 		# Spawn planets randomly.
-		for [0...prefs.server.planetsCount]
+		for [0...@prefs.planet.count]
+			satellite = Math.random() < @prefs.planet.satelliteChance
 			colliding = yes
-			while colliding		  # Ensure none are colliding
-				rock = new Planet(Math.random() * prefs.server.mapSize.w,
-					Math.random() * prefs.server.mapSize.h,
-					50+Math.random()*50)
-				colliding = no
-				for p in planets
-					colliding = yes if nearBorder(rock) or collides(p,rock)
+			# Ensure none are colliding (no do .. while in Coffee)
+			while colliding
+				x = Math.random() * mapW
+				y = Math.random() * mapH
+				force = min + marge * Math.random()
+
+				# Account for satellite size and distance
+				if satellite
+					satGap = force * (satGMin + satGMarge * Math.random())
+					satForce = satAbsFMin + force * (satFMin + satFMarge * Math.random())
+					totForce = force + satGap + 3*satForce
+				else
+					totForce = force
+
+				# Check collisions with existing planets (and moons)
+				colliding = nearBorder(x, y, totForce) or planets.some (p) ->
+					collides(x, y, totForce, p)
+
+			# Not colliding, can add it
+			rock = new Planet(@, x, y, force)
 			planets.push rock
+			if satellite
+				planets.push new Moon(@, rock, satForce, satGap)
+
+		@debug "#{@prefs.planet.count} planets created"
 
 		return planets
 
+	# Return the closest position of 'targetPos' from 'sourcePos'.
+	closestGhost: (sourcePos, targetPos) ->
+		bestPos = null
+		bestDistance = Infinity
+
+		for i in [-1..1]
+			for j in [-1..1]
+				ox = targetPos.x + i * @prefs.mapSize.w
+				oy = targetPos.y + j * @prefs.mapSize.h
+				d = utils.distance(sourcePos.x, sourcePos.y, ox, oy)
+				if d < bestDistance
+					bestDistance = d
+					bestPos = {x: ox, y: oy}
+
+		return bestPos
+
 	spawnBonus: (bonusType) ->
-		return false if Object.keys(@bonuses).length >= prefs.server.maxBonuses
+		return false if Object.keys(@bonuses).length >= @prefs.bonus.maxCount
+
 		@newGameObject( (id) =>
-			@bonuses[id] = new Bonus(id, bonusType) )
+			@bonuses[id] = new Bonus(id, @, bonusType)
+			@debug "spawned new #{@bonuses[id].effect.type} bonus ##{id}"
+			return @bonuses[id] )
+
+	addBots: () ->
+		for i in [0...@prefs.bot.count]
+			botId = 'b' + i
+			@players[botId] = new Bot(botId, @)
+			@newGameObject( (id) =>
+				@debug "bot ##{botId} joined"
+				return @players[botId].createShip(id) )
+
+	humanCount: () ->
+		Object.keys(@players).length - @prefs.bot.count
+
+	botCount: () ->
+		@prefs.bot.count
+
+	noHuman: () ->
+		@humanCount() is 0
+
+	# Prefix message with game namespace.
+	log: (type, msg) ->
+		logger.log(type, "(game #{@sockets.name}) " + msg)
+
+	error: (msg) -> @log('error', msg)
+	warn: (msg) -> @log('warn', msg)
+	info: (msg) -> @log('info', msg)
+	debug: (msg) -> @log('debug', msg)
 
 exports.GameServer = GameServer

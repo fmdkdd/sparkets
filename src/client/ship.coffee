@@ -1,8 +1,6 @@
 class Ship
-	constructor: (ship) ->
+	constructor: (@client, ship) ->
 		@serverUpdate(ship)
-
-		@explosionBits = null
 
 		@engineAnimFor = null
 		@engineAnimDelay = 200
@@ -17,144 +15,142 @@ class Ship
 		if @thrust isnt thrust_old
 			@engineAnimFor = @engineAnimDelay
 
-		# Start the explosion animation if the ship just exploded.
-		if @exploding
-			@explode() if not @explosionBits?
-			@stepExplosion()
-		# Reset the explosion bits if the ship respawned.
-		else if not @exploding and @explosionBits?
-			delete @explosionBits
-
-		# Start the boost animation if the ship just boosted.
-		if @boost > 1 and not @ghosts?
-			@ghosts = []
-		else if @boost <= 1 and @ghosts?
-			delete @ghosts
-
 	update: () ->
-
 		# Update the engine animation countdown.
 		if @engineAnimFor?
-			@engineAnimFor -= sinceLastUpdate
+			@engineAnimFor -= @client.sinceLastUpdate
 			@engineAnimFor = null if @engineAnimFor <= 0
 
-		# Update the ghosts trail.
-		if @ghosts and (@ghosts.length is 0 or now-@ghosts[@ghosts.length-1].t > 0)
-			@ghosts.push
-				x: @pos.x
-				y: @pos.y
-				dir: @dir
-				t: now
-			@ghosts.shift() if @ghosts.length > 5
+	inView: (offset = {x:0, y:0}) ->
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 10)
 
-	isExploding: () ->
-		return @exploding
+	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1
+		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
-	isDead: () ->
-		return @dead
+	draw: (ctxt) ->
+		return if @state is 'exploding' or @state is 'dead'
 
-	draw: (ctxt, offset) ->
-		if @dead
+		# Blink when the ship just spawned.
+		return if @state is 'spawned' and @client.now % 200 < 100
+
+		if @invisible and @ isnt @client.localShip
+			# Maybe draw a stealthy effect instead of the ship.
 			return
-		else if @exploding
-			@drawExplosion(ctxt, offset)
 		else
-			@drawShip(ctxt, offset)
+			# Draw the basic model.
+			ctxt.save()
+			ctxt.translate(@pos.x, @pos.y)
+			ctxt.rotate(@dir)
+			if @invisible
+				@drawModel(ctxt, color(@color, 0.5))
+			else
+				@drawModel(ctxt, color(@color))
+			ctxt.restore()
 
-	drawShip: (ctxt, offset = {x: 0, y: 0}) ->
-		x = @pos.x + offset.x
-		y = @pos.y + offset.y
-
-		# Check if ship is in view before drawing.
-		if not inView(x+10, y+10) and
-				not inView(x+10, y-10) and
-				not inView(x-10, y+10) and
-				not inView(x-10, y-10)
-			return
-		x -= view.x
-		y -= view.y
-
-		cos = Math.cos @dir
-		sin = Math.sin @dir
-
-		# Draw hull.
-
-		if showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, @hitRadius)
-
+		# Color the hull depending on the cannon heat.
 		if @cannonHeat > 0
-			fillAlpha = @cannonHeat/cannonCooldown
+			fillAlpha = @cannonHeat/@client.cannonCooldown
 		else if @firePower > 0
-			fillAlpha = (@firePower-minPower)/(maxPower-minPower)
+			fillAlpha = (@firePower-@client.minPower)/(@client.maxPower-@client.minPower)
 
-		@drawShipModel(x, y, @dir, 1, fillAlpha)
+		fillAlpha /= 2 if @invisible
 
-		# Draw ghosts trail.
-		if @ghosts?
-			for i of @ghosts
-				@drawShipModel(
-						@ghosts[i].x+offset.x-view.x,
-						@ghosts[i].y+offset.y-view.y,
-						@ghosts[i].dir,
-						0.1,
-						0)
+		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
+		ctxt.save()
+		ctxt.translate(@pos.x, @pos.y)
+		ctxt.rotate(@dir)
+		ctxt.fillStyle = color(@color, fillAlpha)
+		ctxt.beginPath()
+		for p in points
+			ctxt.lineTo(p[0], p[1])
+		ctxt.closePath()
+		ctxt.fill()
+		ctxt.restore()
 
 		# Draw engine fire.
 		if @thrust or @engineAnimFor?
-
 			alpha = 1
 			if @engineAnimFor? and @thrust
 				alpha = 1-@engineAnimFor/@engineAnimDelay
 			else if @engineAnimFor?
 				alpha = @engineAnimFor/@engineAnimDelay
 
+			alpha /= 2 if @invisible
+
 			ctxt.strokeStyle = color(@color, alpha)
-			enginePoints = [[-8,-5], [-18,0], [-8,5]]
+			points = [[-8,-5], [-18,0], [-8,5]]
 			ctxt.lineWidth = 2
 			ctxt.save()
-			ctxt.translate(x, y)
+			ctxt.translate(@pos.x, @pos.y)
 			ctxt.rotate(@dir)
 			ctxt.scale(1, Math.max(0.85,alpha))
 			if @boost > 1
 				boostScale = @boost-1
 				ctxt.scale(1 + .15*boostScale, 1 + .3*boostScale)
 			ctxt.beginPath()
-			for p in enginePoints
+			for p in points
 				ctxt.lineTo(p[0], p[1])
 			ctxt.stroke()
 			ctxt.restore()
 
 		# Draw the player's name.
-		if 	@name?  and @ isnt localShip and
-				(displayNames is on or
-				localShip.isExploding() or localShip.isDead())
-			ctxt.fillStyle = 'black'
-			ctxt.font = '15px Quattrocento sans'
-			ctxt.fillText(@name, x - ctxt.measureText(@name).width/2, y - 25)
+		if 	@name?  and @ isnt @client.localShip and
+				(@client.displayNames is on or
+				@client.localShip.state is 'exploding' or @client.localShip.state is 'dead')
+			ctxt.fillStyle = '#666'
+			ctxt.font = '15px sans'
+			ctxt.fillText(@name, @pos.x - ctxt.measureText(@name).width/2, @pos.y - 25)
 
-	drawShipModel: (x, y, dir, strokeAlpha, fillAlpha) ->
+	drawModel: (ctxt, col) ->
 		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
 
-		ctxt.fillStyle = color(@color, fillAlpha)
-		ctxt.strokeStyle = color(@color, strokeAlpha)
+		ctxt.strokeStyle = col
+		ctxt.lineJoin = 'round'
 		ctxt.lineWidth = 4
 
-		ctxt.save()
-		ctxt.translate(x, y)
-		ctxt.rotate(@dir)
 		ctxt.beginPath()
 		for p in points
 			ctxt.lineTo(p[0], p[1])
 		ctxt.closePath()
 		ctxt.stroke()
-		ctxt.fill()
-		ctxt.restore()
 
-	explode: () ->
-		@explosionBits = []
+	drawOnRadar: (ctxt) ->
+		return if @invisible
 
+		bestPos = @client.closestGhost(@client.localShip.pos, @pos)
+		dx = bestPos.x - @client.localShip.pos.x
+		dy = bestPos.y - @client.localShip.pos.y
+
+		# Draw the radar if the ship is outside of the screen bounds.
+		if Math.abs(dx) > @client.canvasSize.w/2 or Math.abs(dy) > @client.canvasSize.h/2
+
+			margin = 20
+			rx = Math.max -@client.canvasSize.w/2 + margin, dx
+			rx = Math.min @client.canvasSize.w/2 - margin, rx
+			ry = Math.max -@client.canvasSize.h/2 + margin, dy
+			ry = Math.min @client.canvasSize.h/2 - margin, ry
+
+			radius = 10
+			alpha = 1
+
+			if @state is 'exploding'
+				animRatio = 1 - @countdown / 1000
+				radius -= animRatio * 10
+				alpha -= animRatio
+
+			ctxt.fillStyle = color(@color, alpha)
+			ctxt.beginPath()
+			ctxt.arc(@client.canvasSize.w/2 + rx, @client.canvasSize.h/2 + ry, radius, 0, 2*Math.PI, false)
+			ctxt.fill()
+
+		return true
+
+	boostEffect: () ->
+		@client.effects.push new BoostEffect(@client, @, 1, 3000)
+
+	explosionEffect: () ->
 		# Initial particle speed is derived from ship speed at death
 		# and killing bullet speed.
 		[vx, vy] = [@vel.x, @vel.y]
@@ -170,69 +166,7 @@ class Ship
 		# Ensure decent fireworks.
 		speed = Math.max(speed, 3)
 
-		# Create explosion particles.
-		for i in [0..200]
-			particle =
-				x: @pos.x
-				y: @pos.y
-				vx: .35* speed *(2*Math.random()-1)
-				vy: .35* speed *(2*Math.random()-1)
-				size: Math.random() * 10
-			angle = Math.atan2(particle.vy, particle.vx)
-			particle.vx *= Math.abs(Math.cos angle)
-			particle.vy *= Math.abs(Math.sin angle)
-			@explosionBits.push particle
+		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
 
-	stepExplosion: () ->
-		for b in @explosionBits
-			b.x += b.vx + (-1 + 2*Math.random())/1.5
-			b.y += b.vy + (-1 + 2*Math.random())/1.5
-
-	drawExplosion: (ctxt, offset = {x: 0, y: 0}) ->
-		ox = -view.x + offset.x
-		oy = -view.y + offset.y
-
-		ctxt.fillStyle = color(@color, (maxExploFrame-@exploFrame)/maxExploFrame)
-		for b in @explosionBits
-			if inView(b.x+offset.x, b.y+offset.y)
-				ctxt.fillRect b.x+ox, b.y+oy, b.size, b.size
-
-	drawOnRadar: (ctxt) ->
-		# Select the closest ship among the real one and its ghosts.
-		bestDistance = Infinity
-		for j in [-1..1]
-			for k in [-1..1]
-				x = @pos.x + j * map.w
-				y = @pos.y + k * map.h
-				d = distance(localShip.pos.x, localShip.pos.y, x, y)
-
-				if d < bestDistance
-					bestDistance = d
-					bestPos = {x, y}
-
-		dx = bestPos.x - localShip.pos.x
-		dy = bestPos.y - localShip.pos.y
-
-		# Draw the radar if the ship is outside of the screen bounds.
-		if Math.abs(dx) > screen.w/2 or Math.abs(dy) > screen.h/2
-
-			margin = 20
-			rx = Math.max -screen.w/2 + margin, dx
-			rx = Math.min screen.w/2 - margin, rx
-			ry = Math.max -screen.h/2 + margin, dy
-			ry = Math.min screen.h/2 - margin, ry
-
-			radius = 10
-			alpha = 1
-
-			if @isExploding()
-				animRatio = @exploFrame / maxExploFrame
-				radius -= animRatio * 10
-				alpha -= animRatio
-
-			ctxt.fillStyle = color(@color, alpha)
-			ctxt.beginPath()
-			ctxt.arc(screen.w/2 + rx, screen.h/2 + ry, radius, 0, 2*Math.PI, false)
-			ctxt.fill()
-
-		return true
+# Exports
+window.Ship = Ship

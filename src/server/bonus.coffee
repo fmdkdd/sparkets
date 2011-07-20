@@ -1,12 +1,13 @@
+utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
-server = require './server'
 BonusMine = require './bonusMine'
 BonusBoost = require './bonusBoost'
-prefs = require './prefs'
-utils = require '../utils'
+BonusEMP = require './bonusEMP'
+BonusDrunk = require './bonusDrunk'
+Rope = require('./rope').Rope
 
 class Bonus extends ChangingObject
-	constructor: (@id, bonusType) ->
+	constructor: (@id, @game, bonusType) ->
 		super()
 
 		@watchChanges 'type'
@@ -14,49 +15,55 @@ class Bonus extends ChangingObject
 		@watchChanges 'state'
 		@watchChanges 'countdown'
 		@watchChanges 'color'
-		@watchChanges 'modelSize'
 		@watchChanges 'pos'
+		@watchChanges 'vel'
 		@watchChanges 'serverDelete'
 		@watchChanges 'bonusType'
 
 		@type = 'bonus'
 
-		@hitRadius = prefs.bonus.hitRadius
-		@modelSize = prefs.bonus.modelSize
+		@hitRadius = @game.prefs.bonus.hitRadius
 
 		@spawn(bonusType)
 
 	spawn: (bonusType) ->
 		@state = 'incoming'
-		@countdown = prefs.bonus.states[@state].countdown
+		@countdown = @game.prefs.bonus.states[@state].countdown
 
 		@pos =
-			x: Math.random() * prefs.server.mapSize.w
-			y: Math.random() * prefs.server.mapSize.h
+			x: Math.random() * @game.prefs.mapSize.w
+			y: Math.random() * @game.prefs.mapSize.h
+		@vel =
+			x: 0
+			y: 0
+
 		@color = utils.randomColor()
 		@empty = yes
 
-		# Choose bonus type.
-		if not bonusType?
-			type = @randomBonus()
-		else
-			type = prefs.bonus.bonusType[bonusType].class
-		@bonusEffect = type.constructor
-		@bonusType = type.type
+		@holder = null
+		@rope = null
 
-		@spawn(bonusType) if server.game.collidesWithPlanet(@)
+		# Choose bonus type.
+		if bonusType?
+			bonusClass = @game.prefs.bonus.bonusType[bonusType].class
+		else
+			bonusClass = @randomBonus()
+		@effect = new bonusClass.constructor(@game, @)
+		@bonusType = bonusClass.type
+
+		@spawn(bonusType) if @game.collidesWithPlanet(@)
 
 	randomBonus: () ->
 		roulette = []
-		for type, bonus of prefs.bonus.bonusType
+		for type, bonus of @game.prefs.bonus.bonusType
 			i = 0
 			while i < bonus.weight
 				roulette.push(bonus.class)
 				++i;
-		return utils.randomArrayElem roulette
+		return Array.random(roulette)
 
 	tangible: () ->
-		@state isnt 'dead'
+		@state isnt 'incoming' and @state isnt 'dead'
 
 	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
 		x += offset.x
@@ -64,25 +71,75 @@ class Bonus extends ChangingObject
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
-		@state = prefs.bonus.states[@state].next
-		@countdown = prefs.bonus.states[@state].countdown
+		@state = @game.prefs.bonus.states[@state].next
+		@countdown = @game.prefs.bonus.states[@state].countdown
+
+	setState: (state) ->
+		if @game.prefs.bonus.states[state]?
+			@state = state
+			@countdown = @game.prefs.bonus.states[state].countdown
 
 	move: () ->
-		true
+		@pos.x += @vel.x
+		@pos.y += @vel.y
+		@warp()
+
+		@vel.x *= @game.prefs.ship.frictionDecay
+		@vel.y *= @game.prefs.ship.frictionDecay
+
+		@changed 'pos'
+
+	warp: () ->
+		{w, h} = @game.prefs.mapSize
+		@pos.x = if @pos.x < 0 then w else @pos.x
+		@pos.x = if @pos.x > w then 0 else @pos.x
+		@pos.y = if @pos.y < 0 then h else @pos.y
+		@pos.y = if @pos.y > h then 0 else @pos.y
 
 	update: () ->
-		@countdown -= prefs.server.timestep if @countdown?
+		if @countdown?
+			@countdown -= @game.prefs.timestep
+			@nextState() if @countdown <= 0
 
 		switch @state
-			# The bonus arrival is imminent!
-			when 'incoming'
-				@nextState() if @countdown <= 0
-
-			# The bonus is available.
-			# when 'available'
 
 			# The bonus is of no more use.
 			when 'dead'
 				@serverDelete = yes
+
+	use: () ->
+		@effect.use()
+		
+		@game.events.push
+			type: 'bonus used'
+			id: @id
+
+	attach: (ship) ->
+		@holder = ship
+		@setState 'claimed'
+
+		# Attach the bonus to the ship with a rope.
+		@game.newGameObject (id) =>
+			@rope = new Rope(@game, id, @holder, @, 30, 4)
+
+	release: () ->
+		@holder = null
+		@setState 'available'
+
+		# We don't need the rope anymore.
+		if @rope?
+			@rope.detach()
+			@rope = null				
+
+	explode: () ->
+		@holder.releaseBonus() if @state is 'claimed'
+		@setState 'dead'
+
+		@game.events.push
+			type: 'bonus exploded'
+			id: @id
+
+	isEvil: () ->
+		@effect.evil?
 
 exports.Bonus = Bonus

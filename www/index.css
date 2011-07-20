@@ -1,0 +1,245 @@
+* { margin: 0; padding: 0; }
+
+body {
+	 font-family: sans;
+	 font-size: 12pt;
+	 padding: 0.5em;
+
+	 color: hsl(0, 0%, 30%);
+}
+
+.footer { clear: both; }
+
+h2 {
+		margin-bottom: 0.4em;
+}
+
+/**
+ * Title.
+ */
+
+#title h1 {
+		float: left;
+		margin-left: 1em;
+}
+
+#title h2 {
+		float: right;
+		margin-right: 2em;
+		padding-top: 0.9em;
+
+		font-size: medium;
+}
+
+/**
+ * Info.
+ */
+
+#info {
+	 margin: 2em;
+	 padding: 1em;
+	 min-width: 600px;
+
+	 background-color: lightgrey;
+	 border-radius: 0.9em;
+	 border: 0.4em solid hsl(-100, 10%, 45%);
+}
+
+#controls, #about {
+		display: block;
+		width: 44%;
+}
+
+#controls ul, #about ul {
+		list-style-position: inside;
+		list-style-type: circle;
+}
+
+#controls {
+		float: left;
+}
+
+#controls .key {
+		color: hsl(0, 0%, 20%);
+}
+
+#goal {
+	 font-style: italic;
+}
+
+#about {
+		float: right;
+}
+
+#about a {
+		text-decoration: none;
+		color: hsl(0, 0%, 20%);
+}
+
+#about a:hover {
+		text-decoration: underline;
+}
+
+/**
+ * Forms.
+ */
+
+#forms {
+	 margin: 2em;
+	 padding: 1em;
+	 min-width: 600px;
+
+	 background-color: lightgrey;
+	 border-radius: 0.9em;
+	 border: 0.4em solid hsl(-100, 10%, 45%);
+}
+
+#createDiv, #joinDiv {
+	 width: 44%;
+}
+
+#createDiv { float: left; }
+#joinDiv { float: right; }
+
+/**
+ * Create column.
+ */
+
+.error {
+	 font-size: .8em;
+	 color: hsl(0, 70%, 50%);
+
+	 display: inline;
+}
+
+#createDiv h3 {
+	 font-size: 1em;
+
+	 margin-top: 1em;
+}
+
+ul.collapse {
+	 list-style-image: url('/img/triangle.svg');
+}
+
+ul.collapse h3:hover {
+	 cursor: pointer;
+	 background-color: hsl(-100, 5%, 75%);
+}
+
+.tooltip {
+	 font-size: .8em;
+	 padding: .2em;
+	 
+	 color: white;
+	 background-color: hsl(0, 0%, 45%);
+	 border-radius: 10%;
+	 box-shadow: 1px 1px 2px #888;
+
+	 cursor: default;
+}
+
+#createForm > ul {
+	 margin-left: 1em;
+}
+
+#createDiv ul ul {
+	 list-style: none;
+}
+
+#createDiv ul ul li {
+	 margin: .3em 0;
+}
+
+#createDiv input[type="text"] {
+	 width: 10em;
+}
+
+#createDiv input[type="range"] {
+	 width: 8em;
+
+	 float: right;
+}
+
+#createDiv [value="Create"] {
+	 padding: .2em .5em;
+	 margin: 1em auto;
+
+	 display: block;
+
+	 /* Necessary for centering in Chrome */
+	 width: 5em;
+
+	 font-size: 14pt;
+
+	 color: white;
+	 border-radius: .3em;
+	 border-width: 3px;
+	 border-style: solid;
+}
+
+#createDiv [value="Create"] {
+	 background-color: hsl(20, 60%, 60%);
+	 border-color: hsl(20, 60%, 45%);
+
+	 transition-property: background-color, border-color;
+	 transition-duration: 150ms;
+	 -webkit-transition-property: background-color, border-color;
+	 -webkit-transition-duration: 150ms;
+	 -moz-transition-property: background-color, border-color;
+	 -moz-transition-duration: 150ms;
+}
+
+#createDiv [value="Create"]:hover {
+	 cursor: pointer;
+
+	 background-color: hsl(20, 60%, 75%);
+	 border-color: hsl(20, 60%, 55%);
+}
+
+#createDiv [value="Create"]:disabled {
+	 cursor: default;
+
+	 background-color: hsl(20, 0%, 75%);
+	 border-color: hsl(20, 0%, 55%);
+}
+
+/**
+ * Join column.
+ */
+
+#gameListTable {
+	 width: 100%;
+
+	 border-collapse: collapse;
+
+	 background-color: white;
+	 border-width: 2px;
+	 border-style: solid;
+	 border-color: hsl(-150, 30%, 45%);
+}
+
+#gameListTable th {
+	 padding: .3em;
+
+	 text-align: left;
+	 font-weight: bold;
+}
+
+#gameList tr {
+	 background-color: white;
+}
+
+#gameList tr:nth-child(odd) {
+	 background-color: hsl(-150, 30%, 92%);
+}
+
+#gameList td {
+	 padding: .3em;
+}
+
+#gameList a {
+	 text-decoration: none;
+
+	 color: hsl(-150, 60%, 45%);
+}

@@ -1,5 +1,5 @@
 class Planet
-	constructor: (planet) ->
+	constructor: (@client, planet) ->
 		@serverUpdate(planet)
 
 		@initSprite() if not @sprite?
@@ -9,7 +9,7 @@ class Planet
 		@sprite.width = @sprite.height = Math.ceil(2*@force)
 
 		c = @sprite.getContext('2d')
-		c.strokeStyle = color planetColor
+		c.strokeStyle = color @color
 		c.fillStyle = 'white'
 		c.lineWidth = 8
 		c.beginPath()
@@ -22,26 +22,27 @@ class Planet
 			@[field] = val
 
 	update: () ->
-		true
 
-	draw: (ctxt, offset = {x: 0, y: 0}) ->
-		px = @pos.x + offset.x
-		py = @pos.y + offset.y
-		f = @force;
+	inView: (offset = {x: 0, y: 0}) ->
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @force)
 
-		# Check the planet really needs to be drawn.
-		if not inView(px+f, py+f) and
-				not inView(px+f, py-f) and
-				not inView(px-f, py+f) and
-				not inView(px-f, py-f)
-			return
+	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1
+		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
-		x = px - view.x
-		y = py - view.y
+		ctxt.fillStyle = 'black'
+		ctxt.font = '15px sans'
+		ctxt.fillText(@id, @pos.x - ctxt.measureText(@id).width/2, @pos.y)
 
-		ctxt.drawImage(@sprite, x-f, y-f)
+	draw: (ctxt) ->
+		ctxt.save()
+		ctxt.translate(@pos.x - @force, @pos.y - @force)
+		@drawModel(ctxt, null)
+		ctxt.restore()
 
-		if showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, @hitRadius)
+	drawModel: (ctxt, col) ->
+		ctxt.drawImage(@sprite, 0, 0)
+
+# Exports
+window.Planet = Planet

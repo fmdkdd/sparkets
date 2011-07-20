@@ -1,9 +1,8 @@
 ChangingObject = require('./changingObject').ChangingObject
-prefs = require './prefs'
 utils = require '../utils'
 
 class Mine extends ChangingObject
-	constructor: (ship, @id) ->
+	constructor: (@owner, @pos, @id, @game) ->
 		super()
 
 		@watchChanges 'type'
@@ -16,12 +15,12 @@ class Mine extends ChangingObject
 
 		@type = 'mine'
 		@state = 'inactive'
-		@countdown = prefs.mine.states[@state].countdown
+		@countdown = @game.prefs.mine.states[@state].countdown
 		@pos =
-			x: ship.pos.x
-			y: ship.pos.y
-		@color = ship.color
-		@explosionRadius = prefs.mine.explosionRadius
+			x: pos.x
+			y: pos.y
+		@color = @owner.color
+		@explosionRadius = @game.prefs.mine.explosionRadius
 
 		@hitRadius = 0
 
@@ -34,32 +33,44 @@ class Mine extends ChangingObject
 		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
-		@state = prefs.mine.states[@state].next
-		@countdown = prefs.mine.states[@state].countdown
+		@state = @game.prefs.mine.states[@state].next
+		@countdown = @game.prefs.mine.states[@state].countdown
+
+	setState: (state) ->
+		if @game.prefs.mine.states[state]?
+			@state = state
+			@countdown = @game.prefs.mine.states[state].countdown
 
 	move: () ->
 		true
 
 	update: () ->
-		@countdown -= prefs.server.timestep if @countdown?
+		if @countdown?
+			@countdown -= @game.prefs.timestep
+			@nextState() if @countdown <= 0
 
 		# The mine is not yet activated.
 		switch @state
-			when 'inactive'
-				@nextState() if @countdown <= 0
 
-			# The mine is ready.
+			# The mine is active.
 			when 'active'
-				++@hitRadius
-				@hitRadius = 0 if @hitRadius is prefs.mine.maxDetectionRadius
+				@hitRadius += @game.prefs.mine.waveSpeed
+				if @hitRadius >= @game.prefs.mine.maxDetectionRadius
+					@hitRadius = @game.prefs.mine.minDetectionRadius
 
 			# The mine is exploding.
 			when 'exploding'
 				@hitRadius = @explosionRadius
-				@nextState() if @countdown <= 0
 
 			# The explosion is over.
 			when 'dead'
 				@serverDelete = yes
+
+	explode: () ->
+		@setState 'exploding'
+
+		@game.events.push
+			type: 'mine exploded'
+			id: @id
 
 exports.Mine = Mine
