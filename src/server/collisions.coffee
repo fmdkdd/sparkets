@@ -55,8 +55,30 @@ exports.tests =
 
 		return false
 
-	'line-multisegment': (obj1, obj2) ->
+	# From: http://paulbourke.net/geometry/lineline2d/
+	'segment-segment': (obj1, obj2) ->
+		a = obj1.hitBox.a
+		b = obj1.hitBox.b
+		c = obj2.hitBox.a
+		d = obj2.hitBox.b
 
+		denominator = (d.y-c.y)*(b.x-a.x)-(d.x-c.x)*(b.y-a.y)
+		ua = ((d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x)) / denominator
+		ub = ((b.x-a.x)*(a.y-c.y)-(b.y-a.y)*(a.x-c.x)) / denominator
+
+		return 0 <= ua <= 1 and 0 <= ub <= 1
+
+	'segment-multisegment': (obj1, obj2) ->
+		points = obj2.hitBox.points
+		for i in [0...points.length-1]
+			mock =
+				hitBox:
+					a: {x: points[i].x, y: points[i].y}
+					b: {x: points[i+1].x, y: points[i+1].y}
+			return true if exports.tests['segment-segment'](obj1, mock)
+
+		return false
+		
 
 exports.handle = (obj1, obj2) ->
 	type1 = "#{obj1.type}-#{obj2.type}"

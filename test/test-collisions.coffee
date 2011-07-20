@@ -129,3 +129,81 @@ exports.suite.addBatch
 
 		'should return true': (topic) ->
 			assert.strictEqual(topic, true)
+
+	'segment and segment - nonintersecting':
+		topic: () ->
+			obj1 = new MockGameObject()
+			obj1.hitBox = 
+				type: 'segment'
+				a: {x: 0, y: 0}
+				b: {x: 10, y: 0}
+
+			obj2 = new MockGameObject()
+			obj2.hitBox = 
+				type: 'segment'
+				a: {x: 20, y: 5}
+				b: {x: 20, y: -5}
+
+			collisions.test(obj1, obj2)
+
+		'should return false': (topic) ->
+			assert.strictEqual(topic, false)
+
+	'segment and segment - intersecting':
+		topic: () ->
+			obj1 = new MockGameObject()
+			obj1.hitBox = 
+				type: 'segment'
+				a: {x: 0, y: 0}
+				b: {x: 10, y: 0}
+
+			obj2 = new MockGameObject()
+			obj2.hitBox = 
+				type: 'segment'
+				a: {x: 5, y: 5}
+				b: {x: 5, y: -5}
+
+			collisions.test(obj1, obj2)
+
+		'should return true': (topic) ->
+			assert.strictEqual(topic, true)
+
+	'segment and multisegment - nonintersecting':
+		topic: () ->
+			obj1 = new MockGameObject()
+			obj1.hitBox = 
+				type: 'segment'
+				a: {x: 0, y: 0}
+				b: {x: 10, y: 0}
+
+			obj2 = new MockGameObject()
+			obj2.hitBox = 
+				type: 'multisegment'
+				points: [{x: 20, y:20},
+								 {x: 20, y:15},
+								 {x: 20, y:10}]
+
+			collisions.test(obj1, obj2)
+
+		'should return false': (topic) ->
+			assert.strictEqual(topic, false)
+
+	'segment and multisegment - intersecting':
+		topic: () ->
+			obj1 = new MockGameObject()
+			obj1.hitBox = 
+				type: 'segment'
+				a: {x: 0, y: 0}
+				b: {x: 10, y: 0}
+
+			obj2 = new MockGameObject()
+			obj2.hitBox = 
+				type: 'multisegment'
+				points: [{x: 5, y: 5},
+								 {x: 5, y: -5},
+								 {x: 5, y: -10}]
+
+			collisions.test(obj1, obj2)
+
+		'should return true': (topic) ->
+			assert.strictEqual(topic, true)
