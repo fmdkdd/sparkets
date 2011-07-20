@@ -38,7 +38,7 @@ class Menu
 				event.preventDefault()
 				pickColor(event)
 
-		@wheelBox.mouseup (event) =>
+		$(document).mouseup (event) =>
 			return if event.which isnt 1 # Only left click triggers.
 
 			# Mouse move can be triggered without any click.
