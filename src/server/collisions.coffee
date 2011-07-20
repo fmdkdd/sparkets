@@ -146,8 +146,9 @@ exports.collisions =
 
 	'bullet-bonus': (bullet, bonus) ->
 		bonus.explode()
+		bullet.explode()
 
-		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id}"
+		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id} and died"
 
 	'bonus-planet': (bonus, planet) ->
 		bonus.explode()
