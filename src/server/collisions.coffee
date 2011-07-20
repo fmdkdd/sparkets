@@ -1,6 +1,53 @@
+utils = require '../utils'
 logger = require('../logger').static
 
 ddebug = (msg) -> logger.log 'collisions', msg
+
+exports.test = (obj1, obj2) ->
+	type1 = "#{obj1.hitBox.type}-#{obj2.hitBox.type}"
+	type2 = "#{obj2.hitBox.type}-#{obj1.hitBox.type}"
+
+	if exports.tests[type1]?
+		exports.tests[type1](obj1, obj2)
+	else if exports.tests[type2]?
+		exports.tests[type2](obj2, obj1)
+	
+exports.tests =
+
+	'circle-circle': (obj1, obj2) ->
+		r1 = obj1.hitBox.radius
+		r2 = obj2.hitBox.radius
+		utils.distance(obj1.pos.x, obj1.pos.y, obj2.pos.x, obj2.pos.y) < r1 + r2
+
+	'circle-segment': (obj1, obj2) ->
+		r = obj1.hitBox.radius
+		c = {x: obj1.pos.x, y: obj1.pos.y}
+		a = {x: obj2.hitBox.a.x, y:obj2.hitBox.a.y}
+		b = {x: obj2.hitBox.b.x, y:obj2.hitBox.b.y}
+
+		ab = utils.vec.vector(a.x, a.y, b.x, b.y)
+		ac = utils.vec.vector(a.x, a.y, c.x, c.y)
+		abu = utils.vec.unit(ab)
+
+		# Project AC onto AB.
+		projLength = utils.vec.dot(ac, utils.vec.unit(ab))
+		proj = utils.vec.times(abu, projLength)
+
+ 		# Compute the closest point of AB from the circle.
+		if projLength <= 0
+			closest = a
+		else if projLength >= utils.vec.length(ab)
+			closest = b
+		else
+			closest = utils.vec.plus(a, proj)
+
+		# Is the closest point of the segment inside of the circle?
+		return utils.distance(closest.x, closest.y, c.x, c.y) < r
+
+	'circle-multisegment': (obj1, obj2) ->
+
+	'line-multisegment': (obj1, obj2) ->
+
 
 exports.handle = (obj1, obj2) ->
 	type1 = "#{obj1.type}-#{obj2.type}"

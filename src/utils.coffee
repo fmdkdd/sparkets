@@ -15,6 +15,37 @@ Array.random = (array) ->
 exports.distance = (x1, y1, x2, y2) ->
 	Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
 
+exports.vec =
+
+	# Give a vector from [x1,y1] to [x2,y2].
+	vector: (x1, y1, x2, y2) ->
+		{x: x2-x1, y: y2-y1}
+
+	# Give the length of v.
+	length: (v) ->
+		exports.distance(0, 0, v.x, v.y)
+
+	# Give the unit vector of v.
+	unit: (v) ->
+		l = exports.vec.length(v)
+		{x: v.x/l, y: v.y/l}
+
+	# Give the dot product of u and v.
+	dot: (u, v) ->
+		u.x*v.x+u.y*v.y
+
+	# Give v scaled by a scalar.
+	times: (v, k) ->
+		{x: v.x*k, y: v.y*k}
+
+	# Give the sum of u and v.
+	plus: (u, v) ->
+		{x: u.x+v.x, y: u.y+v.y}
+
+	# Give the difference of u and v.
+	minus: (u, v) ->
+		{x: u.x-v.x, y: u.y-v.y}
+
 # Return intersection point between line AB and circle (Cx,Cy,Cr).
 exports.lineInterCircle = (Ax,Ay, Bx,By, r, Cx,Cy,Cr, gap) ->
 	[ABx, ABy] = [Bx-Ax, By-Ay]
