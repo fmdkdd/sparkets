@@ -39,6 +39,7 @@ webFiles = {
 	'/img/iconClose.svg',
 	'/img/iconDeath.svg',
 	'/img/iconKill.svg',
+	'/img/iconTalk.svg',
 	'/img/triangle.svg',
 	'/img/tutorialMove.svg',
 	'/img/tutorialShoot.svg',
