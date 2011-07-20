@@ -83,6 +83,10 @@ class Rope
 	explodingEffect: () ->
 		return if @chain.length is 0
 
+		# Convert the chain positions to the closest ghosts of the first node.
+		for i in [1...@chain.length]
+			@chain[i] = @client.closestGhost(@chain[0], @chain[i])
+
 		# Compute the "center" of the rope.
 		center = {x: 0, y: 0}
 		for c in @chain

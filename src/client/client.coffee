@@ -35,7 +35,7 @@ class Client
 
 		# Debugging
 		@showHitCircles = no
-		@showMapBounds = no
+		@showMapBounds = yes
 		@showFPS = no
 
 		@menu = new Menu(@)
