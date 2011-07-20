@@ -46,11 +46,6 @@ exports.vec =
 	minus: (u, v) ->
 		{x: u.x-v.x, y: u.y-v.y}
 
-exports.sign = (x) ->
-	return -1 if x < 0
-	return +1 if x > 0
-	0 
-
 # Return intersection point between line AB and circle (Cx,Cy,Cr).
 exports.lineInterCircle = (Ax,Ay, Bx,By, r, Cx,Cy,Cr, gap) ->
 	[ABx, ABy] = [Bx-Ax, By-Ay]

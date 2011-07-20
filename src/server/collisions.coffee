@@ -30,7 +30,7 @@ exports.tests =
 		abu = utils.vec.unit(ab)
 
 		# Project AC onto AB.
-		projLength = utils.vec.dot(ac, utils.vec.unit(ab))
+		projLength = utils.vec.dot(ac, abu)
 		proj = utils.vec.times(abu, projLength)
 
  		# Compute the closest point of AB from the circle.
