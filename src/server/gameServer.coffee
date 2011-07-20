@@ -1,12 +1,12 @@
+utils = require '../utils'
 logger = require('../logger').static
-GamePreferences = require('./prefs').GamePreferences
-Player = require('./player').Player
+collisions = require('./collisions')
 Bot = require('./bot').Bot
 Bonus = require('./bonus').Bonus
-Planet = require('./planet').Planet
+GamePreferences = require('./prefs').GamePreferences
 Moon = require('./moon').Moon
-collisions = require('./collisions')
-utils = require '../utils'
+Planet = require('./planet').Planet
+Player = require('./player').Player
 
 class GameServer
 	constructor: (@sockets, gamePrefs) ->
@@ -16,12 +16,15 @@ class GameServer
 
 		@bullets = {}
 		@mines = {}
+		@trackers = {}
 		@EMPs = {}
 		@bonuses = {}
 		@planets = {}
 
 		@gameObjects = {}
 		@gameObjectCount = 0
+
+		@events = []
 
 		@prefs = new GamePreferences(gamePrefs)
 
@@ -356,6 +359,8 @@ class GameServer
 		if not utils.isEmptyObject allChanges
 			@sockets.emit 'objects update',
 				objects: allChanges
+				events: @events
+		@events = []
 
 	collidesWithPlanet: (obj) ->
 		for id, planet of @planets
@@ -376,6 +381,8 @@ class GameServer
 				delete @bullets[id]
 			when 'mine'
 				delete @mines[id]
+			when 'tracker'
+				delete @trackers[id]
 			when 'planet'
 				delete @planets[id]
 			when 'moon'
@@ -441,20 +448,37 @@ class GameServer
 					collides(x, y, totForce, p)
 
 			# Not colliding, can add it
-			rock = new Planet(x, y, force)
+			rock = new Planet(@, x, y, force)
 			planets.push rock
 			if satellite
-				planets.push new Moon(rock, satForce, satGap, @)
+				planets.push new Moon(@, rock, satForce, satGap)
 
 		@debug "#{@prefs.planet.count} planets created"
 
 		return planets
 
+	# Return the closest position of 'targetPos' from 'sourcePos'.
+	closestGhost: (sourcePos, targetPos) ->
+		bestPos = null
+		bestDistance = Infinity
+
+		for i in [-1..1]
+			for j in [-1..1]
+				ox = targetPos.x + i * @prefs.mapSize.w
+				oy = targetPos.y + j * @prefs.mapSize.h
+				d = utils.distance(sourcePos.x, sourcePos.y, ox, oy)
+				if d < bestDistance
+					bestDistance = d
+					bestPos = {x: ox, y: oy}
+
+		return bestPos
+
 	spawnBonus: (bonusType) ->
 		return false if Object.keys(@bonuses).length >= @prefs.bonus.maxCount
+
 		@newGameObject( (id) =>
 			@bonuses[id] = new Bonus(id, @, bonusType)
-			@debug "spawned new #{@bonuses[id].bonusType} bonus ##{id}"
+			@debug "spawned new #{@bonuses[id].effect.type} bonus ##{id}"
 			return @bonuses[id] )
 
 	addBots: () ->

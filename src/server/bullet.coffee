@@ -1,5 +1,5 @@
-ChangingObject = require('./changingObject').ChangingObject
 utils = require '../utils'
+ChangingObject = require('./changingObject').ChangingObject
 
 class Bullet extends ChangingObject
 	constructor: (@owner, @id, @game) ->
@@ -42,7 +42,10 @@ class Bullet extends ChangingObject
 		# Pull factor for each object.
 		force = ({object: obj}) =>
 			if obj.type is 'EMP'
-				@game.prefs.bullet.EMPPull * obj.force
+				if obj.ship is @owner
+					0
+				else
+					@game.prefs.bullet.EMPPull * obj.force
 			else
 				@game.prefs.bullet.gravityPull * obj.force
 
@@ -95,6 +98,9 @@ class Bullet extends ChangingObject
 			# No points left, disappear.
 			when 'dead'
 				@serverDelete = yes
+
+	explode: () ->
+		@state = 'dead'
 
 	tangible: ->
 		@state is 'active'

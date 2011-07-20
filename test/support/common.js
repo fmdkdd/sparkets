@@ -248,3 +248,27 @@ WSClient.prototype.event = function(name, args) {
 websocket = function (cl, sid) {
   return new WSClient(cl.port, sid);
 };
+
+/**
+ * Utilities to handle async events with vows.
+ *
+ * `ok = waiter(@callback)` will setup a timeout which to be cleared
+ * when ok is called.
+ */
+
+waitFor = function (ok, fail, timeout) {
+	var timeout = setTimeout(fail, timeout || 100);
+
+	return function () {
+		clearTimeout(timeout);
+		return ok.apply(null, Array.prototype.slice.call(arguments));
+	}
+}
+
+waiter = function (callback, timeout) {
+	return waitFor(function () {
+		var args = Array.prototype.slice.call(arguments);
+		args.unshift(null);
+		return callback.apply(null, args);
+	}, function () { callback('timeout'); });
+}

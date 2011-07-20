@@ -1,8 +1,10 @@
 utils = require '../utils'
 BonusBoost = require './bonusBoost'
-BonusMine = require './bonusMine'
-BonusEMP = require './bonusEMP'
 BonusDrunk = require './bonusDrunk'
+BonusEMP = require './bonusEMP'
+BonusMine = require './bonusMine'
+BonusTracker = require './bonusTracker'
+BonusStealth = require './bonusStealth'
 
 class ServerPreferences
 	constructor: (prefs = {}) ->
@@ -50,6 +52,9 @@ class GamePreferences
 
 	ship:
 		states:
+			'spawned':
+				next: 'alive'
+				countdown: 1500
 			'alive':
 				next: 'exploding'
 				countdown: null
@@ -90,6 +95,12 @@ class GamePreferences
 		# If true, planets gravity affect ships.
 		enableGravity: false
 
+		# Maximum distance from which another ship can be targeted.
+		maxTargetingDistance: 500
+
+		# Successive fields of view used to target enemy ships.
+		targetingFOVs: [30, 60, 90, 180]
+
 	bot:
 		# Number of bots on server.
 		count: 0
@@ -109,6 +120,9 @@ class GamePreferences
 
 			# Angle with target at which to fire (radians).
 			fireSight: [.2, Math.PI/4]
+
+			# Angle with target at which to fire when stealthed (radians).
+			fireSightStealthed: [Math.PI/16, Math.PI/8]
 
 			# Negative gravity from planets when seeking.
 			seekPlanetAvoid: [-500, -50]
@@ -135,10 +149,13 @@ class GamePreferences
 			# Defaults to zero when no correspondin parameter is present.
 			# Probability is checked at every update.
 			acquireEMPUse: [.005, .05]
+			acquireStealthUse: [.005, .05]
 
 			chaseMineUse: [.001, .01]
 			chaseEMPUse: [.001, .01]
 			chaseBoostUse: [.01, 1]
+			chaseTrackerUse: [.001, .01]
+			chaseStealthUse: [.01, 1]
 
 		# Non aggressive, used for tests.
 		cameoPersona:
@@ -195,6 +212,11 @@ class GamePreferences
 			chaseBulletAvoid: -200
 
 	planet:
+
+		# Colors.
+		color: [209, 29, 61]
+		moonColor: [190, 70, 80]
+
 		# Number of planets on the map. Satellites don't count here.
 		count: 30
 
@@ -237,9 +259,30 @@ class GamePreferences
 		# Gap to leave in the hit line.
 		checkWidth: 4
 
+	EMP:
+		# Size of EMP around ship.
+		radius: 25
+
+		# Gravity push factor for ships.
+		shipPush: -200
+
+		states:
+			'active':
+				countdown: 5000
+				next: 'dead'
+
+			'dead':
+				countdown: null
+				next: null
+
 	mine:
+
 		# Sensibility radius.
+		minDetectionRadius: 30
 		maxDetectionRadius: 50
+
+		# Speed of wave.
+		waveSpeed: 0.5
 
 		# Detonation radius.
 		explosionRadius: 80
@@ -258,7 +301,39 @@ class GamePreferences
 				countdown: null
 				next: null
 
+	tracker:
+
+		hitRadius: 5
+		speed: 0.55
+		frictionDecay: 0.95
+		turnSpeed: 20
+
+		states:
+			'deploying':
+				countdown: 700 				# Time (ms) before activation.
+				next: 'tracking'
+			'tracking':
+				countdown: null
+				next: 'exploding'
+			'dead':
+				countdown: null
+				next: null
+
 	bonus:
+		states:
+			'incoming':
+				countdown: 2000
+				next: 'available'
+			'available':
+				countdown: null
+				next: 'claimed'
+			'claimed':
+				countdown: null
+				next: null
+			'dead':
+				countdown: null
+				next: null
+
 		# ms before a bonus drop.
 		waitTime: 5000
 
@@ -270,12 +345,21 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 3
+				weight: 1
+			tracker:
+				class: BonusTracker
+				weight: 1
 			boost:
 				class: BonusBoost
-				weight: 2
+				weight: 0
 			EMP:
 				class: BonusEMP
+				weight: 0
+			drunk:
+				class: BonusDrunk
+				weight: 0
+			stealth:
+				class: BonusStealth
 				weight: 1
 
 		# Radius of hit circle.
@@ -283,17 +367,6 @@ class GamePreferences
 
 		# Drawing size on client.
 		modelSize: 20
-
-		states:
-			'incoming':
-				countdown: 2000
-				next: 'active'
-			'active':
-				countdown: null
-				next: 'dead'
-			'dead':
-				countdown: null
-				next: null
 
 		mine:
 			# Number of held mines.
@@ -309,19 +382,13 @@ class GamePreferences
 			# Decrease boost factor in decay state.
 			boostDecay: 0.02
 
-		emp:
-			# Initial negative force.
-			initialForce: 5
-
-			# Force increase at each update.
-			forceIncrease: .6
-
-			# Max force of the EMP.
-			maxForce: 100
-
 		drunk:
 			# Duration of drunk effect in ms.
 			duration: 3000
+
+		stealth:
+			# Duration of invisiblity in ms.
+			duration: 5000
 
 exports.ServerPreferences = ServerPreferences
 exports.GamePreferences = GamePreferences

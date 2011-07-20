@@ -2,7 +2,7 @@ ChangingObject = require('./changingObject').ChangingObject
 utils = require '../utils'
 
 class Planet extends ChangingObject
-	constructor: (x, y, force) ->
+	constructor: (@game, x, y, force) ->
 		super()
 
 		@watchChanges 'id'
@@ -10,10 +10,12 @@ class Planet extends ChangingObject
 		@watchChanges 'pos'
 		@watchChanges 'force'
 		@watchChanges 'hitRadius'
+		@watchChanges 'color'
 
 		@type = 'planet'
-		@hitRadius = @force = force
 		@pos = {x, y}
+		@hitRadius = @force = force
+		@color = @game.prefs.planet.color
 
 	update: () ->
 

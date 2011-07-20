@@ -1,7 +1,7 @@
 logger = require('../logger')
 ServerPreferences = require('./prefs').ServerPreferences
-
 GameServer = require('./gameServer').GameServer
+
 io = require('socket.io')
 httpServer = require('./httpServer')
 repl = require('webrepl')

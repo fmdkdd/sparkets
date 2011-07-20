@@ -1,381 +1,442 @@
-# Server
-window.socket = null
+class Client
+	constructor: () ->
 
-# Graphics
-window.ctxt = null
-window.canvasSize = {w: 0, h: 0}
-window.map = null
-window.view = {x: 0, y: 0}
-window.mouse = {x: 0, y: 0}
+		# Server
+		@socket = null
 
-# Time
-window.now = null
-window.sinceLastUpdate = null
+		# Graphics
+		@ctxt = document.getElementById('canvas').getContext('2d')
+		@canvasSize = {w: 0, h: 0}
+		@map = null
+		@view = {x: 0, y: 0}
+		@mouse = {x: 0, y: 0}
 
-window.planetColor = [209,29,61]
-window.maxBulletLength = 15
+		# Time
+		@now = null
+		@sinceLastUpdate = null
 
-# Game logic
-window.explosionDuration = 1000
+		@playerId = null
+		@shipId = null
+		@localShip = null
 
-window.playerId = null
-window.shipId = null
-window.localShip = null
+		@gameObjects = {}
+		@ships = {}
+		@bonuses = {}
 
-window.ships = {}
-window.bonuses = {}
+		@effects = []
 
-window.gameObjects = {}
+		@keys = {}
 
-window.effects = []
+		# User preferences
+		@displayNames = no
 
-window.keys = {}
+		# Game logic
+		@maxBulletLength = 15
 
-window.menu = null
-window.chat = null
+		# Debugging
+		@showHitCircles = no
+		@showMapBounds = yes
+		@showFPS = no
 
-# user preferences
-window.displayNames = no
+		@menu = new Menu(@)
+		@menu.restoreLocalPreferences()
 
-# Debugging
-window.showHitCircles = no
-window.showMapBounds = no
-window.showFPS = no
+		@chat = new Chat(@)
 
-# Entry point
-$(document).ready (event) ->
+		# Connect to server and set callbacks.
+		@socket = io.connect()
+		@socket = @socket.socket.of(window.location.hash.substring(1))
 
-	# Restore local preferences.
-	window.menu = new Menu()
-	window.menu.restoreLocalPreferences()
+		# Bind socket events.
+		@socket.on 'connect', () =>
+			@onConnect()
 
-	# Initialize chat.
-	window.chat = new Chat()
+			@socket.on 'connected', (data) =>
+				@onConnected(data)
 
-	# Connect to server and set callbacks.
-	window.socket = io.connect()
-	window.socket = window.socket.socket.of(window.location.hash.substring(1))
-	window.socket.on 'connect', onConnect
-	window.socket.on 'connected', onConnected
-	window.socket.on 'objects update', onObjectsUpdate
-	window.socket.on 'ship created', onShipCreated
-	window.socket.on 'player says', onPlayerMessage
-	window.socket.on 'player quits', onPlayerQuits
-	window.socket.on 'game end', onGameEnd
-	window.socket.on 'disconnect', onDisconnect
+			@socket.on 'objects update', (data) =>
+				@onObjectsUpdate(data)
 
-	# Setup canvas.
-	window.ctxt = document.getElementById('canvas').getContext('2d')
+			@socket.on 'ship created', (data) =>
+				@onShipCreated(data)
 
-	# Setup window resizing event.
-	$(window).resize (event) ->
-		window.canvasSize.w = document.getElementById('canvas').width = window.innerWidth
-		window.canvasSize.h = document.getElementById('canvas').height = window.innerHeight
-	$(window).resize()
+			@socket.on 'player says', (data) =>
+				@onPlayerMessage(data)
 
-# Setup input callbacks and launch game loop.
-go = () ->
-	# Show the menu the first time.
-	if not window.localStorage['spacewar.tutorial']?
-		window.menu.open()
-		window.localStorage['spacewar.tutorial'] = true
+			@socket.on 'player quits', (data) =>
+				@onPlayerQuits(data)
 
-	# Use the game event handler.
-	setInputHandlers()
+			@socket.on 'game end', (data) =>
+				@onGameEnd(data)
 
-	renderLoop(update, window.showFPS)
+			@socket.on 'disconnect', (data) =>
+				@onDisconnect(data)
 
-setInputHandlers = () ->
-	$(document).keydown ({keyCode}) ->
+		# Setup window resizing event.
+		$(window).resize (event) =>
+			@canvasSize.w = document.getElementById('canvas').width = window.innerWidth
+			@canvasSize.h = document.getElementById('canvas').height = window.innerHeight
+		$(window).resize()
+
+	# Setup input callbacks and launch game loop.
+	go: () ->
+		# Show the menu the first time.
+		if not window.localStorage['spacewar.tutorial']?
+			@menu.open()
+			window.localStorage['spacewar.tutorial'] = true
+
+		# Use the game event handler.
+		@setInputHandlers()
+
+		@renderLoop(@showFPS)
+
+	setInputHandlers: () ->
 		# Send key presses and key releases to the server.
-		if not window.keys[keyCode]? or window.keys[keyCode] is off
-			window.keys[keyCode] = on
-			window.socket.emit 'key down',
-				playerId: window.playerId
+		$(document).keydown ({keyCode}) =>
+			if not @keys[keyCode]? or @keys[keyCode] is off
+				@keys[keyCode] = on
+				@socket.emit 'key down',
+					playerId: @playerId
+					key: keyCode
+
+		$(document).keyup ({keyCode}) =>
+			@keys[keyCode] = off
+			@socket.emit 'key up',
+				playerId: @playerId
 				key: keyCode
 
-	$(document).keyup ({keyCode}) ->
-		window.keys[keyCode] = off
-		window.socket.emit 'key up',
-			playerId: window.playerId
-			key: keyCode
+		# Track mouse position.
+		$(document).mousemove ({pageX, pageY}) =>
+			@mouse.x = pageX
+			@mouse.y = pageY
 
-	$(document).mousemove ({pageX, pageY}) ->
-		window.mouse.x = pageX
-		window.mouse.y = pageY
-
-	$(document).mousedown () ->
-		if window.localShip.state is 'dead'
-			window.mouseDownInterval = setInterval( (() ->
-
+		# Let the player move the camera around when his ship died.
+		$(document).mousedown () =>
+			if @localShip.state is 'dead'
+				recenter = () =>
 					# Move the camera towards the position of the mouse.
-					center = {x: window.canvasSize.w/2, y: window.canvasSize.h/2}
-					view.x += (mouse.x-center.x)/50
-					view.y += (mouse.y-center.y)/50
+					center = {x: @canvasSize.w/2, y: @canvasSize.h/2}
+					@view.x += (@mouse.x-center.x)/50
+					@view.y += (@mouse.y-center.y)/50
 
 					# Warp the camera.
-					{w, h} = window.map
-					if view.x < 0 then view.x = w
-					if view.x > w then view.x = 0
-					if view.y < 0 then view.y = h
-					if view.y > h then view.y = 0),
+					{w, h} = @map
+					if @view.x < 0 then @view.x = w
+					if @view.x > w then @view.x = 0
+					if @view.y < 0 then @view.y = h
+					if @view.y > h then @view.y = 0
 
-					5)
+				@mouseDownInterval = setInterval(recenter, 5)
 
-	$(document).mouseup () ->
-		clearInterval(window.mouseDownInterval)
+		$(document).mouseup () =>
+			clearInterval(@mouseDownInterval)
 
-renderLoop = (callback, showFPS) ->
-	# RequestAnimationFrame API
-	# http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-	requestAnimFrame = ( () ->
-		window.requestAnimationFrame       ||
-			window.webkitRequestAnimationFrame ||
-			window.mozRequestAnimationFrame    ||
-			window.oRequestAnimationFrame      ||
-			window.msRequestAnimationFrame     ||
-			(callback, element) ->
-				window.setTimeout(callback, 1000 / 60) )()
+	renderLoop: (showFPS) ->
 
-	currentFPS = 0
-	frameCount = 0
-	lastFPSupdate = 0
+		# RequestAnimationFrame API
+		# http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+		requestAnimFrame = ( () =>
+			window.requestAnimationFrame       or
+			window.webkitRequestAnimationFrame or
+			window.mozRequestAnimationFrame    or
+			window.oRequestAnimationFrame      or
+			window.msRequestAnimationFrame     or
+			(callback, element) -> setTimeout(callback, 1000 / 60) )()
 
-	lastTime = 0
+		currentFPS = 0
+		frameCount = 0
+		lastFPSupdate = 0
+		lastTime = 0
 
-	render = (time) ->
-		# Setup next update.
+		render = (time) =>
+			# Setup next update.
+			requestAnimFrame(render)
+
+			# For browsers which do not pass the time argument.
+			time ?= Date.now()
+
+			# Update FPS every second
+			if (time - lastFPSupdate > 1000)
+				currentFPS = frameCount
+				frameCount = 0
+				lastFPSupdate = time
+				console.info(currentFPS) if showFPS
+
+			# Pass current time and time since last update to callback.
+			@update(time, time - lastTime)
+
+			# Another frame blit you must.
+			++frameCount
+
+			# Update time of the last update.
+			lastTime = time
+
 		requestAnimFrame(render)
 
-		# For browsers which do not pass the time argument.
-		time ?= Date.now()
+	# Game loop!
+	update: (time, sinceUpdate) ->
 
-		# Update FPS every second
-		if (time - lastFPSupdate > 1000)
-			currentFPS = frameCount
-			frameCount = 0
-			lastFPSupdate = time
-			console.info(currentFPS) if showFPS
+		# Update time variables.
+		@sinceLastUpdate = sinceUpdate
+		@now = time
 
-		# Pass current time and time since last update to callback.
-		callback(time, time - lastTime)
+		# Update and cleanup objects.
+		for id, obj of @gameObjects
+			obj.update()
+			if obj.serverDelete and obj.clientDelete
+				@deleteObject id
 
-		# Another frame blit you must.
-		++frameCount
-
-		# Update time of the last update.
-		lastTime = time
-
-	requestAnimFrame(render)
-
-# Game loop!
-update = (time, sinceUpdate) ->
-	# Update time globals (poor kittens...).
-	window.sinceLastUpdate = sinceUpdate
-	window.now = time
-
-	# Update and cleanup objects.
-	for id, obj of window.gameObjects
-		obj.update()
-		if obj.serverDelete and obj.clientDelete
-			deleteObject id
-
-	# Update and cleanup visual effects.
-	for i in [0...window.effects.length]
-		e = window.effects[i]
-		# Splicing dead effects decrease the array size,
-		# but effects.lengh is only checked at the start.
-		if e?
+		# Update and cleanup visual effects.
+		effects = []
+		for e in @effects
 			e.update()
-			if e.deletable()
-				window.effects.splice(i, 1)
+			if not e.deletable()
+				effects.push e
+		@effects = effects
 
-	# Draw scene.
-	redraw(window.ctxt)
+		# Draw scene.
+		@redraw(@ctxt)
 
-window.boxInView = (x, y, r) ->
-	window.inView(x-r, y-r) or window.inView(x-r, y+r) or
-		window.inView(x+r, y-r) or window.inView(x+r, y+r)
+	boxInView: (x, y, r) ->
+		@inView(x-r, y-r) or
+		@inView(x-r, y+r) or
+		@inView(x+r, y-r) or
+		@inView(x+r, y+r)
 
-window.inView = (x, y) ->
-	window.view.x <= x <= window.view.x + window.canvasSize.w and
-		window.view.y <= y <= window.view.y + window.canvasSize.h
+	inView: (x, y) ->
+		@view.x <= x <= @view.x + @canvasSize.w and
+		@view.y <= y <= @view.y + @canvasSize.h
 
-# Clear canvas and draw everything.
-# Not efficient, but we don't have that many objects.
-redraw = (ctxt) ->
-	ctxt.clearRect(0, 0, window.canvasSize.w, window.canvasSize.h)
+	# Clear canvas and draw everything.
+	# Not efficient, but we don't have that many objects.
+	redraw: (ctxt) ->
+		ctxt.clearRect(0, 0, @canvasSize.w, @canvasSize.h)
 
-	# Draw everything centered around the player when he's alive.
-	if window.localShip.state isnt 'dead'
-		centerView(window.localShip)
+		# Draw everything centered around the player when he's alive.
+		if @localShip.state isnt 'dead'
+			@centerView(@localShip)
 
-	ctxt.save()
-	ctxt.translate(-view.x, -view.y)
+		ctxt.save()
+		ctxt.translate(-@view.x, -@view.y)
 
-	drawMapBounds(ctxt) if window.showMapBounds
+		@drawMapBounds(ctxt) if @showMapBounds
 
-	# Draw all objects.
-	for idx, obj of window.gameObjects
-		drawObject(ctxt, obj) if obj.inView()
+		# Draw all objects.
+		for idx, obj of @gameObjects
+			@drawObject(ctxt, obj) if obj.inView()
 
-	# Draw all visual effects.
-	for e in window.effects
-		e.draw(ctxt) if e.inView()
+		# Draw all visual effects.
+		for e in @effects
+			e.draw(ctxt) if e.inView()
 
-	# Draw outside of the map bounds.
-	drawInfinity ctxt
+		# Draw outside of the map bounds.
+		@drawInfinity ctxt
 
-	# View translation doesn't apply to UI.
-	ctxt.restore()
+		# View translation doesn't apply to UI.
+		ctxt.restore()
 
-	# Draw UI
-	drawRadar(ctxt) if window.localShip? and window.localShip.state is 'alive'
+		# Draw UI
+		@drawRadar(ctxt) if @localShip? and @localShip.state is 'alive'
 
-drawObject = (ctxt, obj, offset) ->
-	ctxt.save()
-	obj.draw(ctxt, offset)
-	ctxt.restore()
-	obj.drawHitbox(ctxt) if window.showHitCircles
+	drawObject: (ctxt, obj, offset) ->
+		ctxt.save()
+		obj.draw(ctxt, offset)
+		ctxt.restore()
+		obj.drawHitbox(ctxt) if @showHitCircles
 
-drawMapBounds = (ctxt) ->
-	ctxt.save()
-	ctxt.lineWidth = 2
-	ctxt.strokeStyle = '#dae'
-	ctxt.strokeRect(0, 0, window.map.w, window.map.h)
-	ctxt.restore()
+	drawMapBounds: (ctxt) ->
+		ctxt.save()
+		ctxt.lineWidth = 2
+		ctxt.strokeStyle = '#dae'
+		ctxt.strokeRect(0, 0, @map.w, @map.h)
+		ctxt.restore()
 
-centerView = (obj) ->
-	window.view.x = obj.pos.x - window.canvasSize.w/2
-	window.view.y = obj.pos.y - window.canvasSize.h/2
+	centerView: (obj) ->
+		@view.x = obj.pos.x - @canvasSize.w/2
+		@view.y = obj.pos.y - @canvasSize.h/2
 
-drawRadar = (ctxt) ->
-	for id, ship of window.ships
-		if id isnt window.shipId and ship.state isnt 'dead'
-			ctxt.save()
-			ship.drawOnRadar(ctxt)
-			ctxt.restore()
-
-	for id, bonus of window.bonuses
-		if bonus.state isnt 'dead'
-			ctxt.save()
-			bonus.drawOnRadar(ctxt)
-			ctxt.restore()
-
-drawInfinity = (ctxt) ->
-	# Can the player see the left, right, top and bottom voids?
-	left = window.view.x < 0
-	right = window.view.x > window.map.w - window.canvasSize.w
-	top = window.view.y < 0
-	bottom = window.view.y > window.map.h - window.canvasSize.h
-
-	visibility = [[left and top,    top,    right and top]
-	              [left,           	off,  right],
-	              [left and bottom, bottom, right and bottom]]
-
-	for i in [0..2]
-		for j in [0..2]
-			if visibility[i][j] is on
-				# Translate to the adequate quadrant.
-				offset =
-					x: (j-1)*window.map.w
-					y: (i-1)*window.map.h
-
+	drawRadar: (ctxt) ->
+		for id, ship of @ships
+			if id isnt @shipId and ship.state isnt 'dead'
 				ctxt.save()
-				ctxt.translate(offset.x, offset.y)
-
-				# Draw all visible objects in it.
-				for id, obj of window.gameObjects
-					drawObject(ctxt, obj, offset) if obj.inView(offset)
-
-				# Draw all visible effects
-				for e in window.effects
-					e.draw(ctxt, offset) if e.inView(offset)
-
-				# Quadrant is done drawing.
+				ship.drawOnRadar(ctxt)
 				ctxt.restore()
 
-	return true
+		for id, bonus of @bonuses
+			if bonus.state isnt 'dead'
+				ctxt.save()
+				bonus.drawOnRadar(ctxt)
+				ctxt.restore()
 
-onConnect = () ->
-	console.info "Connected to server."
+	drawInfinity: (ctxt) ->
 
-onDisconnect = () ->
-	console.info "Aaargh! Disconnected!"
+		# Can the player see the left, right, top and bottom voids?
+		left = @view.x < 0
+		right = @view.x > @map.w - @canvasSize.w
+		top = @view.y < 0
+		bottom = @view.y > @map.h - @canvasSize.h
 
-newObject = (i, type, obj) ->
-	switch type
-		when 'ship'
-			window.ships[i] = new Ship(obj)
-		when 'bullet'
-			new Bullet(obj)
-		when 'mine'
-			new Mine(obj)
-		when 'EMP'
-			new EMP(obj)
-		when 'bonus'
-			window.bonuses[i] = new Bonus(obj)
-		when 'planet'
-			new Planet(obj)
-		when 'moon'
-			new Planet(obj)
+		visibility = [[left and top,    top,    right and top]
+		              [left,           	off,  right],
+	  	            [left and bottom, bottom, right and bottom]]
 
-deleteObject = (id) ->
-	type = window.gameObjects[id].type
+		for i in [0..2]
+			for j in [0..2]
+				if visibility[i][j] is on
+					# Translate to the adequate quadrant.
+					offset =
+						x: (j-1)*@map.w
+						y: (i-1)*@map.h
 
-	switch type
-		when 'ship'
-			delete window.ships[id]
-		when 'bonus'
-			delete window.bonuses[id]
+					ctxt.save()
+					ctxt.translate(offset.x, offset.y)
 
-	delete window.gameObjects[id]
+					# Draw all visible objects in it.
+					for id, obj of @gameObjects
+						@drawObject(ctxt, obj, offset) if obj.inView(offset)
 
-# When receiving world update data.
-onObjectsUpdate = (data) ->
-	for id, obj of data.objects
-		if not window.gameObjects[id]?
-			window.gameObjects[id] = newObject(id, obj.type, obj)
-		else
-			window.gameObjects[id].serverUpdate(obj)
+					# Draw all visible effects
+					for e in @effects
+						e.draw(ctxt, offset) if e.inView(offset)
 
-# When receiving our id from the server.
-onConnected = (data) ->
-	window.playerId = data.playerId
+					# Quadrant is done drawing.
+					ctxt.restore()
 
-	window.gameStartTime = data.startTime
+		return true
 
-	# Copy useful game preferences from the server.
-	window.map = data.serverPrefs.mapSize
-	window.minPower = data.serverPrefs.ship.minPower
-	window.maxPower = data.serverPrefs.ship.maxPower
-	window.gameDuration = data.serverPrefs.duration
-	window.cannonCooldown = data.serverPrefs.ship.cannonCooldown
+	newObject: (id, type, obj) ->
+		switch type
+			when 'ship'
+				@ships[id] = new Ship(@, obj)
+			when 'bullet'
+				new Bullet(@, obj)
+			when 'mine'
+				new Mine(@, obj)
+			when 'EMP'
+				new EMP(@, obj)
+			when 'bonus'
+				@bonuses[id] = new Bonus(@, obj)
+			when 'planet'
+				new Planet(@, obj)
+			when 'moon'
+				new Planet(@, obj)
+			when 'rope'
+				new Rope(@, obj)
+			when 'tracker'
+				new Tracker(@, obj)
 
-	window.menu.sendPreferences()
+	deleteObject: (id) ->
+		type = @gameObjects[id].type
 
-	window.socket.emit 'create ship',
-		playerId: window.playerId
+		switch type
+			when 'ship'
+				delete @ships[id]
+			when 'bonus'
+				delete @bonuses[id]
 
-# When receiving our id from the server.
-onShipCreated = (data) ->
-	window.shipId = data.shipId
-	window.localShip = window.gameObjects[window.shipId]
+		delete @gameObjects[id]
 
-	# Set the color of the ship preview in menu to our ship color.
-	window.menu.currentColor = window.localShip.color
-	window.menu.updatePreview(window.localShip.color)
+	closestGhost: (sourcePos, targetPos) ->
+		bestPos = null
+		bestDistance = Infinity
 
-	go()
+		for i in [-1..1]
+			for j in [-1..1]
+				ox = targetPos.x + i * @map.w
+				oy = targetPos.y + j * @map.h
+				d = window.distance(sourcePos.x, sourcePos.y, ox, oy)
+				if d < bestDistance
+					bestDistance = d
+					bestPos = {x: ox, y: oy}
 
-# When a player sent a chat message.
-onPlayerMessage = (data)->
-	window.chat.receive(data)
+		return bestPos
 
-# When another player leaves.
-onPlayerQuits = (data) ->
-	deleteObject data.shipId
+	onConnect: () ->
+		console.info "Connected to server."
 
-onGameEnd = () ->
-	window.gameEnded = yes
-	window.menu.open()
+	onDisconnect: () ->
+		console.info "Aaargh! Disconnected!"
+
+	# When receiving our id from the server.
+	onConnected: (data) ->
+		@playerId = data.playerId
+		@gameStartTime = data.startTime
+
+		# Copy useful game preferences from the server.
+		@map = data.serverPrefs.mapSize
+		@minPower = data.serverPrefs.ship.minPower
+		@maxPower = data.serverPrefs.ship.maxPower
+		@gameDuration = data.serverPrefs.duration
+		@cannonCooldown = data.serverPrefs.ship.cannonCooldown
+
+		@menu.sendPreferences()
+
+		@socket.emit 'create ship',
+			playerId: @playerId
+
+	onShipCreated: (data) ->
+		@shipId = data.shipId
+		@localShip = @gameObjects[@shipId]
+
+		# Set the color of the ship preview in menu to our ship color.
+		@menu.currentColor = @localShip.color
+		@menu.updatePreview(@localShip.color)
+
+		@go()
+
+	# When receiving world update data.
+	onObjectsUpdate: (data) ->
+		for id, obj of data.objects
+			if not @gameObjects[id]?
+				@gameObjects[id] = @newObject(id, obj.type, obj)
+			else
+				@gameObjects[id].serverUpdate(obj)
+
+		if data.events?
+			for e in data.events
+				@handleEvent(e)
+
+	handleEvent: (event) ->
+		switch event.type
+			when 'ship exploded'
+				@gameObjects[event.id].explosionEffect()
+				@chat.receiveEvent(event)
+
+			when 'ship boosted'
+				@gameObjects[event.id].boostEffect()
+
+			when 'mine exploded'
+				@gameObjects[event.id].explodingEffect()
+
+			when 'bonus used'
+				@gameObjects[event.id].openingEffect()
+
+			when 'bonus exploded'
+				@gameObjects[event.id].openingEffect()
+				@gameObjects[event.id].explosionEffect()
+
+			when 'rope exploded'
+				@gameObjects[event.id].explodingEffect()
+
+			when 'tracker activated'
+				@gameObjects[event.id].trailEffect()
+				@gameObjects[event.id].boostEffect()
+
+			when 'tracker exploded'
+				@gameObjects[event.id].explodingEffect()
+
+	# When a player sent a chat message.
+	onPlayerMessage: (data)->
+		@chat.receiveMessage(data)
+
+	# When another player leaves.
+	onPlayerQuits: (data) ->
+		@deleteObject data.shipId
+
+	onGameEnd: () ->
+		@gameEnded = yes
+		@menu.open()
+
+# Entry point.
+$(document).ready () ->
+	window.client = new Client()

@@ -1,5 +1,5 @@
 class Planet
-	constructor: (planet) ->
+	constructor: (@client, planet) ->
 		@serverUpdate(planet)
 
 		@initSprite() if not @sprite?
@@ -9,7 +9,7 @@ class Planet
 		@sprite.width = @sprite.height = Math.ceil(2*@force)
 
 		c = @sprite.getContext('2d')
-		c.strokeStyle = color window.planetColor
+		c.strokeStyle = color @color
 		c.fillStyle = 'white'
 		c.lineWidth = 8
 		c.beginPath()
@@ -22,11 +22,9 @@ class Planet
 			@[field] = val
 
 	update: () ->
-		true
 
 	inView: (offset = {x: 0, y: 0}) ->
-		window.boxInView(@pos.x + offset.x,
-			@pos.y + offset.y, @force)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @force)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
@@ -38,12 +36,12 @@ class Planet
 		ctxt.fillText(@id, @pos.x - ctxt.measureText(@id).width/2, @pos.y)
 
 	draw: (ctxt) ->
-		x = @pos.x
-		y = @pos.y
-		f = @force;
+		ctxt.save()
+		ctxt.translate(@pos.x - @force, @pos.y - @force)
+		@drawModel(ctxt, null)
+		ctxt.restore()
 
-		# Fix jiggling planets?
-		ctxt.translate(x-f, y-f)
+	drawModel: (ctxt, col) ->
 		ctxt.drawImage(@sprite, 0, 0)
 
 # Exports

@@ -2,7 +2,7 @@ ChangingObject = require('./changingObject').ChangingObject
 utils = require '../utils'
 
 class Mine extends ChangingObject
-	constructor: (ship, @id, @game) ->
+	constructor: (@owner, @pos, @id, @game) ->
 		super()
 
 		@watchChanges 'type'
@@ -17,9 +17,9 @@ class Mine extends ChangingObject
 		@state = 'inactive'
 		@countdown = @game.prefs.mine.states[@state].countdown
 		@pos =
-			x: ship.pos.x
-			y: ship.pos.y
-		@color = ship.color
+			x: pos.x
+			y: pos.y
+		@color = @owner.color
 		@explosionRadius = @game.prefs.mine.explosionRadius
 
 		@hitRadius = 0
@@ -36,29 +36,41 @@ class Mine extends ChangingObject
 		@state = @game.prefs.mine.states[@state].next
 		@countdown = @game.prefs.mine.states[@state].countdown
 
+	setState: (state) ->
+		if @game.prefs.mine.states[state]?
+			@state = state
+			@countdown = @game.prefs.mine.states[state].countdown
+
 	move: () ->
 		true
 
 	update: () ->
-		@countdown -= @game.prefs.timestep if @countdown?
+		if @countdown?
+			@countdown -= @game.prefs.timestep
+			@nextState() if @countdown <= 0
 
 		# The mine is not yet activated.
 		switch @state
-			when 'inactive'
-				@nextState() if @countdown <= 0
 
-			# The mine is ready.
+			# The mine is active.
 			when 'active'
-				++@hitRadius
-				@hitRadius = 0 if @hitRadius is @game.prefs.mine.maxDetectionRadius
+				@hitRadius += @game.prefs.mine.waveSpeed
+				if @hitRadius >= @game.prefs.mine.maxDetectionRadius
+					@hitRadius = @game.prefs.mine.minDetectionRadius
 
 			# The mine is exploding.
 			when 'exploding'
 				@hitRadius = @explosionRadius
-				@nextState() if @countdown <= 0
 
 			# The explosion is over.
 			when 'dead'
 				@serverDelete = yes
+
+	explode: () ->
+		@setState 'exploding'
+
+		@game.events.push
+			type: 'mine exploded'
+			id: @id
 
 exports.Mine = Mine

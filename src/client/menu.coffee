@@ -1,5 +1,5 @@
 class Menu
-	constructor: () ->
+	constructor: (@client) ->
 
 		@menu = $('#menu')
 		@closeButton = $('#closeButton')
@@ -38,7 +38,7 @@ class Menu
 				event.preventDefault()
 				pickColor(event)
 
-		@wheelBox.mouseup (event) =>
+		$(document).mouseup (event) =>
 			return if event.which isnt 1 # Only left click triggers.
 
 			# Mouse move can be triggered without any click.
@@ -52,7 +52,7 @@ class Menu
 
 		# Toggle the name display option.
 		@displayNamesCheck.change (event) =>
-			window.displayNames = @displayNamesCheck.is(':checked')
+			@client.displayNames = @displayNamesCheck.is(':checked')
 
 		# Close the menu.
 		@closeButton.click (event) =>
@@ -60,9 +60,15 @@ class Menu
 				@close()
 				event.stopPropagation()
 
-		# Open or close the menu when Escape or M is pressed.
+		# Toggle the menu when Escape or M is pressed.
 		$(document).keyup ({keyCode}) =>
-			@toggle() if keyCode is 27 or keyCode is 77
+			return if @client.chat.isOpen()
+
+			if keyCode is 27
+				@toggle()
+			# Check that we are not typing the letter M in the name field.
+			else if keyCode is 77 and $('#customize input:focus').length is 0
+				@toggle()
 
 	toggle: () ->
 		if @isOpen() then @close() else @open()
@@ -88,10 +94,11 @@ class Menu
 
 	# Send user preferences to the server.
 	sendPreferences: () ->
+		playerId = @client.playerId
 		color = @currentColor
 		name = @nameField.val() if @nameField.val().length > 0
 
-		window.socket.emit 'prefs changed',
+		@client.socket.emit 'prefs changed',
 			playerId: playerId
 			color: color
 			name: name
@@ -162,7 +169,7 @@ class Menu
 		@scoreTable.empty()
 
 		scores = []
-		for id, ship of window.ships
+		for id, ship of @client.ships
 			scores.push
 				name: ship.name or 'unnamed'
 				color: ship.color
@@ -181,14 +188,14 @@ class Menu
 					'<td>' + s.score + '</td></tr>')
 
 	updateTime: () ->
-		if window.gameEnded
+		if @client.gameEnded
 			clearInterval(@clockInterval)
 			$('#timeLeft').html("The game has ended!")
 			return
 
 		# Compute in ms since Epoch.
-		elapsed = Date.now() - window.gameStartTime
-		remaining = window.gameDuration * 60 * 1000 - elapsed
+		elapsed = Date.now() - @client.gameStartTime
+		remaining = @client.gameDuration * 60 * 1000 - elapsed
 
 		# Use Date for conversion and pretty printing.
 		timeLeft = new Date(remaining)

@@ -33,7 +33,7 @@ class Bot extends Player
 		return if not @ship?
 
 		# Automatically respawn.
-		if @ship.isDead() and not @ship.isExploding()
+		if @ship.state is 'dead'
 			@state = 'seek'
 			@ship.spawn()
 
@@ -54,14 +54,17 @@ class Bot extends Player
 		near = ({x, y}, dist) =>
 			utils.distance(x, y, @ship.pos.x, @ship.pos.y) < dist
 
-		alive = (ship) ->
-			not (ship.isDead() or ship.isExploding())
+		allowed = (ship) ->
+			(ship.state is 'spawned' or ship.state is 'alive') and
+				not ship.invisible
+
+		fireSight = if @ship.invisible then @prefs.fireSightStealthed else @prefs.fireSight
 
 		switch @state
 			# Find a target around.
 			when 'seek'
 				for id, p of @game.players
-					if id != @id and p.ship? and alive(p.ship)
+					if id != @id and p.ship? and allowed(p.ship)
 						ghost = closestGhost(p.ship)
 						if near(ghost, @prefs.acquireDistance)
 							@target = p.ship
@@ -84,12 +87,12 @@ class Bot extends Player
 			# Fire at target, but do not chase yet.
 			when 'acquire'
 				@targetGhost = closestGhost(@target)
-				if not alive(@target) or not near(@targetGhost, @prefs.acquireDistance)
+				if not allowed(@target) or not near(@targetGhost, @prefs.acquireDistance)
 					@state = 'seek'
 					return
 
 				@face(@targetGhost)
-				@fire() if @inSight(@targetGhost, @prefs.fireSight)
+				@fire() if @inSight(@targetGhost, fireSight)
 
 				# Near enough, go after it!
 				if near(@targetGhost, @prefs.chaseDistance)
@@ -98,18 +101,19 @@ class Bot extends Player
 			# Chase, fire, kill.
 			when 'chase'
 				@targetGhost = closestGhost(@target)
-				if not alive(@target) or not near(@targetGhost, @prefs.acquireDistance)
+				if not allowed(@target) or not near(@targetGhost, @prefs.acquireDistance)
 					@state = 'seek'
 					return
 
 				@negativeGravityMove(@targetGhost)
-				@fire() if @inSight(@targetGhost, @prefs.fireSight)
+				@fire() if @inSight(@targetGhost, fireSight)
 
 		@ship.useBonus() if @ship.bonus? and @shouldUseBonus()
 
 	shouldUseBonus: () ->
-		prefName = @state + utils.capitalize(@ship.bonus.type) + 'Use'
+		prefName = @state + utils.capitalize(@ship.bonus.effect.type) + 'Use'
 		useProbability = if @prefs[prefName]? then @prefs[prefName] else 0
+		console.info prefName+' '+useProbability
 		return Math.random() < useProbability
 
 	inSight: ({x, y}, angle) ->

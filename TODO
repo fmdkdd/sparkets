@@ -127,6 +127,7 @@
 
 ** Leave some ephemeral traces of fight on planets.
 
+>>>>>>> next
    Ships and bullets splatters their colors. À la paintball.
 
 * Core
@@ -178,8 +179,3 @@
 ** Send full game update to reconnecting / out of sync clients.
 
    Client should clean everything and start anew from this update.
-
-** Add debugging facilities.
-
-	Automated tests.
-	Display connection info (ping, fps,  messages dropped ...)

@@ -1,11 +1,13 @@
-class BonusDrunk
-	type: 'drunk'
+class BonusStealth
+	type: 'stealth'
 
 	constructor: (@game, @bonus) ->
-		@evil = yes
 
 	use: () ->
-		@bonus.holder.inverseTurn = yes
+		@bonus.holder.invisible = yes
+
+		@bonus.holder.on 'fired', (ship, bullet) ->
+			ship.invisible = no
 
 		# Cancel all pending bonus timeouts.
 		for type, timeout of @bonus.holder.bonusTimeout
@@ -13,13 +15,13 @@ class BonusDrunk
 
 		holderId = @bonus.holder.id
 		@bonus.holder.bonusTimeout[exports.type] = setTimeout(( () =>
-			@game.gameObjects[holderId].inverseTurn = no ),
-			@game.prefs.bonus.drunk.duration)
+			@game.gameObjects[holderId]?.invisible = no ),
+			@game.prefs.bonus.stealth.duration)
 
 		# Clean up.
 		@bonus.holder.releaseBonus()
 		@bonus.setState 'dead'
 
-exports.BonusDrunk = BonusDrunk
-exports.constructor = BonusDrunk
-exports.type = 'bonusDrunk'
+exports.BonusStealth = BonusStealth
+exports.constructor = BonusStealth
+exports.type = 'bonusStealth'

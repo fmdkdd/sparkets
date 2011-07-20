@@ -1,14 +1,18 @@
 class Chat
-	constructor: () ->
+	constructor: (@client) ->
 
 		@chat = $('#chat')
 		@input = $('#chatInput')
+
+		@displayDuration = 8000
 
 		@setInputHandlers()
 
 	setInputHandlers: () ->
 
 		$(document).keyup ({keyCode}) =>
+			return if @client.menu.isOpen()
+
 			# Open the chat when T is pressed.
 			if keyCode is 84 and not @isOpen()
 				@open()
@@ -39,14 +43,14 @@ class Chat
 		@input.hasClass('visible')
 
 	send: (message) ->
-		window.socket.emit 'message',
-				playerId: playerId
+		@client.socket.emit 'message',
+				playerId: @client.playerId
 				message: message
 
-	receive: (data) ->
+	receiveMessage: (data) ->
 		message = data.message
-		name = window.ships[data.shipId].name
-		color = window.ships[data.shipId].color
+		name = @client.ships[data.shipId].name
+		color = @client.ships[data.shipId].color
 
 		# Append the message to the chat.
 		@chat.append('<div style="display:none"><span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)">'+name+'</span> '+message+'</div>')
@@ -54,9 +58,27 @@ class Chat
 		line.fadeIn(300)
 		
 		# Program its disappearance.
-		setTimeout( (() ->
+		setTimeout( (() =>
 			line.animate({opacity: 'hide', height: 'toggle'}, 300, () -> line.detach())),
-			8000)
+			@displayDuration)
+
+	receiveEvent: (event) ->
+
+		switch event.type
+			when 'ship exploded'
+				name = @client.ships[event.id].name or 'unnamed'
+				color = @client.ships[event.id].color
+				message = 'exploded'
+
+		# Append the message to the chat.
+		@chat.append('<div style="display:none"><span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)">'+name+'</span> '+message+'</div>')
+		line = @chat.find('div:last')
+		line.fadeIn(300)
+		
+		# Program its disappearance.
+		setTimeout( (() =>
+			line.animate({opacity: 'hide', height: 'toggle'}, 300, () -> line.detach())),
+			@displayDuration)
 
 # Exports
 window.Chat = Chat

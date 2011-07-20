@@ -1,5 +1,5 @@
 class Mine
-	constructor: (mine) ->
+	constructor: (@client, mine) ->
 		@serverUpdate(mine)
 
 	serverUpdate: (mine) ->
@@ -10,61 +10,44 @@ class Mine
 		@clientDelete = @serverDelete
 
 	draw: (ctxt) ->
-		if @state is 'inactive' or @state is 'active'
-			@drawMine(ctxt)
-		else if @state is 'exploding'
-			@drawExplosion(ctxt)
+		return if @state is 'exploding' or @state is 'dead'
 
-	inView: (offset = {x:0, y:0}) ->
-		window.boxInView(@pos.x + offset.x,
-			@pos.y + offset.y, @hitRadius)
+		# Draw the body of the mine.
+		ctxt.save()
+		ctxt.translate(@pos.x, @pos.y)
+		@drawModel(ctxt, color(@color))
+		ctxt.restore()
+
+		# Draw the sensor wave when the mine is active.
+		if @state is 'active'
+			for r in [@hitRadius...0] by -20			
+				ctxt.save()
+				ctxt.lineWidth = 3
+				ctxt.strokeStyle = color(@color, 1-r/50)
+				ctxt.translate(@pos.x, @pos.y)
+				ctxt.beginPath()
+				ctxt.arc(0, 0, r, 0, 2*Math.PI, false)
+				ctxt.stroke()
+				ctxt.restore()
+
+
+	drawModel: (ctxt, col) ->
+		r = 5
+		ctxt.fillStyle = col
+		ctxt.fillRect(-r, -r, r*2, r*2)
+		ctxt.rotate(Math.PI/4)
+		ctxt.fillRect(-r, -r, r*2, r*2)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
 		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
 
-	drawMine: (ctxt) ->
-		x = @pos.x
-		y = @pos.y
-		r = 5
-		hr = @hitRadius
+	inView: (offset = {x:0, y:0}) ->
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @hitRadius)
 
-		# Make the mine grow during the activation process.
-		r -= r * @countdown/1000 if @state is 'inactive'
-
-		# Draw the body of the mine.
-		ctxt.fillStyle = color @color
-		ctxt.save()
-		ctxt.translate(x, y)
-		ctxt.fillRect(-r, -r, r*2, r*2)
-		ctxt.rotate(Math.PI/4)
-		ctxt.fillRect(-r, -r, r*2, r*2)
-		ctxt.restore()
-
-		# Draw the sensor wave when the mine is active.
-		if @state is 'active'
-			ctxt.lineWidth = 3
-			ctxt.strokeStyle = color(@color, 1-@hitRadius/50)
-			ctxt.beginPath()
-			ctxt.arc(x, y, @hitRadius, 0, 2*Math.PI, false)
-			ctxt.stroke()
-
-	drawExplosion: (ctxt) ->
-		x = @pos.x
-		y = @pos.y
-		r = 80
-		a = @countdown/500
-
-		if window.showHitCircles
-			ctxt.strokeStyle = 'red'
-			ctxt.lineWidth = 1
-			strokeCircle(ctxt, x, y, r)
-
-		ctxt.fillStyle = color(@color, a)
-		ctxt.beginPath()
-		ctxt.arc(x, y, r, 0, 2*Math.PI, false)
-		ctxt.fill()
+	explodingEffect: () ->
+		@client.effects.push new FlashEffect(@client, @pos, 80, @color, 500)
 
 # Exports
 window.Mine = Mine

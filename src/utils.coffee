@@ -8,6 +8,9 @@ Array.max = (array) ->
 Array.min = (array) ->
 	Math.min.apply(Math, array)
 
+Array.random = (array) ->
+	return array[Math.floor(Math.random() * array.length)]
+
 # Euclidean distance between two points.
 exports.distance = (x1, y1, x2, y2) ->
 	Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
@@ -47,10 +50,6 @@ exports.relativeAngle = (a) ->
 		a + 2*Math.PI
 	else
 		a
-
-# Random element in array.
-exports.randomArrayElem = (array) ->
-	array[Math.round(Math.random() * (array.length-1))]
 
 exports.randomObjectElem = (obj) ->
 	obj[ exports.randomArrayElem(Object.keys(obj)) ]
@@ -111,3 +110,12 @@ exports.gravityField = (pos, objects, source, force) ->
 		vy += pull.y
 
 	return {x: vx, y: vy}
+
+# Mixins utils from:
+# https://github.com/jashkenas/coffee-script/wiki/FAQ
+exports.extend = (obj, mixin) ->
+  for name, method of mixin
+    obj[name] = method
+
+exports.include = (klass, mixin) ->
+  exports.extend(klass.prototype, mixin)

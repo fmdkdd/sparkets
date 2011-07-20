@@ -2,11 +2,12 @@ Planet = require('./planet').Planet
 utils = require '../utils'
 
 class Moon extends Planet
-	constructor: (@planet, force, gap, @game) ->
+	constructor: (@game, @planet, force, gap) ->
 		# No position yet
-		super(0, 0, force)
+		super(@game, 0, 0, force)
 
 		@type = 'moon'
+		@color = @game.prefs.planet.moonColor
 
 		# Polar coordinates
 		@dist = @planet.force + gap + force
