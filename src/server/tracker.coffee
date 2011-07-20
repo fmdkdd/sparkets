@@ -20,7 +20,9 @@ class Tracker extends ChangingObject
 		@state = 'deploying'
 		@countdown = @game.prefs.tracker.states[@state].countdown
 
-		@pos = dropPos
+		@pos =
+			x: dropPos.x
+			y: dropPos.y
 		@vel =
 			x: 0
 			y: 0

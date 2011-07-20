@@ -18,6 +18,8 @@ exports.collisions =
 			ship.holdBonus(bonus)
 			ship.useBonus() if bonus.isEvil()
 
+			ddebug "ship ##{ship.id} claimed bonus ##{bonus.id}"
+
 	'ship-bullet': (ship, bullet) ->
 		# Immunity to own bullets for a set time.
 		if ship.state is 'alive' and
@@ -26,7 +28,7 @@ exports.collisions =
 				bullet.points.length > 3)
 			ship.explode()
 			ship.killingAccel = bullet.accel
-			bullet.owner.addStat('kills', 1)
+			bullet.owner.addStat('kills', 1) if bullet.owner isnt ship
 			bullet.explode()
 
 			ddebug "bullet ##{bullet.id} killed ship ##{ship.id}"
@@ -34,10 +36,13 @@ exports.collisions =
 	'ship-mine': (ship, mine) ->
 		ship.explode()
 		mine.explode() if mine.state is 'active'
+		mine.owner.addStat('kills', 1) if mine.owner isnt ship
+
 		ddebug "mine ##{mine.id} killed ship ##{ship.id}"
 
 	'ship-moon': (ship, moon) ->
 		ship.explode()
+
 		ddebug "ship ##{ship.id} crashed on moon ##{moon.id}"
 
 	'ship-planet': (ship, planet) ->
@@ -121,10 +126,12 @@ exports.collisions =
 
 	'mine-bullet': (mine, bullet) ->
 		mine.explode() if mine.state is 'active'
+
 		ddebug "bullet ##{bullet.id} hit mine ##{mine.id}"
 
 	'mine-moon': (mine, moon) ->
 		mine.explode() if mine.state is 'active'
+
 		ddebug "bullet ##{mine.id} hit moon ##{moon.id}"
 
 	'mine-mine': (mine1, mine2) ->
@@ -139,18 +146,22 @@ exports.collisions =
 
 	'bullet-bonus': (bullet, bonus) ->
 		bonus.explode()
+
 		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id}"
 
 	'bonus-planet': (bonus, planet) ->
 		bonus.explode()
+
 		ddebug "bonus ##{bonus.id} crashed on planet ##{planet.id}"
 
 	'bonus-moon': (bonus, moon) ->
 		bonus.explode()
+
 		ddebug "bonus ##{bonus.id} crashed on moon ##{moon.id}"
 
 	'tracker-planet' : (tracker, planet) ->
 		tracker.explode()
+
 		ddebug "tracker ##{tracker.id} crashed on planet ##{planet.id}"
 
 	'tracker-moon' : (tracker, moon) ->
@@ -161,6 +172,7 @@ exports.collisions =
 	'tracker-ship' : (tracker, ship) ->
 		tracker.explode()
 		ship.explode()
+		tracker.owner.addStat('kills', 1) if tracker.owner isnt ship
 
 		ddebug "tracker ##{tracker.id} destroyed ship ##{ship.id}"
 
@@ -173,5 +185,5 @@ exports.collisions =
 	'tracker-mine' : (tracker, mine) ->
 		tracker.explode()
 		mine.explode()
-		ddebug "mine ##{mine.id} destroyed tracker ##{tracker.id}"
 
+		ddebug "mine ##{mine.id} destroyed tracker ##{tracker.id}"

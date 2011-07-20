@@ -2,7 +2,7 @@ ChangingObject = require('./changingObject').ChangingObject
 utils = require '../utils'
 
 class Mine extends ChangingObject
-	constructor: (ship, @pos, @id, @game) ->
+	constructor: (@owner, @pos, @id, @game) ->
 		super()
 
 		@watchChanges 'type'
@@ -19,7 +19,7 @@ class Mine extends ChangingObject
 		@pos =
 			x: pos.x
 			y: pos.y
-		@color = ship.color
+		@color = @owner.color
 		@explosionRadius = @game.prefs.mine.explosionRadius
 
 		@hitRadius = 0
