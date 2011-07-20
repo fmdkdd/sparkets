@@ -45,6 +45,15 @@ exports.tests =
 		return utils.distance(closest.x, closest.y, c.x, c.y) < r
 
 	'circle-multisegment': (obj1, obj2) ->
+		points = obj2.hitBox.points
+		for i in [0...points.length-1]
+			mock =
+				hitBox:
+					a: {x: points[i].x, y: points[i].y}
+					b: {x: points[i+1].x, y: points[i+1].y}
+			return true if exports.tests['circle-segment'](obj1, mock)
+
+		return false
 
 	'line-multisegment': (obj1, obj2) ->
 
