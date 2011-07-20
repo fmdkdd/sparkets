@@ -11,16 +11,28 @@ exports.test = (obj1, obj2) ->
 		exports.tests[type1](obj1, obj2)
 	else if exports.tests[type2]?
 		exports.tests[type2](obj2, obj1)
-	
+
+	# Unknown hitBox types
+	else
+		null
+
 exports.tests =
 
 	'circle-circle': (obj1, obj2) ->
 		r1 = obj1.hitBox.radius
 		r2 = obj2.hitBox.radius
+
+		# Zero or negative radius circles can not collide.
+		return false if r1 <= 0 or r2 <= 0
+
 		utils.distance(obj1.pos.x, obj1.pos.y, obj2.pos.x, obj2.pos.y) < r1 + r2
 
 	'circle-segment': (obj1, obj2) ->
 		r = obj1.hitBox.radius
+
+		# Zero or negative radius circles can not collide.
+		return false if r <= 0
+
 		c = {x: obj1.pos.x, y: obj1.pos.y}
 		a = {x: obj2.hitBox.a.x, y:obj2.hitBox.a.y}
 		b = {x: obj2.hitBox.b.x, y:obj2.hitBox.b.y}
@@ -46,6 +58,13 @@ exports.tests =
 
 	'circle-multisegment': (obj1, obj2) ->
 		points = obj2.hitBox.points
+
+		# Multisegment with zero or one point can not collide.
+		return false if points.length < 2
+
+		# Zero or negative radius circles can not collide.
+		return false if obj1.hitBox.radius <= 0
+
 		for i in [0...points.length-1]
 			mock =
 				hitBox:
@@ -70,6 +89,10 @@ exports.tests =
 
 	'segment-multisegment': (obj1, obj2) ->
 		points = obj2.hitBox.points
+
+		# Multisegment with zero or one point can not collide.
+		return false if points.length < 2
+
 		for i in [0...points.length-1]
 			mock =
 				hitBox:
@@ -78,7 +101,21 @@ exports.tests =
 			return true if exports.tests['segment-segment'](obj1, mock)
 
 		return false
-		
+
+	'multisegment-multisegment': (obj1, obj2) ->
+		points = obj2.hitBox.points
+
+		# Multisegment with zero or one point can not collide.
+		return false if obj1.hitBox.points.length < 2 or points.length < 2
+
+		for i in [0...points.length-1]
+			mock =
+				hitBox:
+					a: {x: points[i].x, y: points[i].y}
+					b:	{x: points[i+1].x, y: points[i+1].y}
+			return true if exports.tests['segment-multisegment'](mock, obj1)
+
+		return false
 
 exports.handle = (obj1, obj2) ->
 	type1 = "#{obj1.type}-#{obj2.type}"
