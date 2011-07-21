@@ -116,7 +116,7 @@ class Bot extends Player
 	shouldUseBonus: () ->
 		prefName = @state + utils.capitalize(@ship.bonus.effect.type) + 'Use'
 		useProbability = if @prefs[prefName]? then @prefs[prefName] else 0
-		console.info prefName+' '+useProbability
+
 		return Math.random() < useProbability
 
 	inSight: ({x, y}, angle) ->
