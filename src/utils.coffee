@@ -46,6 +46,15 @@ exports.vec =
 	minus: (u, v) ->
 		{x: u.x-v.x, y: u.y-v.y}
 
+	# Give the perpendicular vector of v.
+	perp: (v) ->
+		{x: -v.y, y: v.x}
+
+	# Give the normalized vector v.
+	normalize: (v) ->
+		l = exports.vec.length(v)
+		{x: v.x/l, y: v.y/l}
+
 # Return intersection point between line AB and circle (Cx,Cy,Cr).
 exports.lineInterCircle = (Ax,Ay, Bx,By, r, Cx,Cy,Cr, gap) ->
 	[ABx, ABy] = [Bx-Ax, By-Ay]

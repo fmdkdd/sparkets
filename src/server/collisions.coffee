@@ -146,6 +146,50 @@ exports.tests =
 
 		return false
 
+	'polygon-polygon': (obj1, obj2) ->
+
+		# Give the normal axis to the edges of an object.
+		edgesAxes = (obj) ->
+			axes = []
+			points = obj.hitBox.points
+			for i in [0...points.length]
+				a = points[i]
+				b = points[(i+1)%points.length]
+				e = utils.vec.vector(a.x, a.y, b.x, b.y)
+				axes.push utils.vec.normalize(utils.vec.perp(e))
+			return axes
+
+		# Project an object onto an axis.
+		projectOnAxis = (obj, axis) ->
+			proj = {min: +Infinity, max: -Infinity}
+			points = obj.hitBox.points
+			for p in points
+				v = utils.vec.dot(axis, p)
+				proj.min = v if v < proj.min
+				proj.max = v if v > proj.max
+			return proj
+
+		# Check if the porjection of two objects onto an axis overlap.
+		projectionsOverlap = (obj1, obj2, axis) ->
+			proj1 = projectOnAxis(obj1, axis)
+			proj2 = projectOnAxis(obj2, axis)
+			return proj1.min <= proj2.min <= proj1.max or
+						 proj1.min <= proj2.max <= proj1.max or
+				     proj2.min <= proj1.min <= proj2.max or
+						 proj2.min <= proj1.max <= proj2.max
+
+		# Compute possible separating axis.
+		axes1 = edgesAxes(obj1)
+		axes2 = edgesAxes(obj2)
+		axes = axes1.concat(axes2)
+
+		# Check if a separating axis exists.
+		for a in axes
+			return false if not projectionsOverlap(obj1, obj2, a)
+
+		# No separating axis, no intersection.
+		return true
+
 exports.handle = (obj1, obj2) ->
 	type1 = "#{obj1.type}-#{obj2.type}"
 	type2 = "#{obj2.type}-#{obj1.type}"

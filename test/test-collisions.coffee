@@ -32,6 +32,13 @@ multiseg = (points) ->
 		points: points
 	return obj
 
+polygon = (points) ->
+	obj = new MockGameObject()
+	obj.hitBox =
+		type: 'polygon'
+		points: points
+	return obj
+
 exports.suite = vows.describe('Collisions')
 
 exports.suite.addBatch
@@ -211,3 +218,105 @@ exports.suite.addBatch
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
+
+	'polygon and polygon - nonintersecting':
+		topic: () ->
+			poly1 = polygon [
+				{x: 0, y: 0},
+				{x: 10, y: 0},
+				{x: 5, y: 5}]
+
+			poly2 = polygon [
+				{x: 20, y: 0},
+				{x: 30, y: 0},
+				{x: 30, y: 10},
+				{x: 20, y: 10}]
+
+			collisions.test(poly1, poly2)
+
+		'should not collide': (topic) ->
+			assert.isFalse(topic)
+
+	'polygon and polygon - intersecting':
+		topic: () ->
+			poly1 = polygon [
+				{x: 0, y: 0},
+				{x: 10, y: 0},
+				{x: 5, y: 5}]
+
+			poly2 = polygon [
+				{x: 5, y: 0},
+				{x: 15, y: 0},
+				{x: 15, y: 10},
+				{x: 5, y: 10}]
+
+			collisions.test(poly1, poly2)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'polygon and polygon - overlapping':
+		topic: () ->
+			poly = polygon [
+				{x: 0, y: 0},
+				{x: 10, y: 0},
+				{x: 5, y: 5}]
+
+			collisions.test(poly, poly)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'polygon and polygon - sharing a unique point':
+		topic: () ->
+			poly1 = polygon [
+				{x: 0, y: 0},
+				{x: 10, y: 0},
+				{x: 5, y: 5}]
+
+			poly2 = polygon [
+				{x: 10, y: 0},
+				{x: 20, y: 0},
+				{x: 15, y: 5}]
+
+			collisions.test(poly1, poly2)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'polygon inside polygon':
+		topic: () ->
+			poly1 = polygon [
+				{x: 0, y: 0},
+				{x: 10, y: 0},
+				{x: 10, y: 10},
+				{x: 0, y: 10}]
+
+			poly2 = polygon [
+				{x: 3, y: 3},
+				{x: 6, y: 3},
+				{x: 6, y: 6},
+				{x: 3, y: 6}]
+
+			collisions.test(poly1, poly2)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'polygon reduced to a unique point':
+		topic: () ->
+			poly1 = polygon [
+				{x: 0, y: 0},
+				{x: 10, y: 0},
+				{x: 10, y: 10},
+				{x: 0, y: 10}]
+
+			poly2 = polygon [
+				{x: 5, y: 5},
+				{x: 5, y: 5},
+				{x: 5, y: 5}]
+
+			collisions.test(poly1, poly2)
+
+		'should not collide with anything': (topic) ->
+			assert.isFalse(topic)
