@@ -36,8 +36,18 @@ class Ship extends ChangingObject
 
 		@boundingRadius = @game.prefs.ship.boundingRadius
 		@hitBox =
-			type: 'circle'
-			radius: @boundingRadius
+			type: 'segments'
+			points: [
+				{x: 0, y: 0},
+				{x: 0, y: 0},
+				{x: 0, y: 0},
+				{x: 0, y: 0}]
+
+		@hitBoxPoints = [
+			{x:  8, y:  0},
+			{x: -7, y:  6},
+			{x: -7, y: -6},
+			{x:  8, y:  0}]
 
 		@spawn()
 
@@ -66,8 +76,11 @@ class Ship extends ChangingObject
 			y: 0
 		@dir = Math.random() * 2*Math.PI
 
-		@hitBox.x = @pos.x
-		@hitBox.y = @pos.y
+		# Update hitbox
+		for i in [0...@hitBox.points.length]
+			pr = utils.vec.rotate(@hitBoxPoints[i], @dir)
+			@hitBox.points[i].x = @pos.x + pr.x
+			@hitBox.points[i].y = @pos.y + pr.y
 
 		@spawn() if @game.collidesWithPlanet(@)
 
@@ -197,8 +210,10 @@ class Ship extends ChangingObject
 			@changed 'vel'
 
 		# Update hitbox
-		@hitBox.x = @pos.x
-		@hitBox.y = @pos.y
+		for i in [0...@hitBox.points.length]
+			pr = utils.vec.rotate(@hitBoxPoints[i], @dir)
+			@hitBox.points[i].x = @pos.x + pr.x
+			@hitBox.points[i].y = @pos.y + pr.y
 		@changed 'hitBox'
 
 		@emit('moved', @)

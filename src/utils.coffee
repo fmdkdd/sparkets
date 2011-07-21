@@ -55,6 +55,11 @@ exports.vec =
 		l = exports.vec.length(v)
 		{x: v.x/l, y: v.y/l}
 
+	rotate: (v, a) ->
+		cos = Math.cos(a)
+		sin = Math.sin(a)
+		{x: v.x*cos - v.y*sin, y: v.x*sin + v.y*cos}
+
 # Return intersection point between line AB and circle (Cx,Cy,Cr).
 exports.lineInterCircle = (Ax,Ay, Bx,By, r, Cx,Cy,Cr, gap) ->
 	[ABx, ABy] = [Bx-Ax, By-Ay]

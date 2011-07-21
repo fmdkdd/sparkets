@@ -25,9 +25,16 @@ class Ship
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 10)
 
 	drawHitbox: (ctxt) ->
+		points = @hitBox.points
+		return if points.length < 2
+
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
+		ctxt.beginPath()
+		ctxt.moveTo(points[0].x, points[0].y)
+		for i in [1...points.length]
+			ctxt.lineTo(points[i].x, points[i].y)
+		ctxt.stroke()
 
 	draw: (ctxt) ->
 		return if @state is 'exploding' or @state is 'dead'
