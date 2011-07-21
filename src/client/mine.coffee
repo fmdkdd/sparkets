@@ -40,8 +40,8 @@ class Mine
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1
-		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
+		ctxt.lineWidth = 1.1
+		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @boundingRadius)

@@ -15,7 +15,7 @@ class EMP
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1
+		ctxt.lineWidth = 1.1
 		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	draw: (ctxt) ->

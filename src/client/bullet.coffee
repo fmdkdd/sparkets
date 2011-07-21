@@ -19,9 +19,11 @@ class Bullet
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1
-		lastPoint = @points[@points.length-1]
-		utils.strokeCircle(ctxt, lastPoint[0], lastPoint[1], @boundingRadius)
+		ctxt.lineWidth = 1.1
+		ctxt.beginPath()
+		ctxt.moveTo(@hitBox.a.x, @hitBox.a.y)
+		ctxt.lineTo(@hitBox.b.x, @hitBox.b.y)
+		ctxt.stroke()
 
 	bulletWrap: (x1, y1, x2, y2) ->
 		Math.abs(x1 - x2) > 50 or

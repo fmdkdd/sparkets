@@ -20,8 +20,8 @@ class Tracker
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1
-		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
+		ctxt.lineWidth = 1.1
+		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	drawModel: (ctxt, col) ->
 		hr = @boundingRadius
