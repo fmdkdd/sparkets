@@ -31,9 +31,10 @@ class Bullet extends ChangingObject
 
 		@boundingRadius = @game.prefs.bullet.boundingRadius
 		@hitBox =
-			type: 'segment'
-			a: {x: @pos.x, y: @pos.y}
-			b: {x: @pos.x, y: @pos.y}
+			type: 'segments'
+			points: [
+				{x: @pos.x, y: @pos.y},
+				{x: @pos.x, y: @pos.y}]
 
 		@color = @owner.color
 		@points = [ [@pos.x, @pos.y] ]
@@ -102,10 +103,10 @@ class Bullet extends ChangingObject
 		else
 			A = @points[@points.length-2]
 			B = @points[@points.length-1]
-		@hitBox.a.x = A[0]
-		@hitBox.a.y = A[1]
-		@hitBox.b.x = B[0]
-		@hitBox.b.y = B[1]
+		@hitBox.points[0].x = A[0]
+		@hitBox.points[0].y = A[1]
+		@hitBox.points[1].x = B[0]
+		@hitBox.points[1].y = B[1]
 		@changed 'hitBox'
 
 	update: () ->

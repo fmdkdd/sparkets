@@ -21,8 +21,8 @@ class Bullet
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1.1
 		ctxt.beginPath()
-		ctxt.moveTo(@hitBox.a.x, @hitBox.a.y)
-		ctxt.lineTo(@hitBox.b.x, @hitBox.b.y)
+		ctxt.moveTo(@hitBox.points[0].x, @hitBox.points[0].y)
+		ctxt.lineTo(@hitBox.points[1].x, @hitBox.points[1].y)
 		ctxt.stroke()
 
 	bulletWrap: (x1, y1, x2, y2) ->

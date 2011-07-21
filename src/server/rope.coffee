@@ -28,13 +28,28 @@ class Rope extends ChangingObject
 					x: 0
 					y: 0
 
-		@boundingRadius = 0
+		# We need a position to insert in the grid. The object is
+		# inserted in all cells overlapping with its bounding box.
+		@pos =
+			x: @nodes[0].pos.x
+			y: @nodes[0].pos.y
+
+		# Make sur all the rope is in the bounding box.
+		@boundingRadius = (@nodes.map (a) =>
+			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
+				Math.max(a,b)
+
 		@hitBox =
-			type: 'multisegment'
+			type: 'segments'
 			points: []
 
+		for n in @nodes
+			@hitBox.points.push
+				x: n.pos.x
+				y: n.pos.y
+
 	tangible: () ->
-		no
+		yes
 
 	move: () ->
 		return if not @object1? or not @object2?
@@ -75,6 +90,20 @@ class Rope extends ChangingObject
 		for n in rope
 			@chain.push n.pos
 		@changed 'chain'
+
+		# Update bounding box and hitbox
+		@pos =
+			x: @nodes[0].pos.x
+			y: @nodes[0].pos.y
+
+		@boundingRadius = (@nodes.map (a) =>
+			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
+				Math.max(a,b)
+
+		for i in [0...@nodes.length]
+			@hitBox.points[i].x = @nodes[i].pos.x
+			@hitBox.points[i].y = @nodes[i].pos.y
+		@changed 'hitBox'
 
 	update: () ->
 

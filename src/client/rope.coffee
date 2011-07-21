@@ -10,6 +10,16 @@ class Rope
 		@clientDelete = @serverDelete
 
 	drawHitbox: (ctxt) ->
+		points = @hitBox.points
+		return if points.length < 2
+
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1.1
+		ctxt.beginPath()
+		ctxt.moveTo(points[0].x, points[0].y)
+		for i in [1...points.length]
+			ctxt.lineTo(points[i].x, points[i].y)
+		ctxt.stroke()
 
 	draw: (ctxt) ->
 		# Draw a bezier curve passing through a set of points.
