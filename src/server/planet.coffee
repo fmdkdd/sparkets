@@ -9,13 +9,21 @@ class Planet extends ChangingObject
 		@watchChanges 'type'
 		@watchChanges 'pos'
 		@watchChanges 'force'
-		@watchChanges 'hitRadius'
 		@watchChanges 'color'
+		@watchChanges 'boundingRadius'
+		@watchChanges 'hitBox'
 
 		@type = 'planet'
 		@pos = {x, y}
-		@hitRadius = @force = force
+		@force = force
 		@color = @game.prefs.planet.color
+
+		@boundingRadius = @force
+		@hitBox =
+			type: 'circle'
+			radius: @force
+			x: @pos.x
+			y: @pos.y
 
 	update: () ->
 
@@ -23,10 +31,5 @@ class Planet extends ChangingObject
 
 	tangible: () ->
 		yes
-
-	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
-		x += offset.x
-		y += offset.y
-		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 exports.Planet = Planet

@@ -29,7 +29,7 @@ class Planet
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+		strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 		ctxt.fillStyle = 'black'
 		ctxt.font = '15px sans'

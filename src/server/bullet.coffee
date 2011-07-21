@@ -7,11 +7,12 @@ class Bullet extends ChangingObject
 
 		@watchChanges 'type'
 		@watchChanges 'color'
-		@watchChanges 'hitRadius'
 		@watchChanges 'pos'
 		@watchChanges 'points'
 		@watchChanges 'lastPoints'
 		@watchChanges 'serverDelete'
+		@watchChanges 'boundingRadius'
+		@watchChanges 'hitBox'
 
 		@type = 'bullet'
 
@@ -27,7 +28,12 @@ class Bullet extends ChangingObject
 			y: @owner.vel.y + @power*ydir
 
 		@state = 'active'
-		@hitRadius = @game.prefs.bullet.hitRadius
+
+		@boundingRadius = @game.prefs.bullet.boundingRadius
+		@hitBox =
+			type: 'segment'
+			a: {x: @pos.x, y: @pos.y}
+			b: {x: @pos.x, y: @pos.y}
 
 		@color = @owner.color
 		@points = [ [@pos.x, @pos.y] ]
@@ -89,6 +95,19 @@ class Bullet extends ChangingObject
 
 		@changed 'pos'
 
+		# Update hitbox.
+		if @warp
+			A = @points[@points.length-3]
+			B = @points[@points.length-2]
+		else
+			A = @points[@points.length-2]
+			B = @points[@points.length-1]
+		@hitBox.a.x = A[0]
+		@hitBox.a.y = A[1]
+		@hitBox.b.x = B[0]
+		@hitBox.b.y = B[1]
+		@changed 'hitBox'
+
 	update: () ->
 		switch @state
 			# Seek and destroy.
@@ -104,14 +123,5 @@ class Bullet extends ChangingObject
 
 	tangible: ->
 		@state is 'active'
-
-	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
-		x += offset.x
-		y += offset.y
-		# Check collisions on the line between the two latest points.
-		[Ax, Ay] = if @warp then @points[@points.length-3] else @points[@points.length-2]
-		[Bx, By] = if @warp then @points[@points.length-2] else @points[@points.length-1]
-
-		return utils.lineInterCircle(Ax,Ay, Bx,By, @hitRadius, x,y,hitRadius, @game.prefs.bullet.checkWidth)?
 
 exports.Bullet = Bullet

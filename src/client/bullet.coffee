@@ -21,7 +21,7 @@ class Bullet
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
 		lastPoint = @points[@points.length-1]
-		strokeCircle(ctxt, lastPoint[0], lastPoint[1], @hitRadius)
+		strokeCircle(ctxt, lastPoint[0], lastPoint[1], @boundingRadius)
 
 	bulletWrap: (x1, y1, x2, y2) ->
 		Math.abs(x1 - x2) > 50 or

@@ -16,7 +16,7 @@ class Bonus
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		window.strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+		window.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 	draw: (ctxt) ->
 		return if @state isnt 'available' and @state isnt 'claimed'

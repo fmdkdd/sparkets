@@ -6,13 +6,13 @@ class Rope extends ChangingObject
 		super()
 
 		@watchChanges 'type'
-		@watchChanges 'hitRadius'
 		@watchChanges 'color'
 		@watchChanges 'serverDelete'
 		@watchChanges 'chain'
-		
+		@watchChanges 'boundingRadius'
+		@watchChanges 'hitBox'
+
 		@type = 'rope'
-		@hitRadius = 0
 
 		@color = @object1.color or @object2.color or 'black'
 
@@ -28,13 +28,13 @@ class Rope extends ChangingObject
 					x: 0
 					y: 0
 
+		@boundingRadius = 0
+		@hitBox =
+			type: 'multisegment'
+			points: []
+
 	tangible: () ->
 		no
-
-	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
-		x += offset.x
-		y += offset.y
-		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	move: () ->
 		return if not @object1? or not @object2?
@@ -66,7 +66,7 @@ class Rope extends ChangingObject
 				ratio = (dist - @segmentLength) / dist
 				next.vel.x += ratio * (cur.pos.x - ghost.x)
 				next.vel.y += ratio * (cur.pos.y - ghost.y)
-			
+
 			#next.vel.x *= @game.prefs.ship.frictionDecay
 			#next.vel.y *= @game.prefs.ship.frictionDecay
 

@@ -11,9 +11,10 @@ class Tracker extends ChangingObject
 		@watchChanges 'dir'
 		@watchChanges 'state'
 		@watchChanges 'color'
-		@watchChanges 'hitRadius'
 		@watchChanges 'countdown'
 		@watchChanges 'serverDelete'
+		@watchChanges 'boundingRadius'
+		@watchChanges 'hitBox'
 
 		@type = 'tracker'
 
@@ -29,13 +30,16 @@ class Tracker extends ChangingObject
 		@dir = @owner.dir
 
 		@color = @owner.color
-		@hitRadius = @game.prefs.tracker.hitRadius
+
+		@boundingRadius = @game.prefs.tracker.boundingRadius
+		@hitBox =
+			type: 'circle'
+			radius: @boundingRadius
+			x: @pos.x
+			y: @pos.y
 
 	tangible: () ->
 		@state isnt 'dead'
-
-	collidesWith: ({pos: {x,y}, hitRadius}) ->
-		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
 		@state = @game.prefs.tracker.states[@state].next
@@ -85,6 +89,11 @@ class Tracker extends ChangingObject
 
 		@changed 'pos'
 		@changed 'vel'
+
+		# Update hitbox
+		@hitBox.x = @pos.x
+		@hitBox.y = @pos.y
+		@changed 'hitBox'
 
 	warp: () ->
 		{w, h} = @game.prefs.mapSize

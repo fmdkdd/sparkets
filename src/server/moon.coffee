@@ -29,6 +29,11 @@ class Moon extends Planet
 
 		@changed 'pos'
 
+		# Update hitbox
+		@hitBox.x = @pos.x
+		@hitBox.y = @pos.y
+		@changed 'hitBox'
+
 	update: () ->
 		@angle += @speed
 

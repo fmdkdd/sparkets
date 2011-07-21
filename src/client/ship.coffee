@@ -27,7 +27,7 @@ class Ship
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+		strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 	draw: (ctxt) ->
 		return if @state is 'exploding' or @state is 'dead'
