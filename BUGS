@@ -1,11 +1,13 @@
 -*- mode: org; -*-
 
+* Visual boost effect still active on respawning when dying before its end.
+  That reminds me of a song ... http://www.youtube.com/watch?v=JhBw80Y54gg
+  Oh wait, it's "boots" -- nevermind!
+
 * Ropes acting funny at borders
   Still reproducible when picking up a bonus at the edge of the
   map. My guess is that the chain is not modified to handle the
   wrapping like it is for bullets. 
-
-* Ship stop drifting too soon
 
 * Menu disappear in Chrome.
   Open/close the menu enough times, and it will never reappear.
