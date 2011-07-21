@@ -10,6 +10,8 @@ class EMP extends ChangingObject
 		@watchChanges 'color'
 		@watchChanges 'force'
 		@watchChanges 'serverDelete'
+		@watchChanges 'boundingRadius'
+		@watchChanges 'hitBox'
 
 		@type = 'EMP'
 
@@ -19,21 +21,22 @@ class EMP extends ChangingObject
 
 		@color = ship.color
 		@force = @game.prefs.EMP.radius
-		@hitRadius = @force
 
 		@state = 'active'
 		@countdown = @game.prefs.EMP.states[@state].countdown
+
+		@boundingRadius = @force
+		@hitBox =
+			type: 'circle'
+			radius: @force
+			x: @pos.x
+			y: @pos.y
 
 	cancel: () ->
 		@serverDelete = yes
 
 	tangible: () ->
 		yes
-
-	collidesWith: ({pos: {x,y}, hitRadius, type}, offset = {x:0, y:0}) ->
-		x += offset.x
-		y += offset.y
-		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	move: () ->
 		return if @state isnt 'active'
@@ -42,6 +45,11 @@ class EMP extends ChangingObject
 		@pos.x = @ship.pos.x
 		@pos.y = @ship.pos.y
 		@changed 'pos'
+
+		# Update hitbox
+		@hitBox.x = @pos.x
+		@hitBox.y = @pos.y
+		@changed 'hitBox'
 
 	nextState: () ->
 		@state = @game.prefs.EMP.states[@state].next

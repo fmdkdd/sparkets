@@ -11,7 +11,6 @@ class Bonus extends ChangingObject
 		super()
 
 		@watchChanges 'type'
-		@watchChanges 'hitRadius'
 		@watchChanges 'state'
 		@watchChanges 'countdown'
 		@watchChanges 'color'
@@ -19,23 +18,21 @@ class Bonus extends ChangingObject
 		@watchChanges 'vel'
 		@watchChanges 'serverDelete'
 		@watchChanges 'bonusType'
+		@watchChanges 'hitBox'
+		@watchChanges 'boundingRadius'
 
 		@type = 'bonus'
 
-		@hitRadius = @game.prefs.bonus.hitRadius
+		@boundingRadius = @game.prefs.bonus.boundingRadius
+		@hitBox =
+			type: 'circle'
+			radius: @boundingRadius
 
 		@spawn(bonusType)
 
 	spawn: (bonusType) ->
 		@state = 'incoming'
 		@countdown = @game.prefs.bonus.states[@state].countdown
-
-		@pos =
-			x: Math.random() * @game.prefs.mapSize.w
-			y: Math.random() * @game.prefs.mapSize.h
-		@vel =
-			x: 0
-			y: 0
 
 		@color = utils.randomColor()
 		@empty = yes
@@ -51,6 +48,16 @@ class Bonus extends ChangingObject
 		@effect = new bonusClass.constructor(@game, @)
 		@bonusType = bonusClass.type
 
+		@pos =
+			x: Math.random() * @game.prefs.mapSize.w
+			y: Math.random() * @game.prefs.mapSize.h
+		@vel =
+			x: 0
+			y: 0
+
+		@hitBox.x = @pos.x
+		@hitBox.y = @pos.y
+
 		@spawn(bonusType) if @game.collidesWithPlanet(@)
 
 	randomBonus: () ->
@@ -64,11 +71,6 @@ class Bonus extends ChangingObject
 
 	tangible: () ->
 		@state isnt 'incoming' and @state isnt 'dead'
-
-	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
-		x += offset.x
-		y += offset.y
-		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
 		@state = @game.prefs.bonus.states[@state].next
@@ -88,6 +90,11 @@ class Bonus extends ChangingObject
 		@vel.y *= @game.prefs.ship.frictionDecay
 
 		@changed 'pos'
+
+		# Update hitbox
+		@hitBox.x = @pos.x
+		@hitBox.y = @pos.y
+		@changed 'hitBox'
 
 	warp: () ->
 		{w, h} = @game.prefs.mapSize
@@ -109,7 +116,7 @@ class Bonus extends ChangingObject
 
 	use: () ->
 		@effect.use()
-		
+
 		@game.events.push
 			type: 'bonus used'
 			id: @id
@@ -129,7 +136,7 @@ class Bonus extends ChangingObject
 		# We don't need the rope anymore.
 		if @rope?
 			@rope.detach()
-			@rope = null				
+			@rope = null
 
 	explode: () ->
 		@holder.releaseBonus() if @state is 'claimed'

@@ -218,14 +218,14 @@ class GameServer
 		# Place the object in all cells containing its bounding box.
 		# We go through the bounding box in increments lower than either
 		# side of the box to avoid skipping a grid cell.
-		halfSide = obj.hitRadius
+		halfSide = obj.boundingRadius
 		incr = 2 * halfSide
 
 		# Find right increment.
 		until incr < Math.min(w, h)
 			incr /= 2
 
-		# Zero hit radius: can't collide, don't insert.
+		# Zero hit radius can't collide, don't insert.
 		if incr > 0
 			cellX = -halfSide
 			while cellX <= halfSide
@@ -334,10 +334,8 @@ class GameServer
 				for j, obj2 of cell
 					o1 = obj1.object
 					o2 = obj2.object
-					if j > i and
-							o1.tangible() and
-							o2.tangible() and
-							(o1.collidesWith(o2, obj2.offset) or o2.collidesWith(o1, obj1.offset))
+					if j > i and o1.tangible() and o2.tangible() and
+							collisions.test(o1.hitBox, o2.hitBox, obj1.offset, obj2.offset)
 						collisions.handle(o1, o2)
 
 		# Record all changes.
@@ -364,7 +362,7 @@ class GameServer
 
 	collidesWithPlanet: (obj) ->
 		for id, planet of @planets
-			return true if obj.collidesWith(planet)
+			return true if collisions.test(obj.hitBox, planet.hitBox)
 		return false
 
 	newGameObject: (creator) ->

@@ -11,7 +11,6 @@ class Ship extends ChangingObject
 		@watchChanges 'name'
 		@watchChanges 'color'
 		@watchChanges 'stats'
-		@watchChanges 'hitRadius'
 		@watchChanges 'state'
 		@watchChanges 'countdown'
 		@watchChanges 'pos'
@@ -23,30 +22,28 @@ class Ship extends ChangingObject
 		@watchChanges 'killingAccel'
 		@watchChanges 'boost'
 		@watchChanges 'invisible'
+		@watchChanges 'boundingRadius'
+		@watchChanges 'hitBox'
 
 		@type = 'ship'
 		@name = name or null
 		@color = color or utils.randomColor()
-		@hitRadius = @game.prefs.ship.hitRadius
 
 		# Session stats.
 		@stats =
 			kills: 0
 			deaths: 0
 
+		@boundingRadius = @game.prefs.ship.boundingRadius
+		@hitBox =
+			type: 'circle'
+			radius: @boundingRadius
+
 		@spawn()
 
 	spawn: () ->
 		@state = 'spawned'
 		@countdown = @game.prefs.ship.states[@state].countdown
-
-		@pos =
-			x: Math.random() * @game.prefs.mapSize.w
-			y: Math.random() * @game.prefs.mapSize.h
-		@vel =
-			x: 0
-			y: 0
-		@dir = Math.random() * 2*Math.PI
 
 		@thrust = false
 		@firePower = @game.prefs.ship.minFirepower
@@ -60,6 +57,17 @@ class Ship extends ChangingObject
 		@boostDecay = 0
 		@inverseTurn = no
 		@invisible = no
+
+		@pos =
+			x: Math.random() * @game.prefs.mapSize.w
+			y: Math.random() * @game.prefs.mapSize.h
+		@vel =
+			x: 0
+			y: 0
+		@dir = Math.random() * 2*Math.PI
+
+		@hitBox.x = @pos.x
+		@hitBox.y = @pos.y
 
 		@spawn() if @game.collidesWithPlanet(@)
 
@@ -188,6 +196,11 @@ class Ship extends ChangingObject
 			@changed 'pos'
 			@changed 'vel'
 
+		# Update hitbox
+		@hitBox.x = @pos.x
+		@hitBox.y = @pos.y
+		@changed 'hitBox'
+
 		@emit('moved', @)
 
 	warp: () ->
@@ -199,11 +212,6 @@ class Ship extends ChangingObject
 
 	tangible: () ->
 		@state is 'spawned' or @state is 'alive'
-
-	collidesWith: ({pos: {x,y}, hitRadius}, offset = {x:0, y:0}) ->
-		x += offset.x
-		y += offset.y
-		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	isDead: () ->
 		@state is 'dead'

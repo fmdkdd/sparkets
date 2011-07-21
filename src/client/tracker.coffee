@@ -15,16 +15,16 @@ class Tracker
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
 		ctxt.rotate(@dir)
-		@drawModel(ctxt, color(@color))
+		@drawModel(ctxt, utils.color(@color))
 		ctxt.restore()
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1
-		strokeCircle(ctxt, @pos.x, @pos.y, @hitRadius)
+		ctxt.lineWidth = 1.1
+		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	drawModel: (ctxt, col) ->
-		hr = @hitRadius
+		hr = @boundingRadius
 
 		ctxt.fillStyle = col
 		ctxt.strokeStyle = col
@@ -55,21 +55,21 @@ class Tracker
 		drawWing(ctxt, hr)
 		ctxt.scale(1, -1)
 		drawWing(ctxt, hr)
-		
+
 		ctxt.restore()
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x,
-			@pos.y + offset.y, @hitRadius)
+			@pos.y + offset.y, @boundingRadius)
 
 	explodingEffect: () ->
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 100, 5, 0.2)
 
 	trailEffect: () ->
 		@client.effects.push new TrailEffect(@client, @, 2, 30, 3)
-	
+
 	boostEffect: () ->
-			@client.effects.push new BoostEffect(@client, @, 3, 600)
+		@client.effects.push new BoostEffect(@client, @, 3, 600)
 
 # Exports
 window.Tracker = Tracker

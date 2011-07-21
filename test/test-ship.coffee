@@ -33,7 +33,7 @@ class MockGame
 						next: 'alive'
 						countdown: null
 
-				hitRadius: 9
+				boundingRadius: 9
 				dirInc: 0.12
 				speed: 0.3
 				frictionDecay: 0.97
@@ -45,7 +45,7 @@ class MockGame
 				enableGravity: false
 
 			bullet:
-				hitRadius: 2
+				boundingRadius: 2
 
 			EMP:
 				shipPush: -200

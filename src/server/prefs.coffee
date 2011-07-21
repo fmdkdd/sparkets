@@ -66,7 +66,7 @@ class GamePreferences
 				countdown: null
 
 		# Radius of hit circle.
-		hitRadius: 9
+		boundingRadius: 9
 
 		# Rotation increase at input update.
 		dirInc: 0.12
@@ -245,7 +245,7 @@ class GamePreferences
 
 	bullet:
 		# Radius of hit circle.
-		hitRadius: 2
+		boundingRadius: 2
 
 		# Gravity pull factor.
 		gravityPull: 200
@@ -303,7 +303,7 @@ class GamePreferences
 
 	tracker:
 
-		hitRadius: 5
+		boundingRadius: 5
 		speed: 0.55
 		frictionDecay: 0.95
 		turnSpeed: 20
@@ -363,7 +363,7 @@ class GamePreferences
 				weight: 1
 
 		# Radius of hit circle.
-		hitRadius: 10
+		boundingRadius: 10
 
 		# Drawing size on client.
 		modelSize: 20

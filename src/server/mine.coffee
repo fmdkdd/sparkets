@@ -9,9 +9,10 @@ class Mine extends ChangingObject
 		@watchChanges 'pos'
 		@watchChanges 'state'
 		@watchChanges 'color'
-		@watchChanges 'hitRadius'
 		@watchChanges 'countdown'
 		@watchChanges 'serverDelete'
+		@watchChanges 'boundingRadius'
+		@watchChanges 'hitBox'
 
 		@type = 'mine'
 		@state = 'inactive'
@@ -22,15 +23,15 @@ class Mine extends ChangingObject
 		@color = @owner.color
 		@explosionRadius = @game.prefs.mine.explosionRadius
 
-		@hitRadius = 0
+		@boundingRadius = 0
+		@hitBox =
+			type: 'circle'
+			radius: 0
+			x: @pos.x
+			y: @pos.y
 
 	tangible: () ->
 		@state is 'active' or @state is 'exploding'
-
-	collidesWith: ({pos: {x,y}, hitRadius, type}, offset = {x:0, y:0}) ->
-		x += offset.x
-		y += offset.y
-		utils.distance(@pos.x, @pos.y, x, y) < @hitRadius + hitRadius
 
 	nextState: () ->
 		@state = @game.prefs.mine.states[@state].next
@@ -54,17 +55,21 @@ class Mine extends ChangingObject
 
 			# The mine is active.
 			when 'active'
-				@hitRadius += @game.prefs.mine.waveSpeed
-				if @hitRadius >= @game.prefs.mine.maxDetectionRadius
-					@hitRadius = @game.prefs.mine.minDetectionRadius
+				@boundingRadius += @game.prefs.mine.waveSpeed
+				if @boundingRadius >= @game.prefs.mine.maxDetectionRadius
+					@boundingRadius = @game.prefs.mine.minDetectionRadius
 
 			# The mine is exploding.
 			when 'exploding'
-				@hitRadius = @explosionRadius
+				@boundingRadius = @explosionRadius
 
 			# The explosion is over.
 			when 'dead'
 				@serverDelete = yes
+
+		# Update hitBox radius
+		@hitBox.radius = @boundingRadius
+		@changed 'hitBox'
 
 	explode: () ->
 		@setState 'exploding'

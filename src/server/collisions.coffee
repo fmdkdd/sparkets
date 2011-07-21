@@ -3,14 +3,30 @@ logger = require('../logger').static
 
 ddebug = (msg) -> logger.log 'collisions', msg
 
-exports.test = (obj1, obj2) ->
-	type1 = "#{obj1.hitBox.type}-#{obj2.hitBox.type}"
-	type2 = "#{obj2.hitBox.type}-#{obj1.hitBox.type}"
+exports.addOffset = (box, offset) ->
+	switch box.type
+		when 'circle'
+			box.x += offset.x
+			box.y += offset.y
+
+		when 'segments', 'polygon'
+			for p in box.points
+				p.x += offset.x
+				p.y += offset.y
+
+	return box
+
+exports.test = (box1, box2, offset1, offset2) ->
+	box1 = exports.addOffset(utils.deepCopy(box1), offset1) if offset1?
+	box2 = exports.addOffset(utils.deepCopy(box2), offset2) if offset2?
+
+	type1 = "#{box1.type}-#{box2.type}"
+	type2 = "#{box2.type}-#{box1.type}"
 
 	if exports.tests[type1]?
-		exports.tests[type1](obj1, obj2)
+		exports.tests[type1](box1, box2)
 	else if exports.tests[type2]?
-		exports.tests[type2](obj2, obj1)
+		exports.tests[type2](box2, box1)
 
 	# Unknown hitBox types
 	else
@@ -18,23 +34,23 @@ exports.test = (obj1, obj2) ->
 
 exports.tests =
 
-	'circle-circle': (obj1, obj2) ->
-		r1 = obj1.hitBox.radius
-		r2 = obj2.hitBox.radius
+	'circle-circle': (box1, box2) ->
+		r1 = box1.radius
+		r2 = box2.radius
 
 		# Zero or negative radius circles can not collide.
 		return false if r1 <= 0 or r2 <= 0
 
-		utils.distance(obj1.pos.x, obj1.pos.y, obj2.pos.x, obj2.pos.y) < r1 + r2
+		utils.distance(box1.x, box1.y, box2.x, box2.y) < r1 + r2
 
-	'circle-segments': (obj1, obj2) ->
-		c = obj1.pos
-		r = obj1.hitBox.radius
+	'circle-segments': (box1, box2) ->
+		c = {x: box1.x, y: box1.y}
+		r = box1.radius
 
 		# Zero or negative radius circles can not collide.
 		return false if r <= 0
 
-		points = obj2.hitBox.points
+		points = box2.points
 
 		# Segments with no point can not collide.
 		return false if points.length is 0
@@ -44,14 +60,14 @@ exports.tests =
 			a = points[i]
 			b = points[i+1]
 
-			ab = utils.vec.minus(b, a)
-
 			# Zero length segments can not collide.
-			return false if utils.vec.length(ab) is 0
+			return false if a.x is b.x and a.y is b.y
 
-			# Project AC onto AB.
+			ab = utils.vec.minus(b, a)
 			ac = utils.vec.minus(c, a)
 			abu = utils.vec.unit(ab)
+
+			# Project AC onto AB.
 			projLength = utils.vec.dot(ac, abu)
 			proj = utils.vec.times(abu, projLength)
 
@@ -68,11 +84,22 @@ exports.tests =
 
 		return false
 
-	'circle-polygon': (obj1, obj2) ->
+	'circle-polygon': (box1, box2) ->
+		# Zero or negative radius circles can not collide.
+		return false if box1.radius <= 0
 
-	'segments-segments': (obj1, obj2) ->
-		points1 = obj1.hitBox.points
-		points2 = obj2.hitBox.points
+		points = box2.points
+		for i in [0...points.length-1]
+			mock =
+				a: {x: points[i].x, y: points[i].y}
+				b: {x: points[i+1].x, y: points[i+1].y}
+			return true if exports.tests['circle-segment'](box1, mock)
+
+		return false
+
+	'segments-segments': (box1, box2) ->
+		points1 = box1.points
+		points2 = box2.points
 
 		# Segments with no point can not collide.
 		return false if points1.length is 0
@@ -116,14 +143,14 @@ exports.tests =
 
 		return false
 
-	'segments-polygon': (obj1, obj2) ->
+	'segments-polygon': (box1, box2) ->
 
-	'polygon-polygon': (obj1, obj2) ->
+	'polygon-polygon': (box1, box2) ->
 
 		# Give the normal axis to the edges of an object.
-		edgesAxes = (obj) ->
+		edgesAxes = (box) ->
 			axes = []
-			points = obj.hitBox.points
+			points = box.points
 			for i in [0...points.length]
 				a = points[i]
 				b = points[(i+1)%points.length]
@@ -131,33 +158,32 @@ exports.tests =
 				axes.push utils.vec.normalize(utils.vec.perp(e))
 			return axes
 
-		# Project an object onto an axis.
-		projectOnAxis = (obj, axis) ->
+		# Project a hitbox onto an axis.
+		projectOnAxis = (box, axis) ->
 			proj = {min: +Infinity, max: -Infinity}
-			points = obj.hitBox.points
-			for p in points
+			for p in box.points
 				v = utils.vec.dot(axis, p)
 				proj.min = v if v < proj.min
 				proj.max = v if v > proj.max
 			return proj
 
-		# Check if the porjection of two objects onto an axis overlap.
-		projectionsOverlap = (obj1, obj2, axis) ->
-			proj1 = projectOnAxis(obj1, axis)
-			proj2 = projectOnAxis(obj2, axis)
+		# Check if the projection of two objects onto an axis overlap.
+		projectionsOverlap = (box1, box2, axis) ->
+			proj1 = projectOnAxis(box1, axis)
+			proj2 = projectOnAxis(box2, axis)
 			return proj1.min <= proj2.min <= proj1.max or
 						 proj1.min <= proj2.max <= proj1.max or
 				     proj2.min <= proj1.min <= proj2.max or
 						 proj2.min <= proj1.max <= proj2.max
 
 		# Compute possible separating axis.
-		axes1 = edgesAxes(obj1)
-		axes2 = edgesAxes(obj2)
+		axes1 = edgesAxes(box1)
+		axes2 = edgesAxes(box2)
 		axes = axes1.concat(axes2)
 
 		# Check if a separating axis exists.
 		for a in axes
-			return false if not projectionsOverlap(obj1, obj2, a)
+			return false if not projectionsOverlap(box1, box2, a)
 
 		# No separating axis, no intersection.
 		return true

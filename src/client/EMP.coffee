@@ -14,11 +14,14 @@ class EMP
 			@pos.y + offset.y, @force)
 
 	drawHitbox: (ctxt) ->
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1.1
+		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	draw: (ctxt) ->
 		ctxt.lineWidth = 3
-		ctxt.strokeStyle = color @color
-		window.strokeCircle(ctxt, @pos.x, @pos.y, @force)
+		ctxt.strokeStyle = utils.color @color
+		utils.strokeCircle(ctxt, @pos.x, @pos.y, @force)
 
 # Exports
 window.EMP = EMP

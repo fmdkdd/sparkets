@@ -9,6 +9,8 @@ class Rope
 	update: () ->
 		@clientDelete = @serverDelete
 
+	drawHitbox: (ctxt) ->
+
 	draw: (ctxt) ->
 		# Draw a bezier curve passing through a set of points.
 		# Partly borrowed from : http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
@@ -20,11 +22,11 @@ class Rope
 			@chain[i] = @client.closestGhost(@chain[0], @chain[i])
 
 		smooth = 0.75
-		ctxt.strokeStyle = color @color
+		ctxt.strokeStyle = utils.color @color
 		ctxt.lineWidth = 2
 		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.beginPath()
-		ctxt.moveTo(@chain[0].x, @chain[0].y)		
+		ctxt.moveTo(@chain[0].x, @chain[0].y)
 
 		for i in [0...@chain.length-1]
 			prev = @chain[i-1] # Position of previous node.
@@ -55,7 +57,7 @@ class Rope
 					y: next.y
 
 			# Center of the current segment.
-			middle = 
+			middle =
 				x: cur.x + (next.x - cur.x) / 2
 				y: cur.y + (next.y - cur.y) / 2
 
@@ -98,7 +100,7 @@ class Rope
 
 		# Compute edges so that they follow the curve of the rope and move
 		# away from the center.
-		edges = []		
+		edges = []
 		for i in [0...@chain.length-1]
 			pos =
 				x: @chain[i].x + (@chain[i+1].x - @chain[i].x)/2
@@ -110,7 +112,7 @@ class Rope
 				vx: (pos.x - center.x) * 0.05
 				vy: (pos.y - center.y) * 0.05
 				vr: (Math.random()*2-1) * 0.05
-				size: window.distance(@chain[i].x, @chain[i].y, @chain[i+1].x, @chain[i+1].y)
+				size: utils.distance(@chain[i].x, @chain[i].y, @chain[i+1].x, @chain[i+1].y)
 
 		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)
 
