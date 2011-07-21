@@ -323,6 +323,13 @@ exports.collisions =
 
 		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id} and died"
 
+	'bullet-rope': (bullet, rope) ->
+		# Release bonus on ship.
+		if rope.object1.type is 'ship'
+			rope.object1.releaseBonus()
+
+		ddebug "bullet ##{bullet.id} cut rope ##{rope.id}"
+
 	'bonus-planet': (bonus, planet) ->
 		bonus.explode()
 

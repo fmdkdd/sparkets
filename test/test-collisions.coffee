@@ -222,6 +222,25 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
+	'multiple segment and multiple segment - intersecting':
+		topic: () ->
+			seg1 = segments [
+				{x: 0, y: 1},
+				{x: 10, y: -1},
+				{x: 19, y: 9}]
+
+			seg2 = segments [
+				{x: -3, y: 0},
+				{x: -6, y: 0},
+				{x: -8, y: 0},
+				{x: 3, y: 0},
+				{x: 8, y: 0}]
+
+			collisions.test(seg2, seg1)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
 	'multiple segment and multiple segment - overlapping':
 		topic: () ->
 			seg = segments [
