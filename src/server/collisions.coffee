@@ -51,7 +51,7 @@ exports.edgesAxes = (box) ->
 
 	points = box.points
 	if box.type is 'segments'
-		edges = points.length - 1	
+		edges = points.length - 1
 	else if box.type is 'polygon'
 		edges = points.length
 
@@ -59,7 +59,7 @@ exports.edgesAxes = (box) ->
 		a = points[i]
 		b = points[(i+1)%points.length]
 		e = utils.vec.vector(a.x, a.y, b.x, b.y)
-		axes.push utils.vec.normalize(e)	
+		axes.push utils.vec.normalize(e)
 
 	return axes
 
@@ -238,6 +238,7 @@ exports.collisions =
 			ship2.explode()
 			ship2.killingAccel = ship1.vel
 
+			ship1.addStat('kills', 1)
 			ddebug "ship ##{ship1.id} boosted through ship ##{ship2.id}"
 
 		# Ship2 has boost, not ship1.
@@ -245,6 +246,7 @@ exports.collisions =
 			ship1.explode()
 			ship1.killingAccel = ship2.vel
 
+			ship2.addStat('kills', 1)
 			ddebug "ship ##{ship2.id} boosted through ship ##{ship1.id}"
 
 		# Both or none have boost.
@@ -292,6 +294,8 @@ exports.collisions =
 		if EMP.ship isnt ship
 			ship.explode()
 			EMP.cancel()
+
+			EMP.ship.addStat('kills', 1)
 
 		ddebug "EMP ##{EMP.id} hit ship ##{ship.id}"
 
