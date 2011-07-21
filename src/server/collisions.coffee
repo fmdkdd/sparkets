@@ -131,8 +131,8 @@ exports.tests =
 			continue if a.x is b.x and a.y is b.y
 
 			for j in [0...points2.length-1]
-				c = points2[i]
-				d = points2[i+1]
+				c = points2[j]
+				d = points2[j+1]
 
 				# Zero length segment can not collide.
 				continue if c.x is d.x and c.y is d.y
@@ -140,7 +140,7 @@ exports.tests =
 				denominator = (d.y-c.y)*(b.x-a.x)-(d.x-c.x)*(b.y-a.y)
 				ua = ((d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x))
 				ub = ((b.x-a.x)*(a.y-c.y)-(b.y-a.y)*(a.x-c.x))
-	
+
 				# Special case: the two segments are colinear.
 				if denominator is ua is ub is 0
 
@@ -151,9 +151,9 @@ exports.tests =
 						return 0 <= ((x.y-z.y)*(x.y-y.y)-(x.x-z.x)*(y.x-x.x)) / xyl2 <= 1
 
 					return true if interior(a, b, c) or
-												 interior(a, b, d) or 
-												 interior(c, d, a) or 
-												 interior(c, d, b) 
+												 interior(a, b, d) or
+												 interior(c, d, a) or
+												 interior(c, d, b)
 
 				# Classic case.
 				else
@@ -174,7 +174,7 @@ exports.tests =
 				b = points[(i+1)%points.length]
 				e = utils.vec.vector(a.x, a.y, b.x, b.y)
 				e = utils.vec.perp(e)
-				axes.push utils.vec.normalize(e)	
+				axes.push utils.vec.normalize(e)
 			return axes
 
 		# Compute possible separating axis.
@@ -330,6 +330,19 @@ exports.collisions =
 		bullet.explode()
 
 		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id} and died"
+
+	'bullet-rope': (bullet, rope) ->
+		# Release bonus on ship.
+		if rope.object1.type is 'ship'
+			rope.object1.releaseBonus()
+		else if rope.object2.type is 'ship'
+			rope.object2.releaseBonus()
+
+		# Hmm .. no ship at either end, what to do?
+		else
+			rope.detach()
+
+		ddebug "bullet ##{bullet.id} cut rope ##{rope.id}"
 
 	'bonus-planet': (bonus, planet) ->
 		bonus.explode()
