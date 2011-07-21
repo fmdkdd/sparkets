@@ -263,6 +263,8 @@ class Ship extends ChangingObject
 		@emit('fired', @, bullet)
 
 	explode : () ->
+		return if @isExploding() or @isDead()
+
 		@releaseBonus() if @bonus?
 
 		@addStat('deaths', 1)
@@ -271,6 +273,8 @@ class Ship extends ChangingObject
 			type: 'ship exploded'
 			id: @id
 
+		# If spawned, skip alive state.
+		@nextState() if @state is 'spawned'
 		@nextState()
 
 		@debug "exploded"
