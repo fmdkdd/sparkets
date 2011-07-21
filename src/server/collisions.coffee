@@ -28,14 +28,16 @@ exports.tests =
 		utils.distance(obj1.pos.x, obj1.pos.y, obj2.pos.x, obj2.pos.y) < r1 + r2
 
 	'circle-segment': (obj1, obj2) ->
+		c = {x: obj1.pos.x, y: obj1.pos.y}
 		r = obj1.hitBox.radius
+		a = obj2.hitBox.a
+		b = obj2.hitBox.b
 
 		# Zero or negative radius circles can not collide.
 		return false if r <= 0
 
-		c = {x: obj1.pos.x, y: obj1.pos.y}
-		a = {x: obj2.hitBox.a.x, y:obj2.hitBox.a.y}
-		b = {x: obj2.hitBox.b.x, y:obj2.hitBox.b.y}
+		# Zero length segments can not collide.
+		return false if utils.vec.length(utils.vec.vector(a.x, a.y, b.x, b.y)) is 0
 
 		ab = utils.vec.vector(a.x, a.y, b.x, b.y)
 		ac = utils.vec.vector(a.x, a.y, c.x, c.y)
@@ -81,11 +83,38 @@ exports.tests =
 		c = obj2.hitBox.a
 		d = obj2.hitBox.b
 
-		denominator = (d.y-c.y)*(b.x-a.x)-(d.x-c.x)*(b.y-a.y)
-		ua = ((d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x)) / denominator
-		ub = ((b.x-a.x)*(a.y-c.y)-(b.y-a.y)*(a.x-c.x)) / denominator
+		# Zero length segments can not collide.
+		return false if utils.vec.length(utils.vec.vector(a.x, a.y, b.x, b.y)) is 0
+		return false if utils.vec.length(utils.vec.vector(c.x, c.y, d.x, d.y)) is 0
 
-		return 0 <= ua <= 1 and 0 <= ub <= 1
+		denominator = (d.y-c.y)*(b.x-a.x)-(d.x-c.x)*(b.y-a.y)
+		ua = ((d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x))
+		ub = ((b.x-a.x)*(a.y-c.y)-(b.y-a.y)*(a.x-c.x))
+	
+		# Special case: the two segments are parallel.
+		if denominator is 0
+
+			# The segments are colinear, check for overlap.
+			if ua is ub is 0
+
+				# Check if point Z lies between X and Y.
+				interior = (x, y, z) ->
+					xy = utils.vec.vector(x.x, x.y, y.x, y.y)
+					xyl2 = xy.x*xy.x+xy.y*xy.y
+					return 0 <= ((x.y-z.y)*(x.y-y.y)-(x.x-z.x)*(y.x-x.x)) / xyl2 <= 1
+
+				return interior(a, b, c) or
+							 interior(a, b, d) or 
+							 interior(c, d, a) or 
+							 interior(c, d, b) 
+
+			# The segments are not colinear, they can't touch.
+			else
+				return false
+
+		# Classic case.
+		else
+			return 0 <= ua/denominator <= 1 and 0 <= ub/denominator <= 1
 
 	'segment-multisegment': (obj1, obj2) ->
 		points = obj2.hitBox.points
