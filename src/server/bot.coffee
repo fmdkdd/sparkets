@@ -14,7 +14,10 @@ class Bot extends Player
 
 		roll = (val) ->
 			if Array.isArray(val)
-				val[0] + (val[1] - val[0]) * Math.random()
+				if typeof val[0] is 'string'
+					Array.random(val)
+				else
+					val[0] + (val[1] - val[0]) * Math.random()
 			else
 				val
 

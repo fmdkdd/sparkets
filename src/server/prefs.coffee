@@ -107,7 +107,10 @@ class GamePreferences
 
 		# Default parameters for bots.
 		defaultPersona:
-			name: 'HK-47'
+			# https://secure.wikimedia.org/wikipedia/en/wiki/List_of_fictional_robots_and_androids
+			name: ['Tik-Tok 1', 'R.U.R 2', 'Alpha-63', 'C-4PO', 'R2D5',
+				'T-600', 'Bending Unit 27', 'Hal 9008', 'No-No', 'Mall-E',
+				'HK-47', 'Ash', 'Bishop', 'C-21', 'R.O.B', 'SLaDOG']
 
 			# Distance threshold to begin firing at a target.
 			acquireDistance: [400, 500]

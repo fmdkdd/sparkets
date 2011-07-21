@@ -107,7 +107,7 @@ exports.relativeAngle = (a) ->
 		a
 
 exports.randomObjectElem = (obj) ->
-	obj[ exports.randomArrayElem(Object.keys(obj)) ]
+	obj[ exports.Array.random(Object.keys(obj)) ]
 
 # Stroke circle.
 exports.strokeCircle = (ctxt, x, y, r) ->
