@@ -16,6 +16,35 @@ exports.addOffset = (box, offset) ->
 
 	return box
 
+# Check intersection between two hitboxes with the help of a set of
+#	possible separating axes.
+exports.checkIntersection = (box1, box2, axes) ->
+
+	# Project a hitbox onto an axis.
+	projectHitBox = (box, axis) ->
+		proj = {min: +Infinity, max: -Infinity}
+		for p in box.points
+			x = utils.vec.dot(axis, p)
+			proj.min = x if x < proj.min
+			proj.max = x if x > proj.max
+		return proj
+
+	# Check if the projection of two objects onto an axis overlap.
+	projectionsOverlap = (box1, box2, axis) ->
+		proj1 = projectHitBox(box1, axis)
+		proj2 = projectHitBox(box2, axis)
+		return proj1.min <= proj2.min <= proj1.max or
+					 proj1.min <= proj2.max <= proj1.max or
+			     proj2.min <= proj1.min <= proj2.max or
+					 proj2.min <= proj1.max <= proj2.max
+
+	# Check if a separating axis exists.
+	for a in axes
+		return false if not projectionsOverlap(box1, box2, a)
+
+	# No separating axis, no intersection.
+	return true
+
 exports.test = (box1, box2, offset1, offset2) ->
 	box1 = exports.addOffset(utils.deepCopy(box1), offset1) if offset1?
 	box2 = exports.addOffset(utils.deepCopy(box2), offset2) if offset2?
@@ -85,17 +114,6 @@ exports.tests =
 		return false
 
 	'circle-polygon': (box1, box2) ->
-		# Zero or negative radius circles can not collide.
-		return false if box1.radius <= 0
-
-		points = box2.points
-		for i in [0...points.length-1]
-			mock =
-				a: {x: points[i].x, y: points[i].y}
-				b: {x: points[i+1].x, y: points[i+1].y}
-			return true if exports.tests['circle-segment'](box1, mock)
-
-		return false
 
 	'segments-segments': (box1, box2) ->
 		points1 = box1.points
@@ -147,46 +165,23 @@ exports.tests =
 
 	'polygon-polygon': (box1, box2) ->
 
-		# Give the normal axis to the edges of an object.
-		edgesAxes = (box) ->
+		# Give the axis of the edges of an object.
+		edgesNormalAxes = (box) ->
 			axes = []
 			points = box.points
 			for i in [0...points.length]
 				a = points[i]
 				b = points[(i+1)%points.length]
 				e = utils.vec.vector(a.x, a.y, b.x, b.y)
-				axes.push utils.vec.normalize(utils.vec.perp(e))
+				e = utils.vec.perp(e)
+				axes.push utils.vec.normalize(e)	
 			return axes
 
-		# Project a hitbox onto an axis.
-		projectOnAxis = (box, axis) ->
-			proj = {min: +Infinity, max: -Infinity}
-			for p in box.points
-				v = utils.vec.dot(axis, p)
-				proj.min = v if v < proj.min
-				proj.max = v if v > proj.max
-			return proj
-
-		# Check if the projection of two objects onto an axis overlap.
-		projectionsOverlap = (box1, box2, axis) ->
-			proj1 = projectOnAxis(box1, axis)
-			proj2 = projectOnAxis(box2, axis)
-			return proj1.min <= proj2.min <= proj1.max or
-						 proj1.min <= proj2.max <= proj1.max or
-				     proj2.min <= proj1.min <= proj2.max or
-						 proj2.min <= proj1.max <= proj2.max
-
 		# Compute possible separating axis.
-		axes1 = edgesAxes(box1)
-		axes2 = edgesAxes(box2)
-		axes = axes1.concat(axes2)
+		axes1 = edgesNormalAxes(box1)
+		axes2 = edgesNormalAxes(box2)
 
-		# Check if a separating axis exists.
-		for a in axes
-			return false if not projectionsOverlap(box1, box2, a)
-
-		# No separating axis, no intersection.
-		return true
+		return exports.checkIntersection(box1, box2, axes1.concat(axes2))
 
 exports.handle = (obj1, obj2) ->
 	type1 = "#{obj1.type}-#{obj2.type}"
