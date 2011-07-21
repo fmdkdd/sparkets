@@ -204,8 +204,8 @@ class Ship extends ChangingObject
 		@vel.y *= @game.prefs.ship.frictionDecay
 
 		# Only update if the change in position is noticeable.
-		if Math.abs(@pos.x-x) > .05 or
-				Math.abs(@pos.y-y) > .05
+		if Math.abs(@pos.x-x) > .02 or
+				Math.abs(@pos.y-y) > .02
 			@changed 'pos'
 			@changed 'vel'
 
