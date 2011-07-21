@@ -50,7 +50,12 @@ exports.edgesAxes = (box) ->
 	axes = []
 
 	points = box.points
-	for i in [0...points.length]
+	if box.type is 'segments'
+		edges = points.length - 1	
+	else if box.type is 'polygon'
+		edges = points.length
+
+	for i in [0...edges]
 		a = points[i]
 		b = points[(i+1)%points.length]
 		e = utils.vec.vector(a.x, a.y, b.x, b.y)
