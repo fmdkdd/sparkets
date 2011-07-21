@@ -234,6 +234,36 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
+	'two parallel segments - nonintersecting':
+		topic: () ->
+			seg1 = segments [
+				{x: 0, y: 0},
+				{x: 10, y: 0}]
+
+			seg2 = segments [
+				{x: 5, y: 5},
+				{x: 15, y: 5}]
+
+			collisions.test(seg1, seg2)
+
+		'should not collide': (topic) ->
+			assert.isFalse(topic)
+
+	'two parallel segments - intersecting':
+		topic: () ->
+			seg1 = segments [
+				{x: 0, y: 0},
+				{x: 10, y: 0}]
+
+			seg2 = segments [
+				{x: 5, y: 0},
+				{x: 15, y: 0}]
+
+			collisions.test(seg1, seg2)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
 	'segment without any point':
 		topic: () ->
 			segments []

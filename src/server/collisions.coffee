@@ -42,8 +42,21 @@ exports.checkIntersection = (box1, box2, axes) ->
 	for a in axes
 		return false if not projectionsOverlap(box1, box2, a)
 
-	# No separating axis, no intersection.
+	# No separating axis, intersection.
 	return true
+
+# Give the axis of the edges of a hitbox.
+exports.edgesAxes = (box) ->
+	axes = []
+
+	points = box.points
+	for i in [0...points.length]
+		a = points[i]
+		b = points[(i+1)%points.length]
+		e = utils.vec.vector(a.x, a.y, b.x, b.y)
+		axes.push utils.vec.normalize(e)	
+
+	return axes
 
 exports.test = (box1, box2, offset1, offset2) ->
 	box1 = exports.addOffset(utils.deepCopy(box1), offset1) if offset1?
@@ -127,37 +140,25 @@ exports.tests =
 			a = points1[i]
 			b = points1[i+1]
 
-			# Zero length segment can not collide.
+			# Zero length segments can not collide.
 			continue if a.x is b.x and a.y is b.y
 
 			for j in [0...points2.length-1]
-				c = points2[i]
-				d = points2[i+1]
+				c = points2[j]
+				d = points2[j+1]
 
-				# Zero length segment can not collide.
+				# Zero length segments can not collide.
 				continue if c.x is d.x and c.y is d.y
 
-				denominator = (d.y-c.y)*(b.x-a.x)-(d.x-c.x)*(b.y-a.y)
-				ua = ((d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x))
-				ub = ((b.x-a.x)*(a.y-c.y)-(b.y-a.y)*(a.x-c.x))
-	
-				# Special case: the two segments are colinear.
-				if denominator is ua is ub is 0
+				# Possible separating axes are the edges axes and the normals
+				# to the edges axes.
+				axes1 = exports.edgesAxes(box1)
+				axes2 = exports.edgesAxes(box2)
+				axes = axes1.concat(axes2)
+				for i in [0...axes.length]
+					axes.push utils.vec.perp(axes[i])
 
-					# Check if point Z lies between X and Y.
-					interior = (x, y, z) ->
-						xy = utils.vec.vector(x.x, x.y, y.x, y.y)
-						xyl2 = xy.x*xy.x+xy.y*xy.y
-						return 0 <= ((x.y-z.y)*(x.y-y.y)-(x.x-z.x)*(y.x-x.x)) / xyl2 <= 1
-
-					return true if interior(a, b, c) or
-												 interior(a, b, d) or 
-												 interior(c, d, a) or 
-												 interior(c, d, b) 
-
-				# Classic case.
-				else
-					return true if 0 <= ua/denominator <= 1 and 0 <= ub/denominator <= 1
+				return true if exports.checkIntersection(box1, box2, axes)
 
 		return false
 
@@ -165,23 +166,14 @@ exports.tests =
 
 	'polygon-polygon': (box1, box2) ->
 
-		# Give the axis of the edges of an object.
-		edgesNormalAxes = (box) ->
-			axes = []
-			points = box.points
-			for i in [0...points.length]
-				a = points[i]
-				b = points[(i+1)%points.length]
-				e = utils.vec.vector(a.x, a.y, b.x, b.y)
-				e = utils.vec.perp(e)
-				axes.push utils.vec.normalize(e)	
-			return axes
+		# Possible separating axes are the normals to the edges.
+		axes1 = exports.edgesAxes(box1)
+		axes2 = exports.edgesAxes(box2)
+		axes = axes1.concat(axes2)
+		for a in axes
+			a = utils.vec.perp(a)
 
-		# Compute possible separating axis.
-		axes1 = edgesNormalAxes(box1)
-		axes2 = edgesNormalAxes(box2)
-
-		return exports.checkIntersection(box1, box2, axes1.concat(axes2))
+		return exports.checkIntersection(box1, box2, axes)
 
 exports.handle = (obj1, obj2) ->
 	type1 = "#{obj1.type}-#{obj2.type}"
