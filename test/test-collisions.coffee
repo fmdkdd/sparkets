@@ -5,44 +5,33 @@ assert = require('assert')
 require('./support/common')
 collisions = require '../build/server/collisions'
 
-# Mock-up game object class.
-class MockGameObject
-	constructor: (x = 0, y = 0) ->
-		@pos = {x: x, y: y}
-
-circle = (radius, x, y) ->
-	obj = new MockGameObject(x, y)
-	obj.hitBox =
-		type: 'circle'
-		radius: radius
-	return obj
+# Hitboxes constructors.
+circle = (radius, x = 0, y = 0) ->
+	type: 'circle'
+	radius: radius
+	x: x
+	y: y
 
 segment = (x1, y1, x2, y2) ->
-	obj = new MockGameObject()
-	obj.hitBox =
-		type: 'segment'
-		a: {x: x1, y: y1}
-		b: {x: x2, y: y2}
-	return obj
+	type: 'segment'
+	a: {x: x1, y: y1}
+	b: {x: x2, y: y2}
 
 multiseg = (points) ->
-	obj = new MockGameObject()
-	obj.hitBox =
-		type: 'multisegment'
-		points: points
-	return obj
+	type: 'multisegment'
+	points: points
+
+offset = (x, y) ->
+	{x: x, y: y}
 
 polygon = (points) ->
-	obj = new MockGameObject()
-	obj.hitBox =
-		type: 'polygon'
-		points: points
-	return obj
+	type: 'polygon'
+	points: points
 
 exports.suite = vows.describe('Collisions')
 
 exports.suite.addBatch
-	'collision.test':
+	'collisions.test':
 		topic: () ->
 			collisions.test
 
@@ -51,7 +40,37 @@ exports.suite.addBatch
 			assert.equal(test(circle(1, -1), circle(2)), test(circle(2), circle(1, -1)))
 
 		'should return null for unknown hitboxes': (test) ->
-			assert.isNull(test({hitBox: type: 'zorglub'}, circle(1)))
+			assert.isNull(test({type: 'zorglub'}, circle(1)))
+
+	'collisions.addOffset':
+		topic: () ->
+			collisions.addOffset
+
+		'should work on circles': (test) ->
+			assert.deepEqual test(circle(1), offset(-10, 12)),
+				type: 'circle'
+				radius: 1
+				x: -10
+				y: 12
+
+		'should work on segments': (test) ->
+			assert.deepEqual test(segment(-1, 0, 1, 0), offset(-10, 12)),
+				type: 'segment'
+				a: {x: -11, y: 12}
+				b: {x: -9, y: 12}
+
+		'should work on multisegments': (test) ->
+			points = [
+				{x: 1, y: 0},
+				{x: 10, y: -1},
+				{x: 0, y: 16}]
+
+			assert.deepEqual test(multiseg(points), offset(-10, 12)),
+				type: 'multisegment'
+				points: [
+					{x: -9, y: 12},
+					{x: 0, y: 11},
+					{x: -10, y: 28}]
 
 	'circle and circle - nonintersecting':
 		topic: () ->

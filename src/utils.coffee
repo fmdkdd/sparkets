@@ -72,6 +72,16 @@ exports.isEmptyObject = (obj) ->
 		return false
 	return true
 
+exports.deepCopy = (obj) ->
+	copy = {}
+	for name, prop of obj
+		if typeof prop is 'object' and not Array.isArray(prop)
+			copy[name] = exports.deepCopy(prop)
+		else
+			copy[name] = prop
+
+	return copy
+
 # Stupid % operator.
 exports.mod = (x, n) ->
 	if isNaN(x)

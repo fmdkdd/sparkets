@@ -3,14 +3,36 @@ logger = require('../logger').static
 
 ddebug = (msg) -> logger.log 'collisions', msg
 
-exports.test = (obj1, obj2) ->
-	type1 = "#{obj1.hitBox.type}-#{obj2.hitBox.type}"
-	type2 = "#{obj2.hitBox.type}-#{obj1.hitBox.type}"
+exports.addOffset = (box, offset) ->
+	switch box.type
+		when 'circle'
+			box.x += offset.x
+			box.y += offset.y
+
+		when 'segment'
+			box.a.x += offset.x
+			box.a.y += offset.y
+			box.b.x += offset.x
+			box.b.y += offset.y
+
+		when 'multisegment'
+			for p in box.points
+				p.x += offset.x
+				p.y += offset.y
+
+	return box
+
+exports.test = (box1, box2, offset1, offset2) ->
+	box1 = exports.addOffset(utils.deepCopy(box1), offset1) if offset1?
+	box2 = exports.addOffset(utils.deepCopy(box2), offset2) if offset2?
+
+	type1 = "#{box1.type}-#{box2.type}"
+	type2 = "#{box2.type}-#{box1.type}"
 
 	if exports.tests[type1]?
-		exports.tests[type1](obj1, obj2)
+		exports.tests[type1](box1, box2)
 	else if exports.tests[type2]?
-		exports.tests[type2](obj2, obj1)
+		exports.tests[type2](box2, box1)
 
 	# Unknown hitBox types
 	else
@@ -18,20 +40,20 @@ exports.test = (obj1, obj2) ->
 
 exports.tests =
 
-	'circle-circle': (obj1, obj2) ->
-		r1 = obj1.hitBox.radius
-		r2 = obj2.hitBox.radius
+	'circle-circle': (box1, box2) ->
+		r1 = box1.radius
+		r2 = box2.radius
 
 		# Zero or negative radius circles can not collide.
 		return false if r1 <= 0 or r2 <= 0
 
-		utils.distance(obj1.pos.x, obj1.pos.y, obj2.pos.x, obj2.pos.y) < r1 + r2
+		utils.distance(box1.x, box1.y, box2.x, box2.y) < r1 + r2
 
-	'circle-segment': (obj1, obj2) ->
-		c = {x: obj1.pos.x, y: obj1.pos.y}
-		r = obj1.hitBox.radius
-		a = obj2.hitBox.a
-		b = obj2.hitBox.b
+	'circle-segment': (box1, box2) ->
+		c = {x: box1.x, y: box1.y}
+		r = box1.radius
+		a = box2.a
+		b = box2.b
 
 		# Zero or negative radius circles can not collide.
 		return false if r <= 0
@@ -58,30 +80,29 @@ exports.tests =
 		# Is the closest point of the segment inside of the circle?
 		return utils.distance(closest.x, closest.y, c.x, c.y) < r
 
-	'circle-multisegment': (obj1, obj2) ->
-		points = obj2.hitBox.points
+	'circle-multisegment': (box1, box2) ->
+		points = box2.points
 
 		# Multisegment with zero or one point can not collide.
 		return false if points.length < 2
 
 		# Zero or negative radius circles can not collide.
-		return false if obj1.hitBox.radius <= 0
+		return false if box1.radius <= 0
 
 		for i in [0...points.length-1]
 			mock =
-				hitBox:
-					a: {x: points[i].x, y: points[i].y}
-					b: {x: points[i+1].x, y: points[i+1].y}
-			return true if exports.tests['circle-segment'](obj1, mock)
+				a: {x: points[i].x, y: points[i].y}
+				b: {x: points[i+1].x, y: points[i+1].y}
+			return true if exports.tests['circle-segment'](box1, mock)
 
 		return false
 
 	# From: http://paulbourke.net/geometry/lineline2d/
-	'segment-segment': (obj1, obj2) ->
-		a = obj1.hitBox.a
-		b = obj1.hitBox.b
-		c = obj2.hitBox.a
-		d = obj2.hitBox.b
+	'segment-segment': (box1, box2) ->
+		a = box1.a
+		b = box1.b
+		c = box2.a
+		d = box2.b
 
 		# Zero length segments can not collide.
 		return false if utils.vec.length(utils.vec.vector(a.x, a.y, b.x, b.y)) is 0
@@ -90,7 +111,7 @@ exports.tests =
 		denominator = (d.y-c.y)*(b.x-a.x)-(d.x-c.x)*(b.y-a.y)
 		ua = ((d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x))
 		ub = ((b.x-a.x)*(a.y-c.y)-(b.y-a.y)*(a.x-c.x))
-	
+
 		# Special case: the two segments are parallel.
 		if denominator is 0
 
@@ -104,9 +125,9 @@ exports.tests =
 					return 0 <= ((x.y-z.y)*(x.y-y.y)-(x.x-z.x)*(y.x-x.x)) / xyl2 <= 1
 
 				return interior(a, b, c) or
-							 interior(a, b, d) or 
-							 interior(c, d, a) or 
-							 interior(c, d, b) 
+							 interior(a, b, d) or
+							 interior(c, d, a) or
+							 interior(c, d, b)
 
 			# The segments are not colinear, they can't touch.
 			else
@@ -116,33 +137,31 @@ exports.tests =
 		else
 			return 0 <= ua/denominator <= 1 and 0 <= ub/denominator <= 1
 
-	'segment-multisegment': (obj1, obj2) ->
-		points = obj2.hitBox.points
+	'segment-multisegment': (box1, box2) ->
+		points = box2.points
 
 		# Multisegment with zero or one point can not collide.
 		return false if points.length < 2
 
 		for i in [0...points.length-1]
 			mock =
-				hitBox:
-					a: {x: points[i].x, y: points[i].y}
-					b: {x: points[i+1].x, y: points[i+1].y}
-			return true if exports.tests['segment-segment'](obj1, mock)
+				a: {x: points[i].x, y: points[i].y}
+				b: {x: points[i+1].x, y: points[i+1].y}
+			return true if exports.tests['segment-segment'](box1, mock)
 
 		return false
 
-	'multisegment-multisegment': (obj1, obj2) ->
-		points = obj2.hitBox.points
+	'multisegment-multisegment': (box1, box2) ->
+		points = box2.points
 
 		# Multisegment with zero or one point can not collide.
-		return false if obj1.hitBox.points.length < 2 or points.length < 2
+		return false if box1.points.length < 2 or points.length < 2
 
 		for i in [0...points.length-1]
 			mock =
-				hitBox:
-					a: {x: points[i].x, y: points[i].y}
-					b:	{x: points[i+1].x, y: points[i+1].y}
-			return true if exports.tests['segment-multisegment'](mock, obj1)
+				a: {x: points[i].x, y: points[i].y}
+				b:	{x: points[i+1].x, y: points[i+1].y}
+			return true if exports.tests['segment-multisegment'](mock, box1)
 
 		return false
 
@@ -151,7 +170,7 @@ exports.tests =
 		# Give the normal axis to the edges of an object.
 		edgesAxes = (obj) ->
 			axes = []
-			points = obj.hitBox.points
+			points = obj.points
 			for i in [0...points.length]
 				a = points[i]
 				b = points[(i+1)%points.length]
@@ -162,7 +181,7 @@ exports.tests =
 		# Project an object onto an axis.
 		projectOnAxis = (obj, axis) ->
 			proj = {min: +Infinity, max: -Infinity}
-			points = obj.hitBox.points
+			points = obj.points
 			for p in points
 				v = utils.vec.dot(axis, p)
 				proj.min = v if v < proj.min
