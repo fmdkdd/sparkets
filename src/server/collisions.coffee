@@ -27,124 +27,96 @@ exports.tests =
 
 		utils.distance(obj1.pos.x, obj1.pos.y, obj2.pos.x, obj2.pos.y) < r1 + r2
 
-	'circle-segment': (obj1, obj2) ->
-		c = {x: obj1.pos.x, y: obj1.pos.y}
+	'circle-segments': (obj1, obj2) ->
+		c = obj1.pos
 		r = obj1.hitBox.radius
-		a = obj2.hitBox.a
-		b = obj2.hitBox.b
 
 		# Zero or negative radius circles can not collide.
 		return false if r <= 0
 
-		# Zero length segments can not collide.
-		return false if utils.vec.length(utils.vec.vector(a.x, a.y, b.x, b.y)) is 0
-
-		ab = utils.vec.vector(a.x, a.y, b.x, b.y)
-		ac = utils.vec.vector(a.x, a.y, c.x, c.y)
-		abu = utils.vec.unit(ab)
-
-		# Project AC onto AB.
-		projLength = utils.vec.dot(ac, abu)
-		proj = utils.vec.times(abu, projLength)
-
- 		# Compute the closest point of AB from the circle.
-		if projLength <= 0
-			closest = a
-		else if projLength >= utils.vec.length(ab)
-			closest = b
-		else
-			closest = utils.vec.plus(a, proj)
-
-		# Is the closest point of the segment inside of the circle?
-		return utils.distance(closest.x, closest.y, c.x, c.y) < r
-
-	'circle-multisegment': (obj1, obj2) ->
 		points = obj2.hitBox.points
 
-		# Multisegment with zero or one point can not collide.
-		return false if points.length < 2
+		# Segments with no point can not collide.
+		return false if points.length is 0
 
-		# Zero or negative radius circles can not collide.
-		return false if obj1.hitBox.radius <= 0
-
+		# Test each segment against the circle.
 		for i in [0...points.length-1]
-			mock =
-				hitBox:
-					a: {x: points[i].x, y: points[i].y}
-					b: {x: points[i+1].x, y: points[i+1].y}
-			return true if exports.tests['circle-segment'](obj1, mock)
+			a = points[i]
+			b = points[i+1]
 
-		return false
+			ab = utils.vec.minus(b, a)
 
-	# From: http://paulbourke.net/geometry/lineline2d/
-	'segment-segment': (obj1, obj2) ->
-		a = obj1.hitBox.a
-		b = obj1.hitBox.b
-		c = obj2.hitBox.a
-		d = obj2.hitBox.b
+			# Zero length segments can not collide.
+			return false if utils.vec.length(ab) is 0
 
-		# Zero length segments can not collide.
-		return false if utils.vec.length(utils.vec.vector(a.x, a.y, b.x, b.y)) is 0
-		return false if utils.vec.length(utils.vec.vector(c.x, c.y, d.x, d.y)) is 0
+			# Project AC onto AB.
+			ac = utils.vec.minus(c, a)
+			abu = utils.vec.unit(ab)
+			projLength = utils.vec.dot(ac, abu)
+			proj = utils.vec.times(abu, projLength)
 
-		denominator = (d.y-c.y)*(b.x-a.x)-(d.x-c.x)*(b.y-a.y)
-		ua = ((d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x))
-		ub = ((b.x-a.x)*(a.y-c.y)-(b.y-a.y)*(a.x-c.x))
-	
-		# Special case: the two segments are parallel.
-		if denominator is 0
-
-			# The segments are colinear, check for overlap.
-			if ua is ub is 0
-
-				# Check if point Z lies between X and Y.
-				interior = (x, y, z) ->
-					xy = utils.vec.vector(x.x, x.y, y.x, y.y)
-					xyl2 = xy.x*xy.x+xy.y*xy.y
-					return 0 <= ((x.y-z.y)*(x.y-y.y)-(x.x-z.x)*(y.x-x.x)) / xyl2 <= 1
-
-				return interior(a, b, c) or
-							 interior(a, b, d) or 
-							 interior(c, d, a) or 
-							 interior(c, d, b) 
-
-			# The segments are not colinear, they can't touch.
+ 			# Compute the closest point of AB from the circle.
+			if projLength <= 0
+				closest = a
+			else if projLength >= utils.vec.length(ab)
+				closest = b
 			else
-				return false
+				closest = utils.vec.plus(a, proj)
 
-		# Classic case.
-		else
-			return 0 <= ua/denominator <= 1 and 0 <= ub/denominator <= 1
-
-	'segment-multisegment': (obj1, obj2) ->
-		points = obj2.hitBox.points
-
-		# Multisegment with zero or one point can not collide.
-		return false if points.length < 2
-
-		for i in [0...points.length-1]
-			mock =
-				hitBox:
-					a: {x: points[i].x, y: points[i].y}
-					b: {x: points[i+1].x, y: points[i+1].y}
-			return true if exports.tests['segment-segment'](obj1, mock)
+			# Is the closest point of the segment inside of the circle?
+			return true if utils.distance(closest.x, closest.y, c.x, c.y) < r
 
 		return false
 
-	'multisegment-multisegment': (obj1, obj2) ->
-		points = obj2.hitBox.points
+	'circle-polygon': (obj1, obj2) ->
 
-		# Multisegment with zero or one point can not collide.
-		return false if obj1.hitBox.points.length < 2 or points.length < 2
+	'segments-segments': (obj1, obj2) ->
+		points1 = obj1.hitBox.points
+		points2 = obj2.hitBox.points
 
-		for i in [0...points.length-1]
-			mock =
-				hitBox:
-					a: {x: points[i].x, y: points[i].y}
-					b:	{x: points[i+1].x, y: points[i+1].y}
-			return true if exports.tests['segment-multisegment'](mock, obj1)
+		# Segments with no point can not collide.
+		return false if points1.length is 0
+		return false if points2.length is 0
+
+		for i in [0...points1.length-1]
+			a = points1[i]
+			b = points1[i+1]
+
+			# Zero length segment can not collide.
+			continue if a.x is b.x and a.y is b.y
+
+			for j in [0...points2.length-1]
+				c = points2[i]
+				d = points2[i+1]
+
+				# Zero length segment can not collide.
+				continue if c.x is d.x and c.y is d.y
+
+				denominator = (d.y-c.y)*(b.x-a.x)-(d.x-c.x)*(b.y-a.y)
+				ua = ((d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x))
+				ub = ((b.x-a.x)*(a.y-c.y)-(b.y-a.y)*(a.x-c.x))
+	
+				# Special case: the two segments are colinear.
+				if denominator is ua is ub is 0
+
+					# Check if point Z lies between X and Y.
+					interior = (x, y, z) ->
+						xy = utils.vec.vector(x.x, x.y, y.x, y.y)
+						xyl2 = xy.x*xy.x+xy.y*xy.y
+						return 0 <= ((x.y-z.y)*(x.y-y.y)-(x.x-z.x)*(y.x-x.x)) / xyl2 <= 1
+
+					return true if interior(a, b, c) or
+												 interior(a, b, d) or 
+												 interior(c, d, a) or 
+												 interior(c, d, b) 
+
+				# Classic case.
+				else
+					return true if 0 <= ua/denominator <= 1 and 0 <= ub/denominator <= 1
 
 		return false
+
+	'segments-polygon': (obj1, obj2) ->
 
 	'polygon-polygon': (obj1, obj2) ->
 

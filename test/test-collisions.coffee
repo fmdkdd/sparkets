@@ -17,18 +17,10 @@ circle = (radius, x, y) ->
 		radius: radius
 	return obj
 
-segment = (x1, y1, x2, y2) ->
+segments = (points) ->
 	obj = new MockGameObject()
 	obj.hitBox =
-		type: 'segment'
-		a: {x: x1, y: y1}
-		b: {x: x2, y: y2}
-	return obj
-
-multiseg = (points) ->
-	obj = new MockGameObject()
-	obj.hitBox =
-		type: 'multisegment'
+		type: 'segments'
 		points: points
 	return obj
 
@@ -80,144 +72,146 @@ exports.suite.addBatch
 
 	'zero radius circle':
 		topic: () ->
-			circle(0)
+			seg = segments [
+				{x: 0, y: 1},
+				{x: 0, y: 2}]
 
-		'should not collide with anything': (circ) ->
-			assert.isFalse(collisions.test(circ, circle(1)))
-			assert.isFalse(collisions.test(circ, segment(0,1,-0,1)))
+		'should not collide with anything': (seg) ->
+			assert.isFalse(collisions.test(circle(0), circle(1)))
+			assert.isFalse(collisions.test(circle(0), seg))
 
-	'circle and segment - nonintersecting':
+	'circle and simple segment - nonintersecting':
 		topic: () ->
-			collisions.test(circle(10), segment(30, 0, 35, 0))
+			seg = segments [
+				{x: 30, y: 0},
+				{x: 35, y: 0}]
+
+			collisions.test(circle(10), seg)
 
 		'should not collide': (topic) ->
 			assert.isFalse(topic)
 
-	'circle and segment - intersecting':
+	'circle and simple segment - intersecting':
 		topic: () ->
-			collisions.test(circle(10), segment(5, 0, 15, 0))
+			seg = segments [
+				{x: 5, y: 0},
+				{x: 15, y: 0}]
+
+			collisions.test(circle(10), seg)
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'circle and multisegment - nonintersecting':
+	'circle and multiple segment - nonintersecting':
 		topic: () ->
-			collisions.test circle(10), multiseg [
+			seg = segments [
 				{x: 30, y: 5},
 				{x: 30, y: 0},
 				{x: 30, y: -5},
 				{x: 30, y: -10}]
 
+			collisions.test(circle(10), seg)
+
 		'should not collide': (topic) ->
 			assert.isFalse(topic)
 
-	'circle and multisegment - intersecting':
+	'circle and multiple segment - intersecting':
 		topic: () ->
-			collisions.test circle(10), multiseg [
+			seg = segments [
 				{x: 5, y: 0},
 				{x: 10, y: 0},
 				{x: 15, y: 0}]
 
-		'should collide': (topic) ->
-			assert.isTrue(topic)
-
-	'segment and segment - overlapping':
-		topic: () ->
-			collisions.test(segment(0,0,1,0), segment(0,0,1,0))
+			collisions.test(circle(10), seg)
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'segment and segment - nonintersecting':
+	'simple segment and simple segment - overlapping':
 		topic: () ->
-			collisions.test(segment(0,0,10,0), segment(20,5,20,-5))
+			seg = segments [
+				{x:0, y:0},
+				{x:1, y:0}]
+
+			collisions.test(seg, seg)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'simple segment and simple segment - nonintersecting':
+		topic: () ->
+			seg1 = segments [
+				{x:0, y:0},
+				{x:10, y:0}]
+
+			seg2 = segments [
+				{x:20, y:5},
+				{x:20, y:-5}]
+
+			collisions.test(seg1, seg2)
 
 		'should not collide': (topic) ->
 			assert.isFalse(topic)
 
 	'zero length segment':
 		topic: () ->
-			segment(0,0,0,0)
+			segments [{x:0, y:0}, {x:0, y:0}]
 
 		'should not collide with anything': (seg) ->
-			assert.isFalse(collisions.test(seg, segment(-1,0,1,0)))
+			assert.isFalse(collisions.test(seg, segments([{x:-1,y:0},{x:1,y:0}])))
 			assert.isFalse(collisions.test(seg, circle(1)))
 
-	'segment and segment - intersecting':
+	'simple segment and multiple segment - nonintersecting':
 		topic: () ->
-			collisions.test(segment(0,0,10,0), segment(5,5,5,-5))
+			seg1 = segments [
+				{x: 0, y: 0},
+				{x: 10, y: 0}]
 
-		'should collide': (topic) ->
-			assert.isTrue(topic)
-
-	'segment and multisegment - nonintersecting':
-		topic: () ->
-			collisions.test segment(0,0,10,0), multiseg [
+			seg2 = segments [
 				{x: 20, y:20},
 				{x: 20, y:15},
 				{x: 20, y:10}]
 
+			collisions.test(seg1, seg2)
+
 		'should not collide': (topic) ->
 			assert.isFalse(topic)
 
-	'segment and multisegment - intersecting':
+	'simple segment and multiple segment - intersecting':
 		topic: () ->
-			collisions.test segment(0,0,10,0), multiseg [
+			seg1 = segments [
+				{x: 0, y: 0},
+				{x: 10, y: 0}]
+
+			seg2 = segments [
 				{x: 5, y: 5},
 				{x: 5, y: -5},
 				{x: 5, y: -10}]
 
-		'should collide': (topic) ->
-			assert.isTrue(topic)
-
-	'multisegment and multisegment - overlapping':
-		topic: () ->
-			mseg = multiseg([{x: 12, y: 12}, {x: 42, y: -2}, {x: 0, y: 9}])
-
-			collisions.test(mseg, mseg)
+			collisions.test(seg1, seg2)
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'zero length multisegment':
+	'multiple segment and multiple segment - overlapping':
 		topic: () ->
-			multiseg([])
+			seg = segments [
+				{x: 12, y: 12},
+				{x: 42, y: -2},
+				{x: 0, y: 9}]
 
-		'should not collide with anything': (mseg) ->
-			assert.isFalse(collisions.test(mseg, circle(1)))
-			assert.isFalse(collisions.test(mseg, segment(-1,0,1,0)))
-
-	'multisegment and multisegment - nonintersecting':
-		topic: () ->
-			mseg1 = multiseg [
-				{x: 0, y: 0},
-				{x: 10, y: -10},
-				{x: 20, y: 0}]
-
-			mseg2 = multiseg [
-				{x: 1, y: 1}
-				{x: 1, y: 10}]
-
-			collisions.test(mseg1, mseg2)
-
-		'should not collide': (topic) ->
-			assert.isFalse(topic)
-
-	'multisegment and multisegment - intersecting':
-		topic: () ->
-			mseg1 = multiseg [
-				{x: 0, y: 0},
-				{x: 10, y: -10},
-				{x: 20, y: 0}]
-
-			mseg2 = multiseg [
-				{x: 1, y: 1}
-				{x: 10, y: -20}]
-
-			collisions.test(mseg1, mseg2)
+			collisions.test(seg, seg)
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
+
+	'segment without any point':
+		topic: () ->
+			segments []
+
+		'should not collide with anything': (seg) ->
+			assert.isFalse(collisions.test(seg, circle(1)))
+			assert.isFalse(collisions.test(seg, segments([{x:-1,y:0},{x:1,y:0}])))
 
 	'polygon and polygon - nonintersecting':
 		topic: () ->
@@ -320,3 +314,4 @@ exports.suite.addBatch
 
 		'should not collide with anything': (topic) ->
 			assert.isFalse(topic)
+
