@@ -9,7 +9,7 @@ class Planet
 		@sprite.width = @sprite.height = Math.ceil(2*@force)
 
 		c = @sprite.getContext('2d')
-		c.strokeStyle = color @color
+		c.strokeStyle = utils.color @color
 		c.fillStyle = 'white'
 		c.lineWidth = 8
 		c.beginPath()
@@ -29,7 +29,7 @@ class Planet
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
+		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 		ctxt.fillStyle = 'black'
 		ctxt.font = '15px sans'

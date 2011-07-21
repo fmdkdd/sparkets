@@ -27,7 +27,7 @@ class Ship
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
+		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 	draw: (ctxt) ->
 		return if @state is 'exploding' or @state is 'dead'
@@ -44,9 +44,9 @@ class Ship
 			ctxt.translate(@pos.x, @pos.y)
 			ctxt.rotate(@dir)
 			if @invisible
-				@drawModel(ctxt, color(@color, 0.5))
+				@drawModel(ctxt, utils.color(@color, 0.5))
 			else
-				@drawModel(ctxt, color(@color))
+				@drawModel(ctxt, utils.color(@color))
 			ctxt.restore()
 
 		# Color the hull depending on the cannon heat.
@@ -61,7 +61,7 @@ class Ship
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
 		ctxt.rotate(@dir)
-		ctxt.fillStyle = color(@color, fillAlpha)
+		ctxt.fillStyle = utils.color(@color, fillAlpha)
 		ctxt.beginPath()
 		for p in points
 			ctxt.lineTo(p[0], p[1])
@@ -79,7 +79,7 @@ class Ship
 
 			alpha /= 2 if @invisible
 
-			ctxt.strokeStyle = color(@color, alpha)
+			ctxt.strokeStyle = utils.color(@color, alpha)
 			points = [[-8,-5], [-18,0], [-8,5]]
 			ctxt.lineWidth = 2
 			ctxt.save()
@@ -140,7 +140,7 @@ class Ship
 				radius -= animRatio * 10
 				alpha -= animRatio
 
-			ctxt.fillStyle = color(@color, alpha)
+			ctxt.fillStyle = utils.color(@color, alpha)
 			ctxt.beginPath()
 			ctxt.arc(@client.canvasSize.w/2 + rx, @client.canvasSize.h/2 + ry, radius, 0, 2*Math.PI, false)
 			ctxt.fill()

@@ -16,7 +16,7 @@ class DislocateEffect
 		true
 
 	draw: (ctxt) ->
-		ctxt.strokeStyle = color(@color, 1-(@client.now-@start)/@duration)
+		ctxt.strokeStyle = utils.color(@color, 1-(@client.now-@start)/@duration)
 		ctxt.lineWidth = 2
 		for e in @edges
 			ctxt.save()

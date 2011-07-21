@@ -1,7 +1,7 @@
 class TrailEffect
 	constructor: (@client, @object, @dispersion = 0.5, @life = 30, @size = 5) ->
 		@particles = []
-		
+
 	update: () ->
 
 		# Delete expired particles
@@ -37,7 +37,7 @@ class TrailEffect
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
 		for p in @particles
-			ctxt.fillStyle = color(@object.color, p.life/@life)
+			ctxt.fillStyle = utils.color(@object.color, p.life/@life)
 			ctxt.save()
 			ctxt.translate(p.x, p.y)
 			ctxt.scale(@size, @size)

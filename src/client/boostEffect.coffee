@@ -43,7 +43,7 @@ class BoostEffect
 			ctxt.save()
 			ctxt.translate(s.x, s.y)
 			ctxt.rotate(s.dir)
-			@object.drawModel(ctxt, color(@object.color, s.alpha))
+			@object.drawModel(ctxt, utils.color(@object.color, s.alpha))
 			ctxt.restore()
 
 # Exports

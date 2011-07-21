@@ -12,7 +12,7 @@ class FlashEffect
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
-		ctxt.fillStyle = color(@color, 1-(@client.now-@start)/@duration)
+		ctxt.fillStyle = utils.color(@color, 1-(@client.now-@start)/@duration)
 		ctxt.beginPath()
 		ctxt.arc(@pos.x, @pos.y, @radius, 0, 2*Math.PI, false)
 		ctxt.fill()

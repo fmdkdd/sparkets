@@ -58,11 +58,11 @@ class ExplosionEffect
 		true
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
-		ctxt.fillStyle = color(@color, (@maxExploFrame-@frame)/@maxExploFrame)
+		ctxt.fillStyle = utils.color(@color, (@maxExploFrame-@frame)/@maxExploFrame)
 		for b in @bits
 			if @client.inView(b.x + offset.x, b.y + offset.y)
 				if b.life > 0
-					ctxt.fillStyle = color(@color, b.life / (1.5 * b.lifeMax))
+					ctxt.fillStyle = utils.color(@color, b.life / (1.5 * b.lifeMax))
 					ctxt.fillRect(b.x, b.y, b.size, b.size)
 
 # Exports

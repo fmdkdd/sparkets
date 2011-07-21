@@ -16,14 +16,14 @@ class Bonus
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		window.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
+		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 	draw: (ctxt) ->
 		return if @state isnt 'available' and @state isnt 'claimed'
 
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
-		@drawModel(ctxt, color(@color))
+		@drawModel(ctxt, utils.color(@color))
 		ctxt.restore()
 
 	drawModel: (ctxt, col) ->
@@ -50,9 +50,9 @@ class Bonus
 				ctxt.restore()
 
 			when 'bonusTracker'
-				window.strokeCircle(ctxt, 0, 0, 1)
-				window.strokeCircle(ctxt, 0, 0, 4)
-				window.strokeCircle(ctxt, 0, 0, 7)
+				utils.strokeCircle(ctxt, 0, 0, 1)
+				utils.strokeCircle(ctxt, 0, 0, 4)
+				utils.strokeCircle(ctxt, 0, 0, 7)
 
 			when 'bonusBoost'
 				ctxt.save()
@@ -128,7 +128,7 @@ class Bonus
 
 	drawRadarSymbol: (ctxt, x, y) ->
 		ctxt.save()
-		ctxt.fillStyle = color @color
+		ctxt.fillStyle = utils.color @color
 		ctxt.translate(x, y)
 		ctxt.rotate(Math.PI/4)
 		ctxt.fillRect(-4, -10, 8, 20)

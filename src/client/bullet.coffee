@@ -21,7 +21,7 @@ class Bullet
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
 		lastPoint = @points[@points.length-1]
-		strokeCircle(ctxt, lastPoint[0], lastPoint[1], @boundingRadius)
+		utils.strokeCircle(ctxt, lastPoint[0], lastPoint[1], @boundingRadius)
 
 	bulletWrap: (x1, y1, x2, y2) ->
 		Math.abs(x1 - x2) > 50 or
@@ -33,8 +33,8 @@ class Bullet
 
 	drawSegment: (ctxt, x1, y1, x2, y2, alpha1, alpha2) ->
 		gradient = ctxt.createLinearGradient(x1, y1, x2, y2)
-		gradient.addColorStop(0, color(@color, alpha1))
-		gradient.addColorStop(1, color(@color, alpha2))
+		gradient.addColorStop(0, utils.color(@color, alpha1))
+		gradient.addColorStop(1, utils.color(@color, alpha2))
 
 		ctxt.strokeStyle = gradient
 		ctxt.beginPath()

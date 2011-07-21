@@ -22,7 +22,7 @@ class Rope
 			@chain[i] = @client.closestGhost(@chain[0], @chain[i])
 
 		smooth = 0.75
-		ctxt.strokeStyle = color @color
+		ctxt.strokeStyle = utils.color @color
 		ctxt.lineWidth = 2
 		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.beginPath()
@@ -112,7 +112,7 @@ class Rope
 				vx: (pos.x - center.x) * 0.05
 				vy: (pos.y - center.y) * 0.05
 				vr: (Math.random()*2-1) * 0.05
-				size: window.distance(@chain[i].x, @chain[i].y, @chain[i+1].x, @chain[i+1].y)
+				size: utils.distance(@chain[i].x, @chain[i].y, @chain[i+1].x, @chain[i+1].y)
 
 		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)
 

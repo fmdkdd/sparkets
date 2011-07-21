@@ -1,4 +1,4 @@
-exports ?= window
+exports ?= window.logger = {}
 
 ## Logger with ANSI colors
 # Borrowed from Socket.IO logger

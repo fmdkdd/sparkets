@@ -1,4 +1,4 @@
-exports ?= window
+exports ?= window.utils = {}
 
 # Array extension
 

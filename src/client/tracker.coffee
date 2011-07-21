@@ -15,13 +15,13 @@ class Tracker
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
 		ctxt.rotate(@dir)
-		@drawModel(ctxt, color(@color))
+		@drawModel(ctxt, utils.color(@color))
 		ctxt.restore()
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
+		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 	drawModel: (ctxt, col) ->
 		hr = @boundingRadius
@@ -69,7 +69,7 @@ class Tracker
 		@client.effects.push new TrailEffect(@client, @, 2, 30, 3)
 
 	boostEffect: () ->
-			@client.effects.push new BoostEffect(@client, @, 3, 600)
+		@client.effects.push new BoostEffect(@client, @, 3, 600)
 
 # Exports
 window.Tracker = Tracker

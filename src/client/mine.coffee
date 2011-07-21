@@ -15,7 +15,7 @@ class Mine
 		# Draw the body of the mine.
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
-		@drawModel(ctxt, color(@color))
+		@drawModel(ctxt, utils.color(@color))
 		ctxt.restore()
 
 		# Draw the sensor wave when the mine is active.
@@ -23,7 +23,7 @@ class Mine
 			for r in [@boundingRadius...0] by -20
 				ctxt.save()
 				ctxt.lineWidth = 3
-				ctxt.strokeStyle = color(@color, 1-r/50)
+				ctxt.strokeStyle = utils.color(@color, 1-r/50)
 				ctxt.translate(@pos.x, @pos.y)
 				ctxt.beginPath()
 				ctxt.arc(0, 0, r, 0, 2*Math.PI, false)
@@ -41,7 +41,7 @@ class Mine
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1
-		strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
+		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @boundingRadius)

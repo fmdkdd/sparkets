@@ -344,7 +344,7 @@ class Client
 			for j in [-1..1]
 				ox = targetPos.x + i * @map.w
 				oy = targetPos.y + j * @map.h
-				d = window.distance(sourcePos.x, sourcePos.y, ox, oy)
+				d = utils.distance(sourcePos.x, sourcePos.y, ox, oy)
 				if d < bestDistance
 					bestDistance = d
 					bestPos = {x: ox, y: oy}
