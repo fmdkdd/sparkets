@@ -44,6 +44,12 @@
 	 Convert to offensive bonus.
 
 
+** Environment
+*** Asteroids
+		Blob-like asteroids slowly drifting across the map.
+		Breaks when hit with a weapon.
+
+
 ** Other game modes
 *** Team deathmatch
 
