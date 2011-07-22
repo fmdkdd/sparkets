@@ -35,9 +35,11 @@ exports.convexHitboxes = (box) ->
 						points: [box.points[i], box.points[i+1]]
 			segments
 
-		# TODO when necesary
 		when 'polygon'
-			[box]
+			polys = []
+			if box.points.length >= 2
+				polys.push box # TODO when necesary
+			polys
 
 		# Unknown hitbox type.
 		else

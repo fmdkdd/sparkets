@@ -75,6 +75,10 @@ exports.suite.addBatch
 					{x: 0, y: 11},
 					{x: -10, y: 28}]
 
+	'circle and circle':
+		'should handle floats': () ->
+			assert.isTrue(collisions.test(circle(1.01), circle(1, 2)))
+
 	'circle and circle - nonintersecting':
 		topic: () ->
 			collisions.test(circle(10), circle(10, 30, 0))
@@ -89,9 +93,14 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'circle and circle':
-		'should handle floats': () ->
-			assert.isTrue(collisions.test(circle(1.01), circle(1, 2)))
+	'circle and circle - overlapping':
+		topic: () ->
+			circ = circle(5)
+
+			collisions.test(circ, circ)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
 
 	'circle and circle - one inside another':
 		topic: () ->
@@ -164,31 +173,50 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'simple segment and simple segment - overlapping':
+	'circle and polygon - nonintersecting':
 		topic: () ->
-			seg = segments [
-				{x:0, y:0},
-				{x:1, y:0}]
+			poly = polygon [
+				{x: 20, y: 0},
+				{x: 40, y: 0},
+				{x: 40, y: 20},
+				{x: 20, y: 20},]
 
-			collisions.test(seg, seg)
+			collisions.test(circle(10), poly)
+
+		'should not collide': (topic) ->
+			assert.isFalse(topic)
+
+	'circle and polygon - intersecting':
+		topic: () ->
+			poly = polygon [
+				{x: -1, y: -1},
+				{x: 1, y: -1},
+				{x: 1, y: 1},
+				{x: -1, y: 1},]
+
+			collisions.test(circle(10), poly)
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'simple segment and simple segment - nonintersecting':
+	'empty segment':
 		topic: () ->
-			seg1 = segments [
-				{x:0, y:0},
-				{x:10, y:0}]
+			segments []
+
+		'should not collide with anything': (seg) ->
+			assert.isFalse(collisions.test(seg, circle(1)))
 
 			seg2 = segments [
-				{x:20, y:5},
-				{x:20, y:-5}]
+				{x:-1,y:0},
+				{x:1,y:0}]
+			assert.isFalse(collisions.test(seg, seg2))
 
-			collisions.test(seg1, seg2)
-
-		'should not collide': (topic) ->
-			assert.isFalse(topic)
+			poly = polygon [
+				{x: -1, y: -1},
+				{x: 1, y: -1},
+				{x: 1, y: 1},
+				{x: -1, y: 1}]
+			assert.isFalse(collisions.test(seg, poly))
 
 	'zero length segment':
 		topic: () ->
@@ -211,63 +239,41 @@ exports.suite.addBatch
 				{x: -1, y: 1}]
 			assert.isFalse(collisions.test(seg, poly))
 
-	'simple segment and long segment - nonintersecting':
+	'simple segment and simple segment - nonintersecting':
 		topic: () ->
 			seg1 = segments [
-				{x: 0, y: 0},
-				{x: 10, y: 0}]
+				{x:0, y:0},
+				{x:10, y:0}]
 
 			seg2 = segments [
-				{x: 20, y:20},
-				{x: 20, y:15},
-				{x: 20, y:10}]
+				{x:20, y:5},
+				{x:20, y:-5}]
 
 			collisions.test(seg1, seg2)
 
 		'should not collide': (topic) ->
 			assert.isFalse(topic)
 
-	'simple segment and long segment - intersecting':
+	'simple segment and simple segment - intersecting':
 		topic: () ->
 			seg1 = segments [
 				{x: 0, y: 0},
-				{x: 10, y: 0}]
+				{x: 10, y: 10}]
 
 			seg2 = segments [
-				{x: 5, y: 5},
-				{x: 5, y: -5},
-				{x: 5, y: -10}]
+				{x: 0, y: 10},
+				{x: 10, y: 0}]
 
 			collisions.test(seg1, seg2)
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'long segment and long segment - intersecting':
-		topic: () ->
-			seg1 = segments [
-				{x: 0, y: 1},
-				{x: 10, y: -1},
-				{x: 19, y: 9}]
-
-			seg2 = segments [
-				{x: -3, y: 0},
-				{x: -6, y: 0},
-				{x: -8, y: 0},
-				{x: 3, y: 0},
-				{x: 8, y: 0}]
-
-			collisions.test(seg2, seg1)
-
-		'should collide': (topic) ->
-			assert.isTrue(topic)
-
-	'long segment and long segment - overlapping':
+	'simple segment and simple segment - overlapping':
 		topic: () ->
 			seg = segments [
-				{x: 12, y: 12},
-				{x: 42, y: -2},
-				{x: 0, y: 9}]
+				{x:0, y:0},
+				{x:1, y:0}]
 
 			collisions.test(seg, seg)
 
@@ -304,24 +310,178 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'empty segment':
+	'simple segment and long segment - nonintersecting':
 		topic: () ->
-			segments []
-
-		'should not collide with anything': (seg) ->
-			assert.isFalse(collisions.test(seg, circle(1)))
+			seg1 = segments [
+				{x: 0, y: 0},
+				{x: 10, y: 0}]
 
 			seg2 = segments [
-				{x:-1,y:0},
-				{x:1,y:0}]
-			assert.isFalse(collisions.test(seg, seg2))
+				{x: 20, y:20},
+				{x: 20, y:15},
+				{x: 20, y:10}]
+
+			collisions.test(seg1, seg2)
+
+		'should not collide': (topic) ->
+			assert.isFalse(topic)
+
+	'simple segment and long segment - intersecting':
+		topic: () ->
+			seg1 = segments [
+				{x: 0, y: 0},
+				{x: 10, y: 0}]
+
+			seg2 = segments [
+				{x: 5, y: 5},
+				{x: 5, y: -5},
+				{x: 5, y: -10}]
+
+			collisions.test(seg1, seg2)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'long segment and long segment - nonintersecting':
+		topic: () ->
+			seg1 = segments [
+				{x: 10, y: 1},
+				{x: 15, y: -1},
+				{x: 20, y: 9}]
+
+			seg2 = segments [
+				{x: -3, y: 0},
+				{x: -6, y: 0},
+				{x: -8, y: 0},
+				{x: 3, y: 0},
+				{x: 8, y: 0}]
+
+			collisions.test(seg2, seg1)
+
+		'should not collide': (topic) ->
+			assert.isFalse(topic)
+
+	'long segment and long segment - intersecting':
+		topic: () ->
+			seg1 = segments [
+				{x: 0, y: 1},
+				{x: 10, y: -1},
+				{x: 19, y: 9}]
+
+			seg2 = segments [
+				{x: -3, y: 0},
+				{x: -6, y: 0},
+				{x: -8, y: 0},
+				{x: 3, y: 0},
+				{x: 8, y: 0}]
+
+			collisions.test(seg2, seg1)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'long segment and long segment - overlapping':
+		topic: () ->
+			seg = segments [
+				{x: 12, y: 12},
+				{x: 42, y: -2},
+				{x: 0, y: 9}]
+
+			collisions.test(seg, seg)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'simple segment and polygon - nonintersecting':
+		topic: () ->
+			seg = segments [
+				{x: 0, y: 0},
+				{x: 10, y: 0}]
 
 			poly = polygon [
+				{x: 20, y: 0},
+				{x: 40, y: 0},
+				{x: 40, y: 20},
+				{x: 20, y: 20},]
+
+			collisions.test(seg, poly)
+
+		'should not collide': (topic) ->
+			assert.isFalse(topic)
+
+	'simple segment and polygon - intersecting':
+		topic: () ->
+			seg = segments [
+				{x: 15, y: 0},
+				{x: 25, y: 0}]
+
+			poly = polygon [
+				{x: 20, y: 0},
+				{x: 40, y: 0},
+				{x: 40, y: 20},
+				{x: 20, y: 20},]
+
+			collisions.test(seg, poly)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'long segment and polygon - nonintersecting':
+		topic: () ->
+			seg = segments [
+				{x: 0, y: 0},
+				{x: 10, y: 0},
+				{x: 15, y: 0},
+				{x: 15, y: 5}]
+
+			poly = polygon [
+				{x: 20, y: 0},
+				{x: 40, y: 0},
+				{x: 40, y: 20},
+				{x: 20, y: 20},]
+
+			collisions.test(seg, poly)
+
+		'should not collide': (topic) ->
+			assert.isFalse(topic)
+
+	'long segment and polygon - intersecting':
+		topic: () ->
+			seg = segments [
+				{x: 15, y: 0},
+				{x: 25, y: 0},
+				{x: 25, y: 15},
+				{x: 25, y: 30}]
+
+			poly = polygon [
+				{x: 20, y: 0},
+				{x: 40, y: 0},
+				{x: 40, y: 20},
+				{x: 20, y: 20},]
+
+			collisions.test(seg, poly)
+
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
+	'empty polygon':
+		topic: () ->
+			poly = polygon []
+
+		'should not collide with anything': (poly) ->
+			assert.isFalse(collisions.test(poly, circle(1)))
+
+			seg = segments [
+				{x:-1,y:0},
+				{x:1,y:0}]
+			assert.isFalse(collisions.test(poly, seg))
+
+			poly2 = polygon [
 				{x: -1, y: -1},
 				{x: 1, y: -1},
 				{x: 1, y: 1},
 				{x: -1, y: 1}]
-			assert.isFalse(collisions.test(seg, poly))
+			assert.isFalse(collisions.test(poly, poly2))
 
 	'polygon and polygon - nonintersecting':
 		topic: () ->
@@ -371,23 +531,6 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'polygon and polygon - sharing a unique point':
-		topic: () ->
-			poly1 = polygon [
-				{x: 0, y: 0},
-				{x: 10, y: 0},
-				{x: 5, y: 5}]
-
-			poly2 = polygon [
-				{x: 10, y: 0},
-				{x: 20, y: 0},
-				{x: 15, y: 5}]
-
-			collisions.test(poly1, poly2)
-
-		'should collide': (topic) ->
-			assert.isTrue(topic)
-
 	'polygon and polygon - one inside another':
 		topic: () ->
 			poly1 = polygon [
@@ -407,20 +550,20 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'polygon reduced to a unique point':
+	'polygon and polygon - sharing a unique point':
 		topic: () ->
 			poly1 = polygon [
 				{x: 0, y: 0},
 				{x: 10, y: 0},
-				{x: 10, y: 10},
-				{x: 0, y: 10}]
+				{x: 5, y: 5}]
 
 			poly2 = polygon [
-				{x: 5, y: 5},
-				{x: 5, y: 5},
-				{x: 5, y: 5}]
+				{x: 10, y: 0},
+				{x: 20, y: 0},
+				{x: 15, y: 5}]
 
 			collisions.test(poly1, poly2)
 
-		'should not collide with anything': (topic) ->
-			assert.isFalse(topic)
+		'should collide': (topic) ->
+			assert.isTrue(topic)
+
