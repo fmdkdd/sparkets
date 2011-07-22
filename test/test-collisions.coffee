@@ -26,6 +26,7 @@ offset = (x, y) ->
 exports.suite = vows.describe('Collisions')
 
 exports.suite.addBatch
+
 	'collisions.test':
 		topic: () ->
 			collisions.test
@@ -92,29 +93,37 @@ exports.suite.addBatch
 		'should handle floats': () ->
 			assert.isTrue(collisions.test(circle(1.01), circle(1, 2)))
 
-	'circle inside circle':
+	'circle and circle - one inside another':
 		topic: () ->
 			collisions.test(circle(1), circle(2))
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'zero radius circle':
+	'circle with zero radius':
 		topic: () ->
-			seg = segments [
-				{x: 0, y: 1},
-				{x: 0, y: 2}]
+			circle(0)
 
-		'should not collide with anything': (seg) ->
-			assert.isFalse(collisions.test(circle(0), circle(1)))
-			assert.isFalse(collisions.test(circle(0), seg))
+		'should not collide with anything': (circ) ->
+			assert.isFalse(collisions.test(circ, circle(10)))
+
+			seg = segments [
+				{x: -1, y: 0},
+				{x: 1, y: 0}]
+			assert.isFalse(collisions.test(circ, seg))
+
+			poly = polygon [
+				{x: -1, y: -1},
+				{x: 1, y: -1},
+				{x: 1, y: 1},
+				{x: -1, y: 1}]
+			assert.isFalse(collisions.test(circ, poly))
 
 	'circle and simple segment - nonintersecting':
 		topic: () ->
 			seg = segments [
 				{x: 30, y: 0},
 				{x: 35, y: 0}]
-
 			collisions.test(circle(10), seg)
 
 		'should not collide': (topic) ->
@@ -125,13 +134,12 @@ exports.suite.addBatch
 			seg = segments [
 				{x: 5, y: 0},
 				{x: 15, y: 0}]
-
 			collisions.test(circle(10), seg)
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'circle and multiple segment - nonintersecting':
+	'circle and long segment - nonintersecting':
 		topic: () ->
 			seg = segments [
 				{x: 30, y: 5},
@@ -144,7 +152,7 @@ exports.suite.addBatch
 		'should not collide': (topic) ->
 			assert.isFalse(topic)
 
-	'circle and multiple segment - intersecting':
+	'circle and long segment - intersecting':
 		topic: () ->
 			seg = segments [
 				{x: 5, y: 0},
@@ -184,13 +192,26 @@ exports.suite.addBatch
 
 	'zero length segment':
 		topic: () ->
-			segments [{x:0, y:0}, {x:0, y:0}]
+			segments [
+				{x:0, y:0},
+				{x:0, y:0}]
 
 		'should not collide with anything': (seg) ->
-			assert.isFalse(collisions.test(seg, segments([{x:-1,y:0},{x:1,y:0}])))
 			assert.isFalse(collisions.test(seg, circle(1)))
 
-	'simple segment and multiple segment - nonintersecting':
+			seg2 = segments [
+				{x:-1, y:0},
+				{x:1, y:0}]
+			assert.isFalse(collisions.test(seg, seg2))
+
+			poly = polygon [
+				{x: -1, y: -1},
+				{x: 1, y: -1},
+				{x: 1, y: 1},
+				{x: -1, y: 1}]
+			assert.isFalse(collisions.test(seg, poly))
+
+	'simple segment and long segment - nonintersecting':
 		topic: () ->
 			seg1 = segments [
 				{x: 0, y: 0},
@@ -206,7 +227,7 @@ exports.suite.addBatch
 		'should not collide': (topic) ->
 			assert.isFalse(topic)
 
-	'simple segment and multiple segment - intersecting':
+	'simple segment and long segment - intersecting':
 		topic: () ->
 			seg1 = segments [
 				{x: 0, y: 0},
@@ -222,7 +243,7 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'multiple segment and multiple segment - intersecting':
+	'long segment and long segment - intersecting':
 		topic: () ->
 			seg1 = segments [
 				{x: 0, y: 1},
@@ -241,7 +262,7 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'multiple segment and multiple segment - overlapping':
+	'long segment and long segment - overlapping':
 		topic: () ->
 			seg = segments [
 				{x: 12, y: 12},
@@ -253,7 +274,7 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'two parallel segments - nonintersecting':
+	'simple segment and simple segment - parallel and nonintersecting':
 		topic: () ->
 			seg1 = segments [
 				{x: 0, y: 0},
@@ -268,7 +289,7 @@ exports.suite.addBatch
 		'should not collide': (topic) ->
 			assert.isFalse(topic)
 
-	'two parallel segments - intersecting':
+	'simple segment and simple segment - parallel and intersecting':
 		topic: () ->
 			seg1 = segments [
 				{x: 0, y: 0},
@@ -283,13 +304,24 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'segment without any point':
+	'empty segment':
 		topic: () ->
 			segments []
 
 		'should not collide with anything': (seg) ->
 			assert.isFalse(collisions.test(seg, circle(1)))
-			assert.isFalse(collisions.test(seg, segments([{x:-1,y:0},{x:1,y:0}])))
+
+			seg2 = segments [
+				{x:-1,y:0},
+				{x:1,y:0}]
+			assert.isFalse(collisions.test(seg, seg2))
+
+			poly = polygon [
+				{x: -1, y: -1},
+				{x: 1, y: -1},
+				{x: 1, y: 1},
+				{x: -1, y: 1}]
+			assert.isFalse(collisions.test(seg, poly))
 
 	'polygon and polygon - nonintersecting':
 		topic: () ->
@@ -356,7 +388,7 @@ exports.suite.addBatch
 		'should collide': (topic) ->
 			assert.isTrue(topic)
 
-	'polygon inside polygon':
+	'polygon and polygon - one inside another':
 		topic: () ->
 			poly1 = polygon [
 				{x: 0, y: 0},
@@ -392,4 +424,3 @@ exports.suite.addBatch
 
 		'should not collide with anything': (topic) ->
 			assert.isFalse(topic)
-

@@ -5,6 +5,7 @@ ddebug = (msg) -> logger.log 'collisions', msg
 
 exports.addOffset = (box, offset) ->
 	switch box.type
+
 		when 'circle'
 			box.x += offset.x
 			box.y += offset.y
@@ -16,169 +17,164 @@ exports.addOffset = (box, offset) ->
 
 	return box
 
-# Check intersection between two hitboxes with the help of a set of
-#	possible separating axes.
-exports.checkIntersection = (box1, box2, axes) ->
+# Subdivide a hitbox into convex hitboxes.
+exports.convexHitboxes = (box) ->
+	switch box.type
 
-	# Project a hitbox onto an axis.
-	projectHitBox = (box, axis) ->
-		proj = {min: +Infinity, max: -Infinity}
-		for p in box.points
-			x = utils.vec.dot(axis, p)
-			proj.min = x if x < proj.min
-			proj.max = x if x > proj.max
-		return proj
+		# Circles are always convex.
+		when 'circle'
+			[box]
 
-	# Check if the projection of two objects onto an axis overlap.
-	projectionsOverlap = (box1, box2, axis) ->
-		proj1 = projectHitBox(box1, axis)
-		proj2 = projectHitBox(box2, axis)
-		return proj1.min <= proj2.min <= proj1.max or
-					 proj1.min <= proj2.max <= proj1.max or
-			     proj2.min <= proj1.min <= proj2.max or
-					 proj2.min <= proj1.max <= proj2.max
+		# Each subsegment becomes a unique hitbox.
+		when 'segments'
+			segments = []
+			if box.points.length >= 2
+				for i in [0...box.points.length-1]
+					segments.push
+						type: 'segments'
+						points: [box.points[i], box.points[i+1]]
+			segments
 
-	# Check if a separating axis exists.
-	for a in axes
-		return false if not projectionsOverlap(box1, box2, a)
+		# TODO when necesary
+		when 'polygon'
+			[box]
 
-	# No separating axis, intersection.
+		# Unknown hitbox type.
+		else
+			null
+
+# Check that the hitbox is valid.
+exports.validHitbox = (box) ->
+	switch box.type
+
+		when 'circle'
+			# Zero radius circles cannot collide.
+			return false if box.radius <= 0		
+
+		when 'segments'
+			# Empty segments cannot collide.
+			return false if box.points.length isnt 2
+
+			# Zero length segments cannot collide
+			a = box.points[0]
+			b = box.points[1]
+			return false if a.x is b.x and a.y is b.y
+
 	return true
 
-# Give the axis of the edges of a hitbox.
-exports.edgesAxes = (box) ->
+# Project a hitbox onto an axis.
+exports.projectHitBox = (box, axis) ->
+	proj = {min: +Infinity, max: -Infinity}
+
+	switch box.type
+
+		when 'circle'
+			center = {x: box.x, y: box.y}
+			x = utils.vec.dot(axis, center)
+			proj.min = x - box.radius
+			proj.max = x + box.radius
+
+		when 'segments', 'polygon'
+			for p in box.points
+				x = utils.vec.dot(axis, p)
+				proj.min = x if x < proj.min
+				proj.max = x if x > proj.max
+		
+	return proj
+
+# Check if two projections overlap.
+exports.projectionsOverlap = (proj1, proj2) ->
+	return proj1.min <= proj2.min <= proj1.max or
+				 proj1.min <= proj2.max <= proj1.max or
+		     proj2.min <= proj1.min <= proj2.max or
+				 proj2.min <= proj1.max <= proj2.max
+
+# Give possible separating axes based on the hitboxes features.
+exports.separatingAxes = (box1, box2) ->
 	axes = []
 
-	points = box.points
-	if box.type is 'segments'
-		edges = points.length - 1
-	else if box.type is 'polygon'
-		edges = points.length
+	for b in [box1, box2]
+		switch b.type
 
-	for i in [0...edges]
-		a = points[i]
-		b = points[(i+1)%points.length]
-		e = utils.vec.vector(a.x, a.y, b.x, b.y)
-		axes.push utils.vec.normalize(e)
+			# Add the axis joining the circle center and the cloest vertex
+			# of the other hitbox.
+			when 'circle'
+				center = {x: b.x, y: b.y}
+				ob = (if b is box1 then box2 else box1)
+
+				# Compute the closest vertex.
+				if ob.type is 'circle'
+					closest = {x: ob.x, y: ob.y}
+				else
+					# TODO : use Voronoi regions instead of dumb distances.
+					closest = ob.points[0]
+					distClosest = utils.distance(closest.x, closest.y, center.x, center.y)
+					for i in [1...ob.points.length]
+						dist = utils.distance(ob.points[i].x, ob.points[i].y, center.x, center.y)
+						if dist < distClosest
+							closest = ob.points[i]
+							distClosest = dist
+
+				# Only add the axis if it has a length.
+				if closest.x isnt center.x or closest.y isnt center.y
+					axes.push utils.vec.normalize(utils.vec.minus(closest, center))
+
+			# Add the normal axis to the edge (there should be only one edge
+			# as the segments have been subdivided into convex parts beforehand)
+			when 'segments'
+				edge = utils.vec.minus(b.points[1], b.points[0])
+				axes.push utils.vec.normalize(utils.vec.perp(edge))
+
+			# Add the normal axis to each edge.
+			when 'polygon'
+				for i in [0...b.points.length]
+					e1 = b.points[i]
+					e2 = b.points[(i+1) % b.points.length]
+					edge = utils.vec.minus(e2, e1)
+					axes.push utils.vec.normalize(utils.vec.perp(edge))
 
 	return axes
 
+# Check for intersection between two hitboxes.
+exports.checkIntersection = (box1, box2) ->
+
+	# Check that the hitboxes are valid.
+	return false if not exports.validHitbox(box1) or not exports.validHitbox(box2)
+
+	# Get possible separating axes.
+	axes = exports.separatingAxes(box1, box2)
+
+	# Project the hitboxes onto each axis.
+	for a in axes
+
+		p1 = exports.projectHitBox(box1, a)
+		p2 = exports.projectHitBox(box2, a)
+
+		# If there is no overlap, we found a separating axis.
+		return false if not exports.projectionsOverlap(p1, p2)
+
+	# No separating axis, intersection detected.
+	return true
+
 exports.test = (box1, box2, offset1, offset2) ->
+
+	# Apply offsets.
 	box1 = exports.addOffset(utils.deepCopy(box1), offset1) if offset1?
 	box2 = exports.addOffset(utils.deepCopy(box2), offset2) if offset2?
 
-	type1 = "#{box1.type}-#{box2.type}"
-	type2 = "#{box2.type}-#{box1.type}"
+	# Subdivide hitboxes into convex ones.
+	boxes1 = exports.convexHitboxes(box1)
+	boxes2 = exports.convexHitboxes(box2)
 
-	if exports.tests[type1]?
-		exports.tests[type1](box1, box2)
-	else if exports.tests[type2]?
-		exports.tests[type2](box2, box1)
+	# Check for unknown hitbox types.
+	return null if not boxes1? or not boxes2?
 
-	# Unknown hitBox types
-	else
-		null
+	# Check each hitboxes pair for intersection.
+	for b1 in boxes1
+		for b2 in boxes2
+			return true if exports.checkIntersection(b1, b2)
 
-exports.tests =
-
-	'circle-circle': (box1, box2) ->
-		r1 = box1.radius
-		r2 = box2.radius
-
-		# Zero or negative radius circles can not collide.
-		return false if r1 <= 0 or r2 <= 0
-
-		utils.distance(box1.x, box1.y, box2.x, box2.y) < r1 + r2
-
-	'circle-segments': (box1, box2) ->
-		c = {x: box1.x, y: box1.y}
-		r = box1.radius
-
-		# Zero or negative radius circles can not collide.
-		return false if r <= 0
-
-		points = box2.points
-
-		# Segments with no point can not collide.
-		return false if points.length is 0
-
-		# Test each segment against the circle.
-		for i in [0...points.length-1]
-			a = points[i]
-			b = points[i+1]
-
-			# Zero length segments can not collide.
-			return false if a.x is b.x and a.y is b.y
-
-			ab = utils.vec.minus(b, a)
-			ac = utils.vec.minus(c, a)
-			abu = utils.vec.unit(ab)
-
-			# Project AC onto AB.
-			projLength = utils.vec.dot(ac, abu)
-			proj = utils.vec.times(abu, projLength)
-
- 			# Compute the closest point of AB from the circle.
-			if projLength <= 0
-				closest = a
-			else if projLength >= utils.vec.length(ab)
-				closest = b
-			else
-				closest = utils.vec.plus(a, proj)
-
-			# Is the closest point of the segment inside of the circle?
-			return true if utils.distance(closest.x, closest.y, c.x, c.y) < r
-
-		return false
-
-	'circle-polygon': (box1, box2) ->
-
-	'segments-segments': (box1, box2) ->
-		points1 = box1.points
-		points2 = box2.points
-
-		# Segments with no point can not collide.
-		return false if points1.length is 0
-		return false if points2.length is 0
-
-		for i in [0...points1.length-1]
-			a = points1[i]
-			b = points1[i+1]
-
-			# Zero length segments can not collide.
-			continue if a.x is b.x and a.y is b.y
-
-			for j in [0...points2.length-1]
-				c = points2[j]
-				d = points2[j+1]
-
-				# Zero length segments can not collide.
-				continue if c.x is d.x and c.y is d.y
-
-				# Possible separating axes are the edges axes and the normals
-				# to the edges axes.
-				axes1 = exports.edgesAxes(box1)
-				axes2 = exports.edgesAxes(box2)
-				axes = axes1.concat(axes2)
-				for i in [0...axes.length]
-					axes.push utils.vec.perp(axes[i])
-
-				return true if exports.checkIntersection(box1, box2, axes)
-
-		return false
-
-	'segments-polygon': (box1, box2) ->
-
-	'polygon-polygon': (box1, box2) ->
-
-		# Possible separating axes are the normals to the edges.
-		axes1 = exports.edgesAxes(box1)
-		axes2 = exports.edgesAxes(box2)
-		axes = axes1.concat(axes2)
-		for a in axes
-			a = utils.vec.perp(a)
-
-		return exports.checkIntersection(box1, box2, axes)
+	return false
 
 exports.handle = (obj1, obj2) ->
 	type1 = "#{obj1.type}-#{obj2.type}"
