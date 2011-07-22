@@ -47,8 +47,18 @@
 ** Environment
 *** Asteroids
 		Blob-like asteroids slowly drifting across the map.
-		Breaks when hit with a weapon.
+		Breaks into smaller asteroids when hit.
 
+*** Base
+		Usable as a spawn area when playing with teams. Could take the
+    form of a big planet riddled with tunnels or a more mechanical
+    mothership.
+
+		Could be protected with sentries targetting invasive enemy players
+    (this game lacks laser!). At the start of the round, bases are
+    unprotected and players must earn sentries. We could use bonuses
+    as a ressource : players bring them to a dedicated drop zone
+    inside the base to progressively improve the base defense.
 
 ** Other game modes
 *** Team deathmatch
