@@ -36,9 +36,8 @@ class Ship extends ChangingObject
 
 		@boundingRadius = @game.prefs.ship.boundingRadius
 		@hitBox =
-			type: 'segments'
+			type: 'polygon'
 			points: [
-				{x: 0, y: 0},
 				{x: 0, y: 0},
 				{x: 0, y: 0},
 				{x: 0, y: 0}]
@@ -48,8 +47,7 @@ class Ship extends ChangingObject
 	hitBoxPoints: [
 		{x:  8, y:  0},
 		{x: -7, y:  6},
-		{x: -7, y: -6},
-		{x:  8, y:  0}]
+		{x: -7, y: -6}]
 
 	updateHitbox: () ->
 		for i in [0...@hitBox.points.length]
