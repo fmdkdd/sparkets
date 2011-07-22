@@ -34,7 +34,7 @@ class Client
 		@maxBulletLength = 15
 
 		# Debugging
-		@showHitCircles = no
+		@showHitBoxes = yes
 		@showMapBounds = no
 		@showFPS = no
 
@@ -242,7 +242,7 @@ class Client
 		ctxt.save()
 		obj.draw(ctxt, offset)
 		ctxt.restore()
-		obj.drawHitbox(ctxt) if @showHitCircles
+		obj.drawHitbox(ctxt) if @showHitBoxes
 
 	drawMapBounds: (ctxt) ->
 		ctxt.save()

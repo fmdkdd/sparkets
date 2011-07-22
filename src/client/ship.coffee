@@ -34,6 +34,7 @@ class Ship
 		ctxt.moveTo(points[0].x, points[0].y)
 		for i in [1...points.length]
 			ctxt.lineTo(points[i].x, points[i].y)
+		ctxt.closePath()
 		ctxt.stroke()
 
 	draw: (ctxt) ->

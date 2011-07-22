@@ -137,7 +137,7 @@ class Menu
 		h += 2*Math.PI if h < 0
 		hDeg = Math.round(h * 180/Math.PI)
 
-		d = distance(0, 0, dx, dy)
+		d = window.utils.distance(0, 0, dx, dy)
 
 		# Clamp distance to colorwheel disc.
 		d = Math.max(minRadius, Math.min(d, maxRadius))
