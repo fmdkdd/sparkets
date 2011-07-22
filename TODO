@@ -1,12 +1,9 @@
 -*- mode: org; -*-
 
 * Gameplay
-	
 
 ** New weapons & items
-
 *** Machine gun
-
 	 Rapid-fire weapon but takes longer to kill ships. Go against the
 	 one shot/one kill principle of the current gameplay. Could be used
 	 for other bonuses like slowdown shots. The player launch burst of
@@ -14,72 +11,73 @@
 	 gets.
 
 *** Portable black hole
-
 	 Gravity affects bullets and ships.
 	 Neat graphical effect required!
 
-*** EMP/Shield
-	 
-	 Deflect bullets. Should cover a moving ship, to the detriment of
-	 its speed/manoeuvrability.
+*** Shield
+	 Deflect bullets. Protect from offensive bonuses.
 
-*** TODO Tracker
+*** EMP
+	 Deactivate near mines and trackers with an electromagnetic blast.
+	 Enemies in the affected area could become drunk.
 
+*** DONE Tracker
+		 CLOSED: [2011-07-22 Fri 16:15]
 	 Mercilessly follow a designated target.
 
 *** Invisible hull
-
 	 Stay invisible while you do not fire or use any other bonus.
 
 *** Big head mode
-
 	 Easier to shoot at, harder to slip between planets but kills on
 	 contact.
 
 *** Paintball mode
-
 	 Spray other ships with your colors! Rating 2 and up.
 
-*** Mirror image 
-	 
+*** Mirror image 	 
 	 Copy of the ship that mirror the player, but turn in opposite
 	 directions.  Fires phony bullets, disappear when colliding
 	 something (different explosion visual).
 
 *** Drunk mode
-
 	 Convert to offensive bonus.
 
 
 ** Other game modes
 *** Team deathmatch
+
 *** King of the hill
     Highlight one area on the map, every second alive in the area
     gives one point. Change area after some time.
+
 *** Courrier / Team courrier
     Pick item at A, bring at B, score. Capture the flag but without
     bases or carefully designed levels.
+
 *** The man with the golden ship
     First player to grab the golden bonus is granted unique powers,
     others have to shoot him down to grab the bonus and rack up the
     kills.
 
+*** Triple team
+		Three teams, each one having a prey team and a hunter team.
+		The team which kills the most preys wins.
+		A ship can only be killed by a member of its hunter team.
+		
+
 ** Statistics
-
 *** Session statistics
-
 		- Kills
 		- Deaths
 		- Score = K - D, compel to avoid kamikazing.
 
 *** Persistent statistics (with account)
-
 		- Total playtime.
 		- Favorite bonuses.
 		- Score progression tracking.
 
 *** Achievements (everybody loves achievements!)
-
 		- National day : Explode X times.
 		- Rube Goldberg from outer space : Create a chain explosion of X mines.
 		- Anticipating the uprising : Kill X bots.
@@ -89,46 +87,40 @@
 		- So Roswell : Crash on planets X times.
 		- Hope nobody saw that : Shot yourself.
 		- Rogue leader : Be at the top of the scoreboard X times.
-	 ...
+		...
 	 
 
 * Interface
-
-
 ** Web interface for game creation.
-
 *** TODO Sanitize input		
-
 		- Unique game id.
 		- Out of range values.
 		  
 *** TODO More info in game list.
-
 		- Max players allowed
+		- ping
 
 *** TODO More options in game creation.
-
 		- Permitted bonuses.
 		- Password.
 
+** Game interface
+*** TODO Chat
+		Let players talk.
+		Display major events (death, crash, new player, ...).
 
-** Communication between players.
+** DONE Let the player move the camera around the battlefield after he dies
+	 CLOSED: [2011-07-22 Fri 16:28]
 
-	 - Minimalist chat?
-
-** Let the player move the camera around the battlefield after he dies
 
 * Graphics
-
-
-** TODO Current bonus visual clue.
-
+** DONE Current bonus visual clue.
+	 CLOSED: [2011-07-22 Fri 16:24]
 	Bonus dragging behind the ship. The rope can be cut.
 
 ** Leave some ephemeral traces of fight on planets.
-
->>>>>>> next
    Ships and bullets splatters their colors. À la paintball.
+
 
 * Core
 
@@ -144,17 +136,12 @@
 
 ** DONE Factorize gravity from planet computations
 	 CLOSED: [2011-07-13 Wed 12:20]
-
    Consider only surrounding planets, wrt the torus.
 
 ** Expire deserted games 
 
-** Get rid of evil global variables.
-
-   Use closures where relevant, pass arguments when convenient.
-
-** Tune collisions.
-
+** DONE Tune collisions.
+	 CLOSED: [2011-07-22 Fri 16:25]
    - Properly handle more than circle on circle collisions. Ideally,
      we should compare hitboxes instead of simple hitradii.
    - Immobile objects need not to be reinserted in the grid (planets).
@@ -163,19 +150,16 @@
 ** Prevent objects from spawning onto each other.
    
 ** Change planet count to a percentage value relative to map size.
-
    Could specify between 30-70% planet fill. Avoid locks when trying
    to fit 50 planets into a 500*500 map. 
    
-** TODO Refactor client clode
-
+** DONE Refactor client clode
+	 CLOSED: [2011-07-22 Fri 16:25]
    What a mess.
 
 ** TODO Rework client drawing.
-
    Find out why Core2 with puny graphic chipset can handle the client fullscreen
    when beefier hardware can't.
 
 ** Send full game update to reconnecting / out of sync clients.
-
    Client should clean everything and start anew from this update.
