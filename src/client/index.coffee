@@ -49,6 +49,8 @@ class Index
 		# Add ranges with tooltips.
 		new Range($('#gamePrefs ul li:nth-child(1)'), 'Duration (min)', 'duration', 3, 20, 1, 5)
 
+		new Range($('#mapPrefs ul li:nth-child(2)'), 'Planet count', 'planetCount', 10, 50, 1, 20)
+
 		new Range($('#bonusPrefs ul li:nth-child(1)'), 'Drop wait (ms)', 'bonus.waitTime', 1000, 10000, 1000, 5000)
 		new Range($('#bonusPrefs ul li:nth-child(2)'), 'Activation wait (ms)', 'bonus.states.incoming.countdown', 500, 5000, 500, 2000)
 		new Range($('#bonusPrefs ul li:nth-child(3)'), 'Max allowed', 'bonus.maxCount', 0, 20, 1, 10)
@@ -67,7 +69,7 @@ class Index
 		# Add selection boxes.
 		@selectionBoxes = []
 		@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(1)'), 'mapSize', ['tiny', 'small', 'medium', 'large', 'epic'], 2)
-		@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(2)'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
+		#@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(2)'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
 
 		$('input[name="id"]').keyup (event) ->
 			if @gameListRegexp? and @.value.match(@gameListRegexp)
