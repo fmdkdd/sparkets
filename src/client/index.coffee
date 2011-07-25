@@ -4,7 +4,8 @@ class Index
 		# Server.
 		@socket = null
 
-		@gameListRegExp = null
+		# Regexp for game name validation.
+		@gameListRegexp = null
 
 		# Connect to server and set callbacks.
 		@socket = io.connect()
@@ -38,89 +39,38 @@ class Index
 			else
 				@gameListRegexp = null
 
-			@socket.on 'game already exists', () ->
-				$('#id-error').html('Name already exists')
+		@socket.on 'game already exists', () ->
+			$('#id-error').html('Name already exists')
 
 		@setupPage()
 
 	setupPage: () ->
 
+		# Add ranges with tooltips.
+		new Range($('#gamePrefs ul li:nth-child(1)'), 'Duration (min)', 'duration', 3, 20, 1, 5)
+
+		new Range($('#bonusPrefs ul li:nth-child(1)'), 'Drop wait (ms)', 'bonus.waitTime', 1000, 10000, 1000, 5000)
+		new Range($('#bonusPrefs ul li:nth-child(2)'), 'Activation wait (ms)', 'bonus.states.incoming.countdown', 500, 5000, 500, 2000)
+		new Range($('#bonusPrefs ul li:nth-child(3)'), 'Max allowed', 'bonus.maxCount', 0, 20, 1, 10)
+		new Range($('#bonusPrefs ul li:nth-child(4)'), 'Mines in bonus', 'bonus.mine.mineCount', 1, 10, 1, 2)
+
+		new Range($('#bonusAppearancePrefs ul li:nth-child(1)'), 'Mines weight', 'bonus.bonusType.mine.weight', 0, 10, 1, 3)
+		new Range($('#bonusAppearancePrefs ul li:nth-child(2)'), 'Boost weight', 'bonus.bonusType.boost.weight', 0, 10, 1, 3)
+		new Range($('#bonusAppearancePrefs ul li:nth-child(3)'), 'EMP weight', 'bonus.bonusType.EMP.weight', 0, 10, 1, 3)
+		new Range($('#bonusAppearancePrefs ul li:nth-child(4)'), 'Stealth weight', 'bonus.bonusType.stealth.weight', 0, 10, 1, 3)
+
+		new Range($('#shipPrefs ul li:nth-child(1)'), 'Speed', 'ship.speed', 0.1, 1, 0.1, 0.3)
+		new Range($('#shipPrefs ul li:nth-child(2)'), 'Friction Decay', 'ship.frictionDecay', 0, 1, 0.01, 0.97)
+
+		new Range($('#botPrefs ul li:nth-child(1)'), 'Count', 'bot.count', 0, 10, 1, 1)	
+
 		# Add selection boxes.
 		@selectionBoxes = []
-		@selectionBoxes.push new SelectionBox($('#map'), 'mapSize', ['tiny', 'small', 'medium', 'large', 'epic'], 2)
-		@selectionBoxes.push new SelectionBox($('#map'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
+		@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(1)'), 'mapSize', ['tiny', 'small', 'medium', 'large', 'epic'], 2)
+		@selectionBoxes.push new SelectionBox($('#createForm #map'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
 
 		# Hide ship prefs menu at start.
 		$('#shipPrefs').next().hide()
-
-		# Tooltip to indicate current value for range input.
-		# Created at mouse down and detached on mouse up, the tooltip
-		# follows the mouse pointer on mouse move.
-		attachTooltip = (element) ->
-			tooltip = null
-
-			updateTooltip = (val) ->
-				# Delay tooltip value update after the value has been updated
-				# in the browser. Otherwise, clicking away from the slider
-				# cursor will move the cursor to the mouse but @.value won't
-				# be updated.
-				setTimeout( (() ->
-					tooltip.innerHTML = val ), 1)
-
-			# Inexact floats have to be pretty-printed. The plan is to
-			# convert them using toFixed(2) for 2 decimal places.
-			# Integers stay as they are.
-			prettyNumber = (str) ->
-				isInt = (string) ->
-					parseInt(string) == parseFloat(string)
-
-				if isInt(str)
-					str
-				else
-					str = parseFloat(str).toFixed(2)
-
-			element.mousedown (event) ->
-				return if event.which isnt 1
-
-				# With enough clicking around you can avoid a mouse up
-				# event. Clear any previously created tooltip to avoid
-				# duplicates.
-				$(tooltip).detach() if tooltip?
-				tooltip = document.createElement('span')
-				tooltip.className = 'tooltip'
-
-				$(tooltip).css('position', 'absolute')
-				$(tooltip).css('top', $(@).offset().top - $(@).height())
-				$(tooltip).css('left', event.pageX)
-				$(@).after(tooltip)
-
-				updateTooltip(prettyNumber(@.value))
-
-			# Update tooltip value and follow pointer.
-			element.mousemove (event) ->
-				return if event.which isnt 1
-				return if not tooltip?
-
-				# Constrain to input element width.
-				xOff = event.pageX
-				left = $(@).offset().left
-				xOff = left if xOff < left
-				right = left + $(@).innerWidth()
-				xOff = right if xOff > right
-
-				$(tooltip).css('left', xOff)
-
-				updateTooltip(prettyNumber(@.value))
-
-			# Delete tooltip.
-			element.mouseup (event) ->
-				return if event.which isnt 1
-				return if not tooltip?
-
-				$(tooltip).detach()
-
-		$('input[type="range"]').each () ->
-			attachTooltip($(@))
 
 		$('input[name="id"]').keyup (event) ->
 			if @gameListRegexp? and @.value.match(@gameListRegexp)

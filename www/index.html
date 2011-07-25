@@ -8,7 +8,9 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/client/index.js"></script>
+  <script src="/js/client/range.js"></script>
   <script src="/js/client/selectionBox.js"></script>
+  <script src="/js/utils.js"></script>
 </head>
 
 <body>
@@ -61,90 +63,58 @@
 			<form id="createForm">
 			   <input type="text" name="id" placeholder="Game name" value="aaa" required />
 				<p class="error" id="id-error"></p>
+
 				<ul class="collapse">
-				  <li><h3>Game</h3>
-					 <ul>
-						<li>
-						  <label for="duration">Duration (min)</label>
-						  <input type="range" name="duration" min="3" max="20" step="1" value="5" />
-						</li>
-					 </ul>
+				  <li id="gamePrefs">
+						<h3>Game</h3>
+						<ul>
+							<li></li>
+						</ul>
+				  </li>
+					
+				  <li id="mapPrefs">
+						<h3>Map</h3>
+						<ul>
+							<li></li>
+						</ul>
 				  </li>
 
-				  <li id="map"><h3>Map</h3>
+				  <li id="bonusPrefs">
+						<h3>Bonus</h3>
+						<ul>
+							<li></li>
+							<li></li>
+							<li></li>
+							<li></li>
+						</ul>
 				  </li>
-
-				  <li><h3>Bonus</h3>
-					 <ul>
-					 <li>
-						<label for="bonus.waitTime">Drop wait (ms)</label>
-						<input type="range" name="bonus.waitTime" min="1000" max="10000" step="1000" value="5000" />
-					 </li>
-
-					 <li>
-						<label for="bonus.states.incoming.countdown">Activation wait (ms)</label>
-						<input type="range" name="bonus.states.incoming.countdown" min="500" max="5000" step="500" value="2000" />
-					 </li>
-
-					 <li>
-						<label for="bonus.maxCount">Max allowed</label>
-						<input type="range" name="bonus.maxCount" min="0" max="20" step="1" value="10" />
-					 </li>
-
-					 <li>
-						<label for="bonus.mine.mineCount">Mines in bonus</label>
-						<input type="range" name="bonus.mine.mineCount" min="1" max="10" step="1" value="2" />
-					 </li>
-					 </ul>
+					
+				  <li id="bonusAppearancePrefs">
+						<h3>Bonus appearance</h3>
+						<ul>
+							<li></li>
+							<li></li>
+							<li></li>
+							<li></li>
+						</ul>
 				  </li>
-					 
-				  <li><h3>Bonus appearance</h3>
-					 <ul>
-					 <li>
-						<label for="bonus.bonusType.mine.weight">Mines weight</label>
-						<input type="range" name="bonus.bonusType.mine.weight" min="0" max="10" step="1" value="3" />
-					 </li>
-
-					 <li>
-						<label for="bonus.bonusType.boost.weight">Boost weight</label>
-						<input type="range" name="bonus.bonusType.boost.weight" min="0" max="10" step="1" value="2" />
-					 </li>
-
-					 <li>
-						<label for="bonus.bonusType.EMP.weight">EMP weight</label>
-						<input type="range" name="bonus.bonusType.EMP.weight" min="0" max="10" step="1" value="1" />
-					 </li>
-
-					 <li>
-						<label for="bonus.bonusType.stealth.weight">Stealth weight</label>
-						<input type="range" name="bonus.bonusType.stealth.weight" min="0" max="10" step="1" value="1" />
-					 </li>
-					 </ul>
+					
+				  <li id="shipPrefs">
+						<h3>Ship</h3>
+						<ul>
+							<li></li>
+							<li></li>
+						</ul>
 				  </li>
-
-				  <li><h3 id="shipPrefs">Ship</h3>
-					 <ul>
-					 <li>
-						<label for="ship.speed">Speed</label>
-						<input type="range" name="ship.speed" min="0.1" max="1" step="0.1" value="0.3" />
-					 </li>
-
-					 <li>
-						<label for="ship.frictionDecay">Friction decay</label>
-						<input type="range" name="ship.frictionDecay" min="0" max="1" step="0.01" value="0.97" />
-					 </li>
-					 </ul>
+					
+				  <li id="botPrefs">
+						<h3>Bot</h3>
+						<ul>
+							<li></li>
+						</ul>
 				  </li>
+					</ul>
 
-				  <li><h3>Bot</h3>
-					 <ul>
-						<li>
-						  <label for="bot.count">Count</label>
-						  <input type="range" name="bot.count" min="0" max="10" step="1" value="1" />
-						</li>
-					 </ul>
-				  </li>
-				</ul>
 				<input type="submit" value="Create" />
 			</form>
 		</div>

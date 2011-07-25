@@ -35,8 +35,8 @@ class GamePreferences
 		utils.safeDeepMerge(@, prefs)
 
 		# Replace presets with real values.
-		for i, p in presets
-			@[i] = p
+		for key, p in presets
+			@[key] = @presets[p]
 
 	presets:
 		mapSize:
@@ -62,7 +62,7 @@ class GamePreferences
 	mapSize: 2000
 
 	# Number of planets.
-	planetCount: 10
+	planetCount: 25
 
 	# The map is divided into a grid of width*height cells.
 	# Colliding objects are checked only in the same cell.

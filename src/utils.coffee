@@ -127,6 +127,18 @@ exports.randomColor = () ->
 exports.capitalize = (word) ->
 	word[0].toUpperCase() + word.substring(1)
 
+# Inexact floats have to be pretty-printed. The plan is to
+# convert them using toFixed(2) for 2 decimal places.
+# Integers stay as they are.
+exports.prettyNumber = (str) ->
+	isInt = (string) ->
+		parseInt(string) == parseFloat(string)
+
+	if isInt(str)
+		str
+	else
+		parseFloat(str).toFixed(2)
+
 # Merge `obj' properties with `target' existing properties.
 # No new property is created in `target'.
 exports.safeDeepMerge = (target, obj) ->

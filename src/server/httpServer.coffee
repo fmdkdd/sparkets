@@ -28,6 +28,7 @@ webFiles = {
 	'/js/client/mine.js',
 	'/js/client/dislocateEffect.js',
 	'/js/client/planet.js',
+	'/js/client/range.js',
 	'/js/client/rope.js',
 	'/js/client/selectionBox.js',
 	'/js/client/ship.js',
