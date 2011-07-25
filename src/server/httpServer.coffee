@@ -14,6 +14,7 @@ webFiles = {
 	'/play/' : '/client.html',
 	'/client.css',
 	'/index.css',
+	'/range.css',
 	'/selectionBox.css',
 	'/js/client/bonus.js',
 	'/js/client/boostEffect.js',
