@@ -74,19 +74,19 @@ class Bullet extends ChangingObject
 		@lastPoints = [ [@pos.x, @pos.y] ]
 
 		# Warp the bullet around the map.
-		{w, h} = @game.prefs.mapSize
+		s = @game.prefs.mapSize
 		@warp = off
 		if @pos.x < 0
-			@pos.x += w
+			@pos.x += s
 			@warp = on
-		if @pos.x > w
-			@pos.x -= w
+		if @pos.x > s
+			@pos.x -= s
 			@warp = on
 		if @pos.y < 0
-			@pos.y += h
+			@pos.y += s
 			@warp = on
-		if @pos.y > h
-			@pos.y -= h
+		if @pos.y > s
+			@pos.y -= s
 			@warp = on
 
 		# Append the warped point again so that the line remains continuous.

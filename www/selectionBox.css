@@ -1,0 +1,29 @@
+table.selectionBox {
+		table-layout: fixed;
+		width: 100%;
+
+		border-collapse: collapse;
+}
+
+table.selectionBox th {
+		width: 20%;
+}
+
+table.selectionBox button {
+		width: 80%;
+		padding: 0.2em;
+
+		background-color: lightgrey;
+		border: 1px solid grey;
+		border-radius: 3px;
+		cursor: pointer;
+}
+
+table.selectionBox button:hover {
+		border: 1px solid blue;
+}
+
+.selectionBox button.selected {
+		background-color: lightblue;
+		border: 1px solid blue;
+}

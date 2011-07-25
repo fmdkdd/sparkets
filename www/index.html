@@ -4,9 +4,11 @@
   <title>Spacewar!</title>
   <link href="/favicon.ico" rel="shortcut icon" />
   <link href="/index.css" rel="stylesheet" />
+  <link href="/selectionBox.css" rel="stylesheet" />
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/client/index.js"></script>
+  <script src="/js/client/selectionBox.js"></script>
 </head>
 
 <body>
@@ -57,7 +59,7 @@
 		<div id="createDiv">
 			<h2>Create</h2>
 			<form id="createForm">
-			   <input type="text" name="id" placeholder="Game name" required />
+			   <input type="text" name="id" placeholder="Game name" value="aaa" required />
 				<p class="error" id="id-error"></p>
 				<ul class="collapse">
 				  <li><h3>Game</h3>
@@ -69,23 +71,7 @@
 					 </ul>
 				  </li>
 
-				  <li><h3>Map</h3>
-					 <ul>
-					 <li>
-						<label for="mapSize.w">Width</label>
-						<input type="range" name="mapSize.w" min="1000" max="5000" step="100" value="2000" />
-					 </li>
-
-					 <li>
-						<label for="mapSize.h">Height</label>
-						<input type="range" name="mapSize.h" min="1000" max="5000" step="100" value="2000" />
-					 </li>
-
-					 <li>
-						<label for="planet.count">Planet count</label>
-						<input type="range" name="planet.count" min="10" max="50" step="5" value="30" />
-					 </li>
-					 </ul>
+				  <li id="map"><h3>Map</h3>
 				  </li>
 
 				  <li><h3>Bonus</h3>

@@ -9,7 +9,7 @@ Planet = require('./planet').Planet
 Player = require('./player').Player
 
 class GameServer
-	constructor: (@sockets, gamePrefs) ->
+	constructor: (@sockets, gamePrefs, gamePrefsPresets) ->
 		@now = 0
 
 		@players = {}
@@ -26,7 +26,7 @@ class GameServer
 
 		@events = []
 
-		@prefs = new GamePreferences(gamePrefs)
+		@prefs = new GamePreferences(gamePrefs, gamePrefsPresets)
 
 	launch: () ->
 		for p in @initPlanets()
@@ -62,8 +62,8 @@ class GameServer
 		@grid =
 			width: @prefs.grid.width
 			height: @prefs.grid.height
-			cellWidth: @prefs.mapSize.w / @prefs.grid.width
-			cellHeight: @prefs.mapSize.h / @prefs.grid.height
+			cellWidth: @prefs.mapSize / @prefs.grid.width
+			cellHeight: @prefs.mapSize / @prefs.grid.height
 			cells: {}
 
 		@addBots()
@@ -194,7 +194,7 @@ class GameServer
 		@updateObjects(@gameObjects)
 
 	placeObjectInGrid: (obj) ->
-		{w: mapWidth, h: mapHeight} = @prefs.mapSize
+		mapWidth = mapHeight = @prefs.mapSize
 		{x: ox, y: oy} = obj.pos
 		w = @grid.cellWidth
 		h = @grid.cellHeight
@@ -257,16 +257,16 @@ class GameServer
 		# (-1,0). To do this, we need an extra offset to their position.
 		gridOffset = (gridX, gridY) =>
 			if gridX < 0
-				xOff = -@prefs.mapSize.w
+				xOff = -@prefs.mapSize
 			else if gridX >= @grid.width
-				xOff = @prefs.mapSize.w
+				xOff = @prefs.mapSize
 			else
 				xOff = 0
 
 			if gridY < 0
-				yOff = -@prefs.mapSize.h
+				yOff = -@prefs.mapSize
 			else if gridY >= @grid.height
-				yOff = @prefs.mapSize.h
+				yOff = @prefs.mapSize
 			else
 				yOff = 0
 
@@ -405,13 +405,12 @@ class GameServer
 				r2 = p.force
 			return (utils.distance(x, y, x2, y2) < r + r2)
 
-		mapW = @prefs.mapSize.w
-		mapH = @prefs.mapSize.h
+		mapS = @prefs.mapSize
 
 		# If a planet is overlapping the map, it will appear to be
 		# colliding with its ghosts in drawInfinity.
 		nearBorder = (x, y, r) ->
-			(x - r < 0 or x + r > mapW or y - r < 0 or y + r > mapH)
+			(x - r < 0 or x + r > mapS or y - r < 0 or y + r > mapS)
 
 		min = @prefs.planet.minForce
 		marge = @prefs.planet.maxForce - min
@@ -424,13 +423,13 @@ class GameServer
 		satGMarge = @prefs.planet.satelliteMaxGap - satGMin
 
 		# Spawn planets randomly.
-		for [0...@prefs.planet.count]
+		for [0...@prefs.planetCount]
 			satellite = Math.random() < @prefs.planet.satelliteChance
 			colliding = yes
 			# Ensure none are colliding (no do .. while in Coffee)
 			while colliding
-				x = Math.random() * mapW
-				y = Math.random() * mapH
+				x = Math.random() * mapS
+				y = Math.random() * mapS
 				force = min + marge * Math.random()
 
 				# Account for satellite size and distance
@@ -462,8 +461,8 @@ class GameServer
 
 		for i in [-1..1]
 			for j in [-1..1]
-				ox = targetPos.x + i * @prefs.mapSize.w
-				oy = targetPos.y + j * @prefs.mapSize.h
+				ox = targetPos.x + i * @prefs.mapSize
+				oy = targetPos.y + j * @prefs.mapSize
 				d = utils.distance(sourcePos.x, sourcePos.y, ox, oy)
 				if d < bestDistance
 					bestDistance = d

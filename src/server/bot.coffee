@@ -44,8 +44,8 @@ class Bot extends Player
 			bestDistance = Infinity
 			for i in [-1..1]
 				for j in [-1..1]
-					x = ship.pos.x + i * @game.prefs.mapSize.w
-					y = ship.pos.y + j * @game.prefs.mapSize.h
+					x = ship.pos.x + i * @game.prefs.mapSize
+					y = ship.pos.y + j * @game.prefs.mapSize
 					d = utils.distance(x, y, @ship.pos.x, @ship.pos.y)
 
 					if d < bestDistance

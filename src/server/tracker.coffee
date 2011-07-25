@@ -96,11 +96,11 @@ class Tracker extends ChangingObject
 		@changed 'hitBox'
 
 	warp: () ->
-		{w, h} = @game.prefs.mapSize
-		@pos.x = if @pos.x < 0 then w else @pos.x
-		@pos.x = if @pos.x > w then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then h else @pos.y
-		@pos.y = if @pos.y > h then 0 else @pos.y
+		s = @game.prefs.mapSize
+		@pos.x = if @pos.x < 0 then s else @pos.x
+		@pos.x = if @pos.x > s then 0 else @pos.x
+		@pos.y = if @pos.y < 0 then s else @pos.y
+		@pos.y = if @pos.y > s then 0 else @pos.y
 
 	explode: () ->
 		@state = 'dead'

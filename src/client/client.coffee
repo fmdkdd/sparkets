@@ -7,7 +7,7 @@ class Client
 		# Graphics
 		@ctxt = document.getElementById('canvas').getContext('2d')
 		@canvasSize = {w: 0, h: 0}
-		@map = null
+		@mapSize = null
 		@view = {x: 0, y: 0}
 		@mouse = {x: 0, y: 0}
 
@@ -34,7 +34,7 @@ class Client
 		@maxBulletLength = 15
 
 		# Debugging
-		@showHitBoxes = yes
+		@showHitBoxes = no
 		@showMapBounds = no
 		@showFPS = no
 
@@ -120,11 +120,11 @@ class Client
 					@view.y += (@mouse.y-center.y)/50
 
 					# Warp the camera.
-					{w, h} = @map
-					if @view.x < 0 then @view.x = w
-					if @view.x > w then @view.x = 0
-					if @view.y < 0 then @view.y = h
-					if @view.y > h then @view.y = 0
+					s = @map
+					if @view.x < 0 then @view.x = s
+					if @view.x > s then @view.x = 0
+					if @view.y < 0 then @view.y = s
+					if @view.y > s then @view.y = 0
 
 				@mouseDownInterval = setInterval(recenter, 5)
 
@@ -248,7 +248,7 @@ class Client
 		ctxt.save()
 		ctxt.lineWidth = 2
 		ctxt.strokeStyle = '#dae'
-		ctxt.strokeRect(0, 0, @map.w, @map.h)
+		ctxt.strokeRect(0, 0, @mapSize, @mapSize)
 		ctxt.restore()
 
 	centerView: (obj) ->
@@ -272,9 +272,9 @@ class Client
 
 		# Can the player see the left, right, top and bottom voids?
 		left = @view.x < 0
-		right = @view.x > @map.w - @canvasSize.w
+		right = @view.x > @mapSize - @canvasSize.w
 		top = @view.y < 0
-		bottom = @view.y > @map.h - @canvasSize.h
+		bottom = @view.y > @mapSize - @canvasSize.h
 
 		visibility = [[left and top,    top,    right and top]
 		              [left,           	off,  right],
@@ -285,8 +285,8 @@ class Client
 				if visibility[i][j] is on
 					# Translate to the adequate quadrant.
 					offset =
-						x: (j-1)*@map.w
-						y: (i-1)*@map.h
+						x: (j-1)*@mapSize
+						y: (i-1)*@mapSize
 
 					ctxt.save()
 					ctxt.translate(offset.x, offset.y)
@@ -342,8 +342,8 @@ class Client
 
 		for i in [-1..1]
 			for j in [-1..1]
-				ox = targetPos.x + i * @map.w
-				oy = targetPos.y + j * @map.h
+				ox = targetPos.x + i * @mapSize
+				oy = targetPos.y + j * @mapSize
 				d = utils.distance(sourcePos.x, sourcePos.y, ox, oy)
 				if d < bestDistance
 					bestDistance = d
@@ -363,7 +363,7 @@ class Client
 		@gameStartTime = data.startTime
 
 		# Copy useful game preferences from the server.
-		@map = data.serverPrefs.mapSize
+		@mapSize = data.serverPrefs.mapSize
 		@minPower = data.serverPrefs.ship.minPower
 		@maxPower = data.serverPrefs.ship.maxPower
 		@gameDuration = data.serverPrefs.duration

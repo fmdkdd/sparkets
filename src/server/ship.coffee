@@ -73,8 +73,8 @@ class Ship extends ChangingObject
 		@invisible = no
 
 		@pos =
-			x: Math.random() * @game.prefs.mapSize.w
-			y: Math.random() * @game.prefs.mapSize.h
+			x: Math.random() * @game.prefs.mapSize
+			y: Math.random() * @game.prefs.mapSize
 		@vel =
 			x: 0
 			y: 0
@@ -216,11 +216,11 @@ class Ship extends ChangingObject
 		@emit('moved', @)
 
 	warp: () ->
-		{w, h} = @game.prefs.mapSize
-		@pos.x = if @pos.x < 0 then w else @pos.x
-		@pos.x = if @pos.x > w then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then h else @pos.y
-		@pos.y = if @pos.y > h then 0 else @pos.y
+		s = @game.prefs.mapSize
+		@pos.x = if @pos.x < 0 then s else @pos.x
+		@pos.x = if @pos.x > s then 0 else @pos.x
+		@pos.y = if @pos.y < 0 then s else @pos.y
+		@pos.y = if @pos.y > s then 0 else @pos.y
 
 	tangible: () ->
 		@state is 'spawned' or @state is 'alive'

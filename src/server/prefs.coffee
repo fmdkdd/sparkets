@@ -29,9 +29,28 @@ class ServerPreferences
 		logLevel: 2
 
 class GamePreferences
-	constructor: (prefs = {}) ->
+	constructor: (prefs = {}, presets = {}) ->
+
 		# Override default values by those provided in `prefs'.
 		utils.safeDeepMerge(@, prefs)
+
+		# Replace presets with real values.
+		for i, p in presets
+			@[i] = p
+
+	presets:
+		mapSize:
+			'tiny': 1000
+			'small': 1500
+			'medium': 2000
+			'large': 5000
+			'epic': 10000
+
+		planetCount:
+			'none': 0
+			'scarce': 10
+			'regular': 20
+			'abnudant': 40
 
 	# ms between two server updates.
 	timestep: 20
@@ -39,10 +58,11 @@ class GamePreferences
 	# Duration of the game in minutes.
 	duration: 5
 
-	# Size of the real map (duh).
-	mapSize:
-		w: 2000
-		h: 2000
+	# Size of the real map.
+	mapSize: 2000
+
+	# Number of planets.
+	planetCount: 10
 
 	# The map is divided into a grid of width*height cells.
 	# Colliding objects are checked only in the same cell.

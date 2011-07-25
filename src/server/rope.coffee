@@ -60,11 +60,11 @@ class Rope extends ChangingObject
 			n.pos.y += n.vel.y
 
 			# Warp around the map.
-			{w, h} = @game.prefs.mapSize
-			n.pos.x = if n.pos.x < 0 then w else n.pos.x
-			n.pos.x = if n.pos.x > w then 0 else n.pos.x
-			n.pos.y = if n.pos.y < 0 then h else n.pos.y
-			n.pos.y = if n.pos.y > h then 0 else n.pos.y
+			s = @game.prefs.mapSize
+			n.pos.x = if n.pos.x < 0 then s else n.pos.x
+			n.pos.x = if n.pos.x > s then 0 else n.pos.x
+			n.pos.y = if n.pos.y < 0 then s else n.pos.y
+			n.pos.y = if n.pos.y > s then 0 else n.pos.y
 
 		# Build a chain starting from the first object, containing all
 		# nodes and ending with the second object.

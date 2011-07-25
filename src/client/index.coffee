@@ -45,18 +45,20 @@ $(document).ready () ->
 			else
 				obj[name] = val
 
-		values = {}
-
+		prefs = {}
 		for input in $(form).find('input')
 			if input.name? and input.value?
 				switch input.type
 					when 'text'
-						insert(values, input.name, input.value)
+						insert(prefs, input.name, input.value)
 					when 'range'
-						insert(values, input.name, parseFloat(input.value))
+						insert(prefs, input.name, parseFloat(input.value))
 
-		return values
+		presets = {}
+		for sb in window.selectionBoxes
+			presets[sb.name] = sb.value()
 
+		return [prefs, presets]
 
 	$('input[name="id"]').keyup (event) ->
 		if window.gameListRegexp? and @.value.match(window.gameListRegexp)
@@ -68,13 +70,14 @@ $(document).ready () ->
 
 	$('#createForm').submit (event) ->
 		event.preventDefault()
-		prefs = gatherValues(@)
+		data = gatherValues(@)
 
 		# Prepare game options.
 		opts =
-			id: prefs.id
-			prefs: prefs
-		delete prefs.id
+			id: data[0].id
+			prefs: data[0]
+			presets: data[1]
+		delete data.id
 
 		window.socket.emit 'create game', opts, () ->
 			# Clear and unfocus game name input on creation.
@@ -84,6 +87,10 @@ $(document).ready () ->
 
 	$('ul.collapse h3').click (event) ->
 		$(@).next().toggle()
+
+	window.selectionBoxes = []
+	window.selectionBoxes.push new SelectionBox($('#map'), 'mapSize', ['tiny', 'small', 'medium', 'large', 'epic'], 2)
+	window.selectionBoxes.push new SelectionBox($('#map'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
 
 	# Hide ship prefs menu at start.
 	$('#shipPrefs').next().hide()
