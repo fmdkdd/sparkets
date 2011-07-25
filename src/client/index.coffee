@@ -67,10 +67,7 @@ class Index
 		# Add selection boxes.
 		@selectionBoxes = []
 		@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(1)'), 'mapSize', ['tiny', 'small', 'medium', 'large', 'epic'], 2)
-		@selectionBoxes.push new SelectionBox($('#createForm #map'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
-
-		# Hide ship prefs menu at start.
-		$('#shipPrefs').next().hide()
+		@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(2)'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
 
 		$('input[name="id"]').keyup (event) ->
 			if @gameListRegexp? and @.value.match(@gameListRegexp)

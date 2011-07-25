@@ -35,8 +35,8 @@ class GamePreferences
 		utils.safeDeepMerge(@, prefs)
 
 		# Replace presets with real values.
-		for key, p in presets
-			@[key] = @presets[p]
+		for key, p of presets
+			@[key] = @presets[key][p]
 
 	presets:
 		mapSize:
