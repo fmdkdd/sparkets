@@ -16,7 +16,7 @@ class Ship
 			@engineAnimFor = @engineAnimDelay
 
 	update: () ->
-		# Update the engine animation countdown.
+		# Update the engine animation.
 		if @engineAnimFor?
 			@engineAnimFor -= @client.sinceLastUpdate
 			@engineAnimFor = null if @engineAnimFor <= 0
@@ -142,11 +142,6 @@ class Ship
 
 			radius = 10
 			alpha = 1
-
-			if @state is 'exploding'
-				animRatio = 1 - @countdown / 1000
-				radius -= animRatio * 10
-				alpha -= animRatio
 
 			ctxt.fillStyle = utils.color(@color, alpha)
 			ctxt.beginPath()

@@ -10,9 +10,7 @@ class Ship extends ChangingObject
 		@watchChanges 'type'
 		@watchChanges 'name'
 		@watchChanges 'color'
-		@watchChanges 'stats'
 		@watchChanges 'state'
-		@watchChanges 'countdown'
 		@watchChanges 'pos'
 		@watchChanges 'vel'
 		@watchChanges 'dir'
@@ -54,6 +52,8 @@ class Ship extends ChangingObject
 			pr = utils.vec.rotate(@hitBoxPoints[i], @dir)
 			@hitBox.points[i].x = @pos.x + pr.x
 			@hitBox.points[i].y = @pos.y + pr.y
+
+		@changed 'hitBox'
 
 	spawn: () ->
 		@state = 'spawned'
@@ -209,11 +209,9 @@ class Ship extends ChangingObject
 		if Math.abs(@pos.x-x) > .02 or
 				Math.abs(@pos.y-y) > .02
 			@changed 'pos'
-			@changed 'vel'
 
 		# Update hitbox
 		@updateHitbox()
-		@changed 'hitBox'
 
 		@emit('moved', @)
 
@@ -236,6 +234,11 @@ class Ship extends ChangingObject
 	nextState: () ->
 		@state = @game.prefs.ship.states[@state].next
 		@countdown = @game.prefs.ship.states[@state].countdown
+
+	setState: (state) ->
+		if @game.prefs.ship.states[state]?
+			@state = state
+			@countdown = @game.prefs.ship.states[state].countdown
 
 	update: () ->
 		if @countdown?
@@ -275,12 +278,15 @@ class Ship extends ChangingObject
 			id: @id
 
 		# If spawned, skip alive state.
-		@nextState() if @state is 'spawned'
-		@nextState()
+		@setState 'exploding'
 
 		@debug "exploded"
 
 		@emit('exploded', @)
+
+		# Notify that the velocity should be transmitted as we need it on
+		# the client side to compute an appropriate explosion effect.
+		@changed 'vel'
 
 	addStat: (field, increment) ->
 		@stats[field] += increment
