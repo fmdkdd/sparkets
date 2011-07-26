@@ -15,7 +15,6 @@ class Bonus extends ChangingObject
 		@watchChanges 'countdown'
 		@watchChanges 'color'
 		@watchChanges 'pos'
-		@watchChanges 'vel'
 		@watchChanges 'serverDelete'
 		@watchChanges 'bonusType'
 		@watchChanges 'hitBox'
