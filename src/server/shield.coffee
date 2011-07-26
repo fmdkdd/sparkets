@@ -2,13 +2,12 @@ ChangingObject = require('./changingObject').ChangingObject
 utils = require('../utils')
 
 class Shield extends ChangingObject
-	constructor: (@ship, @id, @game) ->
+	constructor: (@id, @game, @ship) ->
 		super()
 
 		@watchChanges 'type'
 		@watchChanges 'pos'
 		@watchChanges 'color'
-		@watchChanges 'force'
 		@watchChanges 'serverDelete'
 		@watchChanges 'boundingRadius'
 		@watchChanges 'hitBox'

@@ -10,7 +10,7 @@ class BonusShield
 		return if @used is yes
 
 		@game.newGameObject (id) =>
-			@game.shields[id] = new Shield(@bonus.holder, id, @game)
+			@game.shields[id] = new Shield(id, @game, @bonus.holder)
 
 		@used = yes
 
