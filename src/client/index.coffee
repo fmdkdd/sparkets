@@ -52,12 +52,11 @@ class Index
 			'large': 5000
 			'epic': 10000
 
-		'planet.count':
-			'fewer': 10
-			'few': 20
-			'normal': 30
-			'plenty': 50
-
+		'planet.density':
+			'few': .15
+			'normal': .35
+			'plenty': .5
+			'excessive': .7
 
 	setupPage: () ->
 		li = (container) ->
@@ -68,7 +67,7 @@ class Index
 		@selectionBoxes.push new SelectionBox(li('#mapPrefs ul'),
 			'mapSize', Object.keys(@presets['mapSize']), 2)
 		@selectionBoxes.push new SelectionBox(li('#mapPrefs ul'),
-			'planet.count', Object.keys(@presets['planet.count']), 2)
+			'planet.density', Object.keys(@presets['planet.density']), 1)
 
 		# Add ranges with tooltips.
 		new Range(li('#gamePrefs ul'), 'Duration (min)',

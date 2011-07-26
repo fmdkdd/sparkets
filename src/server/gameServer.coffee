@@ -422,8 +422,14 @@ class GameServer
 		satGMin = @prefs.planet.satelliteMinGap
 		satGMarge = @prefs.planet.satelliteMaxGap - satGMin
 
+		# Compute the number of planets to spawn according to planet
+		# density, planet force and map size.
+		planetSurface = (min + marge) * (min + marge) * Math.PI
+		mapSurface = mapS * mapS
+		planetCount = Math.floor((mapSurface/planetSurface) * @prefs.planet.density)
+
 		# Spawn planets randomly.
-		for [0...@prefs.planet.count]
+		for [0...planetCount]
 			satellite = Math.random() < @prefs.planet.satelliteChance
 			colliding = yes
 			# Ensure none are colliding (no do .. while in Coffee)
@@ -450,7 +456,7 @@ class GameServer
 			if satellite
 				planets.push new Moon(@, rock, satForce, satGap)
 
-		@debug "#{@prefs.planet.count} planets created"
+		@debug "#{planetCount} planets created"
 
 		return planets
 

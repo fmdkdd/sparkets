@@ -222,8 +222,9 @@ class GamePreferences
 		color: [209, 29, 61]
 		moonColor: [190, 70, 80]
 
-		# Number of planets on the map. Satellites don't count here.
-		count: 30
+		# Density of planets on the map in [0,1].
+		# Satellites don't count here.
+		density: .35
 
 		# No planet smaller or larger than this.
 		minForce: 30
