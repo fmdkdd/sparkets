@@ -46,5 +46,7 @@ class BoostEffect
 			@object.drawModel(ctxt, utils.color(@object.color, s.alpha))
 			ctxt.restore()
 
+		true
+
 # Exports
 window.BoostEffect = BoostEffect

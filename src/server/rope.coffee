@@ -48,6 +48,8 @@ class Rope extends ChangingObject
 				x: n.pos.x
 				y: n.pos.y
 
+		true
+
 	tangible: () ->
 		yes
 

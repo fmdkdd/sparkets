@@ -65,5 +65,7 @@ class ExplosionEffect
 					ctxt.fillStyle = utils.color(@color, b.life / (1.5 * b.lifeMax))
 					ctxt.fillRect(b.x, b.y, b.size, b.size)
 
+		true
+
 # Exports
 window.ExplosionEffect = ExplosionEffect

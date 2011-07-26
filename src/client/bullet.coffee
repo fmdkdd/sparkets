@@ -11,6 +11,8 @@ class Bullet
 		for p in @lastPoints
 			@clientPoints.push p
 
+		true
+
 	update: () ->
 		@clientPoints.shift() if @serverDelete or @clientPoints.length > @client.maxBulletLength
 		@clientDelete = yes if @serverDelete and @clientPoints.length == 0

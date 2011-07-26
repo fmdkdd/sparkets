@@ -6,6 +6,8 @@ class Bonus
 		for field, val of bonus
 			@[field] = val
 
+		true
+
 	update: () ->
 		@clientDelete = @serverDelete
 

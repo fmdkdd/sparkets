@@ -6,6 +6,8 @@ class Shield
 		for field, val of shield
 			this[field] = val
 
+		true
+
 	update: () ->
 		@clientDelete = @serverDelete
 

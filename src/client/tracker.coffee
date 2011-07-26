@@ -6,6 +6,8 @@ class Tracker
 		for field, val of tracker
 			this[field] = val
 
+		true
+
 	update: () ->
 		@clientDelete = @serverDelete
 

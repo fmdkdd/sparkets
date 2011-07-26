@@ -268,6 +268,8 @@ class Client
 				bonus.drawOnRadar(ctxt)
 				ctxt.restore()
 
+		true
+
 	drawInfinity: (ctxt) ->
 
 		# Can the player see the left, right, top and bottom voids?

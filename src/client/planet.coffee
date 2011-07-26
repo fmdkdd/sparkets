@@ -23,6 +23,8 @@ class Planet
 		for field, val of planet
 			@[field] = val
 
+		true
+
 	update: () ->
 
 	inView: (offset = {x: 0, y: 0}) ->

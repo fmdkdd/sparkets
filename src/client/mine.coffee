@@ -6,6 +6,8 @@ class Mine
 		for field, val of mine
 			this[field] = val
 
+		true
+
 	update: () ->
 		@clientDelete = @serverDelete
 

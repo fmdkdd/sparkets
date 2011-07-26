@@ -28,5 +28,7 @@ class DislocateEffect
 			ctxt.stroke()
 			ctxt.restore()
 
+		true
+
 # Exports
 window.DislocateEffect = DislocateEffect
