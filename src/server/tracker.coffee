@@ -2,16 +2,14 @@ utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
 
 class Tracker extends ChangingObject
-	constructor: (@owner, @target, dropPos, @id, @game) ->
+	constructor: (@id, @game, @owner, @target, dropPos) ->
 		super()
 
 		@watchChanges 'type'
 		@watchChanges 'pos'
-		@watchChanges 'vel'
 		@watchChanges 'dir'
 		@watchChanges 'state'
 		@watchChanges 'color'
-		@watchChanges 'countdown'
 		@watchChanges 'serverDelete'
 		@watchChanges 'boundingRadius'
 		@watchChanges 'hitBox'
@@ -88,7 +86,6 @@ class Tracker extends ChangingObject
 		@vel.y *= @game.prefs.tracker.frictionDecay
 
 		@changed 'pos'
-		@changed 'vel'
 
 		# Update hitbox
 		@hitBox.x = @pos.x
@@ -104,11 +101,10 @@ class Tracker extends ChangingObject
 
 	explode: () ->
 		@state = 'dead'
+		@serverDelete = yes
 
 		@game.events.push
 			type: 'tracker exploded'
 			id: @id
-
-		@serverDelete = yes
 
 exports.Tracker = Tracker
