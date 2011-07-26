@@ -190,11 +190,12 @@ exports.handle = (obj1, obj2) ->
 exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'available'
-			ddebug "ship ##{ship.id} picked up #{bonus.bonusType} bonus ##{bonus.id}"
 			ship.holdBonus(bonus)
 			ship.useBonus() if bonus.isEvil()
 
-			ddebug "ship ##{ship.id} claimed bonus ##{bonus.id}"
+			ship.addStat("#{bonus.type} bonus grabs", 1)
+
+			ddebug "ship ##{ship.id} picked up #{bonus.bonusType} bonus ##{bonus.id}"
 
 	'ship-bullet': (ship, bullet) ->
 		# Immunity to own bullets for a set time.
@@ -204,25 +205,41 @@ exports.collisions =
 				bullet.points.length > 3)
 			ship.explode()
 			ship.killingAccel = bullet.accel
-			bullet.owner.addStat('kills', 1) if bullet.owner isnt ship
 			bullet.explode()
+
+			if bullet.owner isnt ship
+				bullet.owner.addStat('kills', 1)
+				bullet.owner.addStat('bullet kills', 1)
+			else
+				ship.addStat('deaths by own bullet', 1)
+			ship.addStat('bullet deaths', 1)
 
 			ddebug "bullet ##{bullet.id} killed ship ##{ship.id}"
 
 	'ship-mine': (ship, mine) ->
 		ship.explode()
 		mine.explode() if mine.state is 'active'
-		mine.owner.addStat('kills', 1) if mine.owner isnt ship
+
+		if mine.owner isnt ship
+			mine.owner.addStat('kills', 1)
+			mine.owner.addStat('mine kills', 1)
+		else
+			ship.addStat('deaths by own mine', 1)
+		ship.addStat('mine deaths', 1)
 
 		ddebug "mine ##{mine.id} killed ship ##{ship.id}"
 
 	'ship-moon': (ship, moon) ->
 		ship.explode()
 
+		ship.addStat('moon crashes', 1)
+
 		ddebug "ship ##{ship.id} crashed on moon ##{moon.id}"
 
 	'ship-planet': (ship, planet) ->
 		ship.explode()
+
+		ship.addStat('planet crashes', 1)
 
 		ddebug "ship ##{ship.id} crashed on planet ##{planet.id}"
 
@@ -237,6 +254,8 @@ exports.collisions =
 			ship2.killingAccel = ship1.vel
 
 			ship1.addStat('kills', 1)
+			ship1.addStat('boost kills', 1)
+			ship2.addStat('boost deaths', 1)
 			ddebug "ship ##{ship1.id} boosted through ship ##{ship2.id}"
 
 		# Ship2 has boost, not ship1.
@@ -245,6 +264,8 @@ exports.collisions =
 			ship1.killingAccel = ship2.vel
 
 			ship2.addStat('kills', 1)
+			ship2.addStat('boost kills', 1)
+			ship1.addStat('boost deaths', 1)
 			ddebug "ship ##{ship2.id} boosted through ship ##{ship1.id}"
 
 		# Both or none have boost.
@@ -254,21 +275,33 @@ exports.collisions =
 			ship2.explode()
 			ship2.killingAccel = ship1.vel
 
+			ship1.addStat('ship crashes', 1)
+			ship2.addStat('ship crashes', 1)
 			ddebug "ship ##{ship1.id} and ship ##{ship2.id} crashed"
 
 	'bullet-moon': (bullet, moon) ->
-		bullet.explode() if bullet.state is 'active'
+		if bullet.state is 'active'
+			bullet.explode()
+
+			bullet.owner.addStat('bullets crashed on moons', 1)
 
 		ddebug "bullet ##{bullet.id} hit moon ##{moon.id}"
 
 	'bullet-planet': (bullet, planet) ->
-		bullet.explode() if bullet.state is 'active'
+		if bullet.state is 'active'
+			bullet.explode()
+
+			bullet.owner.addStat('bullets crashed on planets', 1)
 
 		ddebug "bullet ##{bullet.id} hit planet ##{planet.id}"
 
 	'shield-bullet': (shield, bullet) ->
 		# shields absorb all bullets, except from the user!
-		bullet.explode() if bullet.state is 'active' and bullet.owner isnt shield.ship
+		if bullet.state is 'active' and bullet.owner isnt shield.ship
+			bullet.explode()
+
+			shield.ship.addStat('bullets absorbed with shield', 1)
+			bullet.owner.addStat('bullets lost to shields', 1)
 
 		ddebug "shield ##{shield.id} hit bullet ##{bullet.id}"
 
@@ -277,12 +310,18 @@ exports.collisions =
 		shield1.cancel()
 		shield2.cancel()
 
+		shield1.ship.addStat('shield on shield collisions', 1)
+		shield2.ship.addStat('shield on shield collisions', 1)
+
 		ddebug "shield ##{shield1.id} hit shield ##{shield2.id}"
 
 	'shield-mine': (shield, mine) ->
 		# shields absorb one mine.
 		mine.explode() if mine.state is 'active'
 		shield.cancel()
+
+		shield.ship.addStat('mines absorbed with shield', 1)
+
 		ddebug "shield ##{shield.id} hit mine ##{mine.id}"
 
 	# shields do not save ships from moons or planets ...
@@ -294,6 +333,8 @@ exports.collisions =
 			shield.cancel()
 
 			shield.ship.addStat('kills', 1)
+			shield.ship.addStat('shield kills', 1)
+			ship.addStat('shield deaths', 1)
 
 		ddebug "shield ##{shield.id} hit ship ##{ship.id}"
 
@@ -302,15 +343,24 @@ exports.collisions =
 		tracker.explode()
 		shield.cancel()
 
+		shield.ship.addStat('trackers absorbed with shield', 1)
+		tracker.owner.addStat('trackers lost to shields', 1)
+
 		ddebug "shield ##{shield.id} hit tracker ##{tracker.id}"
 
 	'mine-bullet': (mine, bullet) ->
-		mine.explode() if mine.state is 'active'
+		if mine.state is 'active'
+			mine.explode()
+
+			bullet.owner.addStat('mines exploded with bullets', 1)
 
 		ddebug "bullet ##{bullet.id} hit mine ##{mine.id}"
 
 	'mine-moon': (mine, moon) ->
-		mine.explode() if mine.state is 'active'
+		if mine.state is 'active'
+			mine.explode()
+
+			mine.owner.addStat('mines lost to moons', 1)
 
 		ddebug "bullet ##{mine.id} hit moon ##{moon.id}"
 
@@ -328,12 +378,16 @@ exports.collisions =
 		bonus.explode()
 		bullet.explode()
 
+		bullet.owner.addStat('bonus destroyed with bullets', 1)
+
 		ddebug "bullet ##{bullet.id} destroyed bonus ##{bonus.id} and died"
 
 	'bullet-rope': (bullet, rope) ->
 		# Release bonus on ship, if the rope is attached.
 		if rope.object1?.type is 'ship'
 			rope.object1.releaseBonus()
+
+			bullet.owner.addStat('bonuses detached', 1)
 
 		ddebug "bullet ##{bullet.id} cut rope ##{rope.id}"
 
@@ -350,17 +404,27 @@ exports.collisions =
 	'tracker-planet' : (tracker, planet) ->
 		tracker.explode()
 
+		tracker.owner.addStat('trackers lost to planets', 1)
+
 		ddebug "tracker ##{tracker.id} crashed on planet ##{planet.id}"
 
 	'tracker-moon' : (tracker, moon) ->
 		tracker.explode()
+
+		tracker.owner.addStat('trackers lost to moons', 1)
 
 		ddebug "tracker ##{tracker.id} crashed on moon ##{moon.id}"
 
 	'tracker-ship' : (tracker, ship) ->
 		tracker.explode()
 		ship.explode()
-		tracker.owner.addStat('kills', 1) if tracker.owner isnt ship
+
+		if tracker.owner isnt ship
+			tracker.owner.addStat('kills', 1)
+			tracker.owner.addStat('tracker kills', 1)
+		else
+			ship.addStat('deaths by own tracker', 1)
+		ship.addStat('tracker deaths', 1)
 
 		ddebug "tracker ##{tracker.id} destroyed ship ##{ship.id}"
 
@@ -368,10 +432,16 @@ exports.collisions =
 		tracker.explode()
 		bullet.explode()
 
+		tracker.owner.addStat('trackers lost to bullets', 1)
+		bullet.owner.addStat('trackers shot with bullets', 1)
+
 		ddebug "bullet ##{bullet.id} destroyed tracker ##{tracker.id}"
 
 	'tracker-mine' : (tracker, mine) ->
 		tracker.explode()
 		mine.explode()
+
+		tracker.owner.addStat('trackers lost to mines', 1)
+		mine.owner.addStat('trackers destroyed with mines', 1)
 
 		ddebug "mine ##{mine.id} destroyed tracker ##{tracker.id}"

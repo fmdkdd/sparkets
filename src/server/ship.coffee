@@ -123,6 +123,8 @@ class Ship extends ChangingObject
 	useBonus: () ->
 		return if not @bonus? or @state isnt 'alive'
 
+		@addStat("#{@bonus.type}s used", 1)
+
 		@ddebug "use #{@bonus.type} bonus"
 		@bonus.use()
 
@@ -256,6 +258,8 @@ class Ship extends ChangingObject
 
 		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = @game.prefs.ship.cannonCooldown
+
+		@addStat('bullets fired', 1)
 
 		@emit('fired', @, bullet)
 
