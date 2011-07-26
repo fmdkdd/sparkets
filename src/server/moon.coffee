@@ -3,6 +3,7 @@ utils = require '../utils'
 
 class Moon extends Planet
 	constructor: (@game, @planet, force, gap) ->
+
 		# No position yet
 		super(@game, 0, 0, force)
 

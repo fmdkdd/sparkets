@@ -5,15 +5,17 @@ class Planet
 		@initSprite() if not @sprite?
 
 	initSprite: () ->
+		r = @hitBox.radius
+
 		@sprite = document.createElement('canvas')
-		@sprite.width = @sprite.height = Math.ceil(2*@force)
+		@sprite.width = @sprite.height = Math.ceil(2*r)
 
 		c = @sprite.getContext('2d')
 		c.strokeStyle = utils.color @color
 		c.fillStyle = 'white'
 		c.lineWidth = 8
 		c.beginPath()
-		c.arc(@force, @force, @force - c.lineWidth/2, 0, 2*Math.PI, false)
+		c.arc(r, r, r - c.lineWidth/2, 0, 2*Math.PI, false)
 		c.stroke()
 		c.fill()
 
@@ -24,7 +26,7 @@ class Planet
 	update: () ->
 
 	inView: (offset = {x: 0, y: 0}) ->
-		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @force)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @hitBox.radius)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
@@ -36,8 +38,10 @@ class Planet
 		ctxt.fillText(@id, @pos.x - ctxt.measureText(@id).width/2, @pos.y)
 
 	draw: (ctxt) ->
+		r = @hitBox.radius
+
 		ctxt.save()
-		ctxt.translate(@pos.x - @force, @pos.y - @force)
+		ctxt.translate(@pos.x - r, @pos.y - r)
 		@drawModel(ctxt, null)
 		ctxt.restore()
 

@@ -8,7 +8,6 @@ class Planet extends ChangingObject
 		@watchChanges 'id'
 		@watchChanges 'type'
 		@watchChanges 'pos'
-		@watchChanges 'force'
 		@watchChanges 'color'
 		@watchChanges 'boundingRadius'
 		@watchChanges 'hitBox'
