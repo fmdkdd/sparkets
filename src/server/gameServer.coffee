@@ -17,7 +17,7 @@ class GameServer
 		@bullets = {}
 		@mines = {}
 		@trackers = {}
-		@EMPs = {}
+		@shields = {}
 		@bonuses = {}
 		@planets = {}
 
@@ -385,8 +385,8 @@ class GameServer
 				delete @planets[id]
 			when 'moon'
 				delete @planets[id]
-			when 'EMP'
-				delete @EMPs[id]
+			when 'shield'
+				delete @shields[id]
 
 		delete @gameObjects[id]
 

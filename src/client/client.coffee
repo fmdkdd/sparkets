@@ -312,8 +312,8 @@ class Client
 				new Bullet(@, obj)
 			when 'mine'
 				new Mine(@, obj)
-			when 'EMP'
-				new EMP(@, obj)
+			when 'shield'
+				new Shield(@, obj)
 			when 'bonus'
 				@bonuses[id] = new Bonus(@, obj)
 			when 'planet'

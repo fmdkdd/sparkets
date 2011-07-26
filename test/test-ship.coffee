@@ -47,7 +47,7 @@ class MockGame
 			bullet:
 				boundingRadius: 2
 
-			EMP:
+			shield:
 				shipPush: -200
 
 	newGameObject: (fun) ->

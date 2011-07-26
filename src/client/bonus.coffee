@@ -61,7 +61,7 @@ class Bonus
 				@drawBoostIcon(ctxt)
 				ctxt.restore()
 
-			when 'bonusEMP'
+			when 'bonusShield'
 				ctxt.beginPath()
 				ctxt.arc(0, 0, 3, 0, 2*Math.PI, false)
 				ctxt.arc(0, 0, 7, 0, 2*Math.PI, false)

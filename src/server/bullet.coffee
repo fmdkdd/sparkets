@@ -40,19 +40,19 @@ class Bullet extends ChangingObject
 		@points = [ [@pos.x, @pos.y] ]
 		@lastPoints = [ [@pos.x, @pos.y] ]
 
-	# Apply gravity from all planets, moons, and EMPs.
+	# Apply gravity from all planets, moons, and shields.
 	gravityVector: () ->
-		# Get planets, moons and EMPs.
+		# Get planets, moons and shields.
 		filter = (obj) ->
-			obj.type is 'planet' or obj.type is 'moon' or obj.type is 'EMP'
+			obj.type is 'planet' or obj.type is 'moon' or obj.type is 'shield'
 
 		# Pull factor for each object.
 		force = ({object: obj}) =>
-			if obj.type is 'EMP'
+			if obj.type is 'shield'
 				if obj.ship is @owner
 					0
 				else
-					@game.prefs.bullet.EMPPull * obj.force
+					@game.prefs.bullet.shieldPull * obj.force
 			else
 				@game.prefs.bullet.gravityPull * obj.force
 

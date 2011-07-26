@@ -1,9 +1,9 @@
-class EMP
-	constructor: (@client, emp) ->
-		@serverUpdate(emp)
+class Shield
+	constructor: (@client, shield) ->
+		@serverUpdate(shield)
 
-	serverUpdate: (emp) ->
-		for field, val of emp
+	serverUpdate: (shield) ->
+		for field, val of shield
 			this[field] = val
 
 	update: () ->
@@ -24,4 +24,4 @@ class EMP
 		utils.strokeCircle(ctxt, @pos.x, @pos.y, @force)
 
 # Exports
-window.EMP = EMP
+window.Shield = Shield

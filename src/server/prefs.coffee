@@ -1,7 +1,7 @@
 utils = require '../utils'
 BonusBoost = require './bonusBoost'
 BonusDrunk = require './bonusDrunk'
-BonusEMP = require './bonusEMP'
+BonusShield = require './bonusShield'
 BonusMine = require './bonusMine'
 BonusTracker = require './bonusTracker'
 BonusStealth = require './bonusStealth'
@@ -171,11 +171,11 @@ class GamePreferences
 			# Probability, for each state, of using each bonus.
 			# Defaults to zero when no correspondin parameter is present.
 			# Probability is checked at every update.
-			acquireEMPUse: [.005, .05]
+			acquireShieldUse: [.005, .05]
 			acquireStealthUse: [.005, .05]
 
 			chaseMineUse: [.001, .01]
-			chaseEMPUse: [.001, .01]
+			chaseShieldUse: [.001, .01]
 			chaseBoostUse: [.01, 1]
 			chaseTrackerUse: [.001, .01]
 			chaseStealthUse: [.01, 1]
@@ -273,8 +273,8 @@ class GamePreferences
 		# Gravity pull factor.
 		gravityPull: 200
 
-		# EMP repulsive force.
-		EMPPull: -500
+		# Shield repulsive force.
+		shieldPull: -500
 
 		# Bullet points to keep on server.
 		tailLength: 15
@@ -282,8 +282,8 @@ class GamePreferences
 		# Gap to leave in the hit line.
 		checkWidth: 4
 
-	EMP:
-		# Size of EMP around ship.
+	shield:
+		# Size of shield around ship.
 		radius: 25
 
 		# Gravity push factor for ships.
@@ -375,8 +375,8 @@ class GamePreferences
 			boost:
 				class: BonusBoost
 				weight: 0
-			EMP:
-				class: BonusEMP
+			shield:
+				class: BonusShield
 				weight: 0
 			drunk:
 				class: BonusDrunk

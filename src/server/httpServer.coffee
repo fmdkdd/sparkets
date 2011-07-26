@@ -21,7 +21,7 @@ webFiles = {
 	'/js/client/bullet.js',
 	'/js/client/chat.js',
 	'/js/client/client.js',
-	'/js/client/EMP.js',
+	'/js/client/shield.js',
 	'/js/client/explosionEffect.js',
 	'/js/client/flashEffect.js',
 	'/js/client/index.js',

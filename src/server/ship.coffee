@@ -187,8 +187,8 @@ class Ship extends ChangingObject
 			@pos.y += @vel.y
 
 		ax = ay = 0
-		g = @game.prefs.EMP.shipPush
-		for id, e of @game.EMPs
+		g = @game.prefs.shield.shipPush
+		for id, e of @game.shields
 			if e.ship isnt @
 				d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
 				d2 = g * e.force / (d * Math.sqrt(d))

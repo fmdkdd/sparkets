@@ -155,7 +155,7 @@ class Bot extends Player
 		else
 			ax = ay = 0
 
-		# Get planets, moons and EMPs.
+		# Get planets, moons and shields.
 		filter = (obj) ->
 			obj.type is 'planet' or obj.type is 'moon' or
 				obj.type is 'mine' or obj.type is 'bullet'

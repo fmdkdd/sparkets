@@ -1,7 +1,7 @@
 ChangingObject = require('./changingObject').ChangingObject
 utils = require('../utils')
 
-class EMP extends ChangingObject
+class Shield extends ChangingObject
 	constructor: (@ship, @id, @game) ->
 		super()
 
@@ -13,17 +13,17 @@ class EMP extends ChangingObject
 		@watchChanges 'boundingRadius'
 		@watchChanges 'hitBox'
 
-		@type = 'EMP'
+		@type = 'shield'
 
 		@pos =
 			x: ship.pos.x
 			y: ship.pos.y
 
 		@color = ship.color
-		@force = @game.prefs.EMP.radius
+		@force = @game.prefs.shield.radius
 
 		@state = 'active'
-		@countdown = @game.prefs.EMP.states[@state].countdown
+		@countdown = @game.prefs.shield.states[@state].countdown
 
 		@boundingRadius = @force
 		@hitBox =
@@ -52,23 +52,23 @@ class EMP extends ChangingObject
 		@changed 'hitBox'
 
 	nextState: () ->
-		@state = @game.prefs.EMP.states[@state].next
-		@countdown = @game.prefs.EMP.states[@state].countdown
+		@state = @game.prefs.shield.states[@state].next
+		@countdown = @game.prefs.shield.states[@state].countdown
 
 	update: () ->
 		@countdown -= @game.prefs.timestep if @countdown?
 
 		switch @state
 			when 'active'
-				# Delete EMP when ship dies.
+				# Delete shield when ship dies.
 				if @ship.state isnt 'alive'
 					@nextState()
 					return
 
-				# Expire EMP after a set amount of time.
+				# Expire shield after a set amount of time.
 				@nextState() if @countdown <= 0
 
 			when 'dead'
 				@serverDelete = yes
 
-exports.EMP = EMP
+exports.Shield = Shield

@@ -51,7 +51,7 @@ exports.validHitbox = (box) ->
 
 		when 'circle'
 			# Zero radius circles cannot collide.
-			return false if box.radius <= 0		
+			return false if box.radius <= 0
 
 		when 'segments'
 			# Empty segments cannot collide.
@@ -81,7 +81,7 @@ exports.projectHitBox = (box, axis) ->
 				x = utils.vec.dot(axis, p)
 				proj.min = x if x < proj.min
 				proj.max = x if x > proj.max
-		
+
 	return proj
 
 # Check if two projections overlap.
@@ -266,43 +266,43 @@ exports.collisions =
 
 		ddebug "bullet ##{bullet.id} hit planet ##{planet.id}"
 
-	'EMP-bullet': (EMP, bullet) ->
-		# EMPs absorb all bullets, except from the user!
-		bullet.explode() if bullet.state is 'active' and bullet.owner isnt EMP.ship
+	'shield-bullet': (shield, bullet) ->
+		# shields absorb all bullets, except from the user!
+		bullet.explode() if bullet.state is 'active' and bullet.owner isnt shield.ship
 
-		ddebug "EMP ##{EMP.id} hit bullet ##{bullet.id}"
+		ddebug "shield ##{shield.id} hit bullet ##{bullet.id}"
 
-	'EMP-EMP': (EMP1, EMP2) ->
-		# EMPs cancel each other.
-		EMP1.cancel()
-		EMP2.cancel()
+	'shield-shield': (shield1, shield2) ->
+		# shields cancel each other.
+		shield1.cancel()
+		shield2.cancel()
 
-		ddebug "EMP ##{EMP1.id} hit EMP ##{EMP2.id}"
+		ddebug "shield ##{shield1.id} hit shield ##{shield2.id}"
 
-	'EMP-mine': (EMP, mine) ->
-		# EMPs absorb one mine.
+	'shield-mine': (shield, mine) ->
+		# shields absorb one mine.
 		mine.explode() if mine.state is 'active'
-		EMP.cancel()
-		ddebug "EMP ##{EMP.id} hit mine ##{mine.id}"
+		shield.cancel()
+		ddebug "shield ##{shield.id} hit mine ##{mine.id}"
 
-	# EMPs do not save ships from moons or planets ...
+	# shields do not save ships from moons or planets ...
 
-	'EMP-ship': (EMP, ship) ->
-		# EMPs can't take more than one ship.
-		if EMP.ship isnt ship
+	'shield-ship': (shield, ship) ->
+		# shields can't take more than one ship.
+		if shield.ship isnt ship
 			ship.explode()
-			EMP.cancel()
+			shield.cancel()
 
-			EMP.ship.addStat('kills', 1)
+			shield.ship.addStat('kills', 1)
 
-		ddebug "EMP ##{EMP.id} hit ship ##{ship.id}"
+		ddebug "shield ##{shield.id} hit ship ##{ship.id}"
 
-	'EMP-tracker': (EMP, tracker) ->
-		# EMPs absorb one tracker.
+	'shield-tracker': (shield, tracker) ->
+		# shields absorb one tracker.
 		tracker.explode()
-		EMP.cancel()
+		shield.cancel()
 
-		ddebug "EMP ##{EMP.id} hit tracker ##{tracker.id}"
+		ddebug "shield ##{shield.id} hit tracker ##{tracker.id}"
 
 	'mine-bullet': (mine, bullet) ->
 		mine.explode() if mine.state is 'active'

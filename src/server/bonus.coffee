@@ -2,7 +2,7 @@ utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
 BonusMine = require './bonusMine'
 BonusBoost = require './bonusBoost'
-BonusEMP = require './bonusEMP'
+BonusShield = require './bonusShield'
 BonusDrunk = require './bonusDrunk'
 Rope = require('./rope').Rope
 
