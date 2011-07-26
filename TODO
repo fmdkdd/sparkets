@@ -40,8 +40,10 @@
 	 directions.  Fires phony bullets, disappear when colliding
 	 something (different explosion visual).
 
-*** Drunk mode
-	 Convert to offensive bonus.
+*** Drunk gun
+		Gives the player a limited-use weapon letting out a scrambling
+    wave. When hit by the wave, ship controls are reversed. It is the
+    Spacewar equivalent of a shotgun: very low range, high spread.
 
 
 ** Environment
