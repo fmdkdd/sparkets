@@ -45,32 +45,49 @@ class Index
 		@setupPage()
 
 	setupPage: () ->
-
-		# Add ranges with tooltips.
-		new Range($('#gamePrefs ul li:nth-child(1)'), 'Duration (min)', 'duration', 3, 20, 1, 5)
-
-		new Range($('#mapPrefs ul li:nth-child(2)'), 'Planet count', 'planetCount', 10, 50, 1, 20)
-
-		new Range($('#bonusPrefs ul li:nth-child(1)'), 'Drop wait (ms)', 'bonus.waitTime', 1000, 10000, 1000, 5000)
-		new Range($('#bonusPrefs ul li:nth-child(2)'), 'Activation wait (ms)', 'bonus.states.incoming.countdown', 500, 5000, 500, 2000)
-		new Range($('#bonusPrefs ul li:nth-child(3)'), 'Max allowed', 'bonus.maxCount', 0, 20, 1, 10)
-		new Range($('#bonusPrefs ul li:nth-child(4)'), 'Mines in bonus', 'bonus.mine.mineCount', 1, 10, 1, 2)
-
-		new Range($('#bonusAppearancePrefs ul li:nth-child(1)'), 'Mines weight', 'bonus.bonusType.mine.weight', 0, 10, 1, 3)
-		new Range($('#bonusAppearancePrefs ul li:nth-child(2)'), 'Boost weight', 'bonus.bonusType.boost.weight', 0, 10, 1, 3)
-		new Range($('#bonusAppearancePrefs ul li:nth-child(3)'), 'Shield weight', 'bonus.bonusType.shield.weight', 0, 10, 1, 3)
-		new Range($('#bonusAppearancePrefs ul li:nth-child(4)'), 'Stealth weight', 'bonus.bonusType.stealth.weight', 0, 10, 1, 3)
-		new Range($('#bonusAppearancePrefs ul li:nth-child(5)'), 'Tracker weight', 'bonus.bonusType.tracker.weight', 0, 10, 1, 3)
-
-		new Range($('#shipPrefs ul li:nth-child(1)'), 'Speed', 'ship.speed', 0.1, 1, 0.1, 0.3)
-		new Range($('#shipPrefs ul li:nth-child(2)'), 'Friction Decay', 'ship.frictionDecay', 0, 1, 0.01, 0.97)
-
-		new Range($('#botPrefs ul li:nth-child(1)'), 'Count', 'bot.count', 0, 10, 1, 1)
+		li = (container) ->
+			$('<li></li>').appendTo(container)
 
 		# Add selection boxes.
 		@selectionBoxes = []
-		@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(1)'), 'mapSize', ['tiny', 'small', 'medium', 'large', 'epic'], 2)
+		@selectionBoxes.push new SelectionBox(li('#mapPrefs ul'),
+			'mapSize', ['tiny', 'small', 'medium', 'large', 'epic'], 2)
 		#@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(2)'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
+
+		# Add ranges with tooltips.
+		new Range(li('#gamePrefs ul'), 'Duration (min)',
+			'duration', 3, 20, 1, 5)
+
+		new Range(li('#mapPrefs ul'), 'Planet count',
+			'planetCount', 10, 50, 1, 20)
+
+		new Range(li('#bonusPrefs ul'), 'Drop wait (ms)',
+			'bonus.waitTime', 1000, 10000, 1000, 5000)
+		new Range(li('#bonusPrefs ul'), 'Activation wait (ms)',
+			'bonus.states.incoming.countdown', 500, 5000, 500, 2000)
+		new Range(li('#bonusPrefs ul'), 'Max allowed',
+			'bonus.maxCount', 0, 20, 1, 10)
+		new Range(li('#bonusPrefs ul'), 'Mines in bonus',
+			'bonus.mine.mineCount', 1, 10, 1, 2)
+
+		new Range(li('#bonusAppearancePrefs ul'), 'Mines weight',
+			'bonus.bonusType.mine.weight', 0, 10, 1, 3)
+		new Range(li('#bonusAppearancePrefs ul'), 'Boost weight',
+			'bonus.bonusType.boost.weight', 0, 10, 1, 3)
+		new Range(li('#bonusAppearancePrefs ul'), 'Shield weight',
+			'bonus.bonusType.shield.weight', 0, 10, 1, 3)
+		new Range(li('#bonusAppearancePrefs ul'), 'Stealth weight',
+			'bonus.bonusType.stealth.weight', 0, 10, 1, 3)
+		new Range(li('#bonusAppearancePrefs ul'), 'Tracker weight',
+			'bonus.bonusType.tracker.weight', 0, 10, 1, 3)
+
+		new Range(li('#shipPrefs ul'), 'Speed',
+			'ship.speed', 0.1, 1, 0.1, 0.3)
+		new Range(li('#shipPrefs ul'), 'Friction Decay',
+			'ship.frictionDecay', 0, 1, 0.01, 0.97)
+
+		new Range(li('#botPrefs ul'), 'Count',
+			'bot.count', 0, 10, 1, 1)
 
 		$('input[name="id"]').keyup (event) ->
 			if @gameListRegexp? and @.value.match(@gameListRegexp)

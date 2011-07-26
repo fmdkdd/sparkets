@@ -1,6 +1,5 @@
 class Range
 	constructor: (@container, @label, @name, @min, @max, @step, @default) ->
-
 		# Build html elements.
 		@container.append('<label for="' + @name + '">' + @label + '</label>')
 		@range = $('<input type="range" name="' + @name + '" min="' + @min + '" max="' + @max + '" step="' + @step + '" value="' + @default + '"/>').appendTo(@container)
