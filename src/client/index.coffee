@@ -60,6 +60,7 @@ class Index
 		new Range($('#bonusAppearancePrefs ul li:nth-child(2)'), 'Boost weight', 'bonus.bonusType.boost.weight', 0, 10, 1, 3)
 		new Range($('#bonusAppearancePrefs ul li:nth-child(3)'), 'Shield weight', 'bonus.bonusType.shield.weight', 0, 10, 1, 3)
 		new Range($('#bonusAppearancePrefs ul li:nth-child(4)'), 'Stealth weight', 'bonus.bonusType.stealth.weight', 0, 10, 1, 3)
+		new Range($('#bonusAppearancePrefs ul li:nth-child(5)'), 'Tracker weight', 'bonus.bonusType.tracker.weight', 0, 10, 1, 3)
 
 		new Range($('#shipPrefs ul li:nth-child(1)'), 'Speed', 'ship.speed', 0.1, 1, 0.1, 0.3)
 		new Range($('#shipPrefs ul li:nth-child(2)'), 'Friction Decay', 'ship.frictionDecay', 0, 1, 0.01, 0.97)
