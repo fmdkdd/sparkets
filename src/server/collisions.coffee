@@ -405,6 +405,8 @@ exports.collisions =
 		bonus.explode()
 		mine.explode()
 
+		mine.owner.addStat('bonuses destroyed with mines', 1)
+
 		ddebug "mine ##{mine.id} destroyed bonus ##{bonus.id}"
 
 	'bullet-bonus': (bullet, bonus) ->
