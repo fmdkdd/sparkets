@@ -13,7 +13,7 @@ class Shield
 
 	inView: (offset = {x: 0, y: 0}) ->
 		@client.boxInView(@pos.x + offset.x,
-			@pos.y + offset.y, @hitBox.radius)
+			@pos.y + offset.y, @boundingRadius)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
@@ -23,7 +23,7 @@ class Shield
 	draw: (ctxt) ->
 		ctxt.lineWidth = 3
 		ctxt.strokeStyle = utils.color @color
-		utils.strokeCircle(ctxt, @pos.x, @pos.y, @hitBox.radius)
+		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
 
 # Exports
 window.Shield = Shield
