@@ -13,17 +13,17 @@ table.selectionBox button {
 		width: 80%;
 		padding: 0.2em;
 
-		background-color: lightgrey;
-		border: 1px solid grey;
+		background-color: hsl(209, 29%, 80%);
+		border: 2px solid hsl(209, 20%, 61%);
 		border-radius: 3px;
 		cursor: pointer;
 }
 
 table.selectionBox button:hover {
-		border: 1px solid blue;
+		border-width: 3px;
 }
 
 .selectionBox button.selected {
-		background-color: lightblue;
-		border: 1px solid blue;
+		border-width: 3px;
+		border-color: hsl(209, 100%, 61%);
 }
