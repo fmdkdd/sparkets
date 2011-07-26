@@ -35,9 +35,10 @@ class Index
 
 			idList = Object.keys(data)
 			if idList.length > 0
-				@gameListRegexp = new RegExp('^(' + idList.join('|') + '$)')
+				@gameListRegexp = new RegExp('^(' + idList.join('|') + ')$')
 			else
 				@gameListRegexp = null
+			console.info @gameListRegexp
 
 		@socket.on 'game already exists', () ->
 			$('#id-error').html('Name already exists')
@@ -101,8 +102,8 @@ class Index
 		new Range(li('#botPrefs ul'), 'Count',
 			'bot.count', 0, 10, 1, 1)
 
-		$('input[name="id"]').keyup (event) ->
-			if @gameListRegexp? and @.value.match(@gameListRegexp)
+		$('input[name="id"]').keyup (event) =>
+			if @gameListRegexp? and event.target.value.match(@gameListRegexp)
 				$('#id-error').html('Name already exists')
 				$('input[value="Create"]').attr('disabled', 'disabled')
 			else
