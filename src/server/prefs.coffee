@@ -29,33 +29,14 @@ class ServerPreferences
 		logLevel: 2
 
 class GamePreferences
-	constructor: (prefs = {}, presets = {}) ->
-
+	constructor: (prefs = {}) ->
 		# Override default values by those provided in `prefs'.
 		utils.safeDeepMerge(@, prefs)
-
-		# Replace presets with real values.
-		for key, p of presets
-			@[key] = @presets[key][p]
 
 	# Debug-related preferences.
 	debug:
 		# Should send object hit boxes to clients.
 		sendHitBoxes: no
-
-	presets:
-		mapSize:
-			'tiny': 1000
-			'small': 1500
-			'medium': 2000
-			'large': 5000
-			'epic': 10000
-
-		planetCount:
-			'none': 0
-			'scarce': 10
-			'regular': 20
-			'abnudant': 40
 
 	# ms between two server updates.
 	timestep: 20
@@ -65,9 +46,6 @@ class GamePreferences
 
 	# Size of the real map.
 	mapSize: 2000
-
-	# Number of planets.
-	planetCount: 25
 
 	# The map is divided into a grid of width*height cells.
 	# Colliding objects are checked only in the same cell.
@@ -240,7 +218,6 @@ class GamePreferences
 			chaseBulletAvoid: -200
 
 	planet:
-
 		# Colors.
 		color: [209, 29, 61]
 		moonColor: [190, 70, 80]

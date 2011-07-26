@@ -57,9 +57,9 @@ class Server
 				if @gameList[data.id]?
 					socket.emit 'game already exists'
 				else
-					@createGame(data.id, data.prefs, data.presets)
+					@createGame(data.id, data.prefs)
 
-	createGame: (id, gamePrefs, gamePrefsPresets) ->
+	createGame: (id, gamePrefs) ->
 		valid = (str) ->
 			str.match(/^[A-Za-z0-9]+$/)
 
@@ -70,7 +70,7 @@ class Server
 		# Game with ID already exists, don't create.
 		return @gameList[id] if @gameList[id]?
 
-		@gameList[id] = game = new GameServer(@io.of(id), gamePrefs, gamePrefsPresets)
+		@gameList[id] = game = new GameServer(@io.of(id), gamePrefs)
 		game.launch()
 
 		@logger.info "Game #{id} started"

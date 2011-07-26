@@ -44,6 +44,21 @@ class Index
 
 		@setupPage()
 
+	presets:
+		mapSize:
+			'tiny': 1000
+			'small': 1500
+			'medium': 2000
+			'large': 5000
+			'epic': 10000
+
+		'planet.count':
+			'fewer': 10
+			'few': 20
+			'normal': 30
+			'plenty': 50
+
+
 	setupPage: () ->
 		li = (container) ->
 			$('<li></li>').appendTo(container)
@@ -51,15 +66,13 @@ class Index
 		# Add selection boxes.
 		@selectionBoxes = []
 		@selectionBoxes.push new SelectionBox(li('#mapPrefs ul'),
-			'mapSize', ['tiny', 'small', 'medium', 'large', 'epic'], 2)
-		#@selectionBoxes.push new SelectionBox($('#mapPrefs ul li:nth-child(2)'), 'planetCount', ['none', 'scarce', 'regular', 'abudantly'], 2)
+			'mapSize', Object.keys(@presets['mapSize']), 2)
+		@selectionBoxes.push new SelectionBox(li('#mapPrefs ul'),
+			'planet.count', Object.keys(@presets['planet.count']), 2)
 
 		# Add ranges with tooltips.
 		new Range(li('#gamePrefs ul'), 'Duration (min)',
 			'duration', 3, 20, 1, 5)
-
-		new Range(li('#mapPrefs ul'), 'Planet count',
-			'planetCount', 10, 50, 1, 20)
 
 		new Range(li('#bonusPrefs ul'), 'Drop wait (ms)',
 			'bonus.waitTime', 1000, 10000, 1000, 5000)
@@ -103,9 +116,8 @@ class Index
 
 			# Prepare game options.
 			opts =
-				id: data[0].id
-				prefs: data[0]
-				presets: data[1]
+				id: data.id
+				prefs: data
 			delete data.id
 
 			@socket.emit 'create game', opts, () ->
@@ -136,11 +148,10 @@ class Index
 					when 'range'
 						insert(prefs, input.name, parseFloat(input.value))
 
-		presets = {}
 		for sb in @selectionBoxes
-			presets[sb.name] = sb.value()
+			insert(prefs, sb.name, @presets[sb.name][sb.value()])
 
-		return [prefs, presets]
+		return prefs
 
 # Entry point.
 $(document).ready () ->

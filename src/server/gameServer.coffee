@@ -9,7 +9,7 @@ Planet = require('./planet').Planet
 Player = require('./player').Player
 
 class GameServer
-	constructor: (@sockets, gamePrefs, gamePrefsPresets) ->
+	constructor: (@sockets, gamePrefs) ->
 		@now = 0
 
 		@players = {}
@@ -26,7 +26,7 @@ class GameServer
 
 		@events = []
 
-		@prefs = new GamePreferences(gamePrefs, gamePrefsPresets)
+		@prefs = new GamePreferences(gamePrefs)
 
 	launch: () ->
 		for p in @initPlanets()
@@ -423,7 +423,7 @@ class GameServer
 		satGMarge = @prefs.planet.satelliteMaxGap - satGMin
 
 		# Spawn planets randomly.
-		for [0...@prefs.planetCount]
+		for [0...@prefs.planet.count]
 			satellite = Math.random() < @prefs.planet.satelliteChance
 			colliding = yes
 			# Ensure none are colliding (no do .. while in Coffee)
