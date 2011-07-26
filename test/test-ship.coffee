@@ -14,9 +14,7 @@ class MockGame
 			push: () ->
 
 		@prefs =
-			mapSize:
-				w: 2000
-				h: 2000
+			mapSize: 2000
 
 			ship:
 				states:
