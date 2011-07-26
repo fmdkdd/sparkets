@@ -12,7 +12,7 @@ class Tracker extends ChangingObject
 		@watchChanges 'color'
 		@watchChanges 'serverDelete'
 		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox'
+		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
 
 		@type = 'tracker'
 

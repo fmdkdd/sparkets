@@ -21,7 +21,7 @@ class Ship extends ChangingObject
 		@watchChanges 'boost'
 		@watchChanges 'invisible'
 		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox'
+		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
 		@watchChanges 'stats'
 
 		@type = 'ship'

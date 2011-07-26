@@ -10,7 +10,7 @@ class Rope extends ChangingObject
 		@watchChanges 'serverDelete'
 		@watchChanges 'chain'
 		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox'
+		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
 
 		@type = 'rope'
 

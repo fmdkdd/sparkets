@@ -10,7 +10,7 @@ class Planet extends ChangingObject
 		@watchChanges 'pos'
 		@watchChanges 'color'
 		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox'
+		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
 
 		@type = 'planet'
 		@pos = {x, y}

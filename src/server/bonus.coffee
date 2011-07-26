@@ -17,7 +17,7 @@ class Bonus extends ChangingObject
 		@watchChanges 'pos'
 		@watchChanges 'serverDelete'
 		@watchChanges 'bonusType'
-		@watchChanges 'hitBox'
+		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
 		@watchChanges 'boundingRadius'
 
 		@type = 'bonus'

@@ -9,7 +9,7 @@ class Bullet extends ChangingObject
 		@watchChanges 'lastPoints'
 		@watchChanges 'serverDelete'
 		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox'
+		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
 
 		@type = 'bullet'
 

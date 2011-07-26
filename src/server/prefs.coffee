@@ -38,6 +38,11 @@ class GamePreferences
 		for key, p of presets
 			@[key] = @presets[key][p]
 
+	# Debug-related preferences.
+	debug:
+		# Should send object hit boxes to clients.
+		sendHitBoxes: no
+
 	presets:
 		mapSize:
 			'tiny': 1000

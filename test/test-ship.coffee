@@ -50,6 +50,9 @@ class MockGame
 			shield:
 				shipPush: -200
 
+			debug:
+				sendHitBoxes: no
+
 	newGameObject: (fun) ->
 		fun(0)
 
