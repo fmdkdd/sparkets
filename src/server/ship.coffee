@@ -22,6 +22,7 @@ class Ship extends ChangingObject
 		@watchChanges 'invisible'
 		@watchChanges 'boundingRadius'
 		@watchChanges 'hitBox'
+		@watchChanges 'stats'
 
 		@type = 'ship'
 		@name = name or null
