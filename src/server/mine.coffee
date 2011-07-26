@@ -2,7 +2,7 @@ ChangingObject = require('./changingObject').ChangingObject
 utils = require '../utils'
 
 class Mine extends ChangingObject
-	constructor: (@owner, @pos, @id, @game) ->
+	constructor: (@id, @game, @owner, @pos) ->
 		super()
 
 		@watchChanges 'type'

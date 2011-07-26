@@ -11,7 +11,7 @@ class BonusMine
 
 		@game.newGameObject (id) =>
 			dropPos = {x: @bonus.pos.x,	y: @bonus.pos.y}
-			@game.mines[id] = new Mine(@bonus.holder, dropPos, id, @game)
+			@game.mines[id] = new Mine(id, @game, @bonus.holder, dropPos)
 
 		# Decrease mine count.
 		--@mines

@@ -1,14 +1,11 @@
-utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
 
 class Bullet extends ChangingObject
-	constructor: (@owner, @id, @game) ->
+	constructor: (@id, @game, @owner) ->
 		super()
 
 		@watchChanges 'type'
 		@watchChanges 'color'
-		@watchChanges 'pos'
-		@watchChanges 'points'
 		@watchChanges 'lastPoints'
 		@watchChanges 'serverDelete'
 		@watchChanges 'boundingRadius'
@@ -18,7 +15,6 @@ class Bullet extends ChangingObject
 
 		xdir = 10*Math.cos(@owner.dir)
 		ydir = 10*Math.sin(@owner.dir)
-
 		@power = @owner.firePower
 		@pos =
 			x: @owner.pos.x + xdir
@@ -71,7 +67,7 @@ class Bullet extends ChangingObject
 		@pos.y += @accel.y
 
 		@points.push [@pos.x, @pos.y]
-		@lastPoints = [ [@pos.x, @pos.y] ]
+		@lastPoints = [[@pos.x, @pos.y]]
 
 		# Warp the bullet around the map.
 		s = @game.prefs.mapSize
@@ -93,8 +89,6 @@ class Bullet extends ChangingObject
 		if @warp
 			@points.push [@pos.x, @pos.y]
 			@lastPoints.push [@pos.x, @pos.y]
-
-		@changed 'pos'
 
 		# Update hitbox.
 		if @warp

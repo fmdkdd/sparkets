@@ -1,16 +1,19 @@
 class Bullet
 	constructor: (@client, bullet) ->
+		@clientPoints = []
+
 		@serverUpdate (bullet)
 
 	serverUpdate: (bullet) ->
 		for field, val of bullet
 			@[field] = val
 
-		@points.push p for p in @lastPoints
+		for p in @lastPoints
+			@clientPoints.push p
 
 	update: () ->
-		@points.shift() if @serverDelete or @points.length > @client.maxBulletLength
-		@clientDelete = yes if @points.length == 0
+		@clientPoints.shift() if @serverDelete or @clientPoints.length > @client.maxBulletLength
+		@clientDelete = yes if @serverDelete and @clientPoints.length == 0
 
 	inView: (offset = {x: 0, y: 0}) ->
 		# Bullets are culled from view on a segment basis
@@ -48,7 +51,7 @@ class Bullet
 		ctxt.lineWidth = 4
 		ctxt.globalCompositeOperation = 'destination-over'
 
-		p = @points
+		p = @clientPoints
 		x1 = p[0][0]
 		y1 = p[0][1]
 
