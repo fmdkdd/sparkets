@@ -62,6 +62,14 @@ exports.validHitbox = (box) ->
 			b = box.points[1]
 			return false if a.x is b.x and a.y is b.y
 
+		when 'polygon'
+			# Empty polygons cannot collide.
+			return false if box.points.length < 2
+
+		# Unknown hitbox type
+		else
+			return false
+
 	return true
 
 # Project a hitbox onto an axis.
@@ -91,66 +99,85 @@ exports.projectionsOverlap = (proj1, proj2) ->
 		     proj2.min <= proj1.min <= proj2.max or
 				 proj2.min <= proj1.max <= proj2.max
 
-# Give possible separating axes based on the hitboxes features.
-exports.separatingAxes = (box1, box2) ->
-	axes = []
+# Count possible separating axes.
+exports.countSeparatingAxes = (box) ->
+	switch box.type
+		when 'circle'
+			1
+		when 'segments'
+			box.points.length-1
+		when 'polygon'
+			box.points.length
+		else
+			0
 
-	for b in [box1, box2]
-		switch b.type
+# Give the ith separating axis of the box1-box2 pair.
+exports.separatingAxis = (box1, box2, i) ->
 
-			# Add the axis joining the circle center and the cloest vertex
-			# of the other hitbox.
-			when 'circle'
-				center = {x: b.x, y: b.y}
-				ob = (if b is box1 then box2 else box1)
+	# To which hitbox does the separating axis belong?
+	box = if i < box1.count then box1 else box2
 
-				# Compute the closest vertex.
-				if ob.type is 'circle'
-					closest = {x: ob.x, y: ob.y}
-				else
-					# TODO : use Voronoi regions instead of dumb distances.
-					closest = ob.points[0]
-					distClosest = utils.distance(closest.x, closest.y, center.x, center.y)
-					for i in [1...ob.points.length]
-						dist = utils.distance(ob.points[i].x, ob.points[i].y, center.x, center.y)
-						if dist < distClosest
-							closest = ob.points[i]
-							distClosest = dist
+	switch box.type
 
-				# Only add the axis if it has a length.
-				if closest.x isnt center.x or closest.y isnt center.y
-					axes.push utils.vec.normalize(utils.vec.minus(closest, center))
+		# Add the axis joining the circle center and the closest vertex
+		# of the other hitbox.
+		when 'circle'
+			center = {x: box.x, y: box.y}
+			other = (if box is box1 then box2 else box1)
 
-			# Add the normal axis to the edge (there should be only one edge
-			# as the segments have been subdivided into convex parts beforehand)
-			when 'segments'
-				edge = utils.vec.minus(b.points[1], b.points[0])
-				axes.push utils.vec.normalize(utils.vec.perp(edge))
+			# Compute the closest vertex.
+			if other.type is 'circle'
+				closest = {x: other.x, y: other.y}
+			else
+				# TODO : use Voronoi regions instead of dumb distances.
+				closest = other.points[0]
+				distClosest = utils.distance(closest.x, closest.y, center.x, center.y)
+				for j in [1...other.points.length]
+					dist = utils.distance(other.points[j].x, other.points[j].y, center.x, center.y)
+					if dist < distClosest
+						closest = other.points[j]
+						distClosest = dist
 
-			# Add the normal axis to each edge.
-			when 'polygon'
-				for i in [0...b.points.length]
-					e1 = b.points[i]
-					e2 = b.points[(i+1) % b.points.length]
-					edge = utils.vec.minus(e2, e1)
-					axes.push utils.vec.normalize(utils.vec.perp(edge))
+			# Only return the axis if it has a length.
+			if closest.x isnt center.x or closest.y isnt center.y
+				utils.vec.normalize(utils.vec.minus(closest, center))
 
-	return axes
+		# Add the normal axis to the edge (there should be only one edge
+		# as the segments have been subdivided into convex parts beforehand)
+		when 'segments'
+			edge = utils.vec.minus(box.points[1], box.points[0])
+			utils.vec.normalize(utils.vec.perp(edge))
+
+		# Add the normal axis to each edge.
+		when 'polygon'
+			offset = if i < box1.count then 0 else box1.count
+			e1 = box.points[i-offset]
+			e2 = box.points[(i+1-offset) % box.points.length]
+
+			edge = utils.vec.minus(e2, e1)
+			utils.vec.normalize(utils.vec.perp(edge))
 
 # Check for intersection between two hitboxes.
 exports.checkIntersection = (box1, box2) ->
 
+
 	# Check that the hitboxes are valid.
 	return false if not exports.validHitbox(box1) or not exports.validHitbox(box2)
 
-	# Get possible separating axes.
-	axes = exports.separatingAxes(box1, box2)
+	# Count possible separating axes.
+	box1.count = exports.countSeparatingAxes(box1)
+	box2.count = exports.countSeparatingAxes(box2)
 
-	# Project the hitboxes onto each axis.
-	for a in axes
+	for i in [0...(box1.count+box2.count)]
 
-		p1 = exports.projectHitBox(box1, a)
-		p2 = exports.projectHitBox(box2, a)
+		# Compute the ith separating axis.
+		axis = exports.separatingAxis(box1, box2, i)
+
+		continue if not axis?
+
+		# Project the hitboxes onto the axis.
+		p1 = exports.projectHitBox(box1, axis)
+		p2 = exports.projectHitBox(box2, axis)
 
 		# If there is no overlap, we found a separating axis.
 		return false if not exports.projectionsOverlap(p1, p2)

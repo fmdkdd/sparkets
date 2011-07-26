@@ -566,4 +566,3 @@ exports.suite.addBatch
 
 		'should collide': (topic) ->
 			assert.isTrue(topic)
-
