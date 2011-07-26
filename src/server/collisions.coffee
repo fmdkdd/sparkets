@@ -401,6 +401,12 @@ exports.collisions =
 			mine2.explode()
 			ddebug "mine ##{mine1.id} triggered mine ##{mine2.id}"
 
+	'mine-bonus': (mine, bonus) ->
+		bonus.explode()
+		mine.explode()
+
+		ddebug "mine ##{mine.id} destroyed bonus ##{bonus.id}"
+
 	'bullet-bonus': (bullet, bonus) ->
 		bonus.explode()
 		bullet.explode()
