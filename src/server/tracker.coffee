@@ -43,6 +43,11 @@ class Tracker extends ChangingObject
 		@state = @game.prefs.tracker.states[@state].next
 		@countdown = @game.prefs.tracker.states[@state].countdown
 
+	setState: (state) ->
+		if @game.prefs.tracker.states[state]?
+			@state = state
+			@countdown = @game.prefs.tracker.states[state].countdown
+
 	update: () ->
 		state_old = @state
 
@@ -100,7 +105,7 @@ class Tracker extends ChangingObject
 		@pos.y = if @pos.y > s then 0 else @pos.y
 
 	explode: () ->
-		@state = 'dead'
+		@setState 'dead'
 		@serverDelete = yes
 
 		@game.events.push

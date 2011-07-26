@@ -30,7 +30,6 @@ class Mine
 				ctxt.stroke()
 				ctxt.restore()
 
-
 	drawModel: (ctxt, col) ->
 		r = 5
 		ctxt.fillStyle = col

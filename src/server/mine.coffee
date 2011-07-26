@@ -9,24 +9,27 @@ class Mine extends ChangingObject
 		@watchChanges 'pos'
 		@watchChanges 'state'
 		@watchChanges 'color'
-		@watchChanges 'countdown'
 		@watchChanges 'serverDelete'
 		@watchChanges 'boundingRadius'
 		@watchChanges 'hitBox'
 
 		@type = 'mine'
+
 		@state = 'inactive'
 		@countdown = @game.prefs.mine.states[@state].countdown
+
 		@pos =
 			x: pos.x
 			y: pos.y
+
 		@color = @owner.color
+
 		@explosionRadius = @game.prefs.mine.explosionRadius
 
 		@boundingRadius = 0
 		@hitBox =
 			type: 'circle'
-			radius: 0
+			radius: @boundingRadius
 			x: @pos.x
 			y: @pos.y
 
@@ -43,14 +46,12 @@ class Mine extends ChangingObject
 			@countdown = @game.prefs.mine.states[state].countdown
 
 	move: () ->
-		true
 
 	update: () ->
 		if @countdown?
 			@countdown -= @game.prefs.timestep
 			@nextState() if @countdown <= 0
 
-		# The mine is not yet activated.
 		switch @state
 
 			# The mine is active.
