@@ -45,7 +45,7 @@ class Bullet extends ChangingObject
 		# Pull factor for each object.
 		force = ({object: obj}) =>
 			if obj.type is 'shield'
-				if obj.ship is @owner
+				if obj.owner is @owner
 					0
 				else
 					@game.prefs.bullet.shieldPull * obj.force

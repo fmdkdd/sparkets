@@ -191,12 +191,12 @@ class Ship extends ChangingObject
 
 		ax = ay = 0
 		g = @game.prefs.shield.shipPush
-		for id, e of @game.shields
-			if e.ship isnt @
-				d = (e.pos.x-x)*(e.pos.x-x) + (e.pos.y-y)*(e.pos.y-y)
-				d2 = g * e.force / (d * Math.sqrt(d))
-				ax += (e.pos.x-x) * d2
-				ay += (e.pos.y-y) * d2
+		for id, s of @game.shields
+			if s.owner isnt @
+				d = (s.pos.x-x)*(s.pos.x-x) + (s.pos.y-y)*(s.pos.y-y)
+				d2 = g * s.force / (d * Math.sqrt(d))
+				ax += (s.pos.x-x) * d2
+				ay += (s.pos.y-y) * d2
 		@pos.x += ax
 		@pos.y += ay
 

@@ -324,10 +324,10 @@ exports.collisions =
 
 	'shield-bullet': (shield, bullet) ->
 		# shields absorb all bullets, except from the user!
-		if bullet.state is 'active' and bullet.owner isnt shield.ship
+		if bullet.state is 'active' and bullet.owner isnt shield.owner
 			bullet.explode()
 
-			shield.ship.addStat('bullets absorbed with shield', 1)
+			shield.owner.addStat('bullets absorbed with shield', 1)
 			bullet.owner.addStat('bullets lost to shields', 1)
 
 		ddebug "shield ##{shield.id} hit bullet ##{bullet.id}"
@@ -337,8 +337,8 @@ exports.collisions =
 		shield1.cancel()
 		shield2.cancel()
 
-		shield1.ship.addStat('shield on shield collisions', 1)
-		shield2.ship.addStat('shield on shield collisions', 1)
+		shield1.owner.addStat('shield on shield collisions', 1)
+		shield2.owner.addStat('shield on shield collisions', 1)
 
 		ddebug "shield ##{shield1.id} hit shield ##{shield2.id}"
 
@@ -347,7 +347,7 @@ exports.collisions =
 		mine.explode() if mine.state is 'active'
 		shield.cancel()
 
-		shield.ship.addStat('mines absorbed with shield', 1)
+		shield.owner.addStat('mines absorbed with shield', 1)
 
 		ddebug "shield ##{shield.id} hit mine ##{mine.id}"
 
@@ -355,12 +355,12 @@ exports.collisions =
 
 	'shield-ship': (shield, ship) ->
 		# shields can't take more than one ship.
-		if shield.ship isnt ship
+		if shield.owner isnt ship
 			ship.explode()
 			shield.cancel()
 
-			shield.ship.addStat('kills', 1)
-			shield.ship.addStat('shield kills', 1)
+			shield.owner.addStat('kills', 1)
+			shield.owner.addStat('shield kills', 1)
 			ship.addStat('shield deaths', 1)
 
 		ddebug "shield ##{shield.id} hit ship ##{ship.id}"
@@ -370,7 +370,7 @@ exports.collisions =
 		tracker.explode()
 		shield.cancel()
 
-		shield.ship.addStat('trackers absorbed with shield', 1)
+		shield.owner.addStat('trackers absorbed with shield', 1)
 		tracker.owner.addStat('trackers lost to shields', 1)
 
 		ddebug "shield ##{shield.id} hit tracker ##{tracker.id}"

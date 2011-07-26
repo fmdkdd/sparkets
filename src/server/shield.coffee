@@ -2,7 +2,7 @@ ChangingObject = require('./changingObject').ChangingObject
 utils = require('../utils')
 
 class Shield extends ChangingObject
-	constructor: (@id, @game, @ship) ->
+	constructor: (@id, @game, @owner) ->
 		super()
 
 		@watchChanges 'type'
@@ -15,10 +15,10 @@ class Shield extends ChangingObject
 		@type = 'shield'
 
 		@pos =
-			x: ship.pos.x
-			y: ship.pos.y
+			x: owner.pos.x
+			y: owner.pos.y
 
-		@color = ship.color
+		@color = owner.color
 		@force = @game.prefs.shield.radius
 
 		@state = 'active'
@@ -40,9 +40,9 @@ class Shield extends ChangingObject
 	move: () ->
 		return if @state isnt 'active'
 
-		# Follow ship
-		@pos.x = @ship.pos.x
-		@pos.y = @ship.pos.y
+		# Follow owner
+		@pos.x = @owner.pos.x
+		@pos.y = @owner.pos.y
 		@changed 'pos'
 
 		# Update hitbox
@@ -59,8 +59,8 @@ class Shield extends ChangingObject
 
 		switch @state
 			when 'active'
-				# Delete shield when ship dies.
-				if @ship.state isnt 'alive'
+				# Delete shield when owner dies.
+				if @owner.state isnt 'alive'
 					@nextState()
 					return
 
