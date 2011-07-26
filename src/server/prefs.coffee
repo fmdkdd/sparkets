@@ -374,7 +374,7 @@ class GamePreferences
 				weight: 1
 			boost:
 				class: BonusBoost
-				weight: 0
+				weight: 1000
 			shield:
 				class: BonusShield
 				weight: 0

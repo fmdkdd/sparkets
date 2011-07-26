@@ -1,6 +1,7 @@
 -*- mode: org; -*-
 
-* Visual boost effect still active on respawning when dying before its end.
+* DONE Visual boost effect still active on respawning when dying before its end.
+	 CLOSED: [2011-07-26 Tue 14:40]
   That reminds me of a song ... http://www.youtube.com/watch?v=JhBw80Y54gg
   Oh wait, it's "boots" -- nevermind!
 

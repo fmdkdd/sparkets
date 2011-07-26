@@ -33,7 +33,7 @@ class BoostEffect
 		@object.state isnt 'dead' and @object.state isnt 'exploding'
 
 	deletable: () ->
-		not @running and @shadows.length is 0
+		(not @running and @shadows.length is 0) or @object.state is 'dead'
 
 	inView: (offset = {x:0, y:0}) ->
 		true
