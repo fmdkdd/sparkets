@@ -85,7 +85,7 @@ class Bonus extends ChangingObject
 		@pos.y += @vel.y
 		@warp()
 
-		if @vel.x > 0 or @vel.y > 0
+		if @vel.x isnt 0 or @vel.y isnt 0
 			@changed 'pos'
 
 		@vel.x *= @game.prefs.ship.frictionDecay
