@@ -181,3 +181,5 @@
 
 ** Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.
+** Use sprites for all bonuses
+** Visual clue for number of mines in bonus
