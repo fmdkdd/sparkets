@@ -44,11 +44,7 @@ class Bonus
 		switch @bonusType
 			when 'bonusMine'
 				ctxt.save()
-				r = 5
-				r2 = r*2
-				ctxt.fillRect(-r, -r, r2, r2)
-				ctxt.rotate(Math.PI/4)
-				ctxt.fillRect(-r, -r, r2, r2)
+				@drawMineIcon(ctxt)
 				ctxt.restore()
 
 			when 'bonusTracker'
@@ -88,6 +84,13 @@ class Bonus
 				ctxt.bezierCurveTo( 0,  0,  7, -7,  7,  0)
 				ctxt.stroke()
 				ctxt.restore()
+
+	drawMineIcon: (ctxt) ->
+		r = 5
+		r2 = r*2
+		ctxt.fillRect(-r, -r, r2, r2)
+		ctxt.rotate(Math.PI/4)
+		ctxt.fillRect(-r, -r, r2, r2)
 
 	drawArrow: (ctxt) ->
 		ctxt.beginPath()
