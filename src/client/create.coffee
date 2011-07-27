@@ -72,6 +72,8 @@ $(document).ready () ->
 		'bonus.bonusType.stealth.weight', 0, 10, 1, 3)
 	new Range(entry('#panel3 > table', 'Tracker weight'),
 		'bonus.bonusType.tracker.weight', 0, 10, 1, 3)
+	new Range(entry('#panel3 > table', 'EMP weight'),
+		'bonus.bonusType.EMP.weight', 0, 10, 1, 3)
 
 	new Range(entry('#panel4 > table', 'Speed'),
 		'ship.speed', 0.1, 1, 0.1, 0.3)
