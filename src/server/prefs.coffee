@@ -157,12 +157,14 @@ class GamePreferences
 			# Probability is checked at every update.
 			acquireShieldUse: [.005, .05]
 			acquireStealthUse: [.005, .05]
+			acquireEMPUse: [.005, .05]
 
 			chaseMineUse: [.001, .01]
 			chaseShieldUse: [.001, .01]
 			chaseBoostUse: [.01, 1]
 			chaseTrackerUse: [.001, .01]
 			chaseStealthUse: [.01, 1]
+			chaseEMPUse: [.005, .01]
 
 		# Non aggressive, used for tests.
 		cameoPersona:
