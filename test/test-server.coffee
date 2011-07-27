@@ -14,7 +14,9 @@ createServer = (port, replPort) ->
 		port: port
 		replPort: replPort
 		log: []
-		io: {logLevel: -1}
+		io:
+			transports: ['websocket']
+			logLevel: -1
 
 	# Suppress socket.io console output.
 	console.log = () ->
