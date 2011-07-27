@@ -244,6 +244,9 @@ exports.collisions =
 			ddebug "bullet ##{bullet.id} killed ship ##{ship.id}"
 
 	'ship-mine': (ship, mine) ->
+		# Stealthy ships are undetected!
+		return if ship.invisible
+
 		ship.explode()
 		mine.explode() if mine.state is 'active'
 
