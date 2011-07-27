@@ -93,6 +93,8 @@ class Index
 			'bonus.bonusType.stealth.weight', 0, 10, 1, 3)
 		new Range(li('#bonusAppearancePrefs ul'), 'Tracker weight',
 			'bonus.bonusType.tracker.weight', 0, 10, 1, 3)
+		new Range(li('#bonusAppearancePrefs ul'), 'EMP weight',
+			'bonus.bonusType.EMP.weight', 0, 10, 1, 3)
 
 		new Range(li('#shipPrefs ul'), 'Speed',
 			'ship.speed', 0.1, 1, 0.1, 0.3)
