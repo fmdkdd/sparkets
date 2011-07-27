@@ -78,6 +78,17 @@ class Bonus
 				@drawArrow(ctxt)
 				ctxt.restore()
 
+			when 'bonusEMP'
+				ctxt.save()
+				ctxt.beginPath()
+				ctxt.moveTo(7, 0)
+				ctxt.bezierCurveTo( 0,  0,  7,  7,  0,  7)
+				ctxt.bezierCurveTo( 0,  0, -7,  7, -7,  0)
+				ctxt.bezierCurveTo( 0,  0, -7, -7,  0, -7)
+				ctxt.bezierCurveTo( 0,  0,  7, -7,  7,  0)
+				ctxt.stroke()
+				ctxt.restore()
+
 	drawArrow: (ctxt) ->
 		ctxt.beginPath()
 		ctxt.moveTo(5, 0)
