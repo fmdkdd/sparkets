@@ -1,0 +1,72 @@
+* {
+		margin: 0;
+		padding: 0;
+
+		color: black;
+		font-family: sans;
+}
+
+/**
+ * Tabbed panels.
+ */
+
+#form {
+		width: 75%;
+		margin: 3em auto 0em auto;
+		padding: 0.6em;
+
+		background-color: white;
+}
+
+#form > ul > li {
+		display: inline;
+		list-style: none;
+}
+
+#form li a {
+		padding: 0.3em;
+		padding-bottom: 0;
+
+		background-color : white;
+		border: 1px solid grey;
+		border-bottom: none;
+		text-decoration: none;
+}
+
+#form li a.selected {
+		padding-bottom: 0.1em;
+
+		background-color: white;
+}
+
+#form .panel {
+		display: none;
+		padding: 0.3em;
+
+		background-color: white;
+		border: 1px solid grey;
+}
+
+#form .panel#panel1 {
+		display: block;
+}
+
+/**
+ * Form content.
+ */
+
+#form .panel > table {
+
+}
+
+#form .entry {
+		background-color: yellow;
+}
+
+#form .panel td:nth-child(1) {
+
+}
+
+#form .panel td:nth-child(2) {
+		width: 50%;
+}

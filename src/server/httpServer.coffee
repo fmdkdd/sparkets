@@ -11,8 +11,10 @@ mime = (path) ->
 
 webFiles = {
 	'/' : '/index.html',
+	'/create/' : '/create.html'
 	'/play/' : '/client.html',
 	'/client.css',
+	'/create.css',
 	'/index.css',
 	'/range.css',
 	'/selectionBox.css',
@@ -21,6 +23,7 @@ webFiles = {
 	'/js/client/bullet.js',
 	'/js/client/chat.js',
 	'/js/client/client.js',
+	'/js/client/create.js',
 	'/js/client/shield.js',
 	'/js/client/explosionEffect.js',
 	'/js/client/flashEffect.js',
