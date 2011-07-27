@@ -91,15 +91,23 @@ class Client
 		@renderLoop(@showFPS)
 
 	setInputHandlers: () ->
+		# Space, left, up, right, A, Z
+		processedKeys = [32, 37, 38, 39, 65, 90]
+
 		# Send key presses and key releases to the server.
 		$(document).keydown ({keyCode}) =>
+			return unless keyCode in processedKeys
+
 			if not @keys[keyCode]? or @keys[keyCode] is off
 				@keys[keyCode] = on
+				console.info 'key down'
 				@socket.emit 'key down',
 					playerId: @playerId
 					key: keyCode
 
 		$(document).keyup ({keyCode}) =>
+			return unless keyCode in processedKeys
+
 			@keys[keyCode] = off
 			@socket.emit 'key up',
 				playerId: @playerId
