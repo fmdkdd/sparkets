@@ -45,12 +45,10 @@ $(document).ready () ->
 		c = $('<td>' + label + '</td>').appendTo(tr(container))
 		$('<td></td>').insertAfter(c)
 
-	window.selectionBoxes = []
-
-	# Add ranges with tooltips.
-	new Range(entry('#panel1 table', 'Game duration'), 'Duration (min)',
+	new Range(entry('#panel1 table', 'Game duration (min)'),
 		'duration', 3, 20, 1, 5)
 
+	window.selectionBoxes = []
 	window.selectionBoxes.push new SelectionBox(entry('#panel2 > table', 'Map size'),
 		'mapSize', Object.keys(window.presets['mapSize']), 2)
 	window.selectionBoxes.push new SelectionBox(entry('#panel2 > table', 'Planet density'),
@@ -86,7 +84,64 @@ $(document).ready () ->
 	window.socket = io.connect()
 
 	window.socket.on 'connect', () ->
-		@socket.emit 'get game list'
+		# Do something?
 
 	window.socket.on 'game already exists', () ->
-		$('#id-error').html('Name already exists')
+		$('#error').html('Name already exists')
+
+	window.socket.on 'game list', (data) =>
+		idList = Object.keys(data)
+		if idList.length > 0
+			gameListRegexp = new RegExp('^(' + idList.join('|') + ')$')
+		else
+			gameListRegexp = null
+
+	# Setup form handling.
+	$('input[name="id"]').keyup (event) ->
+		if gameListRegexp? and event.target.value.match(gameListRegexp)
+			$('#error').html('Name already exists')
+			$('input[value="Create"]').attr('disabled', 'disabled')
+		else
+			$('#error').html('')
+			$('input[value="Create"]').removeAttr('disabled')
+
+	$('input[type="submit"]').click (event) ->
+		console.info 'x'
+		event.preventDefault()
+		data = gatherValues()
+
+		# Prepare game options.
+		opts =
+			id: data.id
+			prefs: data
+		delete data.id
+
+		window.socket.emit 'create game', opts, () ->
+			# Clear and unfocus game name input on creation.
+			nameInput = $('#panel1 input[name="id"]')
+			nameInput.val('')
+			nameInput.blur()
+
+	gatherValues = () ->
+		insert = (obj, name, val) ->
+			[prop, rest...] = name.split('.')
+
+			if rest.length > 0
+				obj[prop] = {} if not obj[prop]?
+				insert(obj[prop], rest.join('.'), val)
+			else
+				obj[name] = val
+
+		prefs = {}
+		for input in $('#form').find('input')
+			if input.name? and input.value?
+				switch input.type
+					when 'text'
+						insert(prefs, input.name, input.value)
+					when 'range'
+						insert(prefs, input.name, parseFloat(input.value))
+
+		for sb in @selectionBoxes
+			insert(prefs, sb.name, window.presets[sb.name][sb.value()])
+
+		return prefs

@@ -60,7 +60,7 @@
 }
 
 #form .entry {
-		background-color: yellow;
+
 }
 
 #form .panel td:nth-child(1) {
@@ -68,5 +68,12 @@
 }
 
 #form .panel td:nth-child(2) {
-		width: 50%;
+
+}
+
+input[type="submit"] {
+}
+
+#error {
+		color: red;
 }

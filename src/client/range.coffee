@@ -56,7 +56,7 @@ class Range
 		# in the browser. Otherwise, clicking away from the slider
 		# cursor will move the cursor to the mouse but @.value won't
 		# be updated.
-		setTimeout( (() => @tooltip.html(str) ), 1)
+		setTimeout( (() => @tooltip.html(str) if @tooltip?), 1)
 
 # Exports
 window.Range = Range
