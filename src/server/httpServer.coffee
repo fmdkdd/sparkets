@@ -12,6 +12,7 @@ mime = (path) ->
 webFiles = {
 	'/' : '/index.html',
 	'/create/' : '/create.html'
+	'/create' : '/create.html'
 	'/play/' : '/client.html',
 	'/client.css',
 	'/create.css',
