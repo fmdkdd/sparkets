@@ -5,6 +5,7 @@ BonusShield = require './bonusShield'
 BonusMine = require './bonusMine'
 BonusTracker = require './bonusTracker'
 BonusStealth = require './bonusStealth'
+BonusEMP = require './bonusEMP'
 
 class ServerPreferences
 	constructor: (prefs = {}) ->
@@ -358,6 +359,9 @@ class GamePreferences
 			boost:
 				class: BonusBoost
 				weight: 1
+			EMP:
+				class: BonusEMP
+				weight: 1
 			shield:
 				class: BonusShield
 				weight: 1
@@ -387,6 +391,9 @@ class GamePreferences
 
 			# Decrease boost factor in decay state.
 			boostDecay: 0.02
+
+		EMP:
+			effectRadius: 500
 
 		drunk:
 			# Duration of drunk effect in ms.
