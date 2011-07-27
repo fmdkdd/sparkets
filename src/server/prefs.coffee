@@ -234,7 +234,7 @@ class GamePreferences
 		maxForce: 120
 
 		# Probability of adding a satellite to each planet.
-		satelliteChance: .3
+		satelliteChance: .2
 
 		# Safeguard value (can't draw planets smaller than the line width,
 		# and gravity doesn't bode well with small planets)
