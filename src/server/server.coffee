@@ -58,6 +58,8 @@ class Server
 					socket.emit 'game already exists'
 				else
 					@createGame(data.id, data.prefs)
+					socket.emit 'game created',
+						id: data.id
 
 	createGame: (id, gamePrefs) ->
 		valid = (str) ->

@@ -91,7 +91,11 @@ $(document).ready () ->
 	window.socket.on 'game already exists', () ->
 		$('#error').html('Name already exists')
 
-	window.socket.on 'game list', (data) =>
+	window.socket.on 'game created', (data) ->
+		# Redirect to the client page.
+		window.location.replace('../play/#' + data.id)
+
+	window.socket.on 'game list', (data) ->
 		idList = Object.keys(data)
 		if idList.length > 0
 			gameListRegexp = new RegExp('^(' + idList.join('|') + ')$')
@@ -108,7 +112,6 @@ $(document).ready () ->
 			$('input[value="Create"]').removeAttr('disabled')
 
 	$('input[type="submit"]').click (event) ->
-		console.info 'x'
 		event.preventDefault()
 		data = gatherValues()
 
