@@ -44,9 +44,9 @@ class Ship extends ChangingObject
 		@spawn()
 
 	hitBoxPoints: [
-		{x:  8, y:  0},
-		{x: -7, y:  6},
-		{x: -7, y: -6}]
+		{x:  9, y:  0},
+		{x: -10, y:  7},
+		{x: -10, y: -7}]
 
 	updateHitbox: () ->
 		for i in [0...@hitBox.points.length]
