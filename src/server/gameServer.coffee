@@ -29,10 +29,7 @@ class GameServer
 		@prefs = new GamePreferences(gamePrefs)
 
 	launch: () ->
-		for p in @initPlanets()
-			@newGameObject (id) =>
-				p.id = id
-				@planets[id] = p
+		@initPlanets()
 
 		@spawnBonus()
 
@@ -391,7 +388,10 @@ class GameServer
 		delete @gameObjects[id]
 
 	initPlanets: () ->
-		planets = []
+		add = (planet) =>
+			@newGameObject (id) =>
+				planet.id = id
+				@planets[id] = planet
 
 		# Circle to planet collision predicate.
 		collides = (x, y, r, p) ->
@@ -429,6 +429,7 @@ class GameServer
 		planetCount = Math.floor((mapSurface/planetSurface) * @prefs.planet.density)
 
 		# Spawn planets randomly.
+		planets = []
 		for [0...planetCount]
 			satellite = Math.random() < @prefs.planet.satelliteChance
 			colliding = yes
@@ -452,13 +453,15 @@ class GameServer
 
 			# Not colliding, can add it
 			rock = new Planet(@, x, y, force)
-			planets.push rock
+			add(rock)
+			planets.push(rock)
 			if satellite
-				planets.push new Moon(@, rock, satForce, satGap)
+				moon = new Moon(@, rock, satForce, satGap)
+				add(moon)
+				planets.push(moon)
 
 		@debug "#{planetCount} planets created"
-
-		return planets
+		return true
 
 	# Return the closest position of 'targetPos' from 'sourcePos'.
 	closestGhost: (sourcePos, targetPos) ->
