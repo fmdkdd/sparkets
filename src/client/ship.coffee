@@ -171,5 +171,8 @@ class Ship
 
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
 
+	flashEffect: () ->
+		@client.effects.push new FlashEffect(@client, @pos, 300, @color, 600)
+
 # Exports
 window.Ship = Ship

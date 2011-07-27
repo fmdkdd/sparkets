@@ -427,6 +427,9 @@ class Client
 			when 'tracker exploded'
 				@gameObjects[event.id].explodingEffect()
 
+			when 'EMP released'
+				@gameObjects[event.id].flashEffect()
+
 	# When a player sent a chat message.
 	onPlayerMessage: (data)->
 		@chat.receiveMessage(data)
