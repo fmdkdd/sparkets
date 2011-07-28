@@ -47,28 +47,6 @@ class Bonus
 
 		###
 		switch @bonusType
-			when 'bonusMine'
-				ctxt.save()
-				@drawMineIcon(ctxt)
-				ctxt.restore()
-
-			when 'bonusTracker'
-				utils.strokeCircle(ctxt, 0, 0, 1)
-				utils.strokeCircle(ctxt, 0, 0, 4)
-				utils.strokeCircle(ctxt, 0, 0, 7)
-
-			when 'bonusBoost'
-				ctxt.save()
-				ctxt.rotate(Math.PI/2)
-				ctxt.translate(0, -6)
-				@drawBoostIcon(ctxt)
-				ctxt.restore()
-
-			when 'bonusShield'
-				ctxt.beginPath()
-				ctxt.arc(0, 0, 3, 0, 2*Math.PI, false)
-				ctxt.arc(0, 0, 7, 0, 2*Math.PI, false)
-				ctxt.stroke()
 
 			when 'bonusEMP'
 				ctxt.save()
@@ -81,25 +59,6 @@ class Bonus
 				ctxt.stroke()
 				ctxt.restore()
 		###
-
-	drawMineIcon: (ctxt) ->
-		r = 5
-		r2 = r*2
-		ctxt.fillRect(-r, -r, r2, r2)
-		ctxt.rotate(Math.PI/4)
-		ctxt.fillRect(-r, -r, r2, r2)
-
-	drawBoostIcon: (ctxt) ->
-		ctxt.beginPath()
-		ctxt.moveTo(0, 0)
-		ctxt.lineTo(-6, 6)
-		ctxt.lineTo(-2, 6)
-		ctxt.lineTo(-6, 11)
-		ctxt.lineTo( 6, 11)
-		ctxt.lineTo( 2, 6)
-		ctxt.lineTo( 6, 6)
-		ctxt.closePath()
-		ctxt.fill()
 
 	drawOnRadar: (ctxt) ->
 		return if @state isnt 'incoming'

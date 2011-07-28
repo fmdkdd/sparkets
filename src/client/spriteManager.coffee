@@ -82,16 +82,37 @@ class SpriteManager
 
 		return sprite
 
-	'bonusTracker': (sprite, w, h, color) ->
-		sprite
-
 	'bonusMine': (sprite, w, h, color) ->
 		@['mine'](sprite, w, h, color)
+
+	'bonusTracker': (sprite, w, h, color) ->
+		ctxt = sprite.getContext('2d')
+		ctxt.strokeStyle = color
+		ctxt.lineWidth = 2
+
+		# The default width equals 20.
+		scale = sprite.width / 20
+
+		ctxt.save()
+		ctxt.scale(scale, scale)
+		ctxt.translate(10, 10)
+		ctxt.arc(0, 0, 8, 0, 2*Math.PI, false)
+		ctxt.stroke()
+
+		for i in [0..3]
+			ctxt.beginPath()
+			ctxt.moveTo(10, 0)
+			ctxt.lineTo(5, 0)
+			ctxt.stroke()
+			ctxt.rotate(Math.PI/2)
+
+		ctxt.restore()
+
+		return sprite
 
 	'bonusBoost': (sprite, w, h, color) ->
 		ctxt = sprite.getContext('2d')
 		ctxt.fillStyle = color
-		ctxt.lineWidth = 3
 
 		# The default width equals 20.
 		scale = sprite.width / 20
@@ -114,8 +135,32 @@ class SpriteManager
 		return sprite
 
 	'bonusShield': (sprite, w, h, color) ->
-		# Shield.
-		sprite
+		ctxt = sprite.getContext('2d')
+		ctxt.fillStyle = color
+
+		# The default width equals 20.
+		scale = sprite.width / 20
+
+		ctxt.save()
+		ctxt.scale(scale, scale)
+		ctxt.beginPath()
+		ctxt.moveTo(0, 0)
+		ctxt.lineTo(0, 10)
+		ctxt.quadraticCurveTo(3, 20, 10, 20)
+		ctxt.quadraticCurveTo(17, 20, 20, 10)
+		ctxt.lineTo(20, 0)
+		ctxt.fill()
+
+		ctxt.fillStyle = 'hsla(0, 0%, 100%, 0.2)'
+		ctxt.beginPath()
+		ctxt.moveTo(10, 18)
+		ctxt.quadraticCurveTo(17, 20, 18, 10)
+		ctxt.lineTo(18, 2)
+		ctxt.lineTo(10, 2)
+		ctxt.fill()
+		ctxt.restore()
+
+		return sprite
 
 	'bonusStealth': (sprite, w, h, color) ->
 		# Eye?

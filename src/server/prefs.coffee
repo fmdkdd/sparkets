@@ -353,22 +353,25 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 1
+				weight: 0
 			tracker:
 				class: BonusTracker
-				weight: 1
+				weight: 10000
 			boost:
 				class: BonusBoost
-				weight: 1
+				weight: 0
 			EMP:
 				class: BonusEMP
-				weight: 1
+				weight: 0
 			shield:
 				class: BonusShield
-				weight: 1
+				weight: 0
+			drunk:
+				class: BonusDrunk
+				weight: 0
 			stealth:
 				class: BonusStealth
-				weight: 1
+				weight: 0
 
 		# Radius of hit circle.
 		boundingRadius: 10
