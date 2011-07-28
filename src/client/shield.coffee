@@ -8,10 +8,7 @@ class Shield
 		@sprite = @client.spriteManager.get('shield', s, s, color)
 
 	serverUpdate: (shield) ->
-		for field, val of shield
-			this[field] = val
-
-		true
+		utils.deepMerge(shield, @)
 
 	update: () ->
 		@clientDelete = @serverDelete

@@ -3,8 +3,7 @@ class Rope
 		@serverUpdate(rope)
 
 	serverUpdate: (rope) ->
-		for field, val of rope
-			@[field] = val
+		utils.deepMerge(rope, @)
 
 	update: () ->
 		@clientDelete = @serverDelete

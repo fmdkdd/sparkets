@@ -3,10 +3,7 @@ class Tracker
 		@serverUpdate(tracker)
 
 	serverUpdate: (tracker) ->
-		for field, val of tracker
-			this[field] = val
-
-		true
+		utils.deepMerge(tracker, @)
 
 	update: () ->
 		@clientDelete = @serverDelete

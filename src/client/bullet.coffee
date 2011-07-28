@@ -5,8 +5,7 @@ class Bullet
 		@serverUpdate (bullet)
 
 	serverUpdate: (bullet) ->
-		for field, val of bullet
-			@[field] = val
+		utils.deepMerge(bullet, @)
 
 		for p in @lastPoints
 			@clientPoints.push p

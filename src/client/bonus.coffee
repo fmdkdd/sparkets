@@ -12,10 +12,7 @@ class Bonus
 		@sprite.getContext('2d').drawImage(@logo, @sprite.width/2 - @logo.width/2, @sprite.height/2 - @logo.height/2)
 
 	serverUpdate: (bonus) ->
-		for field, val of bonus
-			@[field] = val
-
-		true
+		utils.deepMerge(bonus, @)
 
 	update: () ->
 		@clientDelete = @serverDelete

@@ -8,10 +8,7 @@ class Mine
 		@sprite = @client.spriteManager.get('mine', s, s, color)
 
 	serverUpdate: (mine) ->
-		for field, val of mine
-			this[field] = val
-
-		true
+		utils.deepMerge(mine, @)
 
 	update: () ->
 		@clientDelete = @serverDelete

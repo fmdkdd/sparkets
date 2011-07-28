@@ -14,8 +14,7 @@ class Ship
 	serverUpdate: (ship) ->
 		thrust_old = @thrust
 
-		for field, val of ship
-			@[field] = val
+		utils.deepMerge(ship, @)
 
 		# Start the engine fade-in/out in the ship just started/stopped thrusting.
 		if @thrust isnt thrust_old

@@ -8,10 +8,7 @@ class Planet
 		@sprite = @client.spriteManager.get('planet', s, s, color)
 
 	serverUpdate: (planet) ->
-		for field, val of planet
-			@[field] = val
-
-		true
+		utils.deepMerge(planet, @)
 
 	update: () ->
 
