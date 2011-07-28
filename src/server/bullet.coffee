@@ -4,15 +4,19 @@ class Bullet extends ChangingObject
 	constructor: (@id, @game, @owner) ->
 		super()
 
-		@watchChanges 'type'
-		@watchChanges 'color'
-		@watchChanges 'lastPoints'
-		@watchChanges 'serverDelete'
-		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
+		# Send these properties to new players.
+		@flagFullUpdate('type')
+		@flagFullUpdate('color')
+		@flagFullUpdate('lastPoints')
+		@flagFullUpdate('serverDelete')
+		@flagFullUpdate('boundingRadius')
+		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'bullet'
+		@flagNextUpdate('type')
 
+		# Compute initial position and acceleration vector from position
+		# and direction of owner ship.
 		xdir = 10*Math.cos(@owner.dir)
 		ydir = 10*Math.sin(@owner.dir)
 		@power = @owner.firePower
@@ -23,8 +27,12 @@ class Bullet extends ChangingObject
 			x: @owner.vel.x + @power*xdir
 			y: @owner.vel.y + @power*ydir
 
-		@state = 'active'
+		# Keep track of the last computed position to notify clients.
+		@lastPoints = [ [@pos.x, @pos.y] ]
 
+		@flagNextUpdate('lastPoints')
+
+		# Initial hit box is a point.
 		@boundingRadius = @game.prefs.bullet.boundingRadius
 		@hitBox =
 			type: 'segments'
@@ -32,9 +40,12 @@ class Bullet extends ChangingObject
 				{x: @pos.x, y: @pos.y},
 				{x: @pos.x, y: @pos.y}]
 
+		@state = 'active'
+
+		# Same color as owner ship's.
 		@color = @owner.color
-		@points = [ [@pos.x, @pos.y] ]
-		@lastPoints = [ [@pos.x, @pos.y] ]
+
+		@flagNextUpdate('color')
 
 	# Apply gravity from all planets, moons, and shields.
 	gravityVector: () ->
@@ -66,8 +77,10 @@ class Bullet extends ChangingObject
 		@pos.x += @accel.x
 		@pos.y += @accel.y
 
-		@points.push [@pos.x, @pos.y]
+		# Register new position for clients.
 		@lastPoints = [[@pos.x, @pos.y]]
+
+		@flagNextUpdate('lastPoints')
 
 		# Warp the bullet around the map.
 		s = @game.prefs.mapSize
@@ -86,32 +99,21 @@ class Bullet extends ChangingObject
 			@warp = on
 
 		# Append the warped point again so that the line remains continuous.
-		if @warp
-			@points.push [@pos.x, @pos.y]
-			@lastPoints.push [@pos.x, @pos.y]
+		@lastPoints.push [@pos.x, @pos.y] if @warp
 
 		# Update hitbox.
-		if @warp
-			A = @points[@points.length-3]
-			B = @points[@points.length-2]
-		else
-			A = @points[@points.length-2]
-			B = @points[@points.length-1]
-		@hitBox.points[0].x = A[0]
-		@hitBox.points[0].y = A[1]
-		@hitBox.points[1].x = B[0]
-		@hitBox.points[1].y = B[1]
-		@changed 'hitBox'
+		@hitBox.points[0].x = @hitBox.points[1].x
+		@hitBox.points[0].y = @hitBox.points[1].y
+		@hitBox.points[1].x = @pos.x
+		@hitBox.points[1].y = @pos.y
+
+		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	update: () ->
-		switch @state
-			# Seek and destroy.
-			when 'active'
-				@points.shift() if @points.length > @game.prefs.bullet.tailLength
+		if @state is 'dead'
+			@serverDelete = yes
 
-			# No points left, disappear.
-			when 'dead'
-				@serverDelete = yes
+			@flagNextUpdate('serverDelete')
 
 	explode: () ->
 		@state = 'dead'
