@@ -5,6 +5,12 @@ class Ship
 		@engineAnimFor = null
 		@engineAnimDelay = 200
 
+		# Create the sprite.
+		w = 20+5 # +5 to make way for the line width and the line rounding.
+		h = 14+5
+		color = window.utils.color @color
+		@sprite = @client.spriteManager.get('ship', w, h, color)
+
 	serverUpdate: (ship) ->
 		thrust_old = @thrust
 
@@ -112,17 +118,7 @@ class Ship
 			ctxt.fillText(@name, @pos.x - ctxt.measureText(@name).width/2, @pos.y - 25)
 
 	drawModel: (ctxt, col) ->
-		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
-
-		ctxt.strokeStyle = col
-		ctxt.lineJoin = 'round'
-		ctxt.lineWidth = 4
-
-		ctxt.beginPath()
-		for p in points
-			ctxt.lineTo(p[0], p[1])
-		ctxt.closePath()
-		ctxt.stroke()
+		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 
 	drawOnRadar: (ctxt) ->
 		return if @invisible

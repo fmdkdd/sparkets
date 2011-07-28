@@ -7,8 +7,6 @@ class Mine
 		color = window.utils.color @color
 		@sprite = @client.spriteManager.get('mine', s, s, color)
 
-	initSprite: () ->
-
 	serverUpdate: (mine) ->
 		for field, val of mine
 			this[field] = val
