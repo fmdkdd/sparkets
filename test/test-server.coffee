@@ -150,13 +150,12 @@ exports.suite.addBatch
 		'on `create game` event':
 			topic: () ->
 				openSocket port, (ws) =>
-					ws.event 'create game',
-						id: 'bar'
-
 					ok = waiter(@callback)
 					ws.on 'message', (packet) ->
 						ok(packet) if packet.type is 'event'
 
+					ws.event 'create game',
+						id: 'bar'
 				return
 
 			'should broadcast the game list': (err, packet) ->
@@ -189,11 +188,11 @@ exports.suite.addBatch
 		'on `get game list` event':
 			topic: () ->
 				openSocket port, (ws) =>
-					ws.event 'get game list'
-
 					ok = waiter(@callback)
 					ws.on 'message', (packet) ->
 						ok(packet) if packet.type is 'event'
+
+					ws.event 'get game list'
 				return
 
 			'should return the game list': (err, packet) ->
@@ -213,16 +212,16 @@ exports.suite.addBatch
 		'created game':
 			topic: () ->
 				openSocket port, (ws) =>
-					ws.event 'create game',
-						id: 'bar'
-						prefs: {duration: 0}
-
 					ok = waiter(@callback)
 					msg = 0
 					ws.on 'message', (packet) =>
 						if packet.type is 'event' and packet.name is 'game list'
 							++msg
 							ok(packet) if msg is 2
+
+					ws.event 'create game',
+						id: 'bar'
+						prefs: {duration: 0}
 				return
 
 			'should send the game list twice': (err, packet) ->
