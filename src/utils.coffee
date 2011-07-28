@@ -143,7 +143,7 @@ exports.prettyNumber = (str) ->
 	else
 		parseFloat(str).toFixed(2)
 
-# Merge `obj' properties with `target' existing properties.
+# Merge `source' properties with `target' existing properties.
 # No new property is created in `target'.
 exports.safeDeepMerge = (source, target) ->
 	for name, val of source
@@ -155,6 +155,19 @@ exports.safeDeepMerge = (source, target) ->
 				exports.safeDeepMerge(source[name], target[name])
 			else
 				target[name] = val
+
+	return target
+
+# Put all `source' properties within `target', overwriting properties
+# with the same name, and recursively calls deepMerge for object properties.
+exports.deepMerge = (source, target) ->
+	for name, val of source
+		# Recurse for objects properties.
+		if typeof source[name] is 'object' and not Array.isArray(source[name])
+			target[name] = {} unless target[name]?
+			exports.deepMerge(source[name], target[name])
+		else
+			target[name] = source[name]
 
 	return target
 
