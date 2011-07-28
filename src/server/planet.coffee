@@ -5,28 +5,50 @@ class Planet extends ChangingObject
 	constructor: (@game, x, y, force) ->
 		super()
 
-		@watchChanges 'id'
-		@watchChanges 'type'
-		@watchChanges 'pos'
-		@watchChanges 'color'
-		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
+		# Send these properties to new players.
+		@flagFullUpdate('type')
+		@flagFullUpdate('pos')
+		@flagFullUpdate('color')
+		@flagFullUpdate('boundingRadius')
+		@flagFullUpdate('id') if @game.prefs.debug.sendHitBoxes
+		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'planet'
-		@pos = {x, y}
-		@force = force
-		@color = @game.prefs.planet.color
+		@flagNextUpdate('type')
 
+		# Static position.
+		@pos = {x, y}
+
+		@flagNextUpdate('pos')
+
+		# Radius of planet.
+		@force = force
+
+		# XXX: client relies only on bounding radius to draw ... we
+		# should uncouple this.
 		@boundingRadius = @force
+
+		@flagNextUpdate('boundingRadius')
+
+		# Circle hit box with static position and radius.
 		@hitBox =
 			type: 'circle'
 			radius: @force
 			x: @pos.x
 			y: @pos.y
 
+		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+
+		# Same color for all planets.
+		@color = @game.prefs.planet.color
+
+		@flagNextUpdate('color')
+
 	update: () ->
+		# Nothing to update
 
 	move: () ->
+		# Not moving!
 
 	tangible: () ->
 		yes

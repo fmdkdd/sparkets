@@ -3,12 +3,14 @@ utils = require '../utils'
 
 class Moon extends Planet
 	constructor: (@game, @planet, force, gap) ->
-
 		# No position yet
 		super(@game, 0, 0, force)
 
 		@type = 'moon'
+		@flagNextUpdate('type')
+
 		@color = @game.prefs.planet.moonColor
+		@flagNextUpdate('color')
 
 		# Polar coordinates
 		@dist = @planet.force + gap + force
@@ -19,21 +21,26 @@ class Moon extends Planet
 		M = @game.prefs.planet.satellitePullMax - m
 		pull = m + M * Math.random()
 		@speed = pull * @planet.force / (@dist * Math.sqrt(@dist))
+
+		# Random clockwise or counterclockwise direction.
 		@speed *= -1 if Math.random() < 0.5
 
-		# Update position
+		# Update position once.
 		@move()
 
 	move: () ->
 		@pos.x = @planet.pos.x + @dist * Math.cos(@angle)
 		@pos.y = @planet.pos.y + @dist * Math.sin(@angle)
 
-		@changed 'pos'
+		# XXX: moons always follow the same pattern. Clients should
+		# infer that with starting polar coordinates and speed.
+		@flagNextUpdate('pos')
 
 		# Update hitbox
 		@hitBox.x = @pos.x
 		@hitBox.y = @pos.y
-		@changed 'hitBox'
+		@flagNextUpdate('hitBox.x')
+		@flagNextUpdate('hitBox.y')
 
 	update: () ->
 		@angle += @speed
