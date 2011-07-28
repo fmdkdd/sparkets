@@ -2,13 +2,16 @@ class SpriteManager
 	constructor: () ->
 
 	get: (type, w, h, color) ->
-		@[type](w, h, color)
 
-	'planet': (w, h, color) ->
+		# Create a new sprite.
 		sprite = document.createElement('canvas')
 		sprite.width = Math.ceil(w)
 		sprite.height = Math.ceil(h)
 
+		# Fill the sprite with a pattern. 
+		@[type](sprite, w, h, color)
+
+	'planet': (sprite, w, h, color) ->
 		ctxt = sprite.getContext('2d')
 		ctxt.strokeStyle = color
 		ctxt.fillStyle = 'white'
@@ -22,11 +25,7 @@ class SpriteManager
 
 		return sprite
 
-	'ship': (w, h, color) ->
-		sprite = document.createElement('canvas')
-		sprite.width = Math.ceil(w)
-		sprite.height = Math.ceil(h)
-
+	'ship': (sprite, w, h, color) ->
 		ctxt = sprite.getContext('2d')
 		ctxt.strokeStyle = color
 		ctxt.lineJoin = 'round'
@@ -46,11 +45,7 @@ class SpriteManager
 
 		return sprite
 
-	'mine': (w, h, color) ->
-		sprite = document.createElement('canvas')
-		sprite.width = Math.ceil(w)
-		sprite.height = Math.ceil(h)
-
+	'mine': (sprite, w, h, color) ->
 		ctxt = sprite.getContext('2d')
 		ctxt.fillStyle = color
 
