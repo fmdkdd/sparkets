@@ -23,9 +23,14 @@ class Bonus extends ChangingObject
 		@type = 'bonus'
 
 		@boundingRadius = @game.prefs.bonus.boundingRadius
+		r = @boundingRadius/2
 		@hitBox =
-			type: 'circle'
-			radius: @boundingRadius
+			type: 'polygon'
+			points: [
+				{x: 0, y: 0},
+				{x: 0, y: 0},
+				{x: 0, y: 0},
+				{x: 0, y: 0}]
 
 		@spawn(bonusType)
 
@@ -54,10 +59,22 @@ class Bonus extends ChangingObject
 			x: 0
 			y: 0
 
-		@hitBox.x = @pos.x
-		@hitBox.y = @pos.y
+		@updateHitbox()
 
 		@spawn(bonusType) if @game.collidesWithPlanet(@)
+
+	hitBoxPoints: [
+		{x: -10, y: -10},
+		{x: +10, y: -10},
+		{x: +10, y: +10},
+		{x: -10, y: +10}]
+
+	updateHitbox: () ->
+		for i in [0...@hitBox.points.length]
+			@hitBox.points[i].x = @pos.x + @hitBoxPoints[i].x
+			@hitBox.points[i].y = @pos.y + @hitBoxPoints[i].y
+
+		@changed 'hitBox'
 
 	randomBonus: () ->
 		roulette = []
@@ -87,14 +104,11 @@ class Bonus extends ChangingObject
 
 		if @vel.x isnt 0 or @vel.y isnt 0
 			@changed 'pos'
+			@updateHitbox()
+			console.info @vel.x
 
 		@vel.x *= @game.prefs.ship.frictionDecay
 		@vel.y *= @game.prefs.ship.frictionDecay
-
-		# Update hitbox
-		@hitBox.x = @pos.x
-		@hitBox.y = @pos.y
-		@changed 'hitBox'
 
 	warp: () ->
 		s = @game.prefs.mapSize

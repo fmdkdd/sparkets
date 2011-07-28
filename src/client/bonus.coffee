@@ -16,9 +16,17 @@ class Bonus
 			@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
 
 	drawHitbox: (ctxt) ->
+		points = @hitBox.points
+		return if points.length < 2
+
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
+		ctxt.beginPath()
+		ctxt.moveTo(points[0].x, points[0].y)
+		for i in [1...points.length]
+			ctxt.lineTo(points[i].x, points[i].y)
+		ctxt.closePath()
+		ctxt.stroke()
 
 	draw: (ctxt) ->
 		return if @state isnt 'available' and @state isnt 'claimed'
