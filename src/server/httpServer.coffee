@@ -37,6 +37,7 @@ webFiles = {
 	'/js/client/rope.js',
 	'/js/client/selectionBox.js',
 	'/js/client/ship.js',
+	'/js/client/spriteManager.js',
 	'/js/client/tracker.js',
 	'/js/client/trailEffect.js',
 	'/js/utils.js',

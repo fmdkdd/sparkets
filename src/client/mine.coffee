@@ -2,6 +2,10 @@ class Mine
 	constructor: (@client, mine) ->
 		@serverUpdate(mine)
 
+		@sprite = @client.spriteManager.get('mine', 10*Math.sqrt(2), 10*Math.sqrt(2))
+
+	initSprite: () ->
+
 	serverUpdate: (mine) ->
 		for field, val of mine
 			this[field] = val
@@ -33,11 +37,8 @@ class Mine
 				ctxt.restore()
 
 	drawModel: (ctxt, col) ->
-		r = 5
-		ctxt.fillStyle = col
-		ctxt.fillRect(-r, -r, r*2, r*2)
-		ctxt.rotate(Math.PI/4)
-		ctxt.fillRect(-r, -r, r*2, r*2)
+		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
+		console.info @sprite.width
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'

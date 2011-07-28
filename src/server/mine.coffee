@@ -26,7 +26,7 @@ class Mine extends ChangingObject
 
 		@explosionRadius = @game.prefs.mine.explosionRadius
 
-		@boundingRadius = 0
+		@boundingRadius = 5
 		@hitBox =
 			type: 'circle'
 			radius: @boundingRadius

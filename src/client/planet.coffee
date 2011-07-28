@@ -2,7 +2,7 @@ class Planet
 	constructor: (@client, planet) ->
 		@serverUpdate(planet)
 
-		@initSprite() if not @sprite?
+		@initSprite()
 
 	initSprite: () ->
 		r = @boundingRadius

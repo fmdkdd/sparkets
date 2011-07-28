@@ -11,6 +11,8 @@ class Client
 		@view = {x: 0, y: 0}
 		@mouse = {x: 0, y: 0}
 
+		@spriteManager = new SpriteManager()
+
 		# Time
 		@now = null
 		@sinceLastUpdate = null
@@ -100,7 +102,6 @@ class Client
 
 			if not @keys[keyCode]? or @keys[keyCode] is off
 				@keys[keyCode] = on
-				console.info 'key down'
 				@socket.emit 'key down',
 					playerId: @playerId
 					key: keyCode
