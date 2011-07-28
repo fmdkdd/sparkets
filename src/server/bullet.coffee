@@ -15,7 +15,7 @@ class Bullet extends ChangingObject
 		@type = 'bullet'
 		@flagNextUpdate('type')
 
-		# Compute initial position and acceleration vector from position
+		# Compute initial position and velocity vector from position
 		# and direction of owner ship.
 		xdir = 10*Math.cos(@owner.dir)
 		ydir = 10*Math.sin(@owner.dir)
@@ -23,7 +23,7 @@ class Bullet extends ChangingObject
 		@pos =
 			x: @owner.pos.x + xdir
 			y: @owner.pos.y + ydir
-		@accel =
+		@vel =
 			x: @owner.vel.x + @power*xdir
 			y: @owner.vel.y + @power*ydir
 
@@ -68,14 +68,14 @@ class Bullet extends ChangingObject
 	move: () ->
 		return if @state isnt 'active'
 
-		# Compute new position from acceleration and gravity of all planets.
+		# Compute new position from velocity and gravity of all planets.
 		gvec = @gravityVector()
 
-		@accel.x += gvec.x
-		@accel.y += gvec.y
+		@vel.x += gvec.x
+		@vel.y += gvec.y
 
-		@pos.x += @accel.x
-		@pos.y += @accel.y
+		@pos.x += @vel.x
+		@pos.y += @vel.y
 
 		# Register new position for clients.
 		@lastPoints = [[@pos.x, @pos.y]]
