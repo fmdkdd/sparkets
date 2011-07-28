@@ -2,9 +2,14 @@ class Shield
 	constructor: (@client, shield) ->
 		@serverUpdate(shield)
 
+		# Take color from owner.
+		@owner = @client.gameObjects[@ownerId]
+		@color = @owner.color
+		@pos = @owner.pos
+
 		# Create the sprite.
 		s = 2*@boundingRadius
-		color = window.utils.color @color
+		color = utils.color @color
 		@sprite = @client.spriteManager.get('shield', s, s, color)
 
 	serverUpdate: (shield) ->

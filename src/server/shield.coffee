@@ -7,13 +7,17 @@ class Shield extends ChangingObject
 
 		# Send these properties to new players.
 		@flagFullUpdate('type')
-		@flagFullUpdate('color')
+		@flagFullUpdate('ownerId')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('boundingRadius')
 		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'shield'
 		@flagNextUpdate('type')
+
+		# ID number of owner ship for clients.
+		@ownerId = @owner.id
+		@flagNextUpdate('ownerId')
 
 		# Follow owner ship.
 		@pos = @owner.pos
