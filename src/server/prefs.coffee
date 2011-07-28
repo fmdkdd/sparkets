@@ -380,6 +380,9 @@ class GamePreferences
 		# Drawing size on client.
 		modelSize: 20
 
+		# Inertia decay at update.
+		frictionDecay: 0.97
+
 		mine:
 			# Number of held mines.
 			mineCount: 2

@@ -10,20 +10,23 @@ class Bonus extends ChangingObject
 	constructor: (@id, @game, bonusType) ->
 		super()
 
-		@watchChanges 'type'
-		@watchChanges 'state'
-		@watchChanges 'countdown'
-		@watchChanges 'color'
-		@watchChanges 'pos'
-		@watchChanges 'serverDelete'
-		@watchChanges 'bonusType'
-		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
-		@watchChanges 'boundingRadius'
+		@flagFullUpdate('type')
+		@flagFullUpdate('state')
+		@flagFullUpdate('countdown')
+		@flagFullUpdate('color')
+		@flagFullUpdate('pos')
+		@flagFullUpdate('serverDelete')
+		@flagFullUpdate('bonusType')
+		@flagFullUpdate('boundingRadius')
+		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'bonus'
+		@flagNextUpdate('type')
 
 		@boundingRadius = @game.prefs.bonus.boundingRadius
-		r = @boundingRadius/2
+
+		@flagNextUpdate('boundingRadius')
+
 		@hitBox =
 			type: 'polygon'
 			points: [
@@ -32,36 +35,57 @@ class Bonus extends ChangingObject
 				{x: 0, y: 0},
 				{x: 0, y: 0}]
 
+		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+
 		@spawn(bonusType)
 
 	spawn: (bonusType) ->
-		@state = 'incoming'
-		@countdown = @game.prefs.bonus.states[@state].countdown
-
-		@color = utils.randomColor()
-		@empty = yes
-
-		@holder = null
-		@rope = null
-
-		# Choose bonus type.
-		if bonusType?
-			bonusClass = @game.prefs.bonus.bonusType[bonusType].class
-		else
-			bonusClass = @randomBonus()
-		@effect = new bonusClass.constructor(@game, @)
-		@bonusType = bonusClass.type
-
 		@pos =
 			x: Math.random() * @game.prefs.mapSize
 			y: Math.random() * @game.prefs.mapSize
+
+		@updateHitbox()
+
+		# Find a safe drop location.
+		while @game.collidesWithPlanet(@)
+			@pos.x = Math.random() * @game.prefs.mapSize
+			@pos.y = Math.random() * @game.prefs.mapSize
+			@updateHitbox()
+
+		# Set our initial velocity.
 		@vel =
 			x: 0
 			y: 0
 
-		@updateHitbox()
+		@flagNextUpdate('pos')
 
-		@spawn(bonusType) if @game.collidesWithPlanet(@)
+		# Initial state.
+		@state = 'incoming'
+		@countdown = @game.prefs.bonus.states[@state].countdown
+
+		@flagNextUpdate('state')
+		@flagNextUpdate('countdown')
+
+		# Nice skittles color.
+		@color = utils.randomColor()
+
+		@flagNextUpdate('color')
+
+		# DELETE: this is useless.
+		@holder = null
+		@rope = null
+
+		# Randomly choose bonus type if unspecified.
+		if bonusType?
+			bonusClass = @game.prefs.bonus.bonusType[bonusType].class
+		else
+			bonusClass = @randomBonus()
+
+		# Set bonus effect and type.
+		@effect = new bonusClass.constructor(@game, @)
+		@bonusType = bonusClass.type
+
+		@flagNextUpdate('bonusType')
 
 	hitBoxPoints: [
 		{x: -10, y: -10},
@@ -74,7 +98,7 @@ class Bonus extends ChangingObject
 			@hitBox.points[i].x = @pos.x + @hitBoxPoints[i].x
 			@hitBox.points[i].y = @pos.y + @hitBoxPoints[i].y
 
-		@changed 'hitBox'
+		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	randomBonus: () ->
 		roulette = []
@@ -92,23 +116,35 @@ class Bonus extends ChangingObject
 		@state = @game.prefs.bonus.states[@state].next
 		@countdown = @game.prefs.bonus.states[@state].countdown
 
+		@flagNextUpdate('state')
+		@flagNextUpdate('countdown')
+
 	setState: (state) ->
 		if @game.prefs.bonus.states[state]?
+			@flagNextUpdate('state') unless @state is state
+			@flagNextUpdate('countdown')
+
 			@state = state
 			@countdown = @game.prefs.bonus.states[state].countdown
 
 	move: () ->
-		@pos.x += @vel.x
-		@pos.y += @vel.y
+		# Update position and hitbox according to velocity.
+		unless @vel.x is 0
+			@pos.x += @vel.x
+			@flagNextUpdate('pos.x')
+
+		unless @vel.y is 0
+			@pos.y += @vel.y
+			@flagNextUpdate('pos.y')
+
+		# Warp around the borders.
 		@warp()
 
-		if @vel.x isnt 0 or @vel.y isnt 0
-			@changed 'pos'
-			@updateHitbox()
-			console.info @vel.x
+		@updateHitbox() unless @vel.x is 0 and @vel.y is 0
 
-		@vel.x *= @game.prefs.ship.frictionDecay
-		@vel.y *= @game.prefs.ship.frictionDecay
+		# Decay velocity.
+		@vel.x *= @game.prefs.bonus.frictionDecay
+		@vel.y *= @game.prefs.bonus.frictionDecay
 
 	warp: () ->
 		s = @game.prefs.mapSize
@@ -120,13 +156,16 @@ class Bonus extends ChangingObject
 	update: () ->
 		if @countdown?
 			@countdown -= @game.prefs.timestep
+			# DELETEME: client should only receive the countdown once.
+			@flagNextUpdate('countdown')
+
 			@nextState() if @countdown <= 0
 
 		switch @state
-
 			# The bonus is of no more use.
 			when 'dead'
 				@serverDelete = yes
+				@flagNextUpdate('serverDelete')
 
 	use: () ->
 		@effect.use()
