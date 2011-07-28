@@ -5,18 +5,23 @@ class Rope extends ChangingObject
 	constructor: (@game, @id, @object1, @object2, @ropeLength, @segments) ->
 		super()
 
-		@watchChanges 'type'
-		@watchChanges 'color'
-		@watchChanges 'serverDelete'
-		@watchChanges 'chain'
-		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
+		# Send these properties to new players.
+		@flagFullUpdate('type')
+		@flagFullUpdate('color')
+		@flagFullUpdate('serverDelete')
+		@flagFullUpdate('chain')
+		@flagFullUpdate('boundingRadius')
+		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'rope'
+		@flagNextUpdate('type')
 
+		# Take color of holder, holdee, or default black.
 		@color = @object1.color or @object2.color or 'black'
 
-		@chain = []
+		@flagNextUpdate('color')
+
+		# Nodes are the rope articulation points.
 		@nodes = []
 		@segmentLength = @ropeLength / @segments
 		for i in [0...@segments-1]
@@ -27,6 +32,12 @@ class Rope extends ChangingObject
 				vel:
 					x: 0
 					y: 0
+
+		# The chain is used to send the position of each node to clients.
+		# FIXME: empty on first frame!
+		@chain = []
+
+		@flagNextUpdate('chain')
 
 		# We need a position to insert in the grid. The object is
 		# inserted in all cells overlapping with its bounding box.
@@ -39,6 +50,9 @@ class Rope extends ChangingObject
 			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
 				Math.max(a,b)
 
+		@flagNextUpdate('boundingRadius')
+
+		# Construct hit box with all node points.
 		@hitBox =
 			type: 'segments'
 			points: []
@@ -48,12 +62,13 @@ class Rope extends ChangingObject
 				x: n.pos.x
 				y: n.pos.y
 
-		true
+		@flagNextUpdate('hitBox')
 
 	tangible: () ->
 		yes
 
 	move: () ->
+		# Don't move if no object is attached.
 		return if not @object1? or not @object2?
 
 		# Update each node position.
@@ -77,7 +92,10 @@ class Rope extends ChangingObject
 			cur = rope[i]
 			next = rope[i+1]
 			next.vel = {x:0,y:0}
+
+			# XXX: is this really necessary?
 			ghost = @game.closestGhost(cur.pos, next.pos)
+
 			dist = utils.distance(cur.pos.x, cur.pos.y, ghost.x, ghost.y)
 			if dist > @segmentLength
 				ratio = (dist - @segmentLength) / dist
@@ -91,13 +109,19 @@ class Rope extends ChangingObject
 		@chain = []
 		for n in rope
 			@chain.push n.pos
-		@changed 'chain'
+		@flagNextUpdate('chain')
 
 		# Update bounding box and hitbox
 		@pos =
 			x: @nodes[0].pos.x
 			y: @nodes[0].pos.y
 
+		# Should contain all the nodes.
+		#
+		# FIXME: max distance from first point is erroneous. I think
+		# rope length is a correct upper bound. We should also center
+		# the bounding box, since it's currently useless if the first
+		# point is also the farthest to the right and down.
 		@boundingRadius = (@nodes.map (a) =>
 			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
 				Math.max(a,b)
@@ -105,15 +129,22 @@ class Rope extends ChangingObject
 		for i in [0...@nodes.length]
 			@hitBox.points[i].x = @nodes[i].pos.x
 			@hitBox.points[i].y = @nodes[i].pos.y
-		@changed 'hitBox'
+		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	update: () ->
+		# XXX: Nothing to update?
+		# move() is mainly for updating position and hit box for collisions,
+		# update() is for everything else.
+		#
+		# Construction of the rope and chain objects should move here.
 
 	detach: () ->
 		@object1 = null
 		@object2 = null
 
 		@serverDelete = yes
+
+		@flagNextUpdate('serverDelete')
 
 		@game.events.push
 			type: 'rope exploded'
