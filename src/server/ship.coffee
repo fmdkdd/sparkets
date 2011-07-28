@@ -9,7 +9,7 @@ class Ship extends ChangingObject
 
 		# Send these properties to new players.
 		@flagFullUpdate('type')
-		@flagFullUpdate('name')
+		@flagFullUpdate('name') if name?
 		@flagFullUpdate('color')
 		@flagFullUpdate('state')
 		@flagFullUpdate('pos')
