@@ -145,14 +145,14 @@ exports.prettyNumber = (str) ->
 
 # Merge `obj' properties with `target' existing properties.
 # No new property is created in `target'.
-exports.safeDeepMerge = (target, obj) ->
-	for name, val of obj
+exports.safeDeepMerge = (source, target) ->
+	for name, val of source
 		# Only merge existing properties.
 		if target[name]?
 
 			# Recurse for object properties.
 			if typeof target[name] is 'object' and not Array.isArray(target[name])
-				exports.safeDeepMerge(target[name], obj[name])
+				exports.safeDeepMerge(source[name], target[name])
 			else
 				target[name] = val
 

@@ -9,7 +9,7 @@ BonusEMP = require './bonusEMP'
 class ServerPreferences
 	constructor: (prefs = {}) ->
 		# Override default values by those provided in `prefs'.
-		utils.safeDeepMerge(@, prefs)
+		utils.safeDeepMerge(prefs, @)
 
 	# HTTP server port.
 	port: 12345
@@ -31,7 +31,7 @@ class ServerPreferences
 class GamePreferences
 	constructor: (prefs = {}) ->
 		# Override default values by those provided in `prefs'.
-		utils.safeDeepMerge(@, prefs)
+		utils.safeDeepMerge(prefs, @)
 
 	# Debug-related preferences.
 	debug:
