@@ -230,8 +230,7 @@ exports.collisions =
 				bullet.state is 'active' and
 				(ship.id isnt bullet.owner.id or
 				bullet.points.length > 3)
-			ship.explode()
-			ship.killingAccel = bullet.accel
+			ship.explode(bullet)
 			bullet.explode()
 
 			if bullet.owner isnt ship
@@ -280,8 +279,7 @@ exports.collisions =
 
 		# Ship1 has boost, not ship2.
 		if boost1 and not boost2
-			ship2.explode()
-			ship2.killingAccel = ship1.vel
+			ship2.explode(ship1)
 
 			ship1.addStat('kills', 1)
 			ship1.addStat('boost kills', 1)
@@ -290,8 +288,7 @@ exports.collisions =
 
 		# Ship2 has boost, not ship1.
 		else if boost2 and not boost1
-			ship1.explode()
-			ship1.killingAccel = ship2.vel
+			ship1.explode(ship2)
 
 			ship2.addStat('kills', 1)
 			ship2.addStat('boost kills', 1)
@@ -300,10 +297,8 @@ exports.collisions =
 
 		# Both or none have boost.
 		else
-			ship1.explode()
-			ship1.killingAccel = ship2.vel
-			ship2.explode()
-			ship2.killingAccel = ship1.vel
+			ship1.explode(ship2)
+			ship2.explode(ship1)
 
 			ship1.addStat('ship crashes', 1)
 			ship2.addStat('ship crashes', 1)
@@ -455,7 +450,7 @@ exports.collisions =
 
 	'tracker-ship' : (tracker, ship) ->
 		tracker.explode()
-		ship.explode()
+		ship.explode(tracker)
 
 		if tracker.owner isnt ship
 			tracker.owner.addStat('kills', 1)
