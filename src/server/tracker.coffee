@@ -5,20 +5,26 @@ class Tracker extends ChangingObject
 	constructor: (@id, @game, @owner, @target, dropPos) ->
 		super()
 
-		@watchChanges 'type'
-		@watchChanges 'pos'
-		@watchChanges 'dir'
-		@watchChanges 'state'
-		@watchChanges 'color'
-		@watchChanges 'serverDelete'
-		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
+		# Send these properties to new players.
+		@flagFullUpdate('type')
+		@flagFullUpdate('color')
+		@flagFullUpdate('state')
+		@flagFullUpdate('pos')
+		@flagFullUpdate('dir')
+		@flagFullUpdate('serverDelete')
+		@flagFullUpdate('boundingRadius')
+		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'tracker'
+		@flagNextUpdate('type')
 
+		# Initial state.
 		@state = 'deploying'
 		@countdown = @game.prefs.tracker.states[@state].countdown
 
+		@flagNextUpdate('state')
+
+		# Initial position, velocity and direction.
 		@pos =
 			x: dropPos.x
 			y: dropPos.y
@@ -27,14 +33,28 @@ class Tracker extends ChangingObject
 			y: 0
 		@dir = @owner.dir
 
+		@flagNextUpdate('pos')
+		@flagNextUpdate('dir')
+
+		# Same color as owner ship.
 		@color = @owner.color
 
+		@flagNextUpdate('color')
+
+		# Bounding radius is static.
 		@boundingRadius = @game.prefs.tracker.boundingRadius
+
+		@flagNextUpdate('boundingRadius')
+
+		# Hit box is a circle with fixed radius following centered on
+		# the tracker.
 		@hitBox =
 			type: 'circle'
 			radius: @boundingRadius
 			x: @pos.x
 			y: @pos.y
+
+		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 	tangible: () ->
 		@state isnt 'dead'
@@ -43,8 +63,12 @@ class Tracker extends ChangingObject
 		@state = @game.prefs.tracker.states[@state].next
 		@countdown = @game.prefs.tracker.states[@state].countdown
 
+		@flagNextUpdate('state')
+
 	setState: (state) ->
 		if @game.prefs.tracker.states[state]?
+			@flagNextUpdate('state') unless @state is state
+
 			@state = state
 			@countdown = @game.prefs.tracker.states[state].countdown
 
@@ -69,7 +93,6 @@ class Tracker extends ChangingObject
 
 		# Face the target.
 		if @target?
-
 			# Compute the angle to the target.
 			targetPos = @game.closestGhost(@pos, @target.pos)
 			dx = @pos.x - targetPos.x
@@ -79,23 +102,29 @@ class Tracker extends ChangingObject
 			# Increment the tracker angle to align it with the direction to the target.
 			@dir += angleToTarget / @game.prefs.tracker.turnSpeed
 
+		# Go forward.
 		@vel.x += Math.cos(@dir) * @game.prefs.tracker.speed
 		@vel.y += Math.sin(@dir) * @game.prefs.tracker.speed
 		@pos.x += @vel.x
 		@pos.y += @vel.y
 
+		@flagNextUpdate('pos')
+		@flagNextUpdate('dir')
+
 		# Warp the tracker around the map.
 		@warp()
 
+		# Decay velocity.
 		@vel.x *= @game.prefs.tracker.frictionDecay
 		@vel.y *= @game.prefs.tracker.frictionDecay
-
-		@changed 'pos'
 
 		# Update hitbox
 		@hitBox.x = @pos.x
 		@hitBox.y = @pos.y
-		@changed 'hitBox'
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('hitBox.x')
+			@flagNextUpdate('hitBox.y')
 
 	warp: () ->
 		s = @game.prefs.mapSize
@@ -107,6 +136,8 @@ class Tracker extends ChangingObject
 	explode: () ->
 		@setState 'dead'
 		@serverDelete = yes
+
+		@flagNextUpdate('serverDelete')
 
 		@game.events.push
 			type: 'tracker exploded'
