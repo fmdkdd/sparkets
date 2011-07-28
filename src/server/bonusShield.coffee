@@ -7,11 +7,13 @@ class BonusShield
 		@used = no
 
 	use: () ->
+		# DELETEME
 		return if @used is yes
 
 		@game.newGameObject (id) =>
 			@game.shields[id] = new Shield(id, @game, @bonus.holder)
 
+		# DELETEME
 		@used = yes
 
 		# Clean up.

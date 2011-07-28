@@ -4,22 +4,23 @@ class BonusStealth
 	constructor: (@game, @bonus) ->
 
 	use: () ->
-		@bonus.holder.invisible = yes
+		ship = @bonus.holder
 
-		@bonus.holder.on 'fired', (ship, bullet) ->
-			ship.invisible = no
+		ship.invisible = yes
+		ship.flagNextUpdate('invisible')
 
-		# Cancel all pending bonus timeouts.
-		for type, timeout of @bonus.holder.bonusTimeout
-			clearTimeout(timeout)
+		# Cancel the previous pending stealth cancel.
+		if ship.bonusTimeout.bonusStealth?
+			clearTimeout(ship.bonusTimeout.bonusStealth)
 
-		holderId = @bonus.holder.id
-		@bonus.holder.bonusTimeout[exports.type] = setTimeout(( () =>
-			@game.gameObjects[holderId]?.invisible = no ),
+		ship.bonusTimeout.bonusStealth = setTimeout(( () =>
+			if @game.gameObjects[ship.id]?.invisible
+				@game.gameObjects[ship.id]?.flagNextUpdate('invisible')
+			@game.gameObjects[ship.id]?.invisible = no ),
 			@game.prefs.bonus.stealth.duration)
 
 		# Clean up.
-		@bonus.holder.releaseBonus()
+		ship.releaseBonus()
 		@bonus.setState 'dead'
 
 exports.BonusStealth = BonusStealth

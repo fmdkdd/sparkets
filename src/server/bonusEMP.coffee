@@ -42,16 +42,18 @@ class BonusEMP
 						# Cancel stealth and add drunk effect to ships.
 						when 'ship'
 							cellObj.object.invisible = no
+							cellObj.object.flagNextUpdate('invisible')
 							@drunkEffect(cellObj.object)
 
 		@game.events.push
 			type: 'EMP released'
-			id: @bonus.holder.id
+			id: holder.id
 
+		# DELETEME
 		@used = yes
 
 		# Clean up.
-		@bonus.holder.releaseBonus()
+		holder.releaseBonus()
 		@bonus.setState 'dead'
 
 exports.BonusEMP = BonusEMP

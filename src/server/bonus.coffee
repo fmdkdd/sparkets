@@ -9,6 +9,7 @@ class Bonus extends ChangingObject
 	constructor: (@id, @game, bonusType) ->
 		super()
 
+		# Send these properties to new players.
 		@flagFullUpdate('type')
 		@flagFullUpdate('state')
 		@flagFullUpdate('countdown')
