@@ -2,7 +2,10 @@ class Planet
 	constructor: (@client, planet) ->
 		@serverUpdate(planet)
 
-		@sprite = @client.spriteManager.get('planet', 2*@boundingRadius, 2*@boundingRadius)
+		# Create the sprite.
+		s = 2*@boundingRadius
+		color = window.utils.color @color
+		@sprite = @client.spriteManager.get('planet', s, s, color)
 
 	serverUpdate: (planet) ->
 		for field, val of planet

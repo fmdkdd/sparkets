@@ -2,7 +2,10 @@ class Mine
 	constructor: (@client, mine) ->
 		@serverUpdate(mine)
 
-		@sprite = @client.spriteManager.get('mine', 10*Math.sqrt(2), 10*Math.sqrt(2))
+		# Create the sprite.
+		s = 10*Math.sqrt(2) # The size of the sprite equals the diagonal of the squares forming the sprite.
+		color = window.utils.color @color
+		@sprite = @client.spriteManager.get('mine', s, s, color)
 
 	initSprite: () ->
 

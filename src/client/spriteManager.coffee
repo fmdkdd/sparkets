@@ -2,16 +2,16 @@ class SpriteManager
 	constructor: () ->
 
 	get: (type, w, h, color) ->
-		@[type](w, h)
+		@[type](w, h, color)
 
-	'planet': (w, h) ->
+	'planet': (w, h, color) ->
 		sprite = document.createElement('canvas')
 		sprite.width = Math.ceil(w)
 		sprite.height = Math.ceil(h)
 
 		r = sprite.width/2
 		ctxt = sprite.getContext('2d')
-		ctxt.strokeStyle = 'black'
+		ctxt.strokeStyle = color
 		ctxt.fillStyle = 'white'
 		ctxt.lineWidth = 8
 		ctxt.beginPath()
@@ -21,14 +21,14 @@ class SpriteManager
 
 		return sprite
 
-	'mine': (w, h) ->
+	'mine': (w, h, color) ->
 		sprite = document.createElement('canvas')
 		sprite.width = Math.ceil(w)
 		sprite.height = Math.ceil(h)
 
 		r = w / Math.sqrt(2) / 2
 		ctxt = sprite.getContext('2d')
-		ctxt.fillStyle = 'black'
+		ctxt.fillStyle = color
 		ctxt.save()
 		ctxt.translate(sprite.width/2, sprite.height/2)
 		ctxt.fillRect(-r, -r, r*2, r*2)
