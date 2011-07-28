@@ -2,22 +2,7 @@ class Planet
 	constructor: (@client, planet) ->
 		@serverUpdate(planet)
 
-		@initSprite()
-
-	initSprite: () ->
-		r = @boundingRadius
-
-		@sprite = document.createElement('canvas')
-		@sprite.width = @sprite.height = Math.ceil(2*r)
-
-		c = @sprite.getContext('2d')
-		c.strokeStyle = utils.color @color
-		c.fillStyle = 'white'
-		c.lineWidth = 8
-		c.beginPath()
-		c.arc(r, r, r - c.lineWidth/2, 0, 2*Math.PI, false)
-		c.stroke()
-		c.fill()
+		@sprite = @client.spriteManager.get('planet', 2*@boundingRadius, 2*@boundingRadius)
 
 	serverUpdate: (planet) ->
 		for field, val of planet

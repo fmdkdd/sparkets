@@ -4,6 +4,23 @@ class SpriteManager
 	get: (type, w, h, color) ->
 		@[type](w, h)
 
+	'planet': (w, h) ->
+		sprite = document.createElement('canvas')
+		sprite.width = Math.ceil(w)
+		sprite.height = Math.ceil(h)
+
+		r = sprite.width/2
+		ctxt = sprite.getContext('2d')
+		ctxt.strokeStyle = 'black'
+		ctxt.fillStyle = 'white'
+		ctxt.lineWidth = 8
+		ctxt.beginPath()
+		ctxt.arc(r, r, r - ctxt.lineWidth/2, 0, 2*Math.PI, false)
+		ctxt.stroke()
+		ctxt.fill()
+
+		return sprite
+
 	'mine': (w, h) ->
 		sprite = document.createElement('canvas')
 		sprite.width = Math.ceil(w)
