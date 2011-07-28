@@ -2,6 +2,11 @@ class Shield
 	constructor: (@client, shield) ->
 		@serverUpdate(shield)
 
+		# Create the sprite.
+		s = 2*@boundingRadius
+		color = window.utils.color @color
+		@sprite = @client.spriteManager.get('shield', s, s, color)
+
 	serverUpdate: (shield) ->
 		for field, val of shield
 			this[field] = val
@@ -21,9 +26,10 @@ class Shield
 		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	draw: (ctxt) ->
-		ctxt.lineWidth = 3
-		ctxt.strokeStyle = utils.color @color
-		utils.strokeCircle(ctxt, @pos.x, @pos.y, @boundingRadius)
+		ctxt.save()
+		ctxt.translate(@pos.x, @pos.y)
+		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
+		ctxt.restore()
 
 # Exports
 window.Shield = Shield

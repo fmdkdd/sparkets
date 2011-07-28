@@ -354,7 +354,7 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 1000
+				weight: 1
 			tracker:
 				class: BonusTracker
 				weight: 1
@@ -366,7 +366,7 @@ class GamePreferences
 				weight: 1
 			shield:
 				class: BonusShield
-				weight: 1
+				weight: 1000
 			drunk:
 				class: BonusDrunk
 				weight: 0

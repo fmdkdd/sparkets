@@ -59,5 +59,17 @@ class SpriteManager
 
 		return sprite
 
+	'shield': (sprite, w, h, color) ->
+		ctxt = sprite.getContext('2d')
+		ctxt.lineWidth = 3
+		ctxt.strokeStyle = color
+
+		r = sprite.width/2
+		ctxt.beginPath()
+		ctxt.arc(r, r, r - ctxt.lineWidth/2, 0, 2*Math.PI, false)
+		ctxt.stroke()
+
+		return sprite
+
 # Exports
 window.SpriteManager = SpriteManager
