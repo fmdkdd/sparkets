@@ -131,8 +131,8 @@ class GameServer
 			player.createShip(id) )
 
 		# Send game objects.
-		objs = @watched(@gameObjects)
-		if not utils.isEmptyObject objs
+		objs = @fullUpdate(@gameObjects)
+		unless utils.isEmptyObject(objs)
 			socket.emit 'objects update',
 				objects: objs
 
@@ -141,15 +141,14 @@ class GameServer
 			playerId: id
 			shipId: player.ship.id
 
-	watched: (objs) ->
-		allWatched = {}
+	fullUpdate: (objs) ->
+		allFull = {}
 
 		for id, obj of objs
-			objWatched = obj.watched()
-			if not utils.isEmptyObject objWatched
-				allWatched[id] = objWatched
+			objFull = obj.fullUpdateObj()
+			allFull[id] = objFull unless utils.isEmptyObject(objFull)
 
-		return allWatched
+		return allFull
 
 	broadcastMessage: (socket, data) ->
 		@sockets.emit 'player says',
@@ -335,26 +334,28 @@ class GameServer
 							collisions.test(o1.hitBox, o2.hitBox, obj1.offset, obj2.offset)
 						collisions.handle(o1, o2)
 
-		# Record all changes.
-		allChanges = {}
+		# Construct the client update along the way.
+		clientUpdate = {}
 		for id, obj of objects
 			# Let object update
 			obj.update()
 
-			# Register its changes
-			changes = obj.changes()
-			if not utils.isEmptyObject changes
-				allChanges[id] = changes
-				obj.resetChanges()
+			# Grab the properties flagged for next update transmission.
+			transmit = obj.nextUpdateObj()
+			unless utils.isEmptyObject(transmit)
+				clientUpdate[id] = transmit
+				obj.unflagAllNextUpdate()
 
-			# Delete if requested
-			@deleteObject id if obj.serverDelete
+			# Delete object if requested.
+			@deleteObject(id) if obj.serverDelete
 
-		# Broadcast changes to all players.
-		if not utils.isEmptyObject allChanges
+		# Broadcast update and events to all players.
+		unless utils.isEmptyObject(clientUpdate)
 			@sockets.emit 'objects update',
-				objects: allChanges
+				objects: clientUpdate
 				events: @events
+
+		# Empty events
 		@events = []
 
 	collidesWithPlanet: (obj) ->
