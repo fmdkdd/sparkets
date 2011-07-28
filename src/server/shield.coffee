@@ -5,26 +5,33 @@ class Shield extends ChangingObject
 	constructor: (@id, @game, @owner) ->
 		super()
 
-		@watchChanges 'type'
-		@watchChanges 'pos'
-		@watchChanges 'color'
-		@watchChanges 'serverDelete'
-		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
+		# Send these properties to new players.
+		@flagFullUpdate('type')
+		@flagFullUpdate('color')
+		@flagFullUpdate('serverDelete')
+		@flagFullUpdate('boundingRadius')
+		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'shield'
+		@flagNextUpdate('type')
 
-		@pos =
-			x: owner.pos.x
-			y: owner.pos.y
+		# Follow owner ship.
+		@pos = @owner.pos
 
+		# Same color as owner ship.
 		@color = owner.color
 		@force = @game.prefs.shield.radius
 
+		# Initial state.
 		@state = 'active'
 		@countdown = @game.prefs.shield.states[@state].countdown
 
+		# FIXME: uncouple bounding radius and force, same as planet.
 		@boundingRadius = @force
+
+		@flagNextUpdate('boundingRadius')
+
+		# Hit box is a circle of fixed radius centered on the ship.
 		@hitBox =
 			type: 'circle'
 			radius: @force
@@ -34,21 +41,20 @@ class Shield extends ChangingObject
 	cancel: () ->
 		@serverDelete = yes
 
+		@flagNextUpdate('serverDelete')
+
 	tangible: () ->
 		yes
 
 	move: () ->
 		return if @state isnt 'active'
 
-		# Follow owner
-		@pos.x = @owner.pos.x
-		@pos.y = @owner.pos.y
-		@changed 'pos'
+		# Our position is the ship's, no need to update it.
 
-		# Update hitbox
+		# Hit box update is still necessary.
 		@hitBox.x = @pos.x
 		@hitBox.y = @pos.y
-		@changed 'hitBox'
+		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 	nextState: () ->
 		@state = @game.prefs.shield.states[@state].next
@@ -69,5 +75,7 @@ class Shield extends ChangingObject
 
 			when 'dead'
 				@serverDelete = yes
+
+				@flagNextUpdate('serverDelete')
 
 exports.Shield = Shield
