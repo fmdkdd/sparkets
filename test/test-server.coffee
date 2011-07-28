@@ -156,15 +156,25 @@ exports.suite.addBatch
 					ok = waiter(@callback)
 					ws.on 'message', (packet) ->
 						ok(packet) if packet.type is 'event'
+
 				return
 
-			'should return the game list': (err, packet) ->
+			'should broadcast the game list': (err, packet) ->
 				assert.isNull(err)
-				assert.strictEqual(packet.name, 'game list')
+				if packet.name is 'game list'
+					assert.ok(packet.name)
+
+			'should return `game created` event': (err, packet) ->
+				assert.isNull(err)
+				if packet.name is 'game created'
+					assert.ok(packet.name)
 
 			'should create requested game': (err, packet) ->
 				assert.isNull(err)
-				assert.include(packet.args[0], 'bar')
+				if packet.name is 'game list'
+					assert.include(packet.args[0], 'bar')
+				if packet.name is 'game created'
+					assert.deepEqual(packet.args[0], {id: 'bar'})
 
 		teardown: () ->
 			@server.stop()
