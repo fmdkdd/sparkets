@@ -127,6 +127,10 @@ exports.randomColor = () ->
 exports.capitalize = (word) ->
 	word[0].toUpperCase() + word.substring(1)
 
+# Lowerize (???) first letter of word.
+exports.lowerize = (word) ->
+	word[0].toLowerCase() + word.substring(1)
+
 # Inexact floats have to be pretty-printed. The plan is to
 # convert them using toFixed(2) for 2 decimal places.
 # Integers stay as they are.

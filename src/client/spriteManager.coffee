@@ -31,7 +31,7 @@ class SpriteManager
 		ctxt.lineJoin = 'round'
 		ctxt.lineWidth = 4
 
-		# Coordinates when the width equals 20.
+		# The default width equals 20.
 		points = [[-10,-7], [10,0], [-10,7], [-6,0]]
 		scale = (sprite.width-ctxt.lineWidth) / 20
 
@@ -42,6 +42,17 @@ class SpriteManager
 			ctxt.lineTo(p[0], p[1])
 		ctxt.closePath()
 		ctxt.stroke()
+
+		return sprite
+
+	'bonus': (sprite, w, h, color) ->
+		ctxt = sprite.getContext('2d')
+		ctxt.strokeStyle = color
+		ctxt.fillStyle = 'white'
+		ctxt.lineWidth = 3
+
+		ctxt.fillRect(0, 0, sprite.width, sprite.height)
+		ctxt.strokeRect(0, 0, sprite.width, sprite.height)
 
 		return sprite
 
@@ -61,8 +72,8 @@ class SpriteManager
 
 	'shield': (sprite, w, h, color) ->
 		ctxt = sprite.getContext('2d')
-		ctxt.lineWidth = 3
 		ctxt.strokeStyle = color
+		ctxt.lineWidth = 3
 
 		r = sprite.width/2
 		ctxt.beginPath()
@@ -70,6 +81,49 @@ class SpriteManager
 		ctxt.stroke()
 
 		return sprite
+
+	'bonusTracker': (sprite, w, h, color) ->
+		sprite
+
+	'bonusMine': (sprite, w, h, color) ->
+		@['mine'](sprite, w, h, color)
+
+	'bonusBoost': (sprite, w, h, color) ->
+		ctxt = sprite.getContext('2d')
+		ctxt.fillStyle = color
+		ctxt.lineWidth = 3
+
+		# The default width equals 20.
+		scale = sprite.width / 20
+
+		ctxt.save()
+		ctxt.scale(scale, scale)
+		for i in [0..1]
+			ctxt.translate(i*10, 0)
+			ctxt.beginPath()
+			ctxt.moveTo(0, 2)
+			ctxt.lineTo(5, 10)
+			ctxt.lineTo(0, 18)
+			ctxt.lineTo(5, 18)
+			ctxt.lineTo(10, 10)
+			ctxt.lineTo(5, 2)
+			ctxt.closePath()
+			ctxt.fill()
+		ctxt.restore()
+
+		return sprite
+
+	'bonusShield': (sprite, w, h, color) ->
+		# Shield.
+		sprite
+
+	'bonusStealth': (sprite, w, h, color) ->
+		# Eye?
+		sprite
+
+	'bonusEMP': (sprite, w, h, color) ->
+		# Some king of lightning.
+		sprite
 
 # Exports
 window.SpriteManager = SpriteManager

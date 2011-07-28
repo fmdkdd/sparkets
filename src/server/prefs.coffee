@@ -366,7 +366,7 @@ class GamePreferences
 				weight: 1
 			shield:
 				class: BonusShield
-				weight: 1000
+				weight: 1
 			drunk:
 				class: BonusDrunk
 				weight: 0

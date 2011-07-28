@@ -2,6 +2,15 @@ class Bonus
 	constructor: (@client, bonus) ->
 		@serverUpdate(bonus)
 
+		# Create the bonus sprite.
+		s = 2*@boundingRadius
+		color = window.utils.color @color
+		@sprite = @client.spriteManager.get('bonus', s, s, color)
+
+		# Create the logo sprite and paste it on the bonus sprite.
+		@logo = @client.spriteManager.get(@bonusType, 13, 13, color)
+		@sprite.getContext('2d').drawImage(@logo, @sprite.width/2 - @logo.width/2, @sprite.height/2 - @logo.height/2)
+
 	serverUpdate: (bonus) ->
 		for field, val of bonus
 			@[field] = val
@@ -37,18 +46,9 @@ class Bonus
 		ctxt.restore()
 
 	drawModel: (ctxt, col) ->
+		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 
-		ctxt.strokeStyle = col
-		ctxt.fillStyle = 'white'
-		ctxt.lineWidth = 2
-
-		s = 20
-
-		ctxt.fillRect(-s/2, -s/2, s, s)
-		ctxt.strokeRect(-s/2, -s/2, s, s)
-
-		ctxt.fillStyle = col
-
+		###
 		switch @bonusType
 			when 'bonusMine'
 				ctxt.save()
@@ -92,6 +92,7 @@ class Bonus
 				ctxt.bezierCurveTo( 0,  0,  7, -7,  7,  0)
 				ctxt.stroke()
 				ctxt.restore()
+		###
 
 	drawMineIcon: (ctxt) ->
 		r = 5
