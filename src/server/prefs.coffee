@@ -366,9 +366,6 @@ class GamePreferences
 			shield:
 				class: BonusShield
 				weight: 0
-			drunk:
-				class: BonusDrunk
-				weight: 0
 			stealth:
 				class: BonusStealth
 				weight: 0
