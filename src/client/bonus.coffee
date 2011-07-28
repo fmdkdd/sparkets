@@ -73,15 +73,6 @@ class Bonus
 				ctxt.arc(0, 0, 7, 0, 2*Math.PI, false)
 				ctxt.stroke()
 
-			when 'bonusDrunk'
-				ctxt.save()
-				ctxt.translate(0, -3)
-				@drawArrow(ctxt)
-				ctxt.translate(0, 6)
-				ctxt.rotate(Math.PI)
-				@drawArrow(ctxt)
-				ctxt.restore()
-
 			when 'bonusEMP'
 				ctxt.save()
 				ctxt.beginPath()
@@ -100,15 +91,6 @@ class Bonus
 		ctxt.fillRect(-r, -r, r2, r2)
 		ctxt.rotate(Math.PI/4)
 		ctxt.fillRect(-r, -r, r2, r2)
-
-	drawArrow: (ctxt) ->
-		ctxt.beginPath()
-		ctxt.moveTo(5, 0)
-		ctxt.lineTo(-6, 0)
-		ctxt.lineTo(-3, -3)
-		ctxt.moveTo(-6, 0)
-		ctxt.lineTo(-3, 3)
-		ctxt.stroke()
 
 	drawBoostIcon: (ctxt) ->
 		ctxt.beginPath()

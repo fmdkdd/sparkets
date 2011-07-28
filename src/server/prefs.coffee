@@ -1,6 +1,5 @@
 utils = require '../utils'
 BonusBoost = require './bonusBoost'
-BonusDrunk = require './bonusDrunk'
 BonusShield = require './bonusShield'
 BonusMine = require './bonusMine'
 BonusTracker = require './bonusTracker'
@@ -367,9 +366,6 @@ class GamePreferences
 			shield:
 				class: BonusShield
 				weight: 1
-			drunk:
-				class: BonusDrunk
-				weight: 0
 			stealth:
 				class: BonusStealth
 				weight: 1
@@ -400,9 +396,8 @@ class GamePreferences
 		EMP:
 			effectRadius: 500
 
-		drunk:
-			# Duration of drunk effect in ms.
-			duration: 3000
+			# Duration of drunk side effect in ms.
+			drunkDuration: 3000
 
 		stealth:
 			# Duration of invisiblity in ms.

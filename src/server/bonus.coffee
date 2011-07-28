@@ -3,7 +3,6 @@ ChangingObject = require('./changingObject').ChangingObject
 BonusMine = require './bonusMine'
 BonusBoost = require './bonusBoost'
 BonusShield = require './bonusShield'
-BonusDrunk = require './bonusDrunk'
 Rope = require('./rope').Rope
 
 class Bonus extends ChangingObject

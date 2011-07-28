@@ -14,7 +14,7 @@ class BonusEMP
 
 		ship.bonusTimeout.bonusDrunk = setTimeout(( () =>
 			@game.gameObjects[ship.id].inverseTurn = no ),
-			@game.prefs.bonus.drunk.duration)
+			@game.prefs.bonus.EMP.drunkDuration)
 
 	use: () ->
 		holder = @bonus.holder
