@@ -85,8 +85,6 @@ class Ship extends ChangingObject
 
 		@spawn() if @game.collidesWithPlanet(@)
 
-		@emit('spawned', @)
-
 		@debug "spawned"
 
 	turnLeft: () ->
@@ -214,8 +212,6 @@ class Ship extends ChangingObject
 		# Update hitbox
 		@updateHitbox()
 
-		@emit('moved', @)
-
 	warp: () ->
 		s = @game.prefs.mapSize
 		@pos.x = if @pos.x < 0 then s else @pos.x
@@ -265,7 +261,8 @@ class Ship extends ChangingObject
 
 		@addStat('bullets fired', 1)
 
-		@emit('fired', @, bullet)
+		# Firing cancels invisibility.
+		@invisible = no
 
 	explode : () ->
 		return if @isExploding() or @isDead()
@@ -278,12 +275,14 @@ class Ship extends ChangingObject
 			type: 'ship exploded'
 			id: @id
 
+		# XXX: why do we keep the exploding state? It was useful when
+		# the explosion was managed by the server. Now we just the send
+		# the exploded event and forget the ship on the server.
+
 		# If spawned, skip alive state.
 		@setState 'exploding'
 
 		@debug "exploded"
-
-		@emit('exploded', @)
 
 		# Notify that the velocity should be transmitted as we need it on
 		# the client side to compute an appropriate explosion effect.
@@ -302,9 +301,5 @@ class Ship extends ChangingObject
 	info: (msg) -> @log('info', msg)
 	debug: (msg) -> @log('debug', msg)
 	ddebug: (msg) -> @log('ship', msg)
-
-
-EventEmitter = require('events').EventEmitter
-utils.include(Ship, EventEmitter.prototype)
 
 exports.Ship = Ship

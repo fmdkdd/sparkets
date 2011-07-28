@@ -67,60 +67,24 @@ exports.suite.addBatch
 			game = new MockGame()
 			ship = new Ship(0, game, 0)
 
-			ship.on 'spawned', waiter(@callback)
 			ship.spawn()
-			return
+			return ship
 
-		'should send `spawned` event': (err, ship) ->
+		'should move to `spawned` state': (err, ship) ->
 			assert.isNull(err)
 			assert.isObject(ship)
-			assert.strictEqual(ship.type, 'ship')
-
-	'ship moving':
-		topic: () ->
-			game = new MockGame()
-			ship = new Ship(0, game, 0)
-
-			ship.on 'moved', waiter(@callback)
-			ship.move()
-			return
-
-		'should send `moved` event': (err, ship) ->
-			assert.isNull(err)
-			assert.isObject(ship)
-			assert.strictEqual(ship.type, 'ship')
-
-	'ship firing':
-		topic: () ->
-			game = new MockGame()
-			ship = new Ship(0, game, 0)
-
-			ship.on 'fired', waiter(@callback)
-			ship.spawn()
-			ship.nextState()
-			ship.fire()
-			return
-
-		'should send `fired` event': (err, ship, bullet) ->
-			assert.isNull(err)
-
-			assert.isObject(ship)
-			assert.strictEqual(ship.type, 'ship')
-
-			assert.isObject(bullet)
-			assert.strictEqual(bullet.type, 'bullet')
+			assert.strictEqual(ship.state, 'spawned')
 
 	'ship exploding':
 		topic: () ->
 			game = new MockGame()
 			ship = new Ship(0, game, 0)
 
-			ship.on 'exploded', waiter(@callback)
 			ship.spawn()
 			ship.explode()
-			return
+			return ship
 
-		'should send `exploded` event': (err, ship) ->
+		'should move to `exploding` state': (err, ship) ->
 			assert.isNull(err)
 			assert.isObject(ship)
-			assert.strictEqual(ship.type, 'ship')
+			assert.strictEqual(ship.state, 'exploding')
