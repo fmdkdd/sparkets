@@ -42,7 +42,7 @@ class Bullet extends ChangingObject
 
 		@state = 'active'
 
-		# Same color as owner ship's.
+		# Same color as owner ship.
 		@color = @owner.color
 
 		@flagNextUpdate('color')

@@ -5,33 +5,46 @@ class Mine extends ChangingObject
 	constructor: (@id, @game, @owner, @pos) ->
 		super()
 
-		@watchChanges 'type'
-		@watchChanges 'pos'
-		@watchChanges 'state'
-		@watchChanges 'color'
-		@watchChanges 'serverDelete'
-		@watchChanges 'boundingRadius'
-		@watchChanges 'hitBox' if @game.prefs.debug.sendHitBoxes
+		# Send these properties to new players.
+		@flagFullUpdate('type')
+		@flagFullUpdate('pos')
+		@flagFullUpdate('state')
+		@flagFullUpdate('color')
+		@flagFullUpdate('serverDelete')
+		@flagFullUpdate('boundingRadius')
+		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'mine'
+		@flagNextUpdate('type')
 
+		# Initial state.
 		@state = 'inactive'
 		@countdown = @game.prefs.mine.states[@state].countdown
 
+		@flagNextUpdate('state')
+
+		# Static position.
 		@pos =
 			x: pos.x
 			y: pos.y
 
-		@color = @owner.color
+		@flagNextUpdate('pos')
 
-		@explosionRadius = @game.prefs.mine.explosionRadius
-
+		# Hit box is a circle with static position and varying radius.
 		@boundingRadius = 5
 		@hitBox =
 			type: 'circle'
 			radius: @boundingRadius
 			x: @pos.x
 			y: @pos.y
+
+		@flagNextUpdate('boundingRadius')
+		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+
+		# Same color as owner ship.
+		@color = @owner.color
+
+		@flagNextUpdate('color')
 
 	tangible: () ->
 		@state is 'active' or @state is 'exploding'
@@ -40,12 +53,17 @@ class Mine extends ChangingObject
 		@state = @game.prefs.mine.states[@state].next
 		@countdown = @game.prefs.mine.states[@state].countdown
 
+		@flagNextUpdate('state')
+
 	setState: (state) ->
 		if @game.prefs.mine.states[state]?
+			@flagNextUpdate('state') unless @state is state
+
 			@state = state
 			@countdown = @game.prefs.mine.states[state].countdown
 
 	move: () ->
+		# Not moving!
 
 	update: () ->
 		if @countdown?
@@ -53,24 +71,30 @@ class Mine extends ChangingObject
 			@nextState() if @countdown <= 0
 
 		switch @state
-
 			# The mine is active.
 			when 'active'
 				@boundingRadius += @game.prefs.mine.waveSpeed
 				if @boundingRadius >= @game.prefs.mine.maxDetectionRadius
 					@boundingRadius = @game.prefs.mine.minDetectionRadius
 
+				@flagNextUpdate('boundingRadius')
+
 			# The mine is exploding.
 			when 'exploding'
-				@boundingRadius = @explosionRadius
+				@boundingRadius = @game.prefs.mine.explosionRadius
+
+				@flagNextUpdate('boundingRadius')
 
 			# The explosion is over.
 			when 'dead'
 				@serverDelete = yes
 
-		# Update hitBox radius
+				@flagNextUpdate('serverDelete')
+
+		# Update hit box radius.
 		@hitBox.radius = @boundingRadius
-		@changed 'hitBox'
+
+		@flagNextUpdate('hitBox.radius') if @game.prefs.debug.sendHitBoxes
 
 	explode: () ->
 		@setState 'exploding'
