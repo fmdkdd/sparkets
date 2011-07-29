@@ -289,7 +289,14 @@ class SpriteManager
 			ctxt.save()
 			ctxt.scale(scalex, scaley)
 			ctxt.strokeRect(0, 0, 75, 75)
-			ctxt.fillRect(0, 75, 75, 25)
+			ctxt.beginPath()
+			ctxt.moveTo(0, 75)
+			ctxt.lineTo(0, 90)
+			ctxt.quadraticCurveTo(0, 100, 10, 100)
+			ctxt.lineTo(65, 100)
+			ctxt.quadraticCurveTo(75, 100, 75, 90)
+			ctxt.lineTo(75, 75)
+			ctxt.fill()
 			ctxt.restore()
 
 			return sprite

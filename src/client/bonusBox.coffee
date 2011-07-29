@@ -3,20 +3,20 @@ class BonusBox
 		
 		@states =
 			'none':
-				color: 'lightgrey'
+				color: 'grey'
 				next: 'rare'
 			'rare' :
-				color: 'red'
+				color: 'rgb(238,213,13)'
 				next: 'regular'
 			'regular' :
-				color: 'orange'
+				color: 'rgb(240,115,15)'
 				next: 'plenty'
 			'plenty' :
-				color : 'yellow'
+				color : 'rgb(243,52,14)'
 				next: 'none'
 
 		# Build.
-		@canvas = $('<canvas class="bonusBox" width="75" height="100"></canvas>').appendTo(@container)
+		@canvas = $('<canvas class="bonusBox" width="75" height="100"></canvas><span>&nbsp</span>').appendTo(@container)
 		@ctxt = @canvas[0].getContext('2d')
 
 		# Paste the bonus sprite onto the canvas.
@@ -41,6 +41,7 @@ class BonusBox
 
 		# Draw current state name.
 		@ctxt.fillStyle = 'white'
+		@ctxt.font = '1.2em Arial'
 		@ctxt.fillText(@state, 75/2-@ctxt.measureText(@state).width/2, 90)
 		
 
