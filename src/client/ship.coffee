@@ -166,8 +166,10 @@ class Ship
 
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
 
-	flashEffect: () ->
-		@client.effects.push new FlashEffect(@client, @pos, 300, @color, 600)
+	EMPEffect: () ->
+		# Immobile flash effect.
+		staticPos = {x: @pos.x, y: @pos.y}
+		@client.effects.push new FlashEffect(@client, staticPos, 300, @color, 600)
 
 # Exports
 window.Ship = Ship
