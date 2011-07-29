@@ -4,6 +4,11 @@ class Tracker
 
 		@color = @client.gameObjects[@ownerId].color
 
+		# Create the sprite.
+		s = 2*@boundingRadius + 7
+		color = window.utils.color @color
+		@sprite = @client.spriteManager.get('tracker', s, s, color)
+
 	serverUpdate: (tracker) ->
 		utils.deepMerge(tracker, @)
 
@@ -25,39 +30,7 @@ class Tracker
 		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	drawModel: (ctxt, col) ->
-		hr = @boundingRadius
-
-		ctxt.fillStyle = col
-		ctxt.strokeStyle = col
-		ctxt.lineWidth = 2
-
-		ctxt.save()
-		ctxt.scale(0.7, 1)
-
-		# Draw the hull.
-		ctxt.beginPath()
-		ctxt.moveTo(-hr, hr)
-		ctxt.lineTo(-hr, -hr)
-		ctxt.quadraticCurveTo(2*hr, -hr, 3*hr, 0)
-		ctxt.quadraticCurveTo(2*hr, hr, -hr, hr)
-		ctxt.stroke()
-
-		# Draw the central wing.
-		ctxt.fillRect(-hr, -1, 1.5*hr, 2)
-
-		# Draw the lateral wings.
-		drawWing = (ctxt, hr) ->
-			ctxt.beginPath()
-			ctxt.moveTo(-hr, -hr)
-			ctxt.lineTo(-hr, -2*hr)
-			ctxt.lineTo(hr, -hr)
-			ctxt.fill()
-
-		drawWing(ctxt, hr)
-		ctxt.scale(1, -1)
-		drawWing(ctxt, hr)
-
-		ctxt.restore()
+		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x,

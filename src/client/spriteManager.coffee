@@ -107,6 +107,46 @@ class SpriteManager
 
 			return sprite
 
+		'tracker': (sprite, w, h) ->
+			ctxt = sprite.getContext('2d')	
+			ctxt.fillStyle = 'black'
+			ctxt.strokeStyle = 'black'
+			ctxt.lineWidth = 3
+
+			# The default size is 50.
+			scalex = sprite.width / 50
+			scaley = sprite.height / 50
+
+			ctxt.save()
+			ctxt.scale(scalex, scaley)
+
+			# Hull.
+			ctxt.beginPath()
+			ctxt.moveTo(0, 10)
+			ctxt.lineTo(0, 40)
+			ctxt.quadraticCurveTo(50, 40, 50, 25)
+			ctxt.quadraticCurveTo(50, 10, 0, 10)
+			ctxt.stroke()
+			
+			# Wings.
+			ctxt.beginPath()
+			ctxt.moveTo(0, 0)
+			ctxt.lineTo(0, 10)
+			ctxt.lineTo(25, 10)
+			ctxt.fill()
+
+			ctxt.beginPath()
+			ctxt.moveTo(0, 50)
+			ctxt.lineTo(0, 40)
+			ctxt.lineTo(25, 40)
+			ctxt.fill()
+
+			ctxt.fillRect(0, 23, 25, 4)
+			
+			ctxt.restore()
+
+			return sprite
+
 		'shield': (sprite, w, h) ->
 			ctxt = sprite.getContext('2d')
 			ctxt.strokeStyle = 'black'
@@ -139,7 +179,7 @@ class SpriteManager
 			for i in [0..3]
 				ctxt.beginPath()
 				ctxt.moveTo(10, 0)
-				ctxt.lineTo(5, 0)
+				ctxt.lineTo(4, 0)
 				ctxt.stroke()
 				ctxt.rotate(Math.PI/2)
 
