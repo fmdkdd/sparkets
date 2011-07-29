@@ -97,14 +97,16 @@ class Client
 		processedKeys = [32, 37, 38, 39, 65, 90]
 
 		# Send key presses and key releases to the server.
-		$(document).keydown ({keyCode}) =>
-			return unless keyCode in processedKeys
+		$(document).keydown (event) =>
+			return unless event.keyCode in processedKeys
 
-			if not @keys[keyCode]? or @keys[keyCode] is off
-				@keys[keyCode] = on
+			event.preventDefault()
+
+			if not @keys[event.keyCode]? or @keys[event.keyCode] is off
+				@keys[event.keyCode] = on
 				@socket.emit 'key down',
 					playerId: @playerId
-					key: keyCode
+					key: event.keyCode
 
 		$(document).keyup ({keyCode}) =>
 			return unless keyCode in processedKeys
