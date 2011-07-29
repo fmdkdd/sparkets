@@ -83,6 +83,13 @@
 		The team which kills the most preys wins.
 		A ship can only be killed by a member of its hunter team.
 		
+*** Death race
+	 All ships spawn at the start line, first to finish wins.
+	 The map is tailored for the race, with planets on either side (or
+	 asteroids fields), and some obstacles on it.
+	 Bullets are disabled, as are ship collisions (maybe bump into
+	 obstacles and ships).
+	 Boosts are mandatory.
 
 ** Statistics
 *** Session statistics
