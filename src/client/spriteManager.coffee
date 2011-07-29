@@ -192,8 +192,29 @@ class SpriteManager
 			return sprite
 
 		'bonusStealth': (sprite, w, h) ->
-			# Eye?
-			sprite
+			ctxt = sprite.getContext('2d')
+			ctxt.fillStyle = 'black'
+
+			# The default width equals 20.
+			scale = sprite.width / 20
+
+			ctxt.save()
+			ctxt.scale(scale, scale)
+			ctxt.beginPath()
+			ctxt.moveTo(0, 10)
+			ctxt.quadraticCurveTo(10, -5, 20, 10)
+			ctxt.quadraticCurveTo(10, 25, 0, 10)
+			ctxt.fill()
+
+			ctxt.globalCompositeOperation = 'copy'
+			ctxt.fillStyle = 'rgba(0,0,0,0)'
+			ctxt.beginPath()
+			ctxt.arc(10, 10, 4, 0, 2*Math.PI, false)
+			ctxt.fill()
+			ctxt.globalCompositeOperation = 'source-over'
+			ctxt.restore()
+
+			return sprite
 
 		'bonusEMP': (sprite, w, h) ->
 			ctxt = sprite.getContext('2d')
