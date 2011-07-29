@@ -71,10 +71,6 @@ class Bonus extends ChangingObject
 
 		@flagNextUpdate('color')
 
-		# DELETE: this is useless.
-		@holder = null
-		@rope = null
-
 		# Randomly choose bonus type if unspecified.
 		if bonusType?
 			bonusClass = @game.prefs.bonus.bonusType[bonusType].class

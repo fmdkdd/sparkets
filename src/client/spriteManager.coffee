@@ -14,7 +14,7 @@ class SpriteManager
 			sprite.width = Math.ceil(w)
 			sprite.height = Math.ceil(h)
 
-			# Fill the sprite with a pattern. 
+			# Fill the sprite with a pattern.
 			sprite = @draw[type](sprite, w, h)
 
 			# Store it in the cache.

@@ -17,9 +17,6 @@ class BonusBoost
 			type: 'ship boosted'
 			id: ship.id
 
-		# DELETEME
-		@used = yes
-
 		# Cancel the previous pending boost decay.
 		if ship.bonusTimeout.bonusBoost?
 			clearTimeout(ship.bonusTimeout.bonusBoost)

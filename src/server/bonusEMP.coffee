@@ -49,9 +49,6 @@ class BonusEMP
 			type: 'EMP released'
 			id: holder.id
 
-		# DELETEME
-		@used = yes
-
 		# Clean up.
 		holder.releaseBonus()
 		@bonus.setState 'dead'
