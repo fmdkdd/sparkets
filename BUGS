@@ -10,7 +10,8 @@
   map. My guess is that the chain is not modified to handle the
   wrapping like it is for bullets. 
 
-* Menu disappear in Chrome.
+* DONE Menu disappear in Chrome.
+  CLOSED: [2011-07-29 Fri 14:45]
   Open/close the menu enough times, and it will never reappear.
 
   Pressing Escape, M, and clicking do change the menu class (from
