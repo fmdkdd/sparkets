@@ -146,6 +146,13 @@ class Ship extends ChangingObject
 
 		@ddebug "thrust"
 
+	stopEngine: () ->
+		@thrust = false
+
+		@flagNextUpdate('thrust')
+
+		@ddebug "stop engine"
+
 	chargeFire: () ->
 		return if @cannonHeat > 0 or @state isnt 'alive'
 

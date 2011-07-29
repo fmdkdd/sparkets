@@ -23,7 +23,7 @@ class Player
 				@ship.fire()
 
 		if key is 38
-			@ship.thrust = false
+			@ship.stopEngine()
 
 		# Z : use bonus.
 		if key is 90
