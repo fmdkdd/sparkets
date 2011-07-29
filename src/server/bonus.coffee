@@ -138,20 +138,13 @@ class Bonus extends ChangingObject
 			@flagNextUpdate('pos.y')
 
 		# Warp around the borders.
-		@warp()
+		utils.warp(@pos, @game.prefs.mapSize)
 
 		@updateHitbox() unless @vel.x is 0 and @vel.y is 0
 
 		# Decay velocity.
 		@vel.x *= @game.prefs.bonus.frictionDecay
 		@vel.y *= @game.prefs.bonus.frictionDecay
-
-	warp: () ->
-		s = @game.prefs.mapSize
-		@pos.x = if @pos.x < 0 then s else @pos.x
-		@pos.x = if @pos.x > s then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then s else @pos.y
-		@pos.y = if @pos.y > s then 0 else @pos.y
 
 	update: () ->
 		if @countdown?

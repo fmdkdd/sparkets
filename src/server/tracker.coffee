@@ -111,7 +111,7 @@ class Tracker extends ChangingObject
 		@flagNextUpdate('dir')
 
 		# Warp the tracker around the map.
-		@warp()
+		utils.warp(@pos, @game.prefs.mapSize)
 
 		# Decay velocity.
 		@vel.x *= @game.prefs.tracker.frictionDecay
@@ -124,13 +124,6 @@ class Tracker extends ChangingObject
 		if @game.prefs.debug.sendHitBoxes
 			@flagNextUpdate('hitBox.x')
 			@flagNextUpdate('hitBox.y')
-
-	warp: () ->
-		s = @game.prefs.mapSize
-		@pos.x = if @pos.x < 0 then s else @pos.x
-		@pos.x = if @pos.x > s then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then s else @pos.y
-		@pos.y = if @pos.y > s then 0 else @pos.y
 
 	explode: () ->
 		@setState 'dead'

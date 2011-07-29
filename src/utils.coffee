@@ -95,6 +95,11 @@ exports.mod = (x, n) ->
 		x%n
 	else exports.mod(x+n, n)
 
+exports.warp = (pos, n) ->
+   pos.x = exports.mod(pos.x, n)
+   pos.y = exports.mod(pos.y, n)
+   return pos
+
 # Normalize angle between -Pi and +Pi.
 exports.relativeAngle = (a) ->
 	a = exports.mod(a, 2*Math.PI)

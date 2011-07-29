@@ -247,7 +247,7 @@ class Ship extends ChangingObject
 		@pos.y += ay
 
 		# Warp the ship around the map.
-		@warp()
+		utils.warp(@pos, @game.prefs.mapSize)
 
 		@vel.x *= @game.prefs.ship.frictionDecay
 		@vel.y *= @game.prefs.ship.frictionDecay
@@ -257,13 +257,6 @@ class Ship extends ChangingObject
 		@flagNextUpdate('pos.y') if Math.abs(@pos.y-y) > .02
 
 		@updateHitbox()
-
-	warp: () ->
-		s = @game.prefs.mapSize
-		@pos.x = if @pos.x < 0 then s else @pos.x
-		@pos.x = if @pos.x > s then 0 else @pos.x
-		@pos.y = if @pos.y < 0 then s else @pos.y
-		@pos.y = if @pos.y > s then 0 else @pos.y
 
 	tangible: () ->
 		@state is 'spawned' or @state is 'alive'
