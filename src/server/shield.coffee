@@ -22,15 +22,12 @@ class Shield extends ChangingObject
 		# Follow owner ship.
 		@pos = @owner.pos
 
-		# Same color as owner ship.
-		@color = owner.color
-		@force = @game.prefs.shield.radius
-
 		# Initial state.
 		@state = 'active'
 		@countdown = @game.prefs.shield.states[@state].countdown
 
 		# FIXME: uncouple bounding radius and force, same as planet.
+		@force = @game.prefs.shield.radius
 		@boundingRadius = @force
 
 		@flagNextUpdate('boundingRadius')
@@ -58,7 +55,10 @@ class Shield extends ChangingObject
 		# Hit box update is still necessary.
 		@hitBox.x = @pos.x
 		@hitBox.y = @pos.y
-		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('hitBox.x')
+			@flagNextUpdate('hitBox.y')
 
 	nextState: () ->
 		@state = @game.prefs.shield.states[@state].next
