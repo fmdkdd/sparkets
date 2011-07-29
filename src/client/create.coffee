@@ -1,5 +1,7 @@
 $(document).ready () ->
 
+	window.spriteManager = new SpriteManager()
+
 	# Setup tabbed panels.	
 	$('#form li a').click (event) ->
 
@@ -36,6 +38,12 @@ $(document).ready () ->
 			'plenty': .5
 			'excessive': .7
 
+		'bonus weight':
+			'none': 0
+			'rare': 1
+			'regular': 5
+			'plenty': 10
+
 	# Fill the form.
 
 	entry = (container, label) ->
@@ -54,6 +62,15 @@ $(document).ready () ->
 	window.selectionBoxes.push new SelectionBox(entry('#panel2 > table', 'Planet density'),
 		'planet.density', Object.keys(window.presets['planet.density']), 1)
 
+	window.bonusBoxes = []
+	cell = $('#panel3 tr:nth-child(1) td:nth-child(2)')
+	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.mine.weight', 'bonusMine', 'none')
+	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.tracker.weight', 'bonusTracker', 'none')
+	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.boost.weight', 'bonusBoost', 'none')
+	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.shield.weight', 'bonusShield', 'none')
+	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.EMP.weight', 'bonusEMP', 'none')
+	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.stealth.weight', 'bonusStealth', 'none')
+
 	new Range(entry('#panel3 > table', 'Drop wait (ms)'),
 		'bonus.waitTime', 1000, 10000, 1000, 5000)
 	new Range(entry('#panel3 > table', 'Activation wait (ms)'),
@@ -62,18 +79,6 @@ $(document).ready () ->
 		'bonus.maxCount', 0, 20, 1, 10)
 	new Range(entry('#panel3 > table', 'Mines in bonus'),
 		'bonus.mine.mineCount', 1, 10, 1, 2)
-	new Range(entry('#panel3 > table', 'Mines weight'),
-		'bonus.bonusType.mine.weight', 0, 10, 1, 3)
-	new Range(entry('#panel3 > table', 'Boost weight'),
-		'bonus.bonusType.boost.weight', 0, 10, 1, 3)
-	new Range(entry('#panel3 >  table', 'Shield weight'),
-		'bonus.bonusType.shield.weight', 0, 10, 1, 3)
-	new Range(entry('#panel3 > table', 'Stealth weight'),
-		'bonus.bonusType.stealth.weight', 0, 10, 1, 3)
-	new Range(entry('#panel3 > table', 'Tracker weight'),
-		'bonus.bonusType.tracker.weight', 0, 10, 1, 3)
-	new Range(entry('#panel3 > table', 'EMP weight'),
-		'bonus.bonusType.EMP.weight', 0, 10, 1, 3)
 
 	new Range(entry('#panel4 > table', 'Speed'),
 		'ship.speed', 0.1, 1, 0.1, 0.3)
@@ -148,5 +153,8 @@ $(document).ready () ->
 
 		for sb in @selectionBoxes
 			insert(prefs, sb.name, window.presets[sb.name][sb.value()])
+
+		for bb in @bonusBoxes
+			insert(prefs, bb.name, window.presets['bonus weight'][bb.state])
 
 		return prefs

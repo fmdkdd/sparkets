@@ -57,6 +57,7 @@
 
 #form .panel > table {
 		width: 100%;
+		border-spacing: 0em 1.618em;
 }
 
 #form .entry {
@@ -117,3 +118,14 @@ input[type="submit"]:disabled {
 #error {
 		color: red;
 }
+
+/**
+ * Bonus boxes.
+ */
+
+canvas.bonuxBox {
+		display: block;
+		margin: 100px;
+		padding: 100px;
+}
+

@@ -21,6 +21,7 @@ webFiles = {
 	'/selectionBox.css',
 	'/js/client/bonus.js',
 	'/js/client/boostEffect.js',
+	'/js/client/bonusBox.js',
 	'/js/client/bullet.js',
 	'/js/client/chat.js',
 	'/js/client/client.js',
