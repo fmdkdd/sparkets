@@ -319,9 +319,12 @@ class GameServer
 
 	updateObjects: (objects) ->
 		# Move all objects
-		@grid.cells = {}
 		for id, obj of objects
 			obj.move()
+
+		# Insert them into the grid for collisions.
+		@grid.cells = {}
+		for id, obj of objects
 			@placeObjectInGrid(obj) if obj.tangible()
 
 		# Check all collisions
