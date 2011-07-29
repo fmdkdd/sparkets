@@ -58,9 +58,17 @@ class Bonus
 			ry = Math.max -@client.canvasSize.h/2 + margin, dy
 			ry = Math.min @client.canvasSize.h/2 - margin, ry
 
+			# Scale the symbol with the inverse distance, but ensure a
+			# minimum scale of 0.5.
+			dist = Math.sqrt(dx*dx + dy*dy) - Math.sqrt(rx*rx + ry*ry)
+			halfMap = @client.mapSize/2
+			distRatio = (halfMap - dist) / halfMap
+			scale = Math.max(.5, distRatio)
+
 			# The radar is blinking.
 			if @countdown % 500 < 250
-				@drawRadarSymbol(ctxt, @client.canvasSize.w/2 + rx, @client.canvasSize.h/2 + ry)
+				@drawRadarSymbol(ctxt, @client.canvasSize.w/2 + rx,
+					@client.canvasSize.h/2 + ry, scale)
 
 		# Draw the X on the future bonus position if it lies within the screen.
 		else if @countdown % 500 < 250
@@ -71,10 +79,11 @@ class Bonus
 
 		return true
 
-	drawRadarSymbol: (ctxt, x, y) ->
+	drawRadarSymbol: (ctxt, x, y, scale = 1) ->
 		ctxt.save()
 		ctxt.fillStyle = utils.color @color
 		ctxt.translate(x, y)
+		ctxt.scale(scale, scale)
 		ctxt.rotate(Math.PI/4)
 		ctxt.fillRect(-4, -10, 8, 20)
 		ctxt.rotate(Math.PI/2)

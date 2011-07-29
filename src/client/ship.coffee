@@ -128,7 +128,12 @@ class Ship
 			ry = Math.max -@client.canvasSize.h/2 + margin, dy
 			ry = Math.min @client.canvasSize.h/2 - margin, ry
 
-			radius = 10
+			# Scale radius with the inverse distance, but ensure a
+			# minimum radius of 3.
+			dist = Math.sqrt(dx*dx + dy*dy) - Math.sqrt(rx*rx + ry*ry)
+			halfMap = @client.mapSize/2
+			distRatio = (halfMap - dist) / halfMap
+			radius = 3 + 10 * distRatio
 			alpha = 1
 
 			ctxt.fillStyle = utils.color(@color, alpha)
