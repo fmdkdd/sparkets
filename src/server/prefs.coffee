@@ -59,13 +59,10 @@ class GamePreferences
 				next: 'alive'
 				countdown: 1500
 			'alive':
-				next: 'exploding'
-				countdown: null
-			'exploding':
 				next: 'dead'
-				countdown: 1000
+				countdown: null
 			'dead':
-				next: 'alive'
+				next: 'spawned'
 				countdown: null
 
 		# Radius of hit circle.

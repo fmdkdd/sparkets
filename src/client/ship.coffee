@@ -43,7 +43,7 @@ class Ship
 		ctxt.stroke()
 
 	draw: (ctxt) ->
-		return if @state is 'exploding' or @state is 'dead'
+		return if @state is 'dead'
 
 		# Blink when the ship just spawned.
 		return if @state is 'spawned' and @client.now % 200 < 100
@@ -110,8 +110,7 @@ class Ship
 
 		# Draw the player's name.
 		if 	@name?  and @ isnt @client.localShip and
-				(@client.displayNames is on or
-				@client.localShip.state is 'exploding' or @client.localShip.state is 'dead')
+				(@client.displayNames or @client.localShip.state is 'dead')
 			ctxt.fillStyle = '#666'
 			ctxt.font = '15px sans'
 			ctxt.fillText(@name, @pos.x - ctxt.measureText(@name).width/2, @pos.y - 25)

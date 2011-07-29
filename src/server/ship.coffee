@@ -216,7 +216,7 @@ class Ship extends ChangingObject
 		return null
 
 	move: () ->
-		return if @state is 'exploding' or @state is 'dead'
+		return if @state is 'dead'
 
 		{x, y} = @pos
 
@@ -267,12 +267,6 @@ class Ship extends ChangingObject
 
 	tangible: () ->
 		@state is 'spawned' or @state is 'alive'
-
-	isDead: () ->
-		@state is 'dead'
-
-	isExploding: () ->
-		@state is 'exploding'
 
 	nextState: () ->
 		@state = @game.prefs.ship.states[@state].next
@@ -328,7 +322,7 @@ class Ship extends ChangingObject
 		@flagNextUpdate('invisible')
 
 	explode : (killer) ->
-		return if @isExploding() or @isDead()
+		return if @state is 'dead'
 
 		@releaseBonus() if @bonus?
 
@@ -338,12 +332,8 @@ class Ship extends ChangingObject
 			type: 'ship exploded'
 			id: @id
 
-		# XXX: why do we keep the exploding state? It was useful when
-		# the explosion was managed by the server. Now we just the send
-		# the exploded event and forget the ship on the server.
-
 		# If spawned, skip alive state.
-		@setState 'exploding'
+		@setState 'dead'
 
 		@debug "exploded"
 

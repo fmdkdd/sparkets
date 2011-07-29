@@ -22,13 +22,10 @@ class MockGame
 						next: 'alive'
 						countdown: 1500
 					'alive':
-						next: 'exploding'
-						countdown: null
-					'exploding':
 						next: 'dead'
-						countdown: 1000
+						countdown: null
 					'dead':
-						next: 'alive'
+						next: 'spawned'
 						countdown: null
 
 				boundingRadius: 9
@@ -84,7 +81,7 @@ exports.suite.addBatch
 			ship.explode()
 			return ship
 
-		'should move to `exploding` state': (err, ship) ->
+		'should move to `dead` state': (err, ship) ->
 			assert.isNull(err)
 			assert.isObject(ship)
-			assert.strictEqual(ship.state, 'exploding')
+			assert.strictEqual(ship.state, 'dead')
