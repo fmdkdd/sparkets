@@ -194,11 +194,14 @@ exports.gravityField = (pos, objects, source, force) ->
 
 	vx = vy = 0
 	for id, obj of objects
-		pull = gravity(source(obj), force(obj))
+		f = force(obj)
 
-		# Increase field vector.
-		vx += pull.x
-		vy += pull.y
+		unless f is 0
+			pull = gravity(source(obj), f)
+
+			# Increase field vector.
+			vx += pull.x
+			vy += pull.y
 
 	return {x: vx, y: vy}
 
