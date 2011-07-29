@@ -6,7 +6,7 @@ class Bullet extends ChangingObject
 
 		# Send these properties to new players.
 		@flagFullUpdate('type')
-		@flagFullUpdate('color')
+		@flagFullUpdate('ownerId')
 		@flagFullUpdate('lastPoints')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('boundingRadius')
@@ -14,6 +14,10 @@ class Bullet extends ChangingObject
 
 		@type = 'bullet'
 		@flagNextUpdate('type')
+
+		# Transmit owner id to clients.
+		@ownerId = @owner.id
+		@flagNextUpdate('ownerId')
 
 		# Compute initial position and velocity vector from position
 		# and direction of owner ship.
@@ -41,11 +45,6 @@ class Bullet extends ChangingObject
 				{x: @pos.x, y: @pos.y}]
 
 		@state = 'active'
-
-		# Same color as owner ship.
-		@color = @owner.color
-
-		@flagNextUpdate('color')
 
 	# Apply gravity from all planets, moons, and shields.
 	gravityVector: () ->

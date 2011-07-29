@@ -2,6 +2,8 @@ class Mine
 	constructor: (@client, mine) ->
 		@serverUpdate(mine)
 
+		@color = @client.gameObjects[@ownerId].color
+
 		# Create the sprite.
 		s = 10*Math.sqrt(2) # The size of the sprite equals the diagonal of the squares forming the sprite.
 		color = window.utils.color @color

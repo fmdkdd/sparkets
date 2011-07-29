@@ -4,6 +4,8 @@ class Bullet
 
 		@serverUpdate (bullet)
 
+		@color = @client.gameObjects[@ownerId].color
+
 	serverUpdate: (bullet) ->
 		utils.deepMerge(bullet, @)
 

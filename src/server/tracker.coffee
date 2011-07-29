@@ -7,7 +7,7 @@ class Tracker extends ChangingObject
 
 		# Send these properties to new players.
 		@flagFullUpdate('type')
-		@flagFullUpdate('color')
+		@flagFullUpdate('ownerId')
 		@flagFullUpdate('state')
 		@flagFullUpdate('pos')
 		@flagFullUpdate('dir')
@@ -17,6 +17,10 @@ class Tracker extends ChangingObject
 
 		@type = 'tracker'
 		@flagNextUpdate('type')
+
+		# Transmit owner id to clients.
+		@ownerId = @owner.id
+		@flagNextUpdate('ownerId')
 
 		# Initial state.
 		@state = 'deploying'
@@ -35,11 +39,6 @@ class Tracker extends ChangingObject
 
 		@flagNextUpdate('pos')
 		@flagNextUpdate('dir')
-
-		# Same color as owner ship.
-		@color = @owner.color
-
-		@flagNextUpdate('color')
 
 		# Bounding radius is static.
 		@boundingRadius = @game.prefs.tracker.boundingRadius

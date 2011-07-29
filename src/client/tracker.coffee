@@ -2,6 +2,8 @@ class Tracker
 	constructor: (@client, tracker) ->
 		@serverUpdate(tracker)
 
+		@color = @client.gameObjects[@ownerId].color
+
 	serverUpdate: (tracker) ->
 		utils.deepMerge(tracker, @)
 

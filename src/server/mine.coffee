@@ -7,15 +7,19 @@ class Mine extends ChangingObject
 
 		# Send these properties to new players.
 		@flagFullUpdate('type')
+		@flagFullUpdate('ownerId')
 		@flagFullUpdate('pos')
 		@flagFullUpdate('state')
-		@flagFullUpdate('color')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('boundingRadius')
 		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 		@type = 'mine'
 		@flagNextUpdate('type')
+
+		# Transmit owner id to clients.
+		@ownerId = @owner.id
+		@flagNextUpdate('ownerId')
 
 		# Initial state.
 		@state = 'inactive'
@@ -40,11 +44,6 @@ class Mine extends ChangingObject
 
 		@flagNextUpdate('boundingRadius')
 		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
-
-		# Same color as owner ship.
-		@color = @owner.color
-
-		@flagNextUpdate('color')
 
 	tangible: () ->
 		@state is 'active' or @state is 'exploding'
