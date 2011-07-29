@@ -95,6 +95,9 @@ class GamePreferences
 		# If true, planets gravity affect ships.
 		enableGravity: false
 
+		# Gravity attraction factor, if gravity is enabled.
+		gravityPull: 20
+
 		# Maximum distance from which another ship can be targeted.
 		maxTargetingDistance: 500
 
@@ -270,6 +273,9 @@ class GamePreferences
 
 		# Gravity push factor for ships.
 		shipPush: -200
+
+		# Distance at which ships are affected by the gravity push.
+		shipAffectDistance: 40
 
 		states:
 			'active':

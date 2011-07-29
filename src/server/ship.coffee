@@ -215,43 +215,43 @@ class Ship extends ChangingObject
 
 		return null
 
+	# Apply gravity from all planets, moons, and shields.
+	gravityVector: () ->
+		filter = (obj) =>
+			# Only care for shields near enough, and ignore own shield.
+			if obj.type is 'shield' and obj.owner isnt @
+				return utils.distance(obj.pos.x, obj.pos.y, @pos.x, @pos.y) <
+					@game.prefs.shield.shipAffectDistance
+
+			# Planet and moon gravity only if enabled.
+			if @game.prefs.ship.enableGravity
+				return obj.type in ['planet', 'moon']
+
+			return false
+
+		# Gravity factor for each object.
+		force = ({object: obj}) =>
+			if obj.type is 'shield'
+				@game.prefs.shield.shipPush * obj.force
+			else
+				@game.prefs.ship.gravityPull * obj.force
+
+		return @game.gravityFieldAround(@pos, filter, force)
+
 	move: () ->
 		return if @state is 'dead'
 
 		{x, y} = @pos
 
-		# With gravity enabled.
-		# DELETEME: not fun, and should use @game.gravityVector
-		if @game.prefs.ship.enableGravity
-			{x: ax, y: ay} = @vel
+		# Compute new position from velocity and gravity from planets
+		# and shields.
+		gvec = @gravityVector()
 
-			for id, p of @game.planets
-				d = (p.pos.x-x)*(p.pos.x-x) + (p.pos.y-y)*(p.pos.y-y)
-				d2 = 20 * p.force / (d * Math.sqrt(d))
-				ax -= (x-p.pos.x) * d2
-				ay -= (y-p.pos.y) * d2
+		@vel.x += gvec.x
+		@vel.y += gvec.y
 
-			@pos.x = x + ax
-			@pos.y = y + ay
-			@vel.x = ax
-			@vel.y = ay
-
-		# Without gravity.
-		else
-			@pos.x += @vel.x
-			@pos.y += @vel.y
-
-		# FIXME: should use @game.gravityVector
-		ax = ay = 0
-		g = @game.prefs.shield.shipPush
-		for id, s of @game.shields
-			if s.owner isnt @
-				d = (s.pos.x-x)*(s.pos.x-x) + (s.pos.y-y)*(s.pos.y-y)
-				d2 = g * s.force / (d * Math.sqrt(d))
-				ax += (s.pos.x-x) * d2
-				ay += (s.pos.y-y) * d2
-		@pos.x += ax
-		@pos.y += ay
+		@pos.x += @vel.x
+		@pos.y += @vel.y
 
 		# Warp the ship around the map.
 		utils.warp(@pos, @game.prefs.mapSize)
