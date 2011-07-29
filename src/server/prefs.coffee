@@ -353,10 +353,10 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 0
+				weight: 10000
 			tracker:
 				class: BonusTracker
-				weight: 10000
+				weight: 0
 			boost:
 				class: BonusBoost
 				weight: 0

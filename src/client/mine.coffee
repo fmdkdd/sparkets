@@ -38,7 +38,6 @@ class Mine
 
 	drawModel: (ctxt, col) ->
 		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
-		console.info @sprite.width
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
