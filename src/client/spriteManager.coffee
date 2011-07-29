@@ -55,7 +55,7 @@ class SpriteManager
 		'planet': (sprite, w, h) ->
 			ctxt = sprite.getContext('2d')
 			ctxt.strokeStyle = 'black'
-			ctxt.lineWidth = 8
+			ctxt.lineWidth = 4
 
 			r = sprite.width/2
 			ctxt.beginPath()
@@ -196,8 +196,25 @@ class SpriteManager
 			sprite
 
 		'bonusEMP': (sprite, w, h) ->
-			# Some king of lightning.
-			sprite
+			ctxt = sprite.getContext('2d')
+			ctxt.fillStyle = 'black'
+
+			# The default width equals 20.
+			scale = sprite.width / 20
+
+			ctxt.save()
+			ctxt.scale(scale, scale)
+			ctxt.beginPath()
+			ctxt.moveTo(15, 0)
+			ctxt.lineTo(0, 10)
+			ctxt.lineTo(12, 10)
+			ctxt.lineTo(0, 20)
+			ctxt.lineTo(20, 8)
+			ctxt.lineTo(8, 8)
+			ctxt.fill()
+			ctxt.restore()
+
+			return sprite
 
 # Exports
 window.SpriteManager = SpriteManager

@@ -8,8 +8,8 @@ class Bonus
 		@sprite = @client.spriteManager.get('bonus', s, s, color)
 
 		# Create the logo sprite and paste it on the bonus sprite.
-		#@logo = @client.spriteManager.get(@bonusType, 13, 13, color)
-		#@sprite.getContext('2d').drawImage(@logo, @sprite.width/2 - @logo.width/2, @sprite.height/2 - @logo.height/2)
+		@logo = @client.spriteManager.get(@bonusType, 13, 13, color)
+		@sprite.getContext('2d').drawImage(@logo, @sprite.width/2 - @logo.width/2, @sprite.height/2 - @logo.height/2)
 
 	serverUpdate: (bonus) ->
 		utils.deepMerge(bonus, @)
