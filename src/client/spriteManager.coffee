@@ -215,18 +215,28 @@ class SpriteManager
 			ctxt = sprite.getContext('2d')
 			ctxt.fillStyle = 'black'
 
-			# The default width equals 20.
-			scale = sprite.width / 20
+			# The default width equals 100.
+			scale = sprite.width / 100
 
 			ctxt.save()
 			ctxt.scale(scale, scale)
 			ctxt.beginPath()
 			ctxt.moveTo(0, 0)
-			ctxt.lineTo(0, 10)
-			ctxt.quadraticCurveTo(3, 20, 10, 20)
-			ctxt.quadraticCurveTo(17, 20, 20, 10)
-			ctxt.lineTo(20, 0)
+			ctxt.lineTo(10, 85)
+			ctxt.lineTo(50, 100)
+			ctxt.lineTo(90, 85)
+			ctxt.lineTo(100, 0)
 			ctxt.fill()
+
+			ctxt.globalCompositeOperation = 'copy'
+			ctxt.fillStyle = 'rgba(0,0,0,0)'
+			ctxt.beginPath()
+			ctxt.moveTo(50, 15)
+			ctxt.lineTo(50, 85)
+			ctxt.lineTo(80, 75)
+			ctxt.lineTo(85, 15)
+			ctxt.fill()		
+			ctxt.globalCompositeOperation = 'source-over'
 			ctxt.restore()
 
 			return sprite

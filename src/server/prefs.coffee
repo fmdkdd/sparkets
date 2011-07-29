@@ -362,13 +362,13 @@ class GamePreferences
 				weight: 1
 			boost:
 				class: BonusBoost
-				weight: 1000
+				weight: 1
 			EMP:
 				class: BonusEMP
 				weight: 1
 			shield:
 				class: BonusShield
-				weight: 1
+				weight: 1000
 			stealth:
 				class: BonusStealth
 				weight: 1
