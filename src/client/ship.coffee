@@ -56,10 +56,7 @@ class Ship
 			ctxt.save()
 			ctxt.translate(@pos.x, @pos.y)
 			ctxt.rotate(@dir)
-			if @invisible
-				@drawModel(ctxt, utils.color(@color, 0.5))
-			else
-				@drawModel(ctxt, utils.color(@color))
+			ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 			ctxt.restore()
 
 		# Color the hull depending on the cannon heat.
@@ -115,9 +112,6 @@ class Ship
 			ctxt.font = '15px sans'
 			ctxt.fillText(@name, @pos.x - ctxt.measureText(@name).width/2, @pos.y - 25)
 
-	drawModel: (ctxt, col) ->
-		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
-
 	drawOnRadar: (ctxt) ->
 		return if @invisible
 
@@ -145,7 +139,7 @@ class Ship
 		return true
 
 	boostEffect: () ->
-		@client.effects.push new BoostEffect(@client, @, 1, 3000)
+		@client.effects.push new BoostEffect(@client, @, 10, 3000)
 
 	explosionEffect: () ->
 		# Initial particle speed is derived from ship speed at death

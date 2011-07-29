@@ -21,7 +21,7 @@ class Mine
 		# Draw the body of the mine.
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
-		@drawModel(ctxt, utils.color(@color))
+		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 		ctxt.restore()
 
 		# Draw the sensor wave when the mine is active.
@@ -35,9 +35,6 @@ class Mine
 				ctxt.arc(0, 0, r, 0, 2*Math.PI, false)
 				ctxt.stroke()
 				ctxt.restore()
-
-	drawModel: (ctxt, col) ->
-		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'

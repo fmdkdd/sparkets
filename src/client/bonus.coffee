@@ -39,26 +39,8 @@ class Bonus
 
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
-		@drawModel(ctxt, utils.color(@color))
-		ctxt.restore()
-
-	drawModel: (ctxt, col) ->
 		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
-
-		###
-		switch @bonusType
-
-			when 'bonusEMP'
-				ctxt.save()
-				ctxt.beginPath()
-				ctxt.moveTo(7, 0)
-				ctxt.bezierCurveTo( 0,  0,  7,  7,  0,  7)
-				ctxt.bezierCurveTo( 0,  0, -7,  7, -7,  0)
-				ctxt.bezierCurveTo( 0,  0, -7, -7,  0, -7)
-				ctxt.bezierCurveTo( 0,  0,  7, -7,  7,  0)
-				ctxt.stroke()
-				ctxt.restore()
-		###
+		ctxt.restore()
 
 	drawOnRadar: (ctxt) ->
 		return if @state isnt 'incoming'

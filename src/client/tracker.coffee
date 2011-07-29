@@ -21,16 +21,13 @@ class Tracker
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
 		ctxt.rotate(@dir)
-		@drawModel(ctxt, utils.color(@color))
+		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 		ctxt.restore()
 
 	drawHitbox: (ctxt) ->
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1.1
 		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
-
-	drawModel: (ctxt, col) ->
-		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x,

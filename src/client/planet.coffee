@@ -28,12 +28,10 @@ class Planet
 		r = @boundingRadius
 
 		ctxt.save()
-		ctxt.translate(@pos.x - r, @pos.y - r)
-		@drawModel(ctxt, null)
+		ctxt.translate(@pos.x, @pos.y)
+		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 		ctxt.restore()
 
-	drawModel: (ctxt, col) ->
-		ctxt.drawImage(@sprite, 0, 0)
 
 # Exports
 window.Planet = Planet
