@@ -14,8 +14,9 @@ class BoostEffect
 
 		# Paste the object sprite and alter its opacity.
 		ctxt = sprite.getContext('2d')
-		ctxt.globalAlpha = 1 - (@shadows.length * (1/@length))
+		ctxt.globalAlpha = (1 - @shadows.length / @length) * 0.6
 		ctxt.drawImage(@object.sprite, 0, 0)
+		ctxt.globalAlpha = 1
 
 		return {sprite: sprite}
 
