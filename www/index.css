@@ -1,14 +1,19 @@
-* { margin: 0; padding: 0; }
-
-body {
-	 font-family: sans;
-	 font-size: 12pt;
-	 padding: 0.5em;
-
-	 color: hsl(0, 0%, 30%);
+* {
+		margin: 0;
+		padding: 0;
 }
 
-.footer { clear: both; }
+body {
+		font-family: sans;
+		font-size: 12pt;
+		padding: 0.5em;
+
+		color: hsl(0, 0%, 30%);
+}
+
+.footer {
+		clear: both;
+}
 
 h2 {
 		margin-bottom: 0.4em;
@@ -36,13 +41,13 @@ h2 {
  */
 
 #info {
-	 margin: 2em;
-	 padding: 1em;
-	 min-width: 600px;
+		margin: 2em;
+		padding: 1em;
+		min-width: 600px;
 
-	 background-color: lightgrey;
-	 border-radius: 0.9em;
-	 border: 0.4em solid hsl(-100, 10%, 45%);
+		background-color: lightgrey;
+		border-radius: 0.9em;
+		border: 0.4em solid hsl(-100, 10%, 45%);
 }
 
 #controls, #about {
@@ -64,7 +69,7 @@ h2 {
 }
 
 #goal {
-	 font-style: italic;
+		font-style: italic;
 }
 
 #about {
@@ -81,55 +86,57 @@ h2 {
 }
 
 /**
- * Forms.
+ * Game list.
  */
 
-#forms {
-	 margin: 2em;
-	 padding: 1em;
-	 min-width: 600px;
-
-	 background-color: lightgrey;
-	 border-radius: 0.9em;
-	 border: 0.4em solid hsl(-100, 10%, 45%);
+#joinDiv {
+		margin: 2em;
+		min-width: 600px;
 }
 
-#joinDiv {
-	 width: 90%;
+#joinDiv h2 {
+		float: left;
+}
+
+#joinDiv h3 a{
+		float: right;
+
+		color: grey;
+		text-decoration: none;
 }
 
 #gameListTable {
-	 width: 100%;
+		width: 100%;
 
-	 border-collapse: collapse;
+		border-collapse: collapse;
 
-	 background-color: white;
-	 border-width: 2px;
-	 border-style: solid;
-	 border-color: hsl(-150, 30%, 45%);
+		background-color: white;
+		border-width: 2px;
+		border-style: solid;
+		border-color: hsl(-150, 30%, 45%);
 }
 
 #gameListTable th {
-	 padding: .3em;
+		padding: 0.3em;
 
-	 text-align: left;
-	 font-weight: bold;
+		text-align: left;
+		font-weight: bold;
 }
 
 #gameList tr {
-	 background-color: white;
+		background-color: white;
 }
 
 #gameList tr:nth-child(odd) {
-	 background-color: hsl(-150, 30%, 92%);
+		background-color: hsl(-150, 30%, 92%);
 }
 
 #gameList td {
-	 padding: .3em;
+		padding: .3em;
 }
 
 #gameList a {
-	 text-decoration: none;
+		text-decoration: none;
 
-	 color: hsl(-150, 60%, 45%);
+		color: hsl(-150, 60%, 45%);
 }
