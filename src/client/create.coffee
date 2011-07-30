@@ -3,12 +3,12 @@ $(document).ready () ->
 	window.spriteManager = new SpriteManager()
 
 	# Setup tabbed panels.	
-	$('#form li a').click (event) ->
+	$('#form .tab').click (event) ->
 
 		# Do not follow the clicked link.
 		event.preventDefault()
 
-		oldTab = $('#form li a.selected')
+		oldTab = $('#form .tab.selected')
 		if oldTab.length > 0	
 
 			# Unselect the current tab.

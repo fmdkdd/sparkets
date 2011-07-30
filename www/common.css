@@ -12,6 +12,11 @@ body {
 		color: hsl(0, 0%, 30%);
 }
 
+a {
+		text-decoration: none;
+		color: hsl(194, 94%, 47%);
+}
+
 /**
  * Header.
  */

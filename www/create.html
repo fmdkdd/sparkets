@@ -20,42 +20,42 @@
 <body>
 
 	<header>
-		<h1>SPACEWAR!</h1>
+		<h1><a href="/">SPACEWAR!</a></h1>
 	</header>
 
-	<div id="form">
+	<section id="form">
 
 		<ul>
-			<li><a href="" id="tab1" class="tab selected">General</a></li>
-			<li><a href="" id="tab2" class="tab">Map</a></li>
-			<li><a href="" id="tab3" class="tab">Bonus</a></li>
-			<li><a href="" id="tab4" class="tab">Advanced settings</a></li>
+			<li id="tab1" class="tab selected"><a href="">General</a></li>
+			<li id="tab2" class="tab"><a href="">Map</a></li>
+			<li id="tab3" class="tab"><a href="">Bonus</a></li>
+			<li id="tab4" class="tab"><a href="">Advanced settings</a></li>
 		</ul>
 
-		<div id="panel1" class="panel">
+		<section id="panel1" class="panel">
 			<table>
 				<tr>
 					<td>Game name</td>
 					<td><input type="text" name="id" placeholder="Game name" value="aaa" required/></td>
 				</tr>
 			</table>
-		</div>
+		</section>
 		
-		<div id="panel2" class="panel">
+		<section id="panel2" class="panel">
 			<table></table>
-		</div>
+		</section>
 		
-		<div id="panel3" class="panel">
+		<section id="panel3" class="panel">
 			<table>
 				<tr><td>Enabled bonuses</td><td></td></tr>
 			</table>
-		</div>
+		</section>
 		
-		<div id="panel4" class="panel">
+		<section id="panel4" class="panel">
 			<table></table>
-		</div>
+		</section>
 
-	</div>
+	</section>
 
 	<input type="submit" value="Create"/>
 	<span id="error"/>

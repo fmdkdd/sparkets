@@ -1,48 +1,35 @@
-* {
-		margin: 0;
-		padding: 0;
-
-		font-family: sans;
-}
-
 /**
  * Tabbed panels.
  */
 
-#form {
+section#form {
 		width: 75%;
 		margin: 3em auto 0em auto;
 		padding: 0.6em;
 
-		background: -moz-linear-gradient(top, hsla(209, 18%, 52%, 1) 0%, hsla(209, 18%, 52%, 0.5) 100%);
-		background: -webkit-linear-gradient(top, hsla(209, 18%, 52%, 1) 0%, hsla(209, 18%, 52%, 0.5) 100%);
-		background: linear-gradient(top, hsla(209, 18%, 52%, 1) 0%, hsla(209, 18%, 52%, 0.5) 100%);
-		
-		border: 1px solid grey;
+		background: -webkit-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		box-shadow: 0 2px 3px hsl(0, 0%, 30%);
 }
 
-#form > ul > li {
+section#form ul {
+		margin-bottom: 0.3em;
+}
+
+section#form .tab {
 		display: inline;
-		list-style: none;
-}
-
-#form .tab {
 		padding: 0.3em;
-		padding-bottom: 0;
 
 		background: -moz-linear-gradient(top, lightgrey 0%, grey 95%);
 		background: -webkit-linear-gradient(top, lightgrey 0%, grey 95%);
 		background: linear-gradient(top, lightgrey 0%, grey 95%);
 
+		list-style: none;
+}
+section#form .tab a {
 		color: white;
-		text-decoration: none;
-		border: 1px solid grey;
-		border-bottom: none;
 }
 
-#form .tab.selected {
-		padding-bottom: 0.1em;
-
+section#form .tab.selected {
 		background: -moz-linear-gradient(top, lightgrey 0%, white 50%);
 		background: -webkit-linear-gradient(top, lightgrey 0%, white 50%);
 		background: linear-gradient(top, lightgrey 0%, white 50%);
@@ -50,40 +37,44 @@
 		color: hsl(209, 18%, 52%);
 }
 
-#form .tab {
+section#form .tab.selected a {
+		color: hsl(209, 18%, 52%);
 }
 
-#form .panel {
+/**
+ * Panels.
+ */
+
+section#form .panel {
 		display: none;
 		padding: 0.3em;
 
 		background-color: white;
-		border: 1px solid grey;
 }
 
-#form .panel#panel1 {
+section#form .panel#panel1 {
 		display: block;
 }
 
 /**
- * Form content.
+ * Panel content.
  */
 
-#form .panel > table {
+section#form .panel > table {
 		width: 100%;
 		border-spacing: 0em 1.618em;
 }
 
-#form .entry {
+section#form .entry {
 
 }
 
-#form .panel td:nth-child(1) {
+section#form .panel td:nth-child(1) {
 		width: 30%;
 		padding-left: 1em;
 }
 
-#form .panel td:nth-child(2) {
+section#form .panel td:nth-child(2) {
 
 }
 
@@ -133,12 +124,3 @@ input[type="submit"]:disabled {
 #error {
 		color: red;
 }
-
-/**
- * Bonus boxes.
- */
-
-canvas.bonuxBox {
-
-}
-
