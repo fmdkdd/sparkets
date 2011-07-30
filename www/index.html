@@ -13,54 +13,50 @@
   <script src="/js/client/selectionBox.js"></script>
   <script src="/js/utils.js"></script>
 </head>
-
 <body>
-	<div id="title">
-		<h1>Spacewar!</h1>
-		<h2>A frenetic multiplayer space shooter.</h2>
-		<div class="footer"></div>
-	</div>
 
-	<div id="info">
-		<div id="controls">
-			<h2>Player controls</h2>
-			<p><ul>
-					<li><span class="key">&uarr;</span> to thrust forward.</li>
-					<li><span class="key">&larr;</span> and <span class="key">&rarr;</span> to rotate the ship.</li>
-					<li><span class="key">A</span> to shoot (hold for stronger bullets).</li>
-					<li><span class="key">Z</span> to use bonus (can only hold one).</li>
-					<li><span class="key">M</span> to open the menu.</li>
-					<li><span class="key">T</span> to chat.</li>
-			</ul></p>
+	<header>
+		<h1>SPACEWAR!</h1>
+	</header>
+
+	<section id="info">
+
+		<section id="controls">
+			<h3>Game controls</h3>
+			<ul>
+				<li><span class="key">&uarr;</span> to thrust forward.</li>
+				<li><span class="key">&larr;</span> and <span class="key">&rarr;</span> to rotate the ship.</li>
+				<li><span class="key">A</span> to shoot (hold for stronger bullets).</li>
+				<li><span class="key">Z</span> to use bonus (can only hold one).</li>
+				<li><span class="key">M</span> to open the menu.</li>
+				<li><span class="key">T</span> to chat.</li>
+			</ul>
 			<br/>
 			<p><span id="goal">Shoot other ships before they shoot you.</span></p>
-		</div>
+		</section>
 
-		<div id="about">
-			<h2>How</h2>
-			<p><ul>
-					<li><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/">HTML5</a>
-						<a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html">canvas</a>
-						and <a href="http://dev.w3.org/html5/websockets/">WebSocket</a></li>
-					<li><a href="http://nodejs.org/">Node.js</a>
-						with <a href="http://socket.io">Socket.IO</a></li>
-					<li><a href="http://www.gnu.org/software/emacs/">GNU Emacs</a></li>
-					<li><a href="http://github.com/fmdkdd/spacewar">Source</a> hosted on <a href="http://github.com/">Github</a></li>
-			</ul></p>
+		<section id="about">
+			<h3>How</h3>
+			<ul>
+				<li><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/">HTML5</a>
+					<a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-canvas-element.html">canvas</a>
+					and <a href="http://dev.w3.org/html5/websockets/">WebSocket</a></li>
+				<li><a href="http://nodejs.org/">Node.js</a>
+					with <a href="http://socket.io">Socket.IO</a></li>
+				<li><a href="http://www.gnu.org/software/emacs/">GNU Emacs</a></li>
+				<li><a href="http://github.com/fmdkdd/spacewar">Source</a> hosted on <a href="http://github.com/">Github</a></li>
+			</ul>
 			<br/>
-			<h2>Who</h2>
-			<p><ul>
+			<h3>Who</h3>
+			<ul>
 					<li><a href="http://www.github.com/fmdkdd">fmdkdd</a></li>
 					<li><a href="http://www.github.com/merwaaan">merwaaan</a></li>
-			</ul></p>
-		</div>
+			</ul>
+		</section>
 
-		<div class="footer"></div>
-	</div>
+	</section>
 
-	<div id="joinDiv">
-		<h2>Join a game</h2>
-		<h3><a href="/create">or create your own...</a></h3>
+	<section id="join">
 		<table id="gameListTable">
 			<thead>
 				<th>Name</th>
@@ -70,6 +66,12 @@
 			<tbody id="gameList">
 			</tbody>
 		</table>
-	</div>
+	</section>
+
+	<br/><br/><a href="/create">Create a new game</a>
+
+	<footer>
+	</footer>
+
 </body>
 </html>

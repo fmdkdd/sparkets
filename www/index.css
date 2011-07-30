@@ -1,87 +1,76 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:700);
+
 * {
 		margin: 0;
 		padding: 0;
 }
 
 body {
-		font-family: sans;
-		font-size: 12pt;
-		padding: 0.5em;
+		min-width: 600px;
 
+		font-family: sans;
 		color: hsl(0, 0%, 30%);
 }
 
-.footer {
-		clear: both;
-}
-
-h2 {
-		margin-bottom: 0.4em;
-}
-
 /**
- * Title.
+ * Header.
  */
 
-#title h1 {
-		float: left;
-		margin-left: 1em;
+header {
+		padding: 0 6em;
+
+		background: -webkit-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		border-bottom: 4px solid hsl(194, 94%, 47%);
+		box-shadow: 0 2px 3px hsl(194, 94%, 30%);
 }
 
-#title h2 {
-		float: right;
-		margin-right: 2em;
-		padding-top: 0.9em;
-
-		font-size: medium;
+header h1 {
+		color: hsl(194, 94%, 47%);
+		text-shadow: 0 1px 1px hsl(194, 94%, 70%); 
+		font-family: 'Open Sans';
+		letter-spacing: 0.16em;
 }
 
 /**
  * Info.
  */
 
-#info {
-		margin: 2em;
+section#info {
+		margin: 2em 6em 0 6em;
 		padding: 1em;
-		min-width: 600px;
 
-		background-color: lightgrey;
-		border-radius: 0.9em;
-		border: 0.4em solid hsl(-100, 10%, 45%);
+		-webkit-column-count: 2;
+
+		background: -webkit-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		color: hsl(194, 94%, 30%);
+		border-bottom: 2px solid hsl(194, 94%, 47%);
+		box-shadow: 0 2px 3px hsl(194, 94%, 30%);
 }
 
-#controls, #about {
-		display: block;
-		width: 44%;
+section#info h3 {
+		color: hsl(194, 94%, 47%);
 }
 
-#controls ul, #about ul {
+section#info ul {
 		list-style-position: inside;
-		list-style-type: circle;
+		list-style-type: square;
 }
 
-#controls {
-		float: left;
+section#controls .key {
+		color: hsl(194, 94%, 47%);
 }
 
-#controls .key {
-		color: hsl(0, 0%, 20%);
-}
-
-#goal {
+section#controls #goal {
+		color: hsl(194, 94%, 47%);
 		font-style: italic;
 }
 
-#about {
-		float: right;
-}
-
-#about a {
+section#about a {
+		color: hsl(194, 94%, 47%);
 		text-decoration: none;
-		color: hsl(0, 0%, 20%);
 }
 
-#about a:hover {
+section#about a:hover {
 		text-decoration: underline;
 }
 
@@ -89,54 +78,39 @@ h2 {
  * Game list.
  */
 
-#joinDiv {
-		margin: 2em;
-		min-width: 600px;
+section#join {
+		margin: 2em 6em 0 6em;
 }
 
-#joinDiv h2 {
-		float: left;
-}
-
-#joinDiv h3 a{
-		float: right;
-
-		color: grey;
-		text-decoration: none;
-}
-
-#gameListTable {
+section#join table {
 		width: 100%;
 
 		border-collapse: collapse;
-
-		background-color: white;
-		border-width: 2px;
-		border-style: solid;
-		border-color: hsl(-150, 30%, 45%);
 }
 
-#gameListTable th {
+section#join th {
 		padding: 0.3em;
 
+		background: -webkit-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		color: hsl(194, 94%, 47%);
+		border-bottom: 2px solid hsl(194, 94%, 47%);
 		text-align: left;
 		font-weight: bold;
 }
 
-#gameList tr {
-		background-color: white;
+section#join td {
+		padding: 0.3em;
 }
 
-#gameList tr:nth-child(odd) {
-		background-color: hsl(-150, 30%, 92%);
+section#join tr:nth-child(even) {
+		background-color: hsl(0, 0%, 95%);
 }
 
-#gameList td {
-		padding: .3em;
+section#join tr:nth-child(odd) {
+		background-color: hsl(0, 0%, 90%);
 }
 
-#gameList a {
+section#join a {
 		text-decoration: none;
-
 		color: hsl(-150, 60%, 45%);
 }
