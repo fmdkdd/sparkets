@@ -1,36 +1,3 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:700);
-
-* {
-		margin: 0;
-		padding: 0;
-}
-
-body {
-		min-width: 600px;
-
-		font-family: sans;
-		color: hsl(0, 0%, 30%);
-}
-
-/**
- * Header.
- */
-
-header {
-		padding: 0 6em;
-
-		background: -webkit-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
-		border-bottom: 4px solid hsl(194, 94%, 47%);
-		box-shadow: 0 2px 3px hsl(194, 94%, 30%);
-}
-
-header h1 {
-		color: hsl(194, 94%, 47%);
-		text-shadow: 0 1px 1px hsl(194, 94%, 70%); 
-		font-family: 'Open Sans';
-		letter-spacing: 0.16em;
-}
-
 /**
  * Info.
  */

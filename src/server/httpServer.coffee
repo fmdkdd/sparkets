@@ -15,6 +15,7 @@ webFiles = {
 	'/create' : '/create.html'
 	'/play/' : '/client.html',
 	'/client.css',
+	'/common.css',
 	'/create.css',
 	'/index.css',
 	'/range.css',
