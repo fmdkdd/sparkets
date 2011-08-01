@@ -125,7 +125,7 @@ $(document).ready () ->
 	# Fourth panel: advanced options (aka 'things we didn't know where to put').
 
 	new Range(entry('#panel4 > table', 'Speed'),
-		'ship.speed', 0.1, 1, 0.1, 0.3)
+		'ship.speed', 0.1, 1.01, 0.1, 0.3)
 	new Tooltip(label(4, 1), 'blabla')
 
 	new Range(entry('#panel4 > table', 'Friction decay'),
