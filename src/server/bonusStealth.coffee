@@ -9,15 +9,12 @@ class BonusStealth
 		ship.invisible = yes
 		ship.flagNextUpdate('invisible')
 
-		# Cancel the previous pending stealth cancel.
-		if ship.bonusTimeout.bonusStealth?
-			clearTimeout(ship.bonusTimeout.bonusStealth)
-
-		ship.bonusTimeout.bonusStealth = setTimeout(( () =>
-			if @game.gameObjects[ship.id]?.invisible
-				@game.gameObjects[ship.id]?.flagNextUpdate('invisible')
-			@game.gameObjects[ship.id]?.invisible = no ),
-			@game.prefs.bonus.stealth.duration)
+		# Setup and overwrite previous stealth cancel.
+		ship.bonusTimeouts.stealthEffect =
+			duration: @game.prefs.bonus.stealth.duration
+			onTimeout: (ship) ->
+				ship.invisible = no
+				ship.flagNextUpdate('invisible')
 
 		# Clean up.
 		ship.releaseBonus()

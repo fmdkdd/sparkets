@@ -112,7 +112,7 @@ class Ship extends ChangingObject
 
 		# Drop bonus and cancel all effects.
 		@bonus = null
-		@bonusTimeout = {}
+		@bonusTimeouts = {}
 		@boost = 1
 		@boostDecay = 0
 		@inverseTurn = no
@@ -285,6 +285,13 @@ class Ship extends ChangingObject
 		if @countdown?
 			@countdown -= @game.prefs.timestep
 			@nextState() if @countdown <= 0
+
+		# Process bonus effects timeouts.
+		for type, effect of @bonusTimeouts
+			effect.duration -= @game.prefs.timestep
+			if effect.duration <= 0
+				effect.onTimeout(@)
+				delete @bonusTimeouts[type]
 
 		switch @state
 			when 'alive'

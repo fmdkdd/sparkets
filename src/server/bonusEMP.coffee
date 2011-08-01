@@ -8,13 +8,11 @@ class BonusEMP
 	drunkEffect: (ship) ->
 		ship.inverseTurn = yes
 
-		# Cancel the previous pending drunk decay.
-		if ship.bonusTimeout.bonusDrunk?
-			clearTimeout(ship.bonusTimeout.bonusDrunk)
-
-		ship.bonusTimeout.bonusDrunk = setTimeout(( () =>
-			@game.gameObjects[ship.id].inverseTurn = no ),
-			@game.prefs.bonus.EMP.drunkDuration)
+		# Setup and overwrite previous drunk timeout.
+		ship.bonusTimeouts.drunkEffect =
+			duration: @game.prefs.bonus.EMP.drunkDuration
+			onTimeout: (ship) ->
+				ship.inverseTurn = no
 
 	use: () ->
 		holder = @bonus.holder

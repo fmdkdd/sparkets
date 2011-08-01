@@ -17,14 +17,11 @@ class BonusBoost
 			type: 'ship boosted'
 			id: ship.id
 
-		# Cancel the previous pending boost decay.
-		if ship.bonusTimeout.bonusBoost?
-			clearTimeout(ship.bonusTimeout.bonusBoost)
-
-		# Setup decay for this boost.
-		ship.bonusTimeout[exports.type] = setTimeout(( () =>
-			@game.gameObjects[ship.id].boostDecay = @game.prefs.bonus.boost.boostDecay ),
-			@game.prefs.bonus.boost.boostDuration)
+		# Setup decay for this boost and overwrite previous boost.
+		ship.bonusTimeouts.boostDecay =
+			duration: @game.prefs.bonus.boost.boostDuration
+			onTimeout: (ship) =>
+				ship.boostDecay = @game.prefs.bonus.boost.boostDecay
 
 		# Clean up.
 		ship.releaseBonus()
