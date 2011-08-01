@@ -7,7 +7,7 @@ class SelectionBox
 		# Add buttons.
 		html = ''
 		for i in [0...@items.length]
-			html += '<th><button ' + (if i is @default then 'class="selected"' else '') + ' value="' + @items[i] + '">' + @items[i] + '</button></th>'
+			html += '<th><button ' + (if i is @default then 'class="selected"' else '') + ' value="' + @items[i] + '">' + utils.capitalize(@items[i]) + '</button></th>'
 		@table.find('tr').append(html)
 
 		# Bind a click event to the buttons.

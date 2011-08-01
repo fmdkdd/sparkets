@@ -13,27 +13,44 @@ table.selectionBox button {
 		width: 80%;
 		padding: 0.2em;
 
-		background-color: hsl(209, 29%, 80%);
-		border-color: hsl(209, 20%, 61%);
+		background: -webkit-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		background: -moz-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		background: linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+
+		color: white;
+		border: 1px solid hsl(278, 96%, 50%);
 		border-radius: 3px;
-		border-width: 3px;
-		border-style: solid;
 
-		transition-property: background-color, border-color;
-		transition-duration: 150ms;
-		-webkit-transition-property: background-color, border-color;
+		-webkit-box-shadow: 0 1px 3px hsl(278, 94%, 0%);
+		-moz-box-shadow: 0 1px 3px hsl(278, 94%, 0%);
+		box-shadow: 0 1px 3px hsl(278, 94%, 0%);
+
+		-webkit-transition-property: -webkit-box-shadow;
 		-webkit-transition-duration: 150ms;
-		-moz-transition-property: background-color, border-color;
+		-moz-transition-property: -moz-box-shadow;
 		-moz-transition-duration: 150ms;
-}
+		transition-property: box-shadow;
+		transition-duration: 150ms;
 
-table.selectionBox button:not(.selected):hover {
-		background-color: hsl(209, 29%, 90%);
-		border-color: hsl(209, 20%, 70%);
 		cursor: pointer;
 }
 
-.selectionBox button.selected {
-		border-width: 3px;
-		border-color: hsl(209, 100%, 61%);
+table.selectionBox button:not(.selected):hover {
+		-webkit-box-shadow: 0 0 15px hsl(278, 94%, 10%);
+		-moz-box-shadow: 0 0 15px hsl(278, 94%, 10%);
+		box-shadow: 0 0 15px hsl(278, 94%, 10%);
+}
+
+table.selectionBox button:not(.selected):active {
+		background: -webkit-linear-gradient(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		background: -moz-linear-gradient(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		background: linear-gradient(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+}
+
+table.selectionBox button.selected {
+		border-width: 4px;
+
+		-webkit-box-shadow: 0 0 15px hsl(278, 94%, 10%);
+		-moz-box-shadow: 0 0 15px hsl(278, 94%, 10%);
+		box-shadow: 0 0 15px hsl(278, 94%, 10%);
 }

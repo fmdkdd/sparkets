@@ -14,7 +14,7 @@
 		color: white;
 		font-size: 0.8em;
 
-		-webkit-shadow: 0 1px 3px hsl(194, 94%, 30%);
+		-webkit-box-shadow: 0 1px 3px hsl(194, 94%, 30%);
 		-moz-box-shadow: 0 1px 3px hsl(194, 94%, 30%);
 		box-shadow: 0 1px 3px hsl(194, 94%, 30%);
 }

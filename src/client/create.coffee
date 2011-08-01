@@ -157,13 +157,15 @@ $(document).ready () ->
 			gameListRegexp = null
 
 	# Setup form handling.
-	$('input[name="id"]').keyup (event) ->
+	$('input[type="text"]').keyup (event) ->
 		if gameListRegexp? and event.target.value.match(gameListRegexp)
 			$('#error').html('Name already exists')
-			$('input[value="Create"]').attr('disabled', 'disabled')
+			$('input[type="submit"]').attr('disabled', 'disabled')
+			console.info 'no'
 		else
 			$('#error').html('')
-			$('input[value="Create"]').removeAttr('disabled')
+			$('input[type="submit"]').removeAttr('disabled')
+			console.info 'ok'
 
 	$('input[type="submit"]').click (event) ->
 		event.preventDefault()
