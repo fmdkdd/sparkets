@@ -84,12 +84,27 @@ $(document).ready () ->
 
 	cell = $('#panel3 tr:nth-child(1) td:nth-child(2)')
 
+	# Give the nth bonus.
+	bonus = (n) ->
+		cell.find('.bonusBox:nth-of-type(' + n + ')')
+
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.mine.weight', 'bonusMine')
+	new Tooltip(bonus(1), 'Mine blablablaaa')
+
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.tracker.weight', 'bonusTracker')
+	new Tooltip(bonus(2), 'Tracker blablablaaa')
+
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.boost.weight', 'bonusBoost')
+	new Tooltip(bonus(3), 'Boost blablablaaa')
+
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.shield.weight', 'bonusShield')
+	new Tooltip(bonus(4), 'Shield blablablaaa')
+
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.EMP.weight', 'bonusEMP')
+	new Tooltip(bonus(5), 'EMP blablablaaa')
+
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.stealth.weight', 'bonusStealth')
+	new Tooltip(bonus(6), 'Stealth blablablaaa')
 
 	new Range(entry('#panel3 > table', 'Drop wait (ms)'),
 		'bonus.waitTime', 1000, 10000, 1000, 5000)
