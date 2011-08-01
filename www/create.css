@@ -7,6 +7,11 @@ section#form {
 		padding: 0.6em;
 
 		background: -webkit-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		background: -moz-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+		background: linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+
+		-webkit-box-shadow: 0 2px 3px hsl(0, 0%, 30%);
+		-moz-box-shadow: 0 2px 3px hsl(0, 0%, 30%);
 		box-shadow: 0 2px 3px hsl(0, 0%, 30%);
 }
 
@@ -135,9 +140,14 @@ input[type="submit"]:disabled {
 		padding: 0.3em;
 
 		background: -webkit-linear-gradient(top, hsl(0, 0%, 20%) 0%, hsl(0, 0%, 50%) 100%);
+		background: -moz-linear-gradient(top, hsl(0, 0%, 20%) 0%, hsl(0, 0%, 50%) 100%);
+		background: linear-gradient(top, hsl(0, 0%, 20%) 0%, hsl(0, 0%, 50%) 100%);
+
 		color: white;
 		border: 2px solid white;
-		box-shadow: 0 0 6px grey;
-
 		font-size: 0.8em;
+
+		-webkit-box-shadow: 0 0 6px grey;
+		-moz-box-shadow: 0 0 6px grey;
+		box-shadow: 0 0 6px grey;
 }
