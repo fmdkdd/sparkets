@@ -1,0 +1,85 @@
+//@import url(http://fonts.googleapis.com/css?family=Open+Sans:700);
+
+@blue: hsl(194, 94%, 47%);
+@darkblue: darken(@blue, 20%);
+
+@purple: hsl(278, 96%, 50%);
+@darkpurple: darken(@purple, 20%);
+
+@green: hsl(105, 94%, 40%);
+@darkgreen: darken(@green, 20%);
+
+@beige: hsl(0, 0%, 30%);
+@black: hsl(0, 0%, 0%);
+
+.linear-gradient2 (@start, @stop1, @stop2) {
+		background: -webkit-linear-gradient(@start, @stop1, @stop2);
+		background: -moz-linear-gradient(@start, @stop1, @stop2);
+		background: linear-gradient(@start, @stop1, @stop2);
+}
+
+.linear-gradient3 (@start, @stop1, @stop2, @stop3) {
+		background: -webkit-linear-gradient(@start, @stop1, @stop2, @stop3);
+		background: -moz-linear-gradient(@start, @stop1, @stop2, @stop3);
+		background: linear-gradient(@start, @stop1, @stop2, @stop3);
+}
+
+.gradient-black () {
+		.linear-gradient3(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+}
+
+.gradient-black-reversed () {
+		.linear-gradient3(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+}
+
+.box-shadow (@x, @y, @blur, @color) {
+		box-shadow: @arguments;
+		-webkit-box-shadow: @arguments;
+		-moz-box-shadow: @arguments;
+}
+
+.button-behavior () {
+		-webkit-transition-property: -webkit-box-shadow;
+		-webkit-transition-duration: 150ms;
+		-moz-transition-property: -moz-box-shadow;
+		-moz-transition-duration: 150ms;
+		transition-property: box-shadow;
+		transition-duration: 150ms;
+
+		&:hover {
+				.box-shadow(0, 0, 15px, @black);
+		}
+		&:active {
+				.gradient-black-reversed;
+		}
+}
+
+* {
+		margin: 0;
+		padding: 0;
+}
+
+body {
+		color: @beige;
+		font-family: sans;
+}
+
+a {
+		text-decoration: none;
+		color: @blue;
+}
+
+header {
+		.gradient-black;
+		.box-shadow(0, 2px, 3px, @darkblue);
+
+		padding: 0 6em;
+		border-bottom: 4px solid @blue;
+
+		h1 {
+				color: @blue;
+				text-shadow: 0 1px 1px lighten(@blue, 20%);
+				font-family: 'Open Sans';
+				letter-spacing: 0.16em;
+		}
+}

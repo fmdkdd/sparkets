@@ -1,0 +1,93 @@
+@import "common.less";
+
+/**
+ * Info.
+ */
+
+section#info {
+		.gradient-black;
+		.box-shadow(0, 2px, 3px, @darkblue);
+
+		margin: 2em 6em 0 6em;
+		padding: 1em;
+		-webkit-column-count: 2;
+
+		color: @darkblue;
+		border-bottom: 2px @blue;
+
+		h3 {
+				color: @blue;
+		}
+
+		ul {
+				list-style-position: inside;
+				list-style-type: square;
+		}
+
+		section#controls {
+
+				.key {
+						color: @blue;
+				}
+
+				#goal {
+						color: @blue;
+						font-style: italic;
+				}
+		}
+
+		section#about {
+
+				a {
+						color: @blue;
+						text-decoration: none;
+
+						&:hover {
+								text-decoration: underline;
+						}
+				}
+		}
+}
+
+/**
+ * Game list.
+ */
+
+section#join {
+		margin: 2em 6em 0 6em;
+
+		table {
+				width: 100%;
+				border-collapse: collapse;
+				
+				th {
+						.gradient-black;
+
+						padding: 0.3em;
+
+						color: @blue;
+						border-bottom: 2px solid @blue;
+						text-align: left;
+						font-weight: bold;
+				}
+
+				tr {
+						&:nth-child(even) {
+								background-color: hsl(0, 0%, 95%);
+						}
+
+						&:nth-child(odd) {
+								background-color: hsl(0, 0%, 90%);
+						}
+				}
+
+				td {
+						padding: 0.3em;
+				}
+		
+				a {
+						text-decoration: none;
+						color: hsl(-150, 60%, 45%);
+				}
+		}
+}
