@@ -3,8 +3,7 @@
  */
 
 section#form {
-		width: 75%;
-		margin: 3em auto 0em auto;
+		margin: 3em 6em 0em 6em;
 		padding: 0.6em;
 
 		background: -webkit-linear-gradient(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
