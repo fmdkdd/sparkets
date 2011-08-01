@@ -152,13 +152,13 @@ $(document).ready () ->
 	window.socket.on 'game list', (data) ->
 		idList = Object.keys(data)
 		if idList.length > 0
-			gameListRegexp = new RegExp('^(' + idList.join('|') + ')$')
+			window.gameListRegexp = new RegExp('^(' + idList.join('|') + ')$')
 		else
-			gameListRegexp = null
+			window.gameListRegexp = null
 
 	# Setup form handling.
-	$('input[type="text"]').keyup (event) ->
-		if gameListRegexp? and event.target.value.match(gameListRegexp)
+	$('input[type="text"]').keyup (event) =>
+		if window.gameListRegexp? and event.target.value.match(window.gameListRegexp)
 			$('#error').html('Name already exists')
 			$('input[type="submit"]').attr('disabled', 'disabled')
 			console.info 'no'
@@ -209,3 +209,6 @@ $(document).ready () ->
 			insert(prefs, bb.name, window.presets['bonus weight'][bb.state])
 
 		return prefs
+
+	# Request game list.
+	window.socket.emit 'get game list'

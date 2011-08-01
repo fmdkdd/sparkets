@@ -115,13 +115,13 @@ input[type="submit"] {
 		cursor: pointer;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:not(:disabled):hover {
 		-webkit-box-shadow: 0 0 15px hsl(105, 94%, 10%);
 		-moz-box-shadow: 0 0 15px hsl(105, 94%, 10%);
 		box-shadow: 0 0 15px hsl(105, 94%, 10%);
 }
 
-input[type="submit"]:active {
+input[type="submit"]:not(:disabled):active {
 		background: -webkit-linear-gradient(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
 		background: -moz-linear-gradient(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
 		background: linear-gradient(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
@@ -130,8 +130,7 @@ input[type="submit"]:active {
 input[type="submit"]:disabled {
 	 cursor: default;
 
-	 background-color: hsl(20, 0%, 75%);
-	 border-color: hsl(20, 0%, 55%);
+	 opacity: .5;
 }
 
 #error {
