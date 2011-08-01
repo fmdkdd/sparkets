@@ -4,7 +4,7 @@ class Tooltip
 		@tooltip = null
 
 		@target.mouseover (event) =>
-			@tooltip = $('<div class="tooltip2">'+@text+'</div>').appendTo('body')
+			@tooltip = $('<div class="tooltip">'+@text+'</div>').appendTo('body')
 
 		@target.mousemove (event) =>
 			return if not @tooltip?

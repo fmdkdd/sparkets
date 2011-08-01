@@ -67,7 +67,7 @@ $(document).ready () ->
 	new Tooltip(label(1, 1), 'The name of the game in the game list. Will also define the game URL.')
 
 	new Range(entry('#panel1 table', 'Game duration'),
-		'duration', 3, 20, 1, 5)
+		'duration', 3, 20, 1, 5, ' minutes')
 	new Tooltip(label(1, 2), 'The duration of the game in minutes.')
 
 	# Second panel: map.
@@ -106,20 +106,20 @@ $(document).ready () ->
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.stealth.weight', 'bonusStealth')
 	new Tooltip(bonus(6), 'Stealth blablablaaa')
 
-	new Range(entry('#panel3 > table', 'Drop wait (ms)'),
-		'bonus.waitTime', 1000, 10000, 1000, 5000)
+	new Range(entry('#panel3 > table', 'Drop wait'),
+		'bonus.waitTime', 1000, 10000, 1000, 5000, ' milliseconds')
 	new Tooltip(label(3, 2), 'blabla')
 
-	new Range(entry('#panel3 > table', 'Activation wait (ms)'),
-		'bonus.states.incoming.countdown', 500, 5000, 500, 2000)
+	new Range(entry('#panel3 > table', 'Activation wait'),
+		'bonus.states.incoming.countdown', 500, 5000, 500, 2000, ' milliseconds')
 	new Tooltip(label(3, 3), 'blabla')
 
 	new Range(entry('#panel3 > table', 'Max allowed'),
-		'bonus.maxCount', 0, 20, 1, 10)
+		'bonus.maxCount', 0, 20, 1, 10, ' bonuses')
 	new Tooltip(label(3, 4), 'blabla')
 
 	new Range(entry('#panel3 > table', 'Mines in bonus'),
-		'bonus.mine.mineCount', 1, 10, 1, 2)
+		'bonus.mine.mineCount', 1, 10, 1, 2, ' mines')
 	new Tooltip(label(3, 5), 'blabla')
 
 	# Fourth panel: advanced options (aka 'things we didn't know where to put').

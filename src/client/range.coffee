@@ -1,62 +1,27 @@
 class Range
-	constructor: (@container, @name, @min, @max, @step, @default) ->
+	constructor: (@container, @name, @min, @max, @step, @default, @suffix = '') ->
 
 		# Build html elements.
-		@range = $('<input type="range" name="' + @name + '" min="' + @min + '" max="' + @max + '" step="' + @step + '" value="' + @default + '"/>').appendTo(@container)
+		@container = $('<span class="range"></span>').appendTo(@container)
 
-		# Tooltip to indicate current value for range input.
-		# Created at mouse down and detached on mouse up, the tooltip
-		# follows the mouse pointer on mouse move.
+		@range = $('<input type="range"/>').appendTo(@container)
+		@range.attr('name', @name)
+		@range.attr('min', @min)
+		@range.attr('max', @max)
+		@range.attr('step', @step)
+		@range.attr('value', @default)
 
-		@tooltip = null
+		@range.after('<span></span>')
+		@update()
 
-		@range.mousedown (event) =>
-			return if event.which isnt 1
+		@range.change (event) =>
+			@update()
 
-			# With enough clicking around you can avoid a mouse up
-			# event. Clear any previously created tooltip to avoid
-			# duplicates.
-			@tooltip.detach() if @tooltip?
+	value: () ->
+		@range.attr('value')
 
-			@tooltip = $('<span class="tooltip"></span>').appendTo('body')
-			@tooltip.css('position', 'absolute')
-			@tooltip.css('top', @range.offset().top - @range.height())
-			@tooltip.css('left', event.pageX)
-
-			@updateTooltip()
-
-		# Update tooltip value and follow pointer.
-		@range.mousemove (event) =>
-			return if event.which isnt 1
-			return if not @tooltip?
-
-			# Constrain to input element width.
-			xOff = event.pageX
-			left = @range.offset().left
-			xOff = left if xOff < left
-			right = left + @range.innerWidth()
-			xOff = right if xOff > right
-
-			@tooltip.css('left', xOff)
-
-			@updateTooltip()
-
-		# Delete tooltip.
-		@range.mouseup (event) =>
-			return if event.which isnt 1
-			return if not @tooltip?
-
-			@tooltip.detach()
-			@tooltip = null
-
-	updateTooltip: () ->
-		str = window.utils.prettyNumber(@range.val())
-
-		# Delay tooltip value update after the value has been updated
-		# in the browser. Otherwise, clicking away from the slider
-		# cursor will move the cursor to the mouse but @.value won't
-		# be updated.
-		setTimeout( (() => @tooltip.html(str) if @tooltip?), 1)
+	update: () ->
+		@range.find('+ span').html(utils.prettyNumber(@value()) + @suffix)
 
 # Exports
 window.Range = Range

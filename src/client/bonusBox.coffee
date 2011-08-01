@@ -16,7 +16,7 @@ class BonusBox
 
 	width: 75
 	height: 100
-	headerHeight: 10
+	headerHeight: 6
 
 	constructor: (@container, @name, @type, @state = 'regular') ->
 		

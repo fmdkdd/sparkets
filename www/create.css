@@ -128,7 +128,7 @@ input[type="submit"]:disabled {
 		cursor: pointer;
 }
 
-.tooltip2 {
+.tooltip {
 		position: absolute;
 		max-width: 20em;
 
