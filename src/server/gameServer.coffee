@@ -31,7 +31,7 @@ class GameServer
 	launch: () ->
 		@initPlanets()
 
-		@spawnBonus()
+		@bonusDropCountdown = 0
 
 		# Bind socket events
 		@sockets.on 'connection', (socket) =>
@@ -86,7 +86,6 @@ class GameServer
 
 	freeze: () ->
 		clearTimeout(@updateTimeout)
-		clearInterval(@bonusInterval)
 
 		@frozen = yes
 		@info 'frozen'
@@ -98,7 +97,6 @@ class GameServer
 		@info 'unfrozen'
 
 		@update()
-		@bonusInterval = setInterval(( () => @spawnBonus() ), @prefs.bonus.waitTime)
 
 	clientConnect: (socket) ->
 		id = socket.id
@@ -184,6 +182,12 @@ class GameServer
 
 		# Setup next update.
 		@updateTimeout = setTimeout(( () => @update() ), @prefs.timestep)
+
+		# Check if a bonus drop should happen.
+		@bonusDropCountdown -= @prefs.timestep
+		if @bonusDropCountdown <= 0
+			@bonusDropCountdown = @prefs.bonus.waitTime
+			@spawnBonus()
 
 		player.update() for id, player of @players
 
