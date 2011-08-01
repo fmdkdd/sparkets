@@ -2,6 +2,10 @@ $(document).ready () ->
 
 	window.spriteManager = new SpriteManager()
 
+	window.ranges = []
+	window.selectionBoxes = []
+	window.bonusBoxes = []
+
 	# Setup tabbed panels.	
 	$('#form .tab').click (event) ->
 
@@ -46,24 +50,40 @@ $(document).ready () ->
 
 	# Fill the form.
 
+	# Wrap a two cells tr inside a container and return the second cell.
 	entry = (container, label) ->
 		tr = (container) ->
 			$('<tr class="entry"></tr>').appendTo(container)
 
-		c = $('<td>' + label + '</td>').appendTo(tr(container))
+		c = $('<td><span>' + label + '</span></td>').appendTo(tr(container))
 		$('<td></td>').insertAfter(c)
 
-	new Range(entry('#panel1 table', 'Game duration (min)'),
-		'duration', 3, 20, 1, 5)
+	# Give the label of the `line`th line of the `panel`th panel.
+	label = (panel, line) ->
+		$('#panel'+ panel + ' > table > tbody > tr:nth-child(' + line + ') > td:first-child span')
 
-	window.selectionBoxes = []
+	# First panel: general options.
+
+	new Tooltip(label(1, 1), 'The name of the game in the game list. Will also define the game URL.')
+
+	new Range(entry('#panel1 table', 'Game duration'),
+		'duration', 3, 20, 1, 5)
+	new Tooltip(label(1, 2), 'The duration of the game in minutes.')
+
+	# Second panel: map.
+
 	window.selectionBoxes.push new SelectionBox(entry('#panel2 > table', 'Map size'),
 		'mapSize', Object.keys(window.presets['mapSize']), 2)
+	new Tooltip(label(2, 1), 'blabla')
+
 	window.selectionBoxes.push new SelectionBox(entry('#panel2 > table', 'Planet density'),
 		'planet.density', Object.keys(window.presets['planet.density']), 1)
+	new Tooltip(label(2, 2), 'blabla')
 
-	window.bonusBoxes = []
+	# Third panel: bonus.
+
 	cell = $('#panel3 tr:nth-child(1) td:nth-child(2)')
+
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.mine.weight', 'bonusMine')
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.tracker.weight', 'bonusTracker')
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.boost.weight', 'bonusBoost')
@@ -73,19 +93,33 @@ $(document).ready () ->
 
 	new Range(entry('#panel3 > table', 'Drop wait (ms)'),
 		'bonus.waitTime', 1000, 10000, 1000, 5000)
+	new Tooltip(label(3, 2), 'blabla')
+
 	new Range(entry('#panel3 > table', 'Activation wait (ms)'),
 		'bonus.states.incoming.countdown', 500, 5000, 500, 2000)
+	new Tooltip(label(3, 3), 'blabla')
+
 	new Range(entry('#panel3 > table', 'Max allowed'),
 		'bonus.maxCount', 0, 20, 1, 10)
+	new Tooltip(label(3, 4), 'blabla')
+
 	new Range(entry('#panel3 > table', 'Mines in bonus'),
 		'bonus.mine.mineCount', 1, 10, 1, 2)
+	new Tooltip(label(3, 5), 'blabla')
+
+	# Fourth panel: advanced options (aka 'things we didn't know where to put').
 
 	new Range(entry('#panel4 > table', 'Speed'),
 		'ship.speed', 0.1, 1, 0.1, 0.3)
+	new Tooltip(label(4, 1), 'blabla')
+
 	new Range(entry('#panel4 > table', 'Friction decay'),
 		'ship.frictionDecay', 0, 1, 0.01, 0.97)
+	new Tooltip(label(4, 2), 'blabla')
+
 	new Range(entry('#panel4 > table', 'Bot count'),
 		'bot.count', 0, 10, 1, 1)
+	new Tooltip(label(4, 3), 'blabla')
 
 	# Connect to server and setup callbacks.
 	window.socket = io.connect()

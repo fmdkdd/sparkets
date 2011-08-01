@@ -123,3 +123,21 @@ input[type="submit"]:disabled {
 #error {
 		color: red;
 }
+
+.bonusBox {
+		cursor: pointer;
+}
+
+.tooltip2 {
+		position: absolute;
+		max-width: 20em;
+
+		padding: 0.3em;
+
+		background: -webkit-linear-gradient(top, hsl(0, 0%, 20%) 0%, hsl(0, 0%, 50%) 100%);
+		color: white;
+		border: 2px solid white;
+		box-shadow: 0 0 6px grey;
+
+		font-size: 0.8em;
+}

@@ -24,6 +24,7 @@ class BonusBox
 		@canvas = document.createElement('canvas')
 		@canvas.width = @width
 		@canvas.height = @height + @headerHeight
+		@canvas.className = 'bonusBox'
 		@container.append(@canvas)
 		@container.append('<span>&nbsp</span>') # TODO: replace spacing between bonuses with CSS rule.
 		@ctxt = @canvas.getContext('2d')
