@@ -70,7 +70,7 @@ class Bullet extends ChangingObject
 		# Only reset last points when the update has finished.
 		@lastPoints = []
 
-	move: () ->
+	move: (step) ->
 		return if @state isnt 'active'
 
 		# Keep the starting position for hit box update.
@@ -124,7 +124,7 @@ class Bullet extends ChangingObject
 
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
-	update: () ->
+	update: (step) ->
 		if @state is 'dead'
 			@serverDelete = yes
 

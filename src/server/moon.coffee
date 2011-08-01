@@ -28,7 +28,7 @@ class Moon extends Planet
 		# Update position once.
 		@move()
 
-	move: () ->
+	move: (step) ->
 		@pos.x = @planet.pos.x + @dist * Math.cos(@angle)
 		@pos.y = @planet.pos.y + @dist * Math.sin(@angle)
 
@@ -42,7 +42,7 @@ class Moon extends Planet
 		@flagNextUpdate('hitBox.x')
 		@flagNextUpdate('hitBox.y')
 
-	update: () ->
+	update: (step) ->
 		@angle += @speed
 
 exports.Moon = Moon

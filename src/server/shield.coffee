@@ -47,7 +47,7 @@ class Shield extends ChangingObject
 	tangible: () ->
 		yes
 
-	move: () ->
+	move: (step) ->
 		return if @state isnt 'active'
 
 		# Our position is the ship's, no need to update it.
@@ -64,8 +64,8 @@ class Shield extends ChangingObject
 		@state = @game.prefs.shield.states[@state].next
 		@countdown = @game.prefs.shield.states[@state].countdown
 
-	update: () ->
-		@countdown -= @game.prefs.timestep if @countdown?
+	update: (step) ->
+		@countdown -= @game.prefs.timestep * step if @countdown?
 
 		switch @state
 			when 'active'

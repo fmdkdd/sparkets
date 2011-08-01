@@ -71,11 +71,11 @@ class Tracker extends ChangingObject
 			@state = state
 			@countdown = @game.prefs.tracker.states[state].countdown
 
-	update: () ->
+	update: (step) ->
 		state_old = @state
 
 		if @countdown?
-			@countdown -= @game.prefs.timestep
+			@countdown -= @game.prefs.timestep * step
 			@nextState() if @countdown <= 0
 
 		if state_old isnt @state and @state is 'tracking'
@@ -87,7 +87,7 @@ class Tracker extends ChangingObject
 		if @target? and @target.state is 'dead'
 			@target = null
 
-	move: () ->
+	move: (step) ->
 		return if @state isnt 'tracking'
 
 		# Face the target.

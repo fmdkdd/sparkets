@@ -238,7 +238,7 @@ class Ship extends ChangingObject
 
 		return @game.gravityFieldAround(@pos, filter, force)
 
-	move: () ->
+	move: (step) ->
 		return if @state is 'dead'
 
 		{x, y} = @pos
@@ -281,14 +281,14 @@ class Ship extends ChangingObject
 			@state = state
 			@countdown = @game.prefs.ship.states[state].countdown
 
-	update: () ->
+	update: (step) ->
 		if @countdown?
-			@countdown -= @game.prefs.timestep
+			@countdown -= @game.prefs.timestep * step
 			@nextState() if @countdown <= 0
 
 		# Process bonus effects timeouts.
 		for type, effect of @bonusTimeouts
-			effect.duration -= @game.prefs.timestep
+			effect.duration -= @game.prefs.timestep * step
 			if effect.duration <= 0
 				effect.onTimeout(@)
 				delete @bonusTimeouts[type]

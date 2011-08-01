@@ -61,12 +61,12 @@ class Mine extends ChangingObject
 			@state = state
 			@countdown = @game.prefs.mine.states[state].countdown
 
-	move: () ->
+	move: (step) ->
 		# Not moving!
 
-	update: () ->
+	update: (step) ->
 		if @countdown?
-			@countdown -= @game.prefs.timestep
+			@countdown -= @game.prefs.timestep * step
 			@nextState() if @countdown <= 0
 
 		switch @state

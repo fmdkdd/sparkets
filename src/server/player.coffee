@@ -29,7 +29,7 @@ class Player
 		if key is 90
 			@ship.useBonus()
 
-	update: () ->
+	update: (step) ->
 		return if not @ship? or @ship.state is 'exploding' or @state is 'dead'
 
 		# Left arrow : rotate to the left.

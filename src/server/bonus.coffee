@@ -123,7 +123,7 @@ class Bonus extends ChangingObject
 			@state = state
 			@countdown = @game.prefs.bonus.states[state].countdown
 
-	move: () ->
+	move: (step) ->
 		# Update position and hitbox according to velocity.
 		unless @vel.x is 0
 			@pos.x += @vel.x
@@ -142,9 +142,9 @@ class Bonus extends ChangingObject
 		@vel.x *= @game.prefs.bonus.frictionDecay
 		@vel.y *= @game.prefs.bonus.frictionDecay
 
-	update: () ->
+	update: (step) ->
 		if @countdown?
-			@countdown -= @game.prefs.timestep
+			@countdown -= @game.prefs.timestep * step
 			# DELETEME: client should only receive the countdown once.
 			@flagNextUpdate('countdown')
 

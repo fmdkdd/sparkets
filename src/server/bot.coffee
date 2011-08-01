@@ -32,7 +32,7 @@ class Bot extends Player
 
 		@name = @prefs.name
 
-	update: () ->
+	update: (step) ->
 		return if not @ship?
 
 		# Automatically respawn.

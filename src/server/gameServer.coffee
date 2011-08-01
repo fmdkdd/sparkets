@@ -96,6 +96,8 @@ class GameServer
 		@frozen = no
 		@info 'unfrozen'
 
+		@lastUpdate = Date.now()
+
 		@update()
 
 	clientConnect: (socket) ->
@@ -180,18 +182,24 @@ class GameServer
 			@warn 'update skipped: frozen game'
 			return
 
+		# Elapsed time since last update, relative to server timestep.
+		# Factor for all discrete objet updates.
+		step = (Date.now() - @lastUpdate) / @prefs.timestep
+
 		# Setup next update.
 		@updateTimeout = setTimeout(( () => @update() ), @prefs.timestep)
 
 		# Check if a bonus drop should happen.
-		@bonusDropCountdown -= @prefs.timestep
+		@bonusDropCountdown -= @prefs.timestep * step
 		if @bonusDropCountdown <= 0
 			@bonusDropCountdown = @prefs.bonus.waitTime
 			@spawnBonus()
 
-		player.update() for id, player of @players
+		player.update(step) for id, player of @players
 
-		@updateObjects(@gameObjects)
+		@updateObjects(@gameObjects, step)
+
+		@lastUpdate = Date.now()
 
 	placeObjectInGrid: (obj) ->
 		mapWidth = mapHeight = @prefs.mapSize
@@ -321,10 +329,10 @@ class GameServer
 
 		return utils.gravityField(pos, gravityObjs, source, force)
 
-	updateObjects: (objects) ->
+	updateObjects: (objects, step) ->
 		# Move all objects
 		for id, obj of objects
-			obj.move()
+			obj.move(step)
 
 		# Insert them into the grid for collisions.
 		@grid.cells = {}
@@ -345,7 +353,7 @@ class GameServer
 		clientUpdate = {}
 		for id, obj of objects
 			# Let object update
-			obj.update()
+			obj.update(step)
 
 			# Grab the properties flagged for next update transmission.
 			transmit = obj.nextUpdateObj()

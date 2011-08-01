@@ -44,10 +44,10 @@ class Planet extends ChangingObject
 
 		@flagNextUpdate('color')
 
-	update: () ->
+	update: (step) ->
 		# Nothing to update
 
-	move: () ->
+	move: (step) ->
 		# Not moving!
 
 	tangible: () ->

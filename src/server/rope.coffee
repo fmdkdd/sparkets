@@ -67,7 +67,7 @@ class Rope extends ChangingObject
 	tangible: () ->
 		yes
 
-	move: () ->
+	move: (step) ->
 		# Don't move if no object is attached.
 		return if not @object1? or not @object2?
 
@@ -127,7 +127,7 @@ class Rope extends ChangingObject
 			@hitBox.points[i].y = @nodes[i].pos.y
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
-	update: () ->
+	update: (step) ->
 		# XXX: Nothing to update?
 		# move() is mainly for updating position and hit box for collisions,
 		# update() is for everything else.
