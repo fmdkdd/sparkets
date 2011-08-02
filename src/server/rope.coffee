@@ -101,12 +101,6 @@ class Rope extends ChangingObject
 			#next.vel.x *= @game.prefs.ship.frictionDecay
 			#next.vel.y *= @game.prefs.ship.frictionDecay
 
-		# Prepare the chain which will be sent to the client.
-		@chain = []
-		for n in rope
-			@chain.push n.pos
-		@flagNextUpdate('chain')
-
 		# Update bounding box and hitbox
 		@pos =
 			x: @nodes[0].pos.x
@@ -128,11 +122,15 @@ class Rope extends ChangingObject
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	update: (step) ->
-		# XXX: Nothing to update?
-		# move() is mainly for updating position and hit box for collisions,
-		# update() is for everything else.
-		#
-		# Construction of the rope and chain objects should move here.
+		# Don't send chain if no object is attached.
+		return if not @object1? or not @object2?
+
+		# Prepare the chain which will be sent to the client.
+		rope = [@object1].concat(@nodes).concat([@object2])
+		@chain = []
+		for n in rope
+			@chain.push n.pos
+		@flagNextUpdate('chain')
 
 	detach: () ->
 		@object1 = null
