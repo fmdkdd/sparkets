@@ -36,7 +36,6 @@ class MockGame
 				firepowerInc: 0.1
 				maxFirepower: 3
 				cannonCooldown: 20
-				maxExploFrame: 50
 				enableGravity: false
 
 			bullet:

@@ -258,12 +258,6 @@ class GamePreferences
 		# Shield repulsive force.
 		shieldPull: -500
 
-		# Bullet points to keep on server.
-		tailLength: 15
-
-		# Gap to leave in the hit line.
-		checkWidth: 4
-
 	shield:
 		# Size of shield around ship.
 		radius: 25
@@ -365,16 +359,13 @@ class GamePreferences
 				weight: 1
 			shield:
 				class: BonusShield
-				weight: 1000
+				weight: 1
 			stealth:
 				class: BonusStealth
 				weight: 1
 
 		# Radius of hit circle.
 		boundingRadius: 10
-
-		# Drawing size on client.
-		modelSize: 20
 
 		# Inertia decay at update.
 		frictionDecay: 0.97
@@ -387,7 +378,7 @@ class GamePreferences
 			# Initial speed multiplier.
 			boostFactor: 2
 
-			# Duration of initial boost.
+			# Duration of initial boost (ms).
 			boostDuration: 1500
 
 			# Decrease boost factor in decay state.
