@@ -92,27 +92,22 @@ class Bullet extends ChangingObject
 
 		# Warp the bullet around the map.
 		s = @game.prefs.mapSize
-		@warp = off
 		warping = {x: 0, y: 0}
 		if @pos.x < 0
-			@pos.x += s
 			warping.x = s
-			@warp = on
-		if @pos.x > s
-			@pos.x -= s
+		else if @pos.x > s
 			warping.x = -s
-			@warp = on
 		if @pos.y < 0
-			@pos.y += s
 			warping.y = s
-			@warp = on
-		if @pos.y > s
-			@pos.y -= s
+		else if @pos.y > s
 			warping.y = -s
-			@warp = on
 
-		# Append the warped point again so that the line remains continuous.
-		@lastPoints.push [@pos.x, @pos.y] if @warp
+		if warping.x isnt 0 or warping.y isnt 0
+			@pos.x += warping.x
+			@pos.y += warping.y
+
+			# Append the warped point again so that the line remains continuous.
+			@lastPoints.push [@pos.x, @pos.y]
 
 		# Update hitbox. Since collisions are relative to the bounding
 		# box position (currently @pos), we need to wrap both points of
