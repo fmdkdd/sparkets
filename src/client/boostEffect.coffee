@@ -6,7 +6,7 @@ class BoostEffect
 		setTimeout( (() => @running = no), @duration)
 
 	newShadow: () ->
-		
+
 		# Create a new sprite.
 		sprite = document.createElement('canvas')
 		sprite.width = @object.sprite.width
@@ -36,7 +36,7 @@ class BoostEffect
 		@shadows[0].dir = @object.dir
 
 	isAlive: () ->
-		@object.state isnt 'dead' and @object.state isnt 'exploding'
+		@object.state in ['alive', 'spawned']
 
 	deletable: () ->
 		not @running or @object.state is 'dead'

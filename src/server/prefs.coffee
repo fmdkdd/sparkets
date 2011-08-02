@@ -62,6 +62,9 @@ class GamePreferences
 
 	ship:
 		states:
+			'ready':
+				next: 'spawned'
+				countdown: null
 			'spawned':
 				next: 'alive'
 				countdown: 1500
@@ -69,8 +72,8 @@ class GamePreferences
 				next: 'dead'
 				countdown: null
 			'dead':
-				next: 'spawned'
-				countdown: null
+				next: 'ready'
+				countdown: 1000
 
 		# Radius of hit circle.
 		boundingRadius: 9

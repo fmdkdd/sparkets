@@ -129,7 +129,7 @@ class Client
 
 		# Let the player move the camera around when his ship died.
 		$(document).mousedown () =>
-			if @localShip.state is 'dead'
+			if @localShip.state in ['dead', 'ready']
 				recenter = () =>
 					# Move the camera towards the position of the mouse.
 					center = {x: @canvasSize.w/2, y: @canvasSize.h/2}
@@ -230,7 +230,7 @@ class Client
 		ctxt.clearRect(0, 0, @canvasSize.w, @canvasSize.h)
 
 		# Draw everything centered around the player when he's alive.
-		if @localShip.state isnt 'dead'
+		unless @localShip.state in ['dead', 'ready']
 			@centerView(@localShip)
 
 		ctxt.save()

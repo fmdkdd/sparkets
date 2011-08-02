@@ -17,7 +17,7 @@ class Player
 
 		# Fire the bullet or respawn if the spacebar or A is released.
 		if key is 32 or key is 65
-			if @ship.state is 'dead'
+			if @ship.state is 'ready'
 				@ship.spawn()
 			else
 				@ship.fire()
@@ -30,7 +30,7 @@ class Player
 			@ship.useBonus()
 
 	update: (step) ->
-		return if not @ship? or @ship.state is 'exploding' or @state is 'dead'
+		return if not @ship? or @ship.state in ['dead', 'ready']
 
 		# Left arrow : rotate to the left.
 		@ship.turnLeft(step) if @keys[37] is on

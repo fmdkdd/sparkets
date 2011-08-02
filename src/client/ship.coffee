@@ -43,7 +43,7 @@ class Ship
 		ctxt.stroke()
 
 	draw: (ctxt) ->
-		return if @state is 'dead'
+		return if @state is 'dead' or @state is 'ready'
 
 		# Blink when the ship just spawned.
 		return if @state is 'spawned' and @client.now % 200 < 100

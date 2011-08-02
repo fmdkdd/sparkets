@@ -242,7 +242,7 @@ class Ship extends ChangingObject
 		return @game.gravityFieldAround(@pos, filter, force)
 
 	move: (step) ->
-		return if @state is 'dead'
+		return if @state in ['dead', 'ready']
 
 		{x, y} = @pos
 
@@ -334,7 +334,7 @@ class Ship extends ChangingObject
 		@flagNextUpdate('invisible')
 
 	explode : (killer) ->
-		return if @state is 'dead'
+		return if @state in ['dead', 'ready']
 
 		@releaseBonus() if @bonus?
 
