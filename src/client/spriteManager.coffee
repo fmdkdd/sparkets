@@ -108,7 +108,7 @@ class SpriteManager
 			return sprite
 
 		'tracker': (sprite, w, h) ->
-			ctxt = sprite.getContext('2d')	
+			ctxt = sprite.getContext('2d')
 			ctxt.fillStyle = 'black'
 			ctxt.strokeStyle = 'black'
 			ctxt.lineWidth = 3
@@ -127,7 +127,7 @@ class SpriteManager
 			ctxt.quadraticCurveTo(50, 40, 50, 25)
 			ctxt.quadraticCurveTo(50, 10, 0, 10)
 			ctxt.stroke()
-			
+
 			# Wings.
 			ctxt.beginPath()
 			ctxt.moveTo(0, 0)
@@ -142,7 +142,7 @@ class SpriteManager
 			ctxt.fill()
 
 			ctxt.fillRect(0, 23, 25, 4)
-			
+
 			ctxt.restore()
 
 			return sprite
@@ -228,14 +228,13 @@ class SpriteManager
 			ctxt.lineTo(100, 0)
 			ctxt.fill()
 
-			ctxt.globalCompositeOperation = 'copy'
-			ctxt.fillStyle = 'rgba(0,0,0,0)'
+			ctxt.globalCompositeOperation = 'xor'
 			ctxt.beginPath()
 			ctxt.moveTo(50, 15)
 			ctxt.lineTo(50, 85)
 			ctxt.lineTo(80, 75)
 			ctxt.lineTo(85, 15)
-			ctxt.fill()		
+			ctxt.fill()
 			ctxt.globalCompositeOperation = 'source-over'
 			ctxt.restore()
 
@@ -256,8 +255,7 @@ class SpriteManager
 			ctxt.quadraticCurveTo(10, 25, 0, 10)
 			ctxt.fill()
 
-			ctxt.globalCompositeOperation = 'copy'
-			ctxt.fillStyle = 'rgba(0,0,0,0)'
+			ctxt.globalCompositeOperation = 'xor'
 			ctxt.beginPath()
 			ctxt.arc(10, 10, 4, 0, 2*Math.PI, false)
 			ctxt.fill()
