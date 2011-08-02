@@ -145,7 +145,7 @@ class Ship
 		return true
 
 	boostEffect: () ->
-		@client.effects.push new BoostEffect(@client, @, 5, 30000)
+		@client.effects.push new BoostEffect(@client, @, 5, 1500)
 
 	killingSpeed: () ->
 		# Initial particle speed is derived from ship speed at death
