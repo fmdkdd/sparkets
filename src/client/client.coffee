@@ -49,6 +49,12 @@ class Client
 		@socket = io.connect()
 		@socket = @socket.socket.of(window.location.hash.substring(1))
 
+		# Setup a connexion timeout to redirect to homepage in case of
+		# nonexistent games.
+		@connectionTimeout = setTimeout( ( () ->
+			url = 'http://' + window.location.hostname + ':' + window.location.port
+			window.location.replace(url)), 500)
+
 		# Bind socket events.
 		@socket.on 'connect', () =>
 			@onConnect()
@@ -366,6 +372,7 @@ class Client
 
 	onConnect: () ->
 		console.info "Connected to server."
+		clearTimeout(@connectionTimeout)
 
 	onDisconnect: () ->
 		console.info "Aaargh! Disconnected!"
