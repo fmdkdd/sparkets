@@ -198,12 +198,23 @@ class GameServer
 			@bonusDropCountdown = @prefs.bonus.waitTime
 			@spawnBonus()
 
+		# Copy current game objects to prevent updating newly created
+		# objects.
+		objects = {}
+		for id, obj of @gameObjects
+			objects[id] = obj
+
+		# Update players and bots.
 		for id, player of @players
 			player.update(step)
 			# Compensate for the doubled timestep in power saving mode.
 			player.update(step) if @prefs.powerSave
 
-		@updateObjects(@gameObjects, step)
+		# Update objects known at the update start.
+		@updateObjects(objects, step)
+
+		# Broadcast updated and new objects.
+		@partialUpdate(@gameObjects)
 
 		@lastUpdate = Date.now()
 
@@ -357,12 +368,12 @@ class GameServer
 							collisions.test(o1.hitBox, o2.hitBox, obj1.offset, obj2.offset)
 						collisions.handle(o1, o2)
 
-		# Construct the client update along the way.
+		# Let object update
+		obj.update(step) for id, obj of objects
+
+	partialUpdate: (objects) ->
 		clientUpdate = {}
 		for id, obj of objects
-			# Let object update
-			obj.update(step)
-
 			# Grab the properties flagged for next update transmission.
 			transmit = obj.nextUpdateObj()
 			unless utils.isEmptyObject(transmit)
