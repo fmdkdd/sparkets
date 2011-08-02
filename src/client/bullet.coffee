@@ -21,11 +21,16 @@ class Bullet
 		true
 
 	drawHitbox: (ctxt) ->
+		points = @hitBox.points
+		return if points.length < 2
+
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1.1
 		ctxt.beginPath()
-		ctxt.moveTo(@hitBox.points[0].x, @hitBox.points[0].y)
-		ctxt.lineTo(@hitBox.points[1].x, @hitBox.points[1].y)
+		ctxt.moveTo(points[0].x, points[0].y)
+		for i in [1...points.length]
+			ctxt.lineTo(points[i].x, points[i].y)
+		ctxt.closePath()
 		ctxt.stroke()
 
 	bulletWarp: (x1, y1, x2, y2) ->

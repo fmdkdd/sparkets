@@ -1,4 +1,5 @@
 ChangingObject = require('./changingObject').ChangingObject
+utils = require('../utils')
 
 class Bullet extends ChangingObject
 	constructor: (@id, @game, @owner) ->
@@ -38,7 +39,7 @@ class Bullet extends ChangingObject
 		# Initial hit box is a point.
 		@boundingRadius = @game.prefs.bullet.boundingRadius
 		@hitBox =
-			type: 'segments'
+			type: 'polygon'
 			points: [
 				{x: @pos.x, y: @pos.y},
 				{x: @pos.x, y: @pos.y}]
@@ -107,10 +108,16 @@ class Bullet extends ChangingObject
 		# Update hitbox. Since collisions are relative to the bounding
 		# box position (currently @pos), we need to wrap both points of
 		# the hit segment.
-		@hitBox.points[0].x = prevPos.x + warping.x
-		@hitBox.points[0].y = prevPos.y + warping.y
-		@hitBox.points[1].x = @pos.x
-		@hitBox.points[1].y = @pos.y
+		A =
+			x: prevPos.x + warping.x
+			y: prevPos.y + warping.y
+		B =
+			x: @pos.x
+			y: @pos.y
+
+		# Convert the last segment to a polygon for a larger hit box.
+		@hitBox.points = utils.segmentToPoly(A, B, @boundingRadius)
+
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	update: (step) ->
