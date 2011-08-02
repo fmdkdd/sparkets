@@ -7,7 +7,7 @@ class Bullet extends ChangingObject
 		# Send these properties to new players.
 		@flagFullUpdate('type')
 		@flagFullUpdate('ownerId')
-		@flagFullUpdate('lastPoints')
+		@flagFullUpdate('lastPoint')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('boundingRadius')
 		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
@@ -32,9 +32,8 @@ class Bullet extends ChangingObject
 			y: @owner.vel.y + @power*ydir
 
 		# Keep track of the last computed position to notify clients.
-		@lastPoints = [ [@pos.x, @pos.y] ]
-
-		@flagNextUpdate('lastPoints')
+		@lastPoint = [@pos.x, @pos.y]
+		@flagNextUpdate('lastPoint')
 
 		# Initial hit box is a point.
 		@boundingRadius = @game.prefs.bullet.boundingRadius
@@ -68,7 +67,7 @@ class Bullet extends ChangingObject
 		super()
 
 		# Only reset last points when the update has finished.
-		@lastPoints = []
+		@lastPoint = []
 
 	move: (step) ->
 		return if @state isnt 'active'
@@ -84,11 +83,6 @@ class Bullet extends ChangingObject
 
 		@pos.x += @vel.x
 		@pos.y += @vel.y
-
-		# Register new position for clients.
-		@lastPoints.push [@pos.x, @pos.y]
-
-		@flagNextUpdate('lastPoints')
 
 		# Warp the bullet around the map.
 		s = @game.prefs.mapSize
@@ -106,8 +100,9 @@ class Bullet extends ChangingObject
 			@pos.x += warping.x
 			@pos.y += warping.y
 
-			# Append the warped point again so that the line remains continuous.
-			@lastPoints.push [@pos.x, @pos.y]
+		# Register new position for clients.
+		@lastPoint = [@pos.x, @pos.y]
+		@flagNextUpdate('lastPoint')
 
 		# Update hitbox. Since collisions are relative to the bounding
 		# box position (currently @pos), we need to wrap both points of
@@ -116,7 +111,6 @@ class Bullet extends ChangingObject
 		@hitBox.points[0].y = prevPos.y + warping.y
 		@hitBox.points[1].x = @pos.x
 		@hitBox.points[1].y = @pos.y
-
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	update: (step) ->

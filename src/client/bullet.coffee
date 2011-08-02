@@ -9,10 +9,7 @@ class Bullet
 	serverUpdate: (bullet) ->
 		utils.deepMerge(bullet, @)
 
-		for p in @lastPoints
-			@clientPoints.push p
-
-		true
+		@clientPoints.push @lastPoint
 
 	update: () ->
 		@clientPoints.shift() if @serverDelete or @clientPoints.length > @client.maxBulletLength
@@ -31,7 +28,7 @@ class Bullet
 		ctxt.lineTo(@hitBox.points[1].x, @hitBox.points[1].y)
 		ctxt.stroke()
 
-	bulletWrap: (x1, y1, x2, y2) ->
+	bulletWarp: (x1, y1, x2, y2) ->
 		Math.abs(x1 - x2) > 50 or
 			Math.abs(y1 - y2) > 50
 
@@ -62,8 +59,12 @@ class Bullet
 			x2 = p[i][0]
 			y2 = p[i][1]
 
-			if not @bulletWrap(x1, y1, x2, y2) and @segmentInView(x1, y1, x2, y2, offset)
-				@drawSegment(ctxt, x1, y1, x2, y2, (i-1)/p.length, i/p.length)
+			if not @bulletWarp(x1, y1, x2, y2)
+				if @segmentInView(x1, y1, x2, y2, offset)
+					@drawSegment(ctxt, x1, y1, x2, y2, (i-1)/p.length, i/p.length)
+			else
+				unwarped = utils.unwarp({x: x1, y: y1}, {x: x2, y: y2}, @client.mapSize)
+				@drawSegment(ctxt, x1, y1, unwarped.x, unwarped.y, (i-1)/p.length, i/p.length)
 
 			x1 = x2
 			y1 = y2

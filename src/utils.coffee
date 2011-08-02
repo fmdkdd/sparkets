@@ -97,10 +97,24 @@ exports.mod = (x, n) ->
 		x%n
 	else exports.mod(x+n, n)
 
-exports.warp = (pos, n) ->
-   pos.x = exports.mod(pos.x, n)
-   pos.y = exports.mod(pos.y, n)
-   return pos
+exports.warp = (pos, s) ->
+	pos.x = exports.mod(pos.x, s)
+	pos.y = exports.mod(pos.y, s)
+	return pos
+
+# Transform `pos2` so that it lies in the same frame of reference as
+# `pos1`.
+exports.unwarp = (pos1, pos2, s) ->
+	hs = s/2
+	dx = pos2.x - pos1.x
+	dy = pos2.y - pos1.y
+
+	if dx < -hs then pos2.x += s
+	if dx > hs then pos2.x -= s
+	if dy < -hs then pos2.y += s
+	if dy > hs then pos2.y -= s
+
+	return pos2
 
 # Normalize angle between -Pi and +Pi.
 exports.relativeAngle = (a) ->
