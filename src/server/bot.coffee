@@ -83,9 +83,9 @@ class Bot extends Player
 						break
 
 				if @targetBonus?
-					@negativeGravityMove(@targetBonus)
+					@negativeGravityMove(step, @targetBonus)
 				else
-					@negativeGravityMove()
+					@negativeGravityMove(step)
 
 			# Fire at target, but do not chase yet.
 			when 'acquire'
@@ -94,8 +94,8 @@ class Bot extends Player
 					@state = 'seek'
 					return
 
-				@face(@targetGhost)
-				@fire() if @inSight(@targetGhost, fireSight)
+				@face(step, @targetGhost)
+				@fire(step) if @inSight(@targetGhost, fireSight)
 
 				# Near enough, go after it!
 				if near(@targetGhost, @prefs.chaseDistance)
@@ -108,8 +108,8 @@ class Bot extends Player
 					@state = 'seek'
 					return
 
-				@negativeGravityMove(@targetGhost)
-				@fire() if @inSight(@targetGhost, fireSight)
+				@negativeGravityMove(step, @targetGhost)
+				@fire(step) if @inSight(@targetGhost, fireSight)
 
 		@ship.useBonus() if @ship.bonus? and @shouldUseBonus()
 
@@ -125,7 +125,7 @@ class Bot extends Player
 
 		return Math.abs(targetDir) < angle
 
-	face: ({x,y}) ->
+	face: (step, {x,y}) ->
 		targetDir = Math.atan2(y - @ship.pos.y, x - @ship.pos.x)
 		targetDir = utils.relativeAngle(targetDir - @ship.dir)
 
@@ -133,18 +133,18 @@ class Bot extends Player
 		if Math.abs(targetDir) > @game.prefs.ship.dirInc
 			# Face target
 			if targetDir < 0
-				@ship.turnLeft()
+				@ship.turnLeft(step)
 			else
-				@ship.turnRight()
+				@ship.turnRight(step)
 
-	fire: () ->
+	fire: (step) ->
 		# Charge before firing.
 		if @ship.firePower < @prefs.firePower
-			@ship.chargeFire()
+			@ship.chargeFire(step)
 		else
 			@ship.fire()
 
-	negativeGravityMove: (target) ->
+	negativeGravityMove: (step, target) ->
 		{x, y} = @ship.pos
 		if target?
 			ax = target.x - x
@@ -172,7 +172,7 @@ class Bot extends Player
 		ax += gvec.x
 		ay += gvec.y
 
-		@face({x: ax + x, y: ay + y})
-		@ship.ahead()
+		@face(step, {x: ax + x, y: ay + y})
+		@ship.ahead(step)
 
 exports.Bot = Bot

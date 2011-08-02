@@ -33,16 +33,16 @@ class Player
 		return if not @ship? or @ship.state is 'exploding' or @state is 'dead'
 
 		# Left arrow : rotate to the left.
-		@ship.turnLeft() if @keys[37] is on
+		@ship.turnLeft(step) if @keys[37] is on
 
 		# Right arrow : rotate to the right.
-		@ship.turnRight() if @keys[39] is on
+		@ship.turnRight(step) if @keys[39] is on
 
 		# Up arrow : thrust forward.
-		@ship.ahead() if @keys[38] is on
+		@ship.ahead(step) if @keys[38] is on
 
 		# Spacebar/A : charge the bullet.
-		@ship.chargeFire() if @keys[32] is on or @keys[65] is on
+		@ship.chargeFire(step) if @keys[32] is on or @keys[65] is on
 
 	changePrefs: (name, color) ->
 		if name?

@@ -123,23 +123,25 @@ class Ship extends ChangingObject
 
 		@debug "spawned"
 
-	turnLeft: () ->
-		@dir -= if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
+	turnLeft: (step) ->
+		inc = if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
+		@dir -= inc * step
 
 		@flagNextUpdate('dir')
 
 		@ddebug "turn left"
 
-	turnRight: () ->
-		@dir += if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
+	turnRight: (step) ->
+		inc = if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
+		@dir += inc * step
 
 		@flagNextUpdate('dir')
 
 		@ddebug "turn right"
 
-	ahead: () ->
-		@vel.x += Math.cos(@dir) * @game.prefs.ship.speed * @boost
-		@vel.y += Math.sin(@dir) * @game.prefs.ship.speed * @boost
+	ahead: (step) ->
+		@vel.x += Math.cos(@dir) * step * @game.prefs.ship.speed * @boost
+		@vel.y += Math.sin(@dir) * step * @game.prefs.ship.speed * @boost
 		@thrust = true
 
 		@flagNextUpdate('thrust')
@@ -153,10 +155,11 @@ class Ship extends ChangingObject
 
 		@ddebug "stop engine"
 
-	chargeFire: () ->
+	chargeFire: (step) ->
 		return if @cannonHeat > 0 or @state isnt 'alive'
 
-		@firePower = Math.min(@firePower + @game.prefs.ship.firepowerInc, @game.prefs.ship.maxFirepower)
+		inc = @game.prefs.ship.firepowerInc * step
+		@firePower = Math.min(@firePower + inc, @game.prefs.ship.maxFirepower)
 		@flagNextUpdate('firePower')
 
 		@ddebug "charge fire"
