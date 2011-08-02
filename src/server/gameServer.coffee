@@ -28,6 +28,9 @@ class GameServer
 
 		@prefs = new GamePreferences(gamePrefs)
 
+		if @prefs.powerSave
+			@prefs.timestep = 40
+
 	launch: () ->
 		@initPlanets()
 
@@ -195,7 +198,10 @@ class GameServer
 			@bonusDropCountdown = @prefs.bonus.waitTime
 			@spawnBonus()
 
-		player.update(step) for id, player of @players
+		for id, player of @players
+			player.update(step)
+			# Compensate for the doubled timestep in power saving mode.
+			player.update(step) if @prefs.powerSave
 
 		@updateObjects(@gameObjects, step)
 
@@ -333,6 +339,8 @@ class GameServer
 		# Move all objects
 		for id, obj of objects
 			obj.move(step)
+			# Compensate for the doubled timestep in power saving mode.
+			obj.move(step) if @prefs.powerSave
 
 		# Insert them into the grid for collisions.
 		@grid.cells = {}

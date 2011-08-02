@@ -72,6 +72,7 @@ class Mine extends ChangingObject
 		switch @state
 			# The mine is active.
 			when 'active'
+				# FIXME: slower in powersave mode.
 				@boundingRadius += @game.prefs.mine.waveSpeed
 				if @boundingRadius >= @game.prefs.mine.maxDetectionRadius
 					@boundingRadius = @game.prefs.mine.minDetectionRadius

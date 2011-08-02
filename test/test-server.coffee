@@ -43,7 +43,7 @@ exports.suite.addBatch
 
 		'create game':
 			topic: () ->
-				@server.createGame('a', {timestep: 123})
+				@server.createGame('a', {mapSize: 123})
 
 			'should add to game list': (game) ->
 				assert.include(@server.gameList, 'a')
@@ -52,7 +52,7 @@ exports.suite.addBatch
 				assert.isNumber(game.startTime)
 
 			'should honor prefs': (game) ->
-				assert.equal(123, game.prefs.timestep)
+				assert.equal(123, game.prefs.mapSize)
 
 			'delete game':
 				topic: () ->
@@ -63,7 +63,7 @@ exports.suite.addBatch
 
 		'create another game':
 			topic: () ->
-				@server.createGame('b', {timestep: 123})
+				@server.createGame('b', {mapSize: 123})
 
 			'should add to game list': (game) ->
 				assert.include(@server.gameList, 'b')
@@ -72,14 +72,14 @@ exports.suite.addBatch
 				assert.isNumber(game.startTime)
 
 			'should honor prefs': (game) ->
-				assert.equal(123, game.prefs.timestep)
+				assert.equal(123, game.prefs.mapSize)
 
 			'create another game with the same name':
 				topic: () ->
-					@server.createGame('b', {timestep: 10})
+					@server.createGame('b', {mapSize: 10})
 
 				'should preserve existing game': (game) ->
-					assert.equal(123, game.prefs.timestep)
+					assert.equal(123, game.prefs.mapSize)
 
 		'should start HTTP server':
 			topic: () ->

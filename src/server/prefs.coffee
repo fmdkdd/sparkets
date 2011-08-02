@@ -38,8 +38,15 @@ class GamePreferences
 		# Should send object hit boxes to clients.
 		sendHitBoxes: no
 
-	# ms between two server updates.
+	# ms between two server updates. Do not change this.
 	timestep: 20
+
+	# Toggle power saving mode. When on, the server timestep doubles,
+	# thus saving CPU and bandwidth by sending half the number of
+	# object updates. The gameplay should feel roughly identical,
+	# granted the client does some interpolation between updates to
+	# smooth the perceived framerate.
+	powerSave: no
 
 	# Duration of the game in minutes.
 	duration: 5
@@ -151,6 +158,10 @@ class GamePreferences
 			# Probability, for each state, of using each bonus.
 			# Defaults to zero when no correspondin parameter is present.
 			# Probability is checked at every update.
+
+			# FIXME: less updates in power save mode means bots are half
+			# as less likely to use bonuses. These values are not very
+			# meaningful anyway.
 			acquireShieldUse: [.005, .05]
 			acquireStealthUse: [.005, .05]
 			acquireEMPUse: [.005, .05]

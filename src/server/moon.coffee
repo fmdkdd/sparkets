@@ -43,6 +43,7 @@ class Moon extends Planet
 		@flagNextUpdate('hitBox.y')
 
 	update: (step) ->
+		# FIXME: slower in power save.
 		@angle += @speed
 
 exports.Moon = Moon
