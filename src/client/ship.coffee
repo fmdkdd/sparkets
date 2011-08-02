@@ -56,6 +56,7 @@ class Ship
 			ctxt.save()
 			ctxt.translate(@pos.x, @pos.y)
 			ctxt.rotate(@dir)
+			ctxt.globalAlpha = 0.5 if @invisible
 			ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 			ctxt.restore()
 

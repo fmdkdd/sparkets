@@ -6,7 +6,6 @@ class BoostEffect
 		setTimeout( (() => @running = no), @duration)
 
 	newShadow: () ->
-
 		# Create a new sprite.
 		sprite = document.createElement('canvas')
 		sprite.width = @object.sprite.width
