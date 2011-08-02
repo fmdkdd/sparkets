@@ -7,6 +7,11 @@ class BoostEffect
 
 	newShadow: () ->
 
+		# XXX: Creating new sprites only to draw them with different
+		# opacities seems to defeat the purpose of having sprite in the
+		# first place. Why not drawImage() with a different globalAlpha
+		# for each shadow?
+
 		# Create a new sprite.
 		sprite = document.createElement('canvas')
 		sprite.width = @object.sprite.width
