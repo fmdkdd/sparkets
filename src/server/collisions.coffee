@@ -140,13 +140,13 @@ exports.separatingAxis = (box1, box2, i) ->
 
 			# Only return the axis if it has a length.
 			if closest.x isnt center.x or closest.y isnt center.y
-				utils.vec.normalize(utils.vec.minus(closest, center))
+				utils.vec.unit(utils.vec.minus(closest, center))
 
 		# Add the normal axis to the edge (there should be only one edge
 		# as the segments have been subdivided into convex parts beforehand)
 		when 'segments'
 			edge = utils.vec.minus(box.points[1], box.points[0])
-			utils.vec.normalize(utils.vec.perp(edge))
+			utils.vec.unit(utils.vec.perp(edge))
 
 		# Add the normal axis to each edge.
 		when 'polygon'
@@ -155,7 +155,7 @@ exports.separatingAxis = (box1, box2, i) ->
 			e2 = box.points[(i+1-offset) % box.points.length]
 
 			edge = utils.vec.minus(e2, e1)
-			utils.vec.normalize(utils.vec.perp(edge))
+			utils.vec.unit(utils.vec.perp(edge))
 
 # Check for intersection between two hitboxes.
 exports.checkIntersection = (box1, box2) ->
