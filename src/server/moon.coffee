@@ -25,16 +25,18 @@ class Moon extends Planet
 		# Random clockwise or counterclockwise direction.
 		@speed *= -1 if Math.random() < 0.5
 
+		# Only send polar coordinates to clients, not position.
+		@flagFullUpdate('planet.pos')
+		@flagFullUpdate('angle')
+		@flagFullUpdate('dist')
+		@flagFullUpdate('speed')
+
 		# Update position once.
 		@move()
 
 	move: (step) ->
 		@pos.x = @planet.pos.x + @dist * Math.cos(@angle)
 		@pos.y = @planet.pos.y + @dist * Math.sin(@angle)
-
-		# XXX: moons always follow the same pattern. Clients should
-		# infer that with starting polar coordinates and speed.
-		@flagNextUpdate('pos')
 
 		# Update hitbox
 		@hitBox.x = @pos.x
@@ -45,5 +47,10 @@ class Moon extends Planet
 	update: (step) ->
 		# FIXME: slower in power save.
 		@angle += @speed
+
+		# We could send this less frequently and let the client
+		# interpolate in the meantime. Beware of floating point drift
+		# though.
+		@flagNextUpdate('angle')
 
 exports.Moon = Moon

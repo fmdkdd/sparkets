@@ -11,6 +11,9 @@ class Planet
 		utils.deepMerge(planet, @)
 
 	update: () ->
+		if @type is 'moon'
+			@pos.x = @planet.pos.x + @dist * Math.cos(@angle)
+			@pos.y = @planet.pos.y + @dist * Math.sin(@angle)
 
 	inView: (offset = {x: 0, y: 0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @boundingRadius)
