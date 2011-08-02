@@ -64,12 +64,6 @@ class Bullet extends ChangingObject
 
 		return @game.gravityFieldAround(@pos, filter, force)
 
-	unflagAllNextUpdate: () ->
-		super()
-
-		# Only reset last points when the update has finished.
-		@lastPoint = []
-
 	move: (step) ->
 		return if @state isnt 'active'
 
