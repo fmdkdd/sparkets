@@ -53,7 +53,7 @@ class Client
 		# nonexistent games.
 		@connectionTimeout = setTimeout( ( () ->
 			url = 'http://' + window.location.hostname + ':' + window.location.port
-			window.location.replace(url)), 500)
+			window.location.replace(url)), 1500)
 
 		# Bind socket events.
 		@socket.on 'connect', () =>
