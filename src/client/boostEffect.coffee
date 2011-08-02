@@ -15,6 +15,7 @@ class BoostEffect
 				x: 0
 				y: 0
 				dir: 0
+				alpha: (1 - @shadows.length / @length) * 0.6
 
 		# Update shadows.
 		for i in [@shadows.length-1...0]
@@ -38,7 +39,8 @@ class BoostEffect
 		for i in [0...@shadows.length]
 			s = @shadows[i]
 			ctxt.save()
-			ctxt.globalAlpha = (1 - i / @length) * 0.6
+			ctxt.globalAlpha = s.alpha
+			console.info ctxt.globalAlphe
 			ctxt.translate(s.x, s.y)
 			ctxt.rotate(s.dir)
 			ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
