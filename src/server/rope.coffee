@@ -2,7 +2,7 @@ utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
 
 class Rope extends ChangingObject
-	constructor: (@game, @id, @object1, @object2, @ropeLength, @segments) ->
+	constructor: (@game, @id, @holder, @holdee, @ropeLength, @segments) ->
 		super()
 
 		# Send these properties to new players.
@@ -17,7 +17,7 @@ class Rope extends ChangingObject
 		@flagNextUpdate('type')
 
 		# Take color of holder, holdee, or default black.
-		@color = @object1.color or @object2.color or 'black'
+		@color = @holder.color or @holdee.color or 'black'
 
 		@flagNextUpdate('color')
 
@@ -27,8 +27,8 @@ class Rope extends ChangingObject
 		for i in [0...@segments-1]
 			@nodes.push
 				pos:
-					x: @object1.pos.x + (i+1) * (@object2.pos.x - @object1.pos.x) / @segments
-					y: @object1.pos.y + (i+1) * (@object2.pos.y - @object1.pos.y) / @segments
+					x: @holder.pos.x + (i+1) * (@holdee.pos.x - @holder.pos.x) / @segments
+					y: @holder.pos.y + (i+1) * (@holdee.pos.y - @holder.pos.y) / @segments
 				vel:
 					x: 0
 					y: 0
@@ -69,7 +69,7 @@ class Rope extends ChangingObject
 
 	move: (step) ->
 		# Don't move if no object is attached.
-		return if not @object1? or not @object2?
+		return if not @holder? or not @holdee?
 
 		# Update each node position.
 		for n in @nodes
@@ -81,7 +81,7 @@ class Rope extends ChangingObject
 
 		# Build a chain starting from the first object, containing all
 		# nodes and ending with the second object.
-		rope = [@object1].concat(@nodes).concat([@object2])
+		rope = [@holder].concat(@nodes).concat([@holdee])
 
 		# Enforce the distance constraints.
 		for i in [0...rope.length-1]
@@ -123,18 +123,18 @@ class Rope extends ChangingObject
 
 	update: (step) ->
 		# Don't send chain if no object is attached.
-		return if not @object1? or not @object2?
+		return if not @holder? or not @holdee?
 
 		# Prepare the chain which will be sent to the client.
-		rope = [@object1].concat(@nodes).concat([@object2])
+		rope = [@holder].concat(@nodes).concat([@holdee])
 		@chain = []
 		for n in rope
 			@chain.push n.pos
 		@flagNextUpdate('chain')
 
 	detach: () ->
-		@object1 = null
-		@object2 = null
+		@holder = null
+		@holdee = null
 
 		@serverDelete = yes
 
