@@ -86,8 +86,6 @@ class Rope
 
 		ctxt.stroke()
 
-		ctxt.globalCompositeOperation = 'source-over'
-
 	inView: (offset = {x:0, y:0}) ->
 		true
 

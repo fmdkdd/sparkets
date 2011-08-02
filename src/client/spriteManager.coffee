@@ -41,13 +41,14 @@ class SpriteManager
 
 		# Paste the original sprite.
 		ctxt = colored.getContext('2d')
+		ctxt.save()
 		ctxt.drawImage(sprite, 0, 0)
 
 		# Apply a colored overlay where the original sprite isn't transparent.
 		ctxt.globalCompositeOperation = 'source-in'
 		ctxt.fillStyle = color
 		ctxt.fillRect(0, 0, colored.width, colored.height)
-		ctxt.globalCompositeOperation = 'source-over'
+		ctxt.restore()
 
 		return colored
 
@@ -235,7 +236,6 @@ class SpriteManager
 			ctxt.lineTo(80, 75)
 			ctxt.lineTo(85, 15)
 			ctxt.fill()
-			ctxt.globalCompositeOperation = 'source-over'
 			ctxt.restore()
 
 			return sprite
@@ -259,7 +259,6 @@ class SpriteManager
 			ctxt.beginPath()
 			ctxt.arc(10, 10, 4, 0, 2*Math.PI, false)
 			ctxt.fill()
-			ctxt.globalCompositeOperation = 'source-over'
 			ctxt.restore()
 
 			return sprite

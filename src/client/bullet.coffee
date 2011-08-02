@@ -74,7 +74,6 @@ class Bullet
 			x1 = x2
 			y1 = y2
 
-		ctxt.globalCompositeOperation = 'source-over'
 
 # Exports
 window.Bullet = Bullet
