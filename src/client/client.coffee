@@ -274,7 +274,7 @@ class Client
 
 	drawRadar: (ctxt) ->
 		for id, ship of @ships
-			if id isnt @shipId and ship.state isnt 'dead'
+			unless id is @shipId or ship.state in ['dead', 'ready', 'spawned']
 				ctxt.save()
 				ship.drawOnRadar(ctxt)
 				ctxt.restore()
