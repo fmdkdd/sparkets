@@ -86,11 +86,8 @@ class GamePreferences
 		# Highest initial bullet speed.
 		maxFirepower: 3
 
-		# Number of frames to wait before firing again.
-		cannonCooldown: 20
-
-		# Duration of explosion animation in frames.
-		maxExploFrame: 50
+		# Time to wait before firing again (ms).
+		cannonCooldown: 400
 
 		# If true, planets gravity affect ships.
 		enableGravity: false

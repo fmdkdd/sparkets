@@ -296,13 +296,15 @@ class Ship extends ChangingObject
 		switch @state
 			when 'alive'
 				if @cannonHeat > 0
-					--@cannonHeat
+					@cannonHeat -= @game.prefs.timestep * step
+					@cannonHeat = 0 if @cannonHeat < 0
 
 					# FIXME: client should infer this.
 					@flagNextUpdate('cannonHeat')
 
 				# Decay boost if active.
 				if @boost > 1 and @boostDecay > 0
+					# FIXME: longer decay in power save.
 					@boost -= @boostDecay
 					@boost = 1 if @boost < 1
 
