@@ -37,7 +37,7 @@ class Client
 
 		# Debugging
 		@showHitBoxes = no
-		@showMapBounds = yes
+		@showMapBounds = no
 		@showFPS = no
 
 		@menu = new Menu(@)
@@ -413,13 +413,14 @@ class Client
 		switch event.type
 			when 'ship exploded'
 				@gameObjects[event.id].explosionEffect()
+				@gameObjects[event.id].dislocationEffect()
 				@chat.receiveEvent(event)
 
 			when 'ship boosted'
 				@gameObjects[event.id].boostEffect()
 
 			when 'mine exploded'
-				@gameObjects[event.id].explodingEffect()
+				@gameObjects[event.id].explosionEffect()
 
 			when 'bonus used'
 				@gameObjects[event.id].openingEffect()
@@ -429,14 +430,14 @@ class Client
 				@gameObjects[event.id].explosionEffect()
 
 			when 'rope exploded'
-				@gameObjects[event.id].explodingEffect()
+				@gameObjects[event.id].explosionEffect()
 
 			when 'tracker activated'
 				@gameObjects[event.id].trailEffect()
 				@gameObjects[event.id].boostEffect()
 
 			when 'tracker exploded'
-				@gameObjects[event.id].explodingEffect()
+				@gameObjects[event.id].explosionEffect()
 
 			when 'EMP released'
 				@gameObjects[event.id].EMPEffect()

@@ -91,7 +91,7 @@ class Rope
 	inView: (offset = {x:0, y:0}) ->
 		true
 
-	explodingEffect: () ->
+	explosionEffect: () ->
 		return if @chain.length is 0
 
 		# Convert the chain positions to the closest ghosts of the first node.

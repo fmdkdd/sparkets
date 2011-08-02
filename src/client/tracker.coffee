@@ -33,7 +33,7 @@ class Tracker
 		@client.boxInView(@pos.x + offset.x,
 			@pos.y + offset.y, @boundingRadius)
 
-	explodingEffect: () ->
+	explosionEffect: () ->
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 100, 5, 0.2)
 
 	trailEffect: () ->

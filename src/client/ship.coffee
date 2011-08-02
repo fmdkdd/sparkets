@@ -146,7 +146,7 @@ class Ship
 	boostEffect: () ->
 		@client.effects.push new BoostEffect(@client, @, 5, 3000)
 
-	explosionEffect: () ->
+	killingSpeed: () ->
 		# Initial particle speed is derived from ship speed at death
 		# and killing bullet speed.
 		[vx, vy] = [@vel.x, @vel.y]
@@ -160,9 +160,48 @@ class Ship
 			speed = nvel
 
 		# Ensure decent fireworks.
-		speed = Math.max(speed, 3)
+		Math.max(speed, 3)
+
+	explosionEffect: () ->
+		speed = @killingSpeed()
 
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
+
+	dislocationEffect: () ->
+		points = [
+			{x: -10, y: -7},
+			{x: 10, y: -0},
+			{x: -10, y: 7},
+			{x: -6, y: 0}]
+
+		edges = []
+
+		speed = @killingSpeed()
+
+		# Rotate points according to the direction of the ship.
+		for p in points
+			p = utils.vec.rotate(p, @dir)
+
+		# Loop through the points to build edges.
+		for i in [0...points.length]
+			cur = points[i]
+			next = points[(i+1) % points.length]
+			middle =
+				x: cur.x + (next.x - cur.x) / 2
+				y: cur.y + (next.y - cur.y) / 2
+			angle = Math.atan2(next.y-cur.y, next.x-cur.x)
+
+			edges.push
+				x: @pos.x + middle.x
+				y: @pos.y + middle.y
+				r: angle
+				vx: middle.x * 0.05 * speed * Math.random()
+				vy: middle.y * 0.05 * speed * Math.random()
+				vr: (Math.random()*2-1) * 0.05
+				size: utils.distance(cur.x, cur.y, next.x, next.y)
+				lineWidth: 4
+
+		@client.effects.push new DislocateEffect(@client, edges, @color, 5000)
 
 	EMPEffect: () ->
 		# Immobile flash effect.

@@ -17,8 +17,8 @@ class DislocateEffect
 
 	draw: (ctxt) ->
 		ctxt.strokeStyle = utils.color(@color, 1-(@client.now-@start)/@duration)
-		ctxt.lineWidth = 2
 		for e in @edges
+			ctxt.lineWidth = e.lineWidth or 2
 			ctxt.save()
 			ctxt.translate(e.x, e.y)
 			ctxt.rotate(e.r)

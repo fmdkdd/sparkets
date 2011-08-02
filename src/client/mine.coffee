@@ -44,7 +44,7 @@ class Mine
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @boundingRadius)
 
-	explodingEffect: () ->
+	explosionEffect: () ->
 		@client.effects.push new FlashEffect(@client, @pos, 80, @color, 500)
 
 # Exports
