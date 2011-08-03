@@ -157,8 +157,10 @@
    Bonus too could benefit by emitting the 'effect wears off' event
    catched by ships instead of managing the bonusTimeouts explicitly.
 
-   Node provides the EventEmitter prototype for this purpose.
-
+   While this is a nice pattern, we need to make sure calling
+   listeners is synchronous. If that must be done, use our own
+   synchronous EventEmitter.
+   
 ** DONE Factorize gravity from planet computations
 	 CLOSED: [2011-07-13 Wed 12:20]
    Consider only surrounding planets, wrt the torus.
@@ -174,7 +176,8 @@
 
 ** Prevent objects from spawning onto each other.
    
-** Change planet count to a percentage value relative to map size.
+** DONE Change planet count to a percentage value relative to map size.
+   CLOSED: [2011-08-03 Wed 15:28]
    Could specify between 30-70% planet fill. Avoid locks when trying
    to fit 50 planets into a 500*500 map. 
    
