@@ -17,15 +17,16 @@ class Bonus extends ChangingObject
 		@flagFullUpdate('pos')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('bonusType')
-		@flagFullUpdate('boundingRadius')
-		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagFullUpdate('boundingBox')
+			@flagFullUpdate('hitBox')
 
 		@type = 'bonus'
 		@flagNextUpdate('type')
 
-		@boundingRadius = @game.prefs.bonus.boundingRadius
-
-		@flagNextUpdate('boundingRadius')
+		# Bounding box is the same as the hit box.
+		@boundingBox =
+			radius: @game.prefs.bonus.boundingBoxRadius
 
 		@hitBox =
 			type: 'polygon'
@@ -35,7 +36,9 @@ class Bonus extends ChangingObject
 				{x: 0, y: 0},
 				{x: 0, y: 0}]
 
-		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox')
+			@flagNextUpdate('hitBox')
 
 		@spawn(bonusType)
 
@@ -44,13 +47,13 @@ class Bonus extends ChangingObject
 			x: Math.random() * @game.prefs.mapSize
 			y: Math.random() * @game.prefs.mapSize
 
-		@updateHitbox()
+		@updateBoxes()
 
 		# Find a safe drop location.
 		while @game.collidesWithPlanet(@)
 			@pos.x = Math.random() * @game.prefs.mapSize
 			@pos.y = Math.random() * @game.prefs.mapSize
-			@updateHitbox()
+			@updateBoxes()
 
 		# Set our initial velocity.
 		@vel =
@@ -89,12 +92,18 @@ class Bonus extends ChangingObject
 		{x: +10, y: +10},
 		{x: -10, y: +10}]
 
-	updateHitbox: () ->
+	updateBoxes: () ->
 		for i in [0...@hitBox.points.length]
 			@hitBox.points[i].x = @pos.x + @hitBoxPoints[i].x
 			@hitBox.points[i].y = @pos.y + @hitBoxPoints[i].y
 
-		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
+		@boundingBox.x = @pos.x
+		@boundingBox.y = @pos.y
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox.x')
+			@flagNextUpdate('boundingBox.y')
+			@flagNextUpdate('hitBox.points')
 
 	randomBonus: () ->
 		roulette = []
@@ -136,7 +145,8 @@ class Bonus extends ChangingObject
 		# Warp around the borders.
 		utils.warp(@pos, @game.prefs.mapSize)
 
-		@updateHitbox() unless @vel.x is 0 and @vel.y is 0
+		# Update bounding and hit boxes.
+		@updateBoxes() unless @vel.x is 0 and @vel.y is 0
 
 		# Decay velocity.
 		@vel.x *= @game.prefs.bonus.frictionDecay

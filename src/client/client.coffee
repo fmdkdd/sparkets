@@ -259,7 +259,15 @@ class Client
 		ctxt.save()
 		obj.draw(ctxt, offset)
 		ctxt.restore()
-		obj.drawHitbox(ctxt) if @showHitBoxes
+		if @showHitBoxes
+			ctxt.save()
+			obj.drawHitbox(ctxt)
+
+			# Draw bounding box
+			ctxt.strokeStyle = 'blue'
+			r = obj.boundingBox.radius
+			ctxt.strokeRect(obj.boundingBox.x - r, obj.boundingBox.y - r, 2*r, 2*r)
+			ctxt.restore()
 
 	drawMapBounds: (ctxt) ->
 		ctxt.save()

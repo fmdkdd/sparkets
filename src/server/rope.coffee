@@ -10,8 +10,9 @@ class Rope extends ChangingObject
 		@flagFullUpdate('color')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('clientChain')
-		@flagFullUpdate('boundingRadius')
-		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagFullUpdate('boundingBox')
+			@flagFullUpdate('hitBox')
 
 		@type = 'rope'
 		@flagNextUpdate('type')
@@ -41,18 +42,9 @@ class Rope extends ChangingObject
 		# The client chain only contains positions from the chain.
 		@updateClientChain()
 
-		# We need a position to insert in the grid. The object is
-		# inserted in all cells overlapping with its bounding box.
-		@pos =
-			x: @chain[0].pos.x
-			y: @chain[0].pos.y
-
-		# Make sur all the rope is in the bounding box.
-		@boundingRadius = (@chain.map (a) =>
-			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
-				Math.max(a,b)
-
-		@flagNextUpdate('boundingRadius')
+		# Init bounding box.
+		@boundingBox = {}
+		@updateBoundingBox()
 
 		# Construct hit box with all chain positions.
 		@hitBox =
@@ -64,7 +56,7 @@ class Rope extends ChangingObject
 				x: n.pos.x
 				y: n.pos.y
 
-		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
+		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
 	tangible: () ->
 		yes
@@ -98,21 +90,8 @@ class Rope extends ChangingObject
 				next.vel.x += ratio * (cur.pos.x - ghost.x)
 				next.vel.y += ratio * (cur.pos.y - ghost.y)
 
-		# Update bounding box and hitbox
-		@pos =
-			x: @chain[0].pos.x
-			y: @chain[0].pos.y
-
-		# Should contain all the nodes.
-		#
-		# FIXME: max distance from first point is erroneous. I think
-		# rope length is a correct upper bound. We should also center
-		# the bounding box, since it's currently useless if the first
-		# point is also the farthest to the right and down.
-		@boundingRadius = (@chain.map (a) =>
-			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
-				Math.max(a,b)
-
+		# Update bounding box and hitbox.
+		@updateBoundingBox()
 		@updateHitBox()
 
 	update: (step) ->
@@ -135,6 +114,25 @@ class Rope extends ChangingObject
 			@hitBox.points[i].y = @chain[i].pos.y
 
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
+
+	updateBoundingBox: () ->
+		# Should contain all the nodes.
+		#
+		# FIXME: max distance from first point is erroneous. I think
+		# rope length is a correct upper bound. We should also center
+		# the bounding box, since it's currently useless if the first
+		# point is also the farthest to the right and down.
+		@boundingBox.x = @chain[0].pos.x
+		@boundingBox.y = @chain[0].pos.y
+
+		x = @boundingBox.x
+		y = @boundingBox.y
+
+		@boundingBox.radius = (@chain.map (a) ->
+			utils.distance(x, y, a.pos.x, a.pos.y)).reduce (a,b) ->
+				Math.max(a,b)
+
+		@flagNextUpdate('boundingBox') if @game.prefs.debug.sendHitBoxes
 
 	detach: () ->
 		@holder = null

@@ -12,8 +12,9 @@ class Tracker extends ChangingObject
 		@flagFullUpdate('pos')
 		@flagFullUpdate('dir')
 		@flagFullUpdate('serverDelete')
-		@flagFullUpdate('boundingRadius')
-		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagFullUpdate('boundingBox')
+			@flagFullUpdate('hitBox')
 
 		@type = 'tracker'
 		@flagNextUpdate('type')
@@ -40,20 +41,25 @@ class Tracker extends ChangingObject
 		@flagNextUpdate('pos')
 		@flagNextUpdate('dir')
 
-		# Bounding radius is static.
-		@boundingRadius = @game.prefs.tracker.boundingRadius
+		# Bounding box has static radius, following the tracker.
+		radius = @game.prefs.tracker.boundingBoxRadius
 
-		@flagNextUpdate('boundingRadius')
+		@boundingBox =
+			x: @pos.x
+			y: @pos.y
+			radius: radius
 
 		# Hit box is a circle with fixed radius following centered on
 		# the tracker.
 		@hitBox =
 			type: 'circle'
-			radius: @boundingRadius
 			x: @pos.x
 			y: @pos.y
+			radius: radius
 
-		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox')
+			@flagNextUpdate('hitBox')
 
 	tangible: () ->
 		@state isnt 'dead'
@@ -117,11 +123,16 @@ class Tracker extends ChangingObject
 		@vel.x *= @game.prefs.tracker.frictionDecay
 		@vel.y *= @game.prefs.tracker.frictionDecay
 
-		# Update hitbox
+		# Update bounding and hit boxes.
+		@boundingBox.x = @pos.x
+		@boundingBox.y = @pos.y
+
 		@hitBox.x = @pos.x
 		@hitBox.y = @pos.y
 
 		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox.x')
+			@flagNextUpdate('boundingBox.y')
 			@flagNextUpdate('hitBox.x')
 			@flagNextUpdate('hitBox.y')
 

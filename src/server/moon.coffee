@@ -38,6 +38,12 @@ class Moon extends Planet
 		@pos.x = @planet.pos.x + @dist * Math.cos(@angle)
 		@pos.y = @planet.pos.y + @dist * Math.sin(@angle)
 
+		# Update bounding box position.
+		@boundingBox.x = @pos.x
+		@boundingBox.y = @pos.y
+		@flagNextUpdate('boundingBox.x')
+		@flagNextUpdate('boundingBox.y')
+
 		# Update hitbox
 		@hitBox.x = @pos.x
 		@hitBox.y = @pos.y

@@ -75,8 +75,8 @@ class GamePreferences
 				next: 'ready'
 				countdown: 1000
 
-		# Radius of hit circle.
-		boundingRadius: 9
+		# Half-width of bounding box.
+		boundingBoxRadius: 13
 
 		# Rotation increase at input update.
 		dirInc: 0.12
@@ -263,9 +263,6 @@ class GamePreferences
 		satellitePullMax: .2
 
 	bullet:
-		# Radius of hit circle.
-		boundingRadius: 2
-
 		# Gravity pull factor.
 		gravityPull: 200
 
@@ -319,7 +316,7 @@ class GamePreferences
 
 	tracker:
 
-		boundingRadius: 5
+		boundingBoxRadius: 5
 		speed: 0.55
 		frictionDecay: 0.95
 		turnSpeed: 20
@@ -378,8 +375,8 @@ class GamePreferences
 				class: BonusStealth
 				weight: 1
 
-		# Radius of hit circle.
-		boundingRadius: 10
+		# Half-width of bounding box.
+		boundingBoxRadius: 10
 
 		# Inertia decay at update.
 		frictionDecay: 0.97

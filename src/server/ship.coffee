@@ -19,9 +19,10 @@ class Ship extends ChangingObject
 		@flagFullUpdate('cannonHeat')
 		@flagFullUpdate('boost')
 		@flagFullUpdate('invisible')
-		@flagFullUpdate('boundingRadius')
-		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 		@flagFullUpdate('stats')
+		if @game.prefs.debug.sendHitBoxes
+			@flagFullUpdate('boundingBox')
+			@flagFullUpdate('hitBox')
 
 		@type = 'ship'
 		@flagNextUpdate('type')
@@ -42,10 +43,9 @@ class Ship extends ChangingObject
 		@flagNextUpdate('stats.kills')
 		@flagNextUpdate('stats.deaths')
 
-		# Bounding radius is static.
-		@boundingRadius = @game.prefs.ship.boundingRadius
-
-		@flagNextUpdate('boundingRadius')
+		# Bounding box has static radius, but follows ship.
+		@boundingBox =
+			radius: @game.prefs.ship.boundingBoxRadius
 
 		# Hit box is a triangle slightly smaller than the displayed
 		# ship.
@@ -88,6 +88,11 @@ class Ship extends ChangingObject
 
 		@flagNextUpdate('pos')
 		@flagNextUpdate('dir')
+
+		# Set bounding box position.
+		@boundingBox.x = @pos.x
+		@boundingBox.y = @pos.y
+		@flagNextUpdate('boundingBox') if @game.prefs.debug.sendHitBoxes
 
 		# Initial velocity.
 		@vel =
@@ -260,6 +265,14 @@ class Ship extends ChangingObject
 
 		@vel.x *= @game.prefs.ship.frictionDecay
 		@vel.y *= @game.prefs.ship.frictionDecay
+
+		# Update bounding box position.
+		@boundingBox.x = @pos.x
+		@boundingBox.y = @pos.y
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox.x')
+			@flagNextUpdate('boundingBox.y')
 
 		# Only update if the change in position is noticeable.
 		@flagNextUpdate('pos.x') if Math.abs(@pos.x-x) > .02

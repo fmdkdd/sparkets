@@ -3,7 +3,8 @@ class Bonus
 		@serverUpdate(bonus)
 
 		# Create the bonus sprite.
-		s = 2*@boundingRadius
+		@radius = 10
+		s = 2*@radius
 		color = window.utils.color @color
 		@sprite = @client.spriteManager.get('bonus', s, s, color)
 
@@ -19,7 +20,7 @@ class Bonus
 
 	inView: (offset = {x:0, y:0}) ->
 		@state isnt 'incoming' and
-			@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
+			@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
 	drawHitbox: (ctxt) ->
 		return if not @hitBox?

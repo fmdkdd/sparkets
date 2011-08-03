@@ -220,7 +220,6 @@ class GameServer
 
 	placeObjectInGrid: (obj) ->
 		mapWidth = mapHeight = @prefs.mapSize
-		{x: ox, y: oy} = obj.pos
 		w = @grid.cellWidth
 		h = @grid.cellHeight
 
@@ -243,7 +242,9 @@ class GameServer
 		# Place the object in all cells containing its bounding box.
 		# We go through the bounding box in increments lower than either
 		# side of the box to avoid skipping a grid cell.
-		halfSide = obj.boundingRadius
+		x = obj.boundingBox.x
+		y = obj.boundingBox.y
+		halfSide = obj.boundingBox.radius
 		incr = 2 * halfSide
 
 		# Find right increment.
@@ -256,7 +257,7 @@ class GameServer
 			while cellX <= halfSide
 				cellY = -halfSide
 				while cellY <= halfSide
-					insert(ox + cellX, oy + cellY)
+					insert(x + cellX, y + cellY)
 					cellY += incr
 				cellX += incr
 

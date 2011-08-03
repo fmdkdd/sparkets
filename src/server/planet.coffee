@@ -8,10 +8,12 @@ class Planet extends ChangingObject
 		# Send these properties to new players.
 		@flagFullUpdate('type')
 		@flagFullUpdate('pos')
+		@flagFullUpdate('force')
 		@flagFullUpdate('color')
-		@flagFullUpdate('boundingRadius')
-		@flagFullUpdate('id') if @game.prefs.debug.sendHitBoxes
-		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagFullUpdate('id')
+			@flagFullUpdate('boundingBox')
+			@flagFullUpdate('hitBox')
 
 		@type = 'planet'
 		@flagNextUpdate('type')
@@ -24,11 +26,13 @@ class Planet extends ChangingObject
 		# Radius of planet.
 		@force = force
 
-		# XXX: client relies only on bounding radius to draw ... we
-		# should uncouple this.
-		@boundingRadius = @force
+		@flagNextUpdate('force')
 
-		@flagNextUpdate('boundingRadius')
+		# Static bounding box with force as radius.
+		@boundingBox =
+			x: @pos.x
+			y: @pos.y
+			radius: @force
 
 		# Circle hit box with static position and radius.
 		@hitBox =
@@ -37,7 +41,9 @@ class Planet extends ChangingObject
 			x: @pos.x
 			y: @pos.y
 
-		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox')
+			@flagNextUpdate('hitBox')
 
 		# Same color for all planets.
 		@color = @game.prefs.planet.color

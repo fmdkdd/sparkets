@@ -5,7 +5,8 @@ class Tracker
 		@color = @client.gameObjects[@ownerId].color
 
 		# Create the sprite.
-		s = 2*@boundingRadius + 7
+		@radius = 5
+		s = 2*@radius + 7
 		color = window.utils.color @color
 		@sprite = @client.spriteManager.get('tracker', s, s, color)
 
@@ -32,8 +33,7 @@ class Tracker
 		ctxt.restore()
 
 	inView: (offset = {x:0, y:0}) ->
-		@client.boxInView(@pos.x + offset.x,
-			@pos.y + offset.y, @boundingRadius)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
 	explosionEffect: () ->
 		@client.effects.push new ExplosionEffect(@client, @pos, @color, 100, 5, 0.2)

@@ -3,7 +3,7 @@ class Planet
 		@serverUpdate(planet)
 
 		# Create the sprite.
-		s = 2*@boundingRadius
+		s = 2 * @force
 		color = window.utils.color @color
 		@sprite = @client.spriteManager.get('planet', s, s, color)
 
@@ -16,7 +16,7 @@ class Planet
 			@pos.y = @planet.pos.y + @dist * Math.sin(@angle)
 
 	inView: (offset = {x: 0, y: 0}) ->
-		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @boundingRadius)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @force)
 
 	drawHitbox: (ctxt) ->
 		return if not @hitBox?
@@ -30,8 +30,6 @@ class Planet
 		ctxt.fillText(@id, @pos.x - ctxt.measureText(@id).width/2, @pos.y)
 
 	draw: (ctxt) ->
-		r = @boundingRadius
-
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
 		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)

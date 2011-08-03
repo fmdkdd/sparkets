@@ -165,7 +165,7 @@ class Bot extends Player
 			state = if @state is 'chase' then @state else 'seek'
 			type = if obj.type is 'moon' then 'planet' else obj.type
 			prop = state + utils.capitalize(type) + 'Avoid'
-			return @prefs[prop] * obj.boundingRadius
+			return @prefs[prop] * obj.boundingBox.radius
 
 		# Try to avoid planets and mines using a negative field motion.
 		gvec = @game.gravityFieldAround(@ship.pos, filter, force)

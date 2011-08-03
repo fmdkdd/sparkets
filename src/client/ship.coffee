@@ -34,7 +34,7 @@ class Ship
 			@engineAnimFor = null if @engineAnimFor <= 0
 
 	inView: (offset = {x:0, y:0}) ->
-		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 10)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
 
 	drawHitbox: (ctxt) ->
 		return if not @hitBox?

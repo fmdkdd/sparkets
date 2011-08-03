@@ -10,8 +10,9 @@ class Bullet extends ChangingObject
 		@flagFullUpdate('ownerId')
 		@flagFullUpdate('lastPoint')
 		@flagFullUpdate('serverDelete')
-		@flagFullUpdate('boundingRadius')
-		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagFullUpdate('boundingBox')
+			@flagFullUpdate('hitBox')
 
 		@type = 'bullet'
 		@flagNextUpdate('type')
@@ -37,14 +38,18 @@ class Bullet extends ChangingObject
 		@flagNextUpdate('lastPoint')
 
 		# Initial hit box is a point.
-		@boundingRadius = @game.prefs.bullet.boundingRadius
+		@boundingBox =
+			radius: 0
+
 		@hitBox =
 			type: 'polygon'
 			points: [
 				{x: @pos.x, y: @pos.y},
 				{x: @pos.x, y: @pos.y}]
 
-		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox')
+			@flagNextUpdate('hitBox')
 
 		@state = 'active'
 
@@ -112,9 +117,18 @@ class Bullet extends ChangingObject
 			y: @pos.y
 
 		# Convert the last segment to a polygon for a larger hit box.
-		@hitBox.points = utils.segmentToPoly(A, B, @boundingRadius)
+		@hitBox.points = utils.segmentToPoly(A, B, 2)
 
-		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
+		# Update bounding box to cover the entire last segment.
+		seg = utils.vec.minus(B, A)
+		center = utils.vec.plus(A, utils.vec.times(seg, 0.5))
+		@boundingBox.x = center.x
+		@boundingBox.y = center.y
+		@boundingBox.radius = utils.vec.length(seg)/2
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox')
+			@flagNextUpdate('hitBox.points')
 
 	update: (step) ->
 		if @state is 'dead'

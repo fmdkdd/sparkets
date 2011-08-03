@@ -33,7 +33,7 @@ class Mine
 
 		# Draw the sensor wave when the mine is active.
 		if @state is 'active'
-			for r in [@boundingRadius...0] by -20
+			for r in [@radius...0] by -20
 				ctxt.save()
 				ctxt.lineWidth = 3
 				ctxt.strokeStyle = utils.color(@color, 1-r/50)
@@ -44,7 +44,7 @@ class Mine
 				ctxt.restore()
 
 	inView: (offset = {x:0, y:0}) ->
-		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @boundingRadius)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
 	explosionEffect: () ->
 		@client.effects.push new FlashEffect(@client, @pos, 80, @color, 500)

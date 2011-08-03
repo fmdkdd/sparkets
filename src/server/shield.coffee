@@ -9,8 +9,9 @@ class Shield extends ChangingObject
 		@flagFullUpdate('type')
 		@flagFullUpdate('ownerId')
 		@flagFullUpdate('serverDelete')
-		@flagFullUpdate('boundingRadius')
-		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+		if @game.prefs.debug.sendHitBoxes
+			@flagFullUpdate('boundingBox')
+			@flagFullUpdate('hitBox')
 
 		@type = 'shield'
 		@flagNextUpdate('type')
@@ -28,16 +29,23 @@ class Shield extends ChangingObject
 
 		# FIXME: uncouple bounding radius and force, same as planet.
 		@force = @game.prefs.shield.radius
-		@boundingRadius = @force
-
-		@flagNextUpdate('boundingRadius')
+		@flagNextUpdate('force')
 
 		# Hit box is a circle of fixed radius centered on the ship.
+		@boundingBox =
+			x: @pos.x
+			y: @pos.y
+			radius: @force
+
 		@hitBox =
 			type: 'circle'
 			radius: @force
 			x: @pos.x
 			y: @pos.y
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox')
+			@flagNextUpdate('hitBox')
 
 	cancel: () ->
 		@serverDelete = yes
@@ -52,11 +60,16 @@ class Shield extends ChangingObject
 
 		# Our position is the ship's, no need to update it.
 
-		# Hit box update is still necessary.
+		# Updating bounding and hit boxes is still necessary.
+		@boundingBox.x = @pos.x
+		@boundingBox.y = @pos.y
+
 		@hitBox.x = @pos.x
 		@hitBox.y = @pos.y
 
 		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox.x')
+			@flagNextUpdate('boundingBox.y')
 			@flagNextUpdate('hitBox.x')
 			@flagNextUpdate('hitBox.y')
 
