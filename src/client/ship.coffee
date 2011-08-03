@@ -5,20 +5,27 @@ class Ship
 		@engineAnimFor = null
 		@engineAnimDelay = 200
 
-		# Create the sprite.
-		w = 20+5 # +5 to make way for the line width and the line rounding.
-		h = 14+5
-		color = window.utils.color @color
-		@sprite = @client.spriteManager.get('ship', w, h, color)
+		@initSprite()
 
 	serverUpdate: (ship) ->
+		color_old = @color
 		thrust_old = @thrust
 
 		utils.deepMerge(ship, @)
 
+		# Fetch a new sprite if the color changed.
+		if @color isnt color_old
+			@initSprite()
+
 		# Start the engine fade-in/out in the ship just started/stopped thrusting.
 		if @thrust isnt thrust_old
 			@engineAnimFor = @engineAnimDelay
+
+	initSprite: () ->
+		w = 20+5 # +5 to make way for the line width and the line rounding.
+		h = 14+5
+		color = window.utils.color @color
+		@sprite = @client.spriteManager.get('ship', w, h, color)
 
 	update: () ->
 		# Update the engine animation.

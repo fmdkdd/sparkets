@@ -49,13 +49,18 @@ class Player
 		@ship.chargeFire(step) if @keysDown[32] is on or @keysDown[65] is on
 
 	changePrefs: (name, color) ->
+	
 		if name?
 			@name = name
-			@ship.name = name if @ship?
+			if @ship?
+				@ship.name = name
+				@ship.flagNextUpdate('name')
 
 		if color?
 			@color = color
-			@ship.color = color if @ship?
+			if @ship?
+				@ship.color = color
+				@ship.flagNextUpdate('color')
 
 
 exports.Player = Player

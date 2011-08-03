@@ -27,9 +27,8 @@ class Ship extends ChangingObject
 		@flagNextUpdate('type')
 
 		# Saved name or none.
-		if name?
-			@name = name
-			@flagNextUpdate('name')
+		@name = name
+		@flagNextUpdate('name')
 
 		# Saved color or random one.
 		@color = color or utils.randomColor()
