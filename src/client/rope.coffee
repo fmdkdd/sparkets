@@ -9,6 +9,8 @@ class Rope
 		@clientDelete = @serverDelete
 
 	drawHitbox: (ctxt) ->
+		return if not @hitBox?
+
 		points = @hitBox.points
 		return if points.length < 2
 

@@ -30,6 +30,8 @@ class Ship
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 10)
 
 	drawHitbox: (ctxt) ->
+		return if not @hitBox?
+
 		points = @hitBox.points
 		return if points.length < 2
 

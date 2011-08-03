@@ -15,6 +15,13 @@ class Tracker
 	update: () ->
 		@clientDelete = @serverDelete
 
+	drawHitbox: (ctxt) ->
+		return if not @hitBox?
+
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1.1
+		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
+
 	draw: (ctxt) ->
 		return if @state is 'dead'
 
@@ -23,11 +30,6 @@ class Tracker
 		ctxt.rotate(@dir)
 		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 		ctxt.restore()
-
-	drawHitbox: (ctxt) ->
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x,

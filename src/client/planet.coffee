@@ -19,6 +19,8 @@ class Planet
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @boundingRadius)
 
 	drawHitbox: (ctxt) ->
+		return if not @hitBox?
+
 		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 1.1
 		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)

@@ -15,6 +15,13 @@ class Mine
 	update: () ->
 		@clientDelete = @serverDelete
 
+	drawHitbox: (ctxt) ->
+		return if not @hitBox?
+
+		ctxt.strokeStyle = 'red'
+		ctxt.lineWidth = 1.1
+		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
+
 	draw: (ctxt) ->
 		return if @state is 'exploding' or @state is 'dead'
 
@@ -35,11 +42,6 @@ class Mine
 				ctxt.arc(0, 0, r, 0, 2*Math.PI, false)
 				ctxt.stroke()
 				ctxt.restore()
-
-	drawHitbox: (ctxt) ->
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @boundingRadius)
