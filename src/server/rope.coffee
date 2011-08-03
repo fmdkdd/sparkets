@@ -34,10 +34,7 @@ class Rope extends ChangingObject
 					y: 0
 
 		# The chain is used to send the position of each node to clients.
-		# FIXME: empty on first frame!
-		@chain = []
-
-		@flagNextUpdate('chain')
+		@updateChain()
 
 		# We need a position to insert in the grid. The object is
 		# inserted in all cells overlapping with its bounding box.
@@ -57,12 +54,15 @@ class Rope extends ChangingObject
 			type: 'segments'
 			points: []
 
-		for n in @nodes
+		# The chain contains the positions of every node plus the 
+		# positions of the two objects whereas the node is only
+		# articulation points.
+		for p in @chain
 			@hitBox.points.push
-				x: n.pos.x
-				y: n.pos.y
+				x: p.x
+				y: p.y
 
-		@flagNextUpdate('hitBox')
+		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	tangible: () ->
 		yes
@@ -98,9 +98,6 @@ class Rope extends ChangingObject
 				next.vel.x += ratio * (cur.pos.x - ghost.x)
 				next.vel.y += ratio * (cur.pos.y - ghost.y)
 
-			#next.vel.x *= @game.prefs.ship.frictionDecay
-			#next.vel.y *= @game.prefs.ship.frictionDecay
-
 		# Update bounding box and hitbox
 		@pos =
 			x: @nodes[0].pos.x
@@ -116,21 +113,31 @@ class Rope extends ChangingObject
 			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
 				Math.max(a,b)
 
-		for i in [0...@nodes.length]
-			@hitBox.points[i].x = @nodes[i].pos.x
-			@hitBox.points[i].y = @nodes[i].pos.y
-		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
-
 	update: (step) ->
 		# Don't send chain if no object is attached.
 		return if not @holder? or not @holdee?
 
+		@updateChain()
+
+		# The hitbox is based on the chain and must be updated in order.
+		@updateHitBox()
+
+	updateChain: () ->
 		# Prepare the chain which will be sent to the client.
 		rope = [@holder].concat(@nodes).concat([@holdee])
+
 		@chain = []
 		for n in rope
 			@chain.push n.pos
+
 		@flagNextUpdate('chain')
+
+	updateHitBox: () ->
+		for i in [0...@chain.length]
+			@hitBox.points[i].x = @chain[i].x
+			@hitBox.points[i].y = @chain[i].y
+
+		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	detach: () ->
 		@holder = null
