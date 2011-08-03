@@ -10,6 +10,11 @@
 @beige: hsl(0, 0%, 30%);
 @black: hsl(0, 0%, 0%);
 
+@grey: hsl(0, 0%, 8%);
+@yellow: hsl(53, 90%, 49%);
+@orange: hsl(27, 88%, 50%);
+@red: hsl(10, 91%, 50%);
+
 .linear-gradient2 (@start, @stop1, @stop2) {
 		background: -webkit-linear-gradient(@start, @stop1, @stop2);
 		background: -moz-linear-gradient(@start, @stop1, @stop2);
@@ -54,6 +59,15 @@
 		&:active {
 				.gradient-black-reversed;
 		}
+}
+
+.textfield {
+		.gradient-light;
+
+		padding: 0.2em;
+
+		border: 1px solid white;
+		border-radius: 0.5em;
 }
 
 * {
@@ -101,6 +115,10 @@ header {
 		}
 }
 
+input[type="text"], input[type="email"], input[type="password"] {
+		.textfield;
+}
+
 section#accountForm {
 		.gradient-black-reversed;
 		.box-shadow(0, 2px, 3px, @darkblue);
@@ -141,13 +159,6 @@ section#accountForm {
 				input {
 						display: block;
 						margin-bottom: 2em;
-				}
-
-				input[type="text"], input[type="email"], input[type="password"] {
-						.gradient-light;
-
-						border: 1px solid white;
-						border-radius: 0.5em;
 				}
 
 				input[type="submit"] {
