@@ -417,8 +417,8 @@ exports.collisions =
 
 	'bullet-rope': (bullet, rope) ->
 		# Release bonus on ship, if the rope is attached.
-		if rope.object1?.type is 'ship'
-			rope.object1.releaseBonus()
+		if rope.holder?.type is 'ship'
+			rope.holder.releaseBonus()
 
 			bullet.owner.addStat('bonuses detached', 1)
 
