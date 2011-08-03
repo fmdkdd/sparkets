@@ -14,6 +14,7 @@ webFiles = {
 	'/create/' : '/create.html'
 	'/create' : '/create.html'
 	'/play/' : '/client.html',
+	'/bonusBox.less',
 	'/client.less',
 	'/common.less',
 	'/create.less',

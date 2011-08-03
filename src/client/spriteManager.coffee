@@ -290,29 +290,5 @@ class SpriteManager
 
 			return sprite
 
-		'frame': (sprite, w, h) ->
-			ctxt = sprite.getContext('2d')
-			ctxt.strokeStyle = 'black'
-			ctxt.lineWidth = 10
-
-			# Default width is 75, default height 100.
-			scalex = sprite.width / 75
-			scaley = sprite.height / 100
-
-			ctxt.save()
-			ctxt.scale(scalex, scaley)
-			ctxt.strokeRect(0, 0, 75, 75)
-			ctxt.beginPath()
-			ctxt.moveTo(0, 75)
-			ctxt.lineTo(0, 90)
-			ctxt.quadraticCurveTo(0, 100, 10, 100)
-			ctxt.lineTo(65, 100)
-			ctxt.quadraticCurveTo(75, 100, 75, 90)
-			ctxt.lineTo(75, 75)
-			ctxt.fill()
-			ctxt.restore()
-
-			return sprite
-
 # Exports
 window.SpriteManager = SpriteManager

@@ -14,61 +14,61 @@ class BonusBox
 			color : 'rgb(243,52,14)'
 			next: 'none'
 
-	width: 75
-	height: 100
-	headerHeight: 6
+	bonusSize: 60
 
 	constructor: (@container, @name, @type, @state = 'regular') ->
 		
-		# Build the canvas.
-		@canvas = document.createElement('canvas')
-		@canvas.width = @width
-		@canvas.height = @height + @headerHeight
-		@canvas.className = 'bonusBox'
-		@container.append(@canvas)
-		@container.append('<span>&nbsp</span>') # TODO: replace spacing between bonuses with CSS rule.
-		@ctxt = @canvas.getContext('2d')
+		# Build HTML elements.
+		@box = $('<div class="bonusBox"></div>').appendTo(@container)
 
-		# Build the canvas header.
-		@canvasHeader = document.createElement('canvas')
-		@canvasHeader.width = @width
-		@canvasHeader.height = @headerHeight
-		headerCtxt = @canvasHeader.getContext('2d')
+		@tabs = $('<ul></ul>').appendTo(@box)
+		for state, data of @states
+			tab = $('<li><span>&nbsp</span></li>').appendTo(@tabs)
+			tab.css('background-color', @states[state].color)
+			tab.width('25%');
 
-		for id, data of @states
-			headerCtxt.fillStyle = data.color
-			headerCtxt.fillRect(0, 0, @width/4, @headerHeight)
-			headerCtxt.translate(@width/4, 0)
+		@content = $('<div></div>').appendTo(@box)
+
+		@canvas = $('<canvas></canvas>')
+		@canvas.attr('width', @bonusSize)
+		@canvas.attr('height', @bonusSize)
+		@content.append(@canvas)
+
+		@label = $('<span class="label"></span>').appendTo(@content)
 
 		# Paste the bonus sprite onto the canvas.
-		@drawBonus()
+		@sprite = window.spriteManager.get(@type, @bonusSize, @bonusSize, 'black')
+		@ctxt = @canvas[0].getContext('2d')
+		@ctxt.drawImage(@sprite, 0, 0)
 
-		# Paste the frame onto the canvas.
-		@drawFrame()		
+		# Setup color and label.
+		@update()
 
-		$(@canvas).click (event) =>
+		# Go to next state when the box is clicked.
+		$(@content).click (event) =>
 			@state = @states[@state].next
-			@drawFrame()
 
-	drawBonus: () ->
+			# Update color and label.
+			@update()
 
-		# Paste the bonus sprite onto the canvas.
-		@sprite = window.spriteManager.get(@type, 50, 50, 'black')
-		@ctxt.drawImage(@sprite, @width/2-@sprite.width/2, 75/2-@sprite.height/2+@headerHeight)
+		# Go to a specific state when a tab is clicked.
+		$('li', @box).click (event) =>
 
-	drawFrame: () ->
-	
-		# Paste the canvas header.
-		@ctxt.drawImage(@canvasHeader, 0, 0)
+			# Find which tab was clicked.
+			index = $('li', @box).index(event.target)
+			s = 'none'
+			s = @states[s].next for [0...index]
+			@state = s
 
-		# Paste the frame onto the canvas.
-		@frame = window.spriteManager.get('frame', @width, @height, @states[@state].color)
-		@ctxt.drawImage(@frame, 0, @headerHeight)
+			# Update color and label.
+			@update()
 
-		# Draw current state name.
-		@ctxt.fillStyle = 'white'
-		@ctxt.font = '1.2em Arial'
-		@ctxt.fillText(@state, @width/2-@ctxt.measureText(@state).width/2, @height+@headerHeight-10)
-		
+	update: () ->
+		# Change color.
+		@box.css('background-color', @states[@state].color)
+
+		# Change label.
+		@label.html(@state)
+
 # Exports
 window.BonusBox = BonusBox
