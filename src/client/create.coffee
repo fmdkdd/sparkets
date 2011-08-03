@@ -210,5 +210,18 @@ $(document).ready () ->
 
 		return prefs
 
+	# Setup log in and sign up forms.
+	$('#login, #signup').click (event) =>
+		return if window.accountForm?
+
+		# Popup the forms.
+		new AccountForm()
+
+		# Focus on the appropriate field.
+		if event.target.id is 'login'
+			window.accountForm.formLogin.find('input[name="username"]').focus()
+		else
+			window.accountForm.formSignup.find('input[name="username"]').focus()
+
 	# Request game list.
 	window.socket.emit 'get game list'
