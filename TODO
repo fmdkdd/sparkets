@@ -14,10 +14,12 @@
 	 Gravity affects bullets and ships.
 	 Neat graphical effect required!
 
-*** Shield
+*** DONE Shield
+		 CLOSED: [2011-08-03 Wed 14:33]
 	 Deflect bullets. Protect from offensive bonuses.
 
-*** EMP
+*** DONE EMP
+		 CLOSED: [2011-08-03 Wed 14:33]
 	 Deactivate near mines and trackers with an electromagnetic blast.
 	 Enemies in the affected area could become drunk.
 
@@ -25,7 +27,8 @@
 		 CLOSED: [2011-07-22 Fri 16:15]
 	 Mercilessly follow a designated target.
 
-*** Invisible hull
+*** DONE Invisible hull
+		 CLOSED: [2011-08-03 Wed 14:33]
 	 Stay invisible while you do not fire or use any other bonus.
 
 *** Big head mode
@@ -39,12 +42,6 @@
 	 Copy of the ship that mirror the player, but turn in opposite
 	 directions.  Fires phony bullets, disappear when colliding
 	 something (different explosion visual).
-
-*** Drunk gun
-		Gives the player a limited-use weapon letting out a scrambling
-    wave. When hit by the wave, ship controls are reversed. It is the
-    Spacewar equivalent of a shotgun: very low range, high spread.
-
 
 ** Environment
 *** Asteroids
@@ -117,17 +114,20 @@
 
 * Interface
 ** Web interface for game creation.
-*** TODO Sanitize input		
+*** TODO Sanitize input
 		- Unique game id.
 		- Out of range values.
 		  
 *** TODO More info in game list.
-		- Max players allowed
-		- ping
+		- Max players allowed.
+		- Ping.
+    - Password-protected or not.
+		- Game mode.
 
 *** TODO More options in game creation.
-		- Permitted bonuses.
 		- Password.
+    - Number of players allowed.
+	  - Game mode.
 
 ** Game interface
 *** TODO Chat
@@ -188,5 +188,6 @@
 
 ** Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.
-** Use sprites for all bonuses
+** DONE Use sprites for all bonuses
+	 CLOSED: [2011-08-03 Wed 14:37]
 ** Visual clue for number of mines in bonus
