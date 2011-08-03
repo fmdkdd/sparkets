@@ -36,8 +36,8 @@ class Client
 		@maxBulletLength = 15
 
 		# Debugging
-		@showHitBoxes = no
-		@showMapBounds = no
+		@showHitBoxes = yes
+		@showMapBounds = yes
 		@showFPS = no
 
 		@menu = new Menu(@)

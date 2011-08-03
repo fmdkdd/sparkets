@@ -44,6 +44,8 @@ class Bullet extends ChangingObject
 				{x: @pos.x, y: @pos.y},
 				{x: @pos.x, y: @pos.y}]
 
+		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
+
 		@state = 'active'
 
 	# Apply gravity from all planets, moons, and shields.
