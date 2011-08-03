@@ -2,30 +2,22 @@ class BoostEffect
 	constructor: (@client, @object, @length = 3, @duration = 1000) ->
 		@shadows = []
 
+		@sprite = @object.sprite
+
 		@running = yes
 		setTimeout( (() => @running = no), @duration)
-
-	newShadow: () ->
-		# Create a new sprite.
-		sprite = document.createElement('canvas')
-		sprite.width = @object.sprite.width
-		sprite.height = @object.sprite.height
-
-		# Paste the object sprite and alter its opacity.
-		ctxt = sprite.getContext('2d')
-		ctxt.globalAlpha = (1 - @shadows.length / @length) * 0.6
-		ctxt.drawImage(@object.sprite, 0, 0)
-		ctxt.globalAlpha = 1
-
-		return {sprite: sprite}
 
 	update: () ->
 
 		# Progressively insert new shadows.
 		if @shadows.length < @length
-			@shadows.push @newShadow()
+			@shadows.push
+				x: 0
+				y: 0
+				dir: 0
+				alpha: (1 - @shadows.length / @length) * 0.6
 
-		# Update shadows position.
+		# Update shadows.
 		for i in [@shadows.length-1...0]
 			@shadows[i].x = @shadows[i-1].x
 			@shadows[i].y = @shadows[i-1].y
@@ -44,11 +36,14 @@ class BoostEffect
 		true
 
 	draw: (ctxt) ->
-		for s in @shadows
+		for i in [0...@shadows.length]
+			s = @shadows[i]
 			ctxt.save()
+			ctxt.globalAlpha = s.alpha
+			console.info ctxt.globalAlphe
 			ctxt.translate(s.x, s.y)
 			ctxt.rotate(s.dir)
-			ctxt.drawImage(s.sprite, -s.sprite.width/2, -s.sprite.height/2)
+			ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 			ctxt.restore()
 
 		true

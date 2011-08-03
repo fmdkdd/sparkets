@@ -71,13 +71,14 @@ class SpriteManager
 			ctxt.lineJoin = 'round'
 			ctxt.lineWidth = 4
 
-			# The default width equals 20.
+			# Default width is 20, default height is 14.
 			points = [[-10,-7], [10,0], [-10,7], [-6,0]]
-			scale = (sprite.width-ctxt.lineWidth) / 20
+			scalex = (sprite.width-ctxt.lineWidth) / 20
+			scaley = (sprite.height-ctxt.lineWidth) / 14
 
 			ctxt.beginPath()
 			ctxt.translate(sprite.width/2, sprite.height/2)
-			ctxt.scale(scale, scale)
+			ctxt.scale(scalex, scaley)
 			for p in points
 				ctxt.lineTo(p[0], p[1])
 			ctxt.closePath()
@@ -114,7 +115,7 @@ class SpriteManager
 			ctxt.strokeStyle = 'black'
 			ctxt.lineWidth = 3
 
-			# The default size is 50.
+			# Default width is 50, default height is 50..
 			scalex = sprite.width / 50
 			scaley = sprite.height / 50
 
@@ -168,11 +169,12 @@ class SpriteManager
 			ctxt.strokeStyle = 'black'
 			ctxt.lineWidth = 2
 
-			# The default width equals 20.
-			scale = sprite.width / 20
+			# Default width is 20, default height is 20.
+			scalex = sprite.width / 20
+			scaley = sprite.height / 20
 
 			ctxt.save()
-			ctxt.scale(scale, scale)
+			ctxt.scale(scalex, scaley)
 			ctxt.translate(10, 10)
 			ctxt.arc(0, 0, 8, 0, 2*Math.PI, false)
 			ctxt.stroke()
@@ -192,11 +194,12 @@ class SpriteManager
 			ctxt = sprite.getContext('2d')
 			ctxt.fillStyle = 'black'
 
-			# The default width equals 20.
-			scale = sprite.width / 20
+			# Default width is 20, default height is 20.
+			scalex = sprite.width / 20
+			scaley = sprite.height / 20
 
 			ctxt.save()
-			ctxt.scale(scale, scale)
+			ctxt.scale(scalex, scaley)
 			for i in [0..1]
 				ctxt.translate(i*10, 0)
 				ctxt.beginPath()
@@ -216,11 +219,12 @@ class SpriteManager
 			ctxt = sprite.getContext('2d')
 			ctxt.fillStyle = 'black'
 
-			# The default width equals 100.
-			scale = sprite.width / 100
+			# Default width is 100, default height is 100.
+			scalex = sprite.width / 100
+			scaley = sprite.height / 100
 
 			ctxt.save()
-			ctxt.scale(scale, scale)
+			ctxt.scale(scalex, scaley)
 			ctxt.beginPath()
 			ctxt.moveTo(0, 0)
 			ctxt.lineTo(10, 85)
@@ -244,11 +248,12 @@ class SpriteManager
 			ctxt = sprite.getContext('2d')
 			ctxt.fillStyle = 'black'
 
-			# The default width equals 20.
-			scale = sprite.width / 20
+			# Default width is 20, default height is 20.
+			scalex = sprite.width / 20
+			scaley = sprite.height / 20
 
 			ctxt.save()
-			ctxt.scale(scale, scale)
+			ctxt.scale(scalex, scaley)
 			ctxt.beginPath()
 			ctxt.moveTo(0, 10)
 			ctxt.quadraticCurveTo(10, -5, 20, 10)
@@ -267,11 +272,12 @@ class SpriteManager
 			ctxt = sprite.getContext('2d')
 			ctxt.fillStyle = 'black'
 
-			# The default width equals 20.
-			scale = sprite.width / 20
+			# Default width is 20, default height is 20.
+			scalex = sprite.width / 20
+			scaley = sprite.height / 20
 
 			ctxt.save()
-			ctxt.scale(scale, scale)
+			ctxt.scale(scalex, scaley)
 			ctxt.beginPath()
 			ctxt.moveTo(15, 0)
 			ctxt.lineTo(0, 10)
@@ -289,7 +295,7 @@ class SpriteManager
 			ctxt.strokeStyle = 'black'
 			ctxt.lineWidth = 10
 
-			# The default width equals 100, the width 75..
+			# Default width is 75, default height 100.
 			scalex = sprite.width / 75
 			scaley = sprite.height / 100
 

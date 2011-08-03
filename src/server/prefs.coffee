@@ -67,7 +67,7 @@ class GamePreferences
 				countdown: null
 			'spawned':
 				next: 'alive'
-				countdown: 1500
+				countdown: 1000
 			'alive':
 				next: 'dead'
 				countdown: null

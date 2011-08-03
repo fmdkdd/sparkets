@@ -3,46 +3,50 @@ Ship = require('./ship').Ship
 
 class Player
 	constructor: (@id, @game) ->
-		@keys = {}
+		@keysDown = {}
+		@keysUp = {}
 		@ship = null
 
 	createShip: (id) ->
 		@ship = new Ship(id, @game, @id, @name, @color)
 
 	keyDown: (key) ->
-		@keys[key] = on
+		@keysDown[key] = on
 
 	keyUp: (key) ->
-		@keys[key] = off
+		@keysDown[key] = off
+		@keysUp[key] = on
 
+	update: (step) ->
 		# Fire the bullet or respawn if the spacebar or A is released.
-		if key is 32 or key is 65
+		if @keysUp[32] or @keysUp[65]
 			if @ship.state is 'ready'
 				@ship.spawn()
 			else
 				@ship.fire()
 
-		if key is 38
+		if @keysUp[38]
 			@ship.stopEngine()
 
 		# Z : use bonus.
-		if key is 90
+		if @keysUp[90]
 			@ship.useBonus()
 
-	update: (step) ->
+		@keysUp = {}
+
 		return if not @ship? or @ship.state in ['dead', 'ready']
 
 		# Left arrow : rotate to the left.
-		@ship.turnLeft(step) if @keys[37] is on
+		@ship.turnLeft(step) if @keysDown[37] is on
 
 		# Right arrow : rotate to the right.
-		@ship.turnRight(step) if @keys[39] is on
+		@ship.turnRight(step) if @keysDown[39] is on
 
 		# Up arrow : thrust forward.
-		@ship.ahead(step) if @keys[38] is on
+		@ship.ahead(step) if @keysDown[38] is on
 
 		# Spacebar/A : charge the bullet.
-		@ship.chargeFire(step) if @keys[32] is on or @keys[65] is on
+		@ship.chargeFire(step) if @keysDown[32] is on or @keysDown[65] is on
 
 	changePrefs: (name, color) ->
 		if name?
@@ -52,5 +56,6 @@ class Player
 		if color?
 			@color = color
 			@ship.color = color if @ship?
+
 
 exports.Player = Player
