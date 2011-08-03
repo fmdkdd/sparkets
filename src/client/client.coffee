@@ -137,7 +137,7 @@ class Client
 					@view.y += (@mouse.y-center.y)/50
 
 					# Warp the camera.
-					s = @map
+					s = @mapSize
 					if @view.x < 0 then @view.x = s
 					if @view.x > s then @view.x = 0
 					if @view.y < 0 then @view.y = s
