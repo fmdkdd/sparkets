@@ -24,24 +24,24 @@ class Rope
 		# Draw a bezier curve passing through a set of points.
 		# Partly borrowed from : http://www.efg2.com/Lab/Graphics/Jean-YvesQueinecBezierCurves.htm
 
-		return if @chain.length is 0
+		return if @clientChain.length is 0
 
 		# Check for map warping.
-		for i in [1...@chain.length]
-			@chain[i] = @client.closestGhost(@chain[0], @chain[i])
+		for i in [1...@clientChain.length]
+			@clientChain[i] = @client.closestGhost(@clientChain[0], @clientChain[i])
 
 		smooth = 0.75
 		ctxt.strokeStyle = utils.color @color
 		ctxt.lineWidth = 2
 		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.beginPath()
-		ctxt.moveTo(@chain[0].x, @chain[0].y)
+		ctxt.moveTo(@clientChain[0].x, @clientChain[0].y)
 
-		for i in [0...@chain.length-1]
-			prev = @chain[i-1] # Position of previous node.
-			cur = @chain[i] # Position of current node.
-			next = @chain[i+1] # Position of next node.
-			nnext = @chain[i+2] # Position of next next node.
+		for i in [0...@clientChain.length-1]
+			prev = @clientChain[i-1] # Position of previous node.
+			cur = @clientChain[i] # Position of current node.
+			next = @clientChain[i+1] # Position of next node.
+			nnext = @clientChain[i+2] # Position of next next node.
 
 			# Compute a weighted symmetric to the previous node with respect
 			# to the current one.
@@ -90,36 +90,36 @@ class Rope
 		true
 
 	explosionEffect: () ->
-		return if @chain.length is 0
+		return if @clientChain.length is 0
 
 		# Convert the chain positions to the closest ghosts of the first node.
-		for i in [1...@chain.length]
-			@chain[i] = @client.closestGhost(@chain[0], @chain[i])
+		for i in [1...@clientChain.length]
+			@clientChain[i] = @client.closestGhost(@clientChain[0], @clientChain[i])
 
 		# Compute the "center" of the rope.
 		center = {x: 0, y: 0}
-		for c in @chain
+		for c in @clientChain
 			center.x += c.x
 			center.y += c.y
 		center =
-			x: center.x / @chain.length
-			y: center.y / @chain.length
+			x: center.x / @clientChain.length
+			y: center.y / @clientChain.length
 
 		# Compute edges so that they follow the curve of the rope and move
 		# away from the center.
 		edges = []
-		for i in [0...@chain.length-1]
+		for i in [0...@clientChain.length-1]
 			pos =
-				x: @chain[i].x + (@chain[i+1].x - @chain[i].x)/2
-				y: @chain[i].y + (@chain[i+1].y - @chain[i].y)/2
+				x: @clientChain[i].x + (@clientChain[i+1].x - @clientChain[i].x)/2
+				y: @clientChain[i].y + (@clientChain[i+1].y - @clientChain[i].y)/2
 			edges.push
 				x: pos.x
 				y: pos.y
-				r: Math.atan2(@chain[i+1].y - @chain[i].y, @chain[i+1].x - @chain[i].x)
+				r: Math.atan2(@clientChain[i+1].y - @clientChain[i].y, @clientChain[i+1].x - @clientChain[i].x)
 				vx: (pos.x - center.x) * 0.05
 				vy: (pos.y - center.y) * 0.05
 				vr: (Math.random()*2-1) * 0.05
-				size: utils.distance(@chain[i].x, @chain[i].y, @chain[i+1].x, @chain[i+1].y)
+				size: utils.distance(@clientChain[i].x, @clientChain[i].y, @clientChain[i+1].x, @clientChain[i+1].y)
 
 		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)
 

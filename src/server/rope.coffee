@@ -9,7 +9,7 @@ class Rope extends ChangingObject
 		@flagFullUpdate('type')
 		@flagFullUpdate('color')
 		@flagFullUpdate('serverDelete')
-		@flagFullUpdate('chain')
+		@flagFullUpdate('clientChain')
 		@flagFullUpdate('boundingRadius')
 		@flagFullUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
 
@@ -18,49 +18,51 @@ class Rope extends ChangingObject
 
 		# Take color of holder, holdee, or default black.
 		@color = @holder.color or @holdee.color or 'black'
-
 		@flagNextUpdate('color')
 
-		# Nodes are the rope articulation points.
-		@nodes = []
+		# The chain contains each object at its ends plus the articulation
+		# points inbetween them.
 		@segmentLength = @ropeLength / @segments
+		seg =
+			x: (@holdee.pos.x - @holder.pos.x) / @segments
+			y: (@holdee.pos.y - @holder.pos.y) / @segments
+
+		@chain = [@holder]
 		for i in [0...@segments-1]
-			@nodes.push
+			@chain.push
 				pos:
-					x: @holder.pos.x + (i+1) * (@holdee.pos.x - @holder.pos.x) / @segments
-					y: @holder.pos.y + (i+1) * (@holdee.pos.y - @holder.pos.y) / @segments
+					x: @holder.pos.x + (i+1) * seg.x
+					y: @holder.pos.y + (i+1) * seg.y
 				vel:
 					x: 0
 					y: 0
+		@chain.push @holdee
 
-		# The chain is used to send the position of each node to clients.
-		@updateChain()
+		# The client chain only contains positions from the chain.
+		@updateClientChain()
 
 		# We need a position to insert in the grid. The object is
 		# inserted in all cells overlapping with its bounding box.
 		@pos =
-			x: @nodes[0].pos.x
-			y: @nodes[0].pos.y
+			x: @chain[0].pos.x
+			y: @chain[0].pos.y
 
 		# Make sur all the rope is in the bounding box.
-		@boundingRadius = (@nodes.map (a) =>
+		@boundingRadius = (@chain.map (a) =>
 			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
 				Math.max(a,b)
 
 		@flagNextUpdate('boundingRadius')
 
-		# Construct hit box with all node points.
+		# Construct hit box with all chain positions.
 		@hitBox =
 			type: 'segments'
 			points: []
 
-		# The chain contains the positions of every node plus the 
-		# positions of the two objects whereas the node is only
-		# articulation points.
-		for p in @chain
+		for n in @chain
 			@hitBox.points.push
-				x: p.x
-				y: p.y
+				x: n.pos.x
+				y: n.pos.y
 
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
@@ -71,22 +73,20 @@ class Rope extends ChangingObject
 		# Don't move if no object is attached.
 		return if not @holder? or not @holdee?
 
-		# Update each node position.
-		for n in @nodes
+		# Update each articulation point position.
+		for i in [1...@chain.length-1]
+			n = @chain[i]
 			n.pos.x += n.vel.x
 			n.pos.y += n.vel.y
 
 			# Warp around the map.
 			utils.warp(n.pos, @game.prefs.mapSize)
 
-		# Build a chain starting from the first object, containing all
-		# nodes and ending with the second object.
-		rope = [@holder].concat(@nodes).concat([@holdee])
-
 		# Enforce the distance constraints.
-		for i in [0...rope.length-1]
-			cur = rope[i]
-			next = rope[i+1]
+		# Each node must pull the following one.
+		for i in [0...@chain.length-1]
+			cur = @chain[i]
+			next = @chain[i+1]
 			next.vel = {x:0,y:0}
 
 			# XXX: is this really necessary?
@@ -100,8 +100,8 @@ class Rope extends ChangingObject
 
 		# Update bounding box and hitbox
 		@pos =
-			x: @nodes[0].pos.x
-			y: @nodes[0].pos.y
+			x: @chain[0].pos.x
+			y: @chain[0].pos.y
 
 		# Should contain all the nodes.
 		#
@@ -109,33 +109,30 @@ class Rope extends ChangingObject
 		# rope length is a correct upper bound. We should also center
 		# the bounding box, since it's currently useless if the first
 		# point is also the farthest to the right and down.
-		@boundingRadius = (@nodes.map (a) =>
+		@boundingRadius = (@chain.map (a) =>
 			utils.distance(@pos.x, @pos.y, a.pos.x, a.pos.y)).reduce (a,b) ->
 				Math.max(a,b)
+
+		@updateHitBox()
 
 	update: (step) ->
 		# Don't send chain if no object is attached.
 		return if not @holder? or not @holdee?
 
-		@updateChain()
+		@updateClientChain()
 
-		# The hitbox is based on the chain and must be updated in order.
-		@updateHitBox()
+	updateClientChain: () ->
+		@clientChain = []
 
-	updateChain: () ->
-		# Prepare the chain which will be sent to the client.
-		rope = [@holder].concat(@nodes).concat([@holdee])
+		for n in @chain
+			@clientChain.push n.pos
 
-		@chain = []
-		for n in rope
-			@chain.push n.pos
-
-		@flagNextUpdate('chain')
+		@flagNextUpdate('clientChain')
 
 	updateHitBox: () ->
 		for i in [0...@chain.length]
-			@hitBox.points[i].x = @chain[i].x
-			@hitBox.points[i].y = @chain[i].y
+			@hitBox.points[i].x = @chain[i].pos.x
+			@hitBox.points[i].y = @chain[i].pos.y
 
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
