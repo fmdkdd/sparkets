@@ -223,5 +223,9 @@ $(document).ready () ->
 		else
 			window.accountForm.formSignup.find('input[name="username"]').focus()
 
+	# Make page content unselectable to prevent inopportune selection
+	# when repidly clicking on bonuses.
+	document.body.onselectstart = () -> false
+
 	# Request game list.
 	window.socket.emit 'get game list'
