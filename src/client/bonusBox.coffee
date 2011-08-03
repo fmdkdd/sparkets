@@ -56,7 +56,7 @@ class BonusBox
 
 			# Find which tab was clicked.
 			index = $('li', @box).index(event.target)
-			if index > 0
+			if index >= 0
 				s = 'none'
 				s = @states[s].next for [0...index]
 				@state = s
