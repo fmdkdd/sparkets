@@ -42,21 +42,22 @@ class Rope extends ChangingObject
 		# The client chain only contains positions from the chain.
 		@updateClientChain()
 
-		# Init bounding box.
-		@boundingBox = {}
-		@updateBoundingBox()
-
-		# Construct hit box with all chain positions.
+		# Construct hit box with from articulation points, not counting
+		# holder and holdee.
 		@hitBox =
 			type: 'segments'
 			points: []
 
-		for n in @chain
+		for i in [1...@chain.length-1]
 			@hitBox.points.push
-				x: n.pos.x
-				y: n.pos.y
+				x: @chain[i].pos.x
+				y: @chain[i].pos.y
 
 		@flagNextUpdate('hitBox') if @game.prefs.debug.sendHitBoxes
+
+		# Init bounding box (depends on hit box).
+		@boundingBox = {}
+		@updateBoundingBox()
 
 	tangible: () ->
 		yes
@@ -65,34 +66,59 @@ class Rope extends ChangingObject
 		# Don't move if no object is attached.
 		return if not @holder? or not @holdee?
 
+		outside = ({x,y}) =>
+			x < 0 or y < 0 or x > @game.prefs.mapSize or y > @game.prefs.mapSize
+
 		# Update each articulation point position.
+		allOutside = true
 		for i in [1...@chain.length-1]
 			n = @chain[i]
 			n.pos.x += n.vel.x
 			n.pos.y += n.vel.y
 
-			# Warp around the map.
-			utils.warp(n.pos, @game.prefs.mapSize)
+			allOutside = allOutside and outside(n.pos)
+
+		# FIXME: sometimes when crossing corners, the holdee will
+		# teleport and the hitbox will be wrong. It only lasts an
+		# instant, but it is no less wrong.
+
+		# Warp all points, or warp none.
+		# Need to unwarp holdee position to check if it is outside.
+		beforeLast = @chain[@chain.length-2].pos
+		holdeePos = {x: @chain[@chain.length-1].pos.x, y: @chain[@chain.length-1].pos.y}
+		allOutside = allOutside and
+			outside(utils.unwarp(beforeLast, holdeePos, @game.prefs.mapSize))
+		if allOutside
+			utils.warp(node.pos, @game.prefs.mapSize) for node in @chain
 
 		# Enforce the distance constraints.
 		# Each node must pull the following one.
 		for i in [0...@chain.length-1]
-			cur = @chain[i]
+			curpos = @chain[i].pos
 			next = @chain[i+1]
+			nextpos = next.pos
 			next.vel = {x:0,y:0}
 
-			# XXX: is this really necessary?
-			ghost = @game.closestGhost(cur.pos, next.pos)
+			# Holder might warp, we need unwarped position to enforce
+			# distance constraints or the rope will stretch hard!
+			if i is 0
+				curpos = {x: curpos.x, y: curpos.y}
+				utils.unwarp(next.pos, curpos, @game.prefs.mapSize)
 
-			dist = utils.distance(cur.pos.x, cur.pos.y, ghost.x, ghost.y)
+			# Holdee migth warp, same as above.
+			if i is @chain.length-2
+				nextpos = {x: next.pos.x, y: next.pos.y}
+				utils.unwarp(curpos, nextpos, @game.prefs.mapSize)
+
+			dist = utils.distance(curpos.x, curpos.y, nextpos.x, nextpos.y)
 			if dist > @segmentLength
 				ratio = (dist - @segmentLength) / dist
-				next.vel.x += ratio * (cur.pos.x - ghost.x)
-				next.vel.y += ratio * (cur.pos.y - ghost.y)
+				next.vel.x += ratio * (curpos.x - nextpos.x)
+				next.vel.y += ratio * (curpos.y - nextpos.y)
 
 		# Update bounding box and hitbox.
-		@updateBoundingBox()
 		@updateHitBox()
+		@updateBoundingBox()
 
 	update: (step) ->
 		# Don't send chain if no object is attached.
@@ -109,28 +135,25 @@ class Rope extends ChangingObject
 		@flagNextUpdate('clientChain')
 
 	updateHitBox: () ->
-		for i in [0...@chain.length]
-			@hitBox.points[i].x = @chain[i].pos.x
-			@hitBox.points[i].y = @chain[i].pos.y
+		for i in [1...@chain.length-1]
+			@hitBox.points[i-1].x = @chain[i].pos.x
+			@hitBox.points[i-1].y = @chain[i].pos.y
 
 		@flagNextUpdate('hitBox.points') if @game.prefs.debug.sendHitBoxes
 
 	updateBoundingBox: () ->
-		# Should contain all the nodes.
-		#
-		# FIXME: max distance from first point is erroneous. I think
-		# rope length is a correct upper bound. We should also center
-		# the bounding box, since it's currently useless if the first
-		# point is also the farthest to the right and down.
-		@boundingBox.x = @chain[0].pos.x
-		@boundingBox.y = @chain[0].pos.y
+		# Center on middle articulation point.
+		middle = Math.floor(@hitBox.points.length/2)
+		x = @boundingBox.x = @hitBox.points[middle].x
+		y = @boundingBox.y = @hitBox.points[middle].y
 
-		x = @boundingBox.x
-		y = @boundingBox.y
+		# XXX: max distance from middle point is incorrect, but works
+		# well for our rope with distance constraints.
+		maxDist = 0
+		for point in @hitBox.points
+			maxDist = Math.max(maxDist, utils.distance(x, y, point.x, point.y))
 
-		@boundingBox.radius = (@chain.map (a) ->
-			utils.distance(x, y, a.pos.x, a.pos.y)).reduce (a,b) ->
-				Math.max(a,b)
+		@boundingBox.radius = maxDist
 
 		@flagNextUpdate('boundingBox') if @game.prefs.debug.sendHitBoxes
 
