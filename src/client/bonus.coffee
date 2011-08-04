@@ -42,6 +42,7 @@ class Bonus
 
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
+		ctxt.globalCompositeOperation = 'destination-over'
 		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 		ctxt.restore()
 
