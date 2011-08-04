@@ -107,8 +107,6 @@ class Client
 		$(document).keydown (event) =>
 			return unless event.keyCode in processedKeys
 
-			event.preventDefault()
-
 			if not @keys[event.keyCode]? or @keys[event.keyCode] is off
 				@keys[event.keyCode] = on
 				@socket.emit 'key down',
@@ -427,6 +425,9 @@ class Client
 
 	handleEvent: (event) ->
 		switch event.type
+			when 'message'
+				@chat.display(event)
+
 			when 'ship crashed'
 				@gameObjects[event.id].explosionEffect()
 				@gameObjects[event.id].dislocationEffect()

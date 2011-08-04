@@ -55,7 +55,7 @@ class GameServer
 			socket.on 'message', (data) =>
 				@events.push
 					type: 'message'
-					id: data.id
+					id: @players[data.id].ship.id
 					message: data.message
 
 			socket.on 'disconnect', () =>
@@ -393,7 +393,7 @@ class GameServer
 				objects: clientUpdate
 				events: @events
 
-		# Empty events
+		# Clear all events
 		@events = []
 
 	collidesWithPlanet: (obj) ->

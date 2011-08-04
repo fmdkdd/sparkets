@@ -44,7 +44,7 @@ class Chat
 
 	send: (message) ->
 		@client.socket.emit 'message',
-				playerId: @client.playerId
+				id: @client.playerId
 				message: message
 
 	display: (data) ->
@@ -54,10 +54,11 @@ class Chat
 
 		switch data.type
 			when 'message'
-				name = @client.ships[data.shipId].name
-				color = @client.ships[data.shipId].color
+				console.info data
+				name = @client.ships[data.id].name
+				color = @client.ships[data.id].color
 				img = '<img width="30" src="/img/iconTalk.svg"/>'
-				message = colorize(name, color) + ' ' + img + ' ' + data.message
+				message = colorize(name, color) + ' ' + img + ' "' + data.message + '"'
 
 			when 'ship crashed'
 				name = @client.ships[data.id].name or 'unnamed'
