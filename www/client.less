@@ -1,178 +1,256 @@
-* {
-	 margin : 0;
-	 padding : 0;
-}
+@import "common.less";
 
 /**
  * Canvas.
  */
 
-#canvas {
-	 position: absolute;
-	 width: 100%;
-	 height: 100%;
-	 z-index: -1;
+canvas#canvas {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		z-index: -1;
 }
 
 /**
  * Menu.
  */
 
-#menu {
-	 top: 50px;
-	 width: 700px;
-	 height: 500px;
-	 margin: auto;
-	 position: relative;
-	 padding: 20px;
+table#menu {
+		position: relative;
+		top: 50px;
+		margin: auto;
 
-	 color: hsl(0, 0%, 30%);
-	 background-color: lightgrey;
-	 border-radius: 0.9em;
-	 border: 0.4em solid hsl(-100, 10%, 45%);
+		border-collapse: collapse;
 
-	 font-size: 17px;
-	 font-family: sans;
+		&.hidden {
+				opacity: 0;
+				visibility: hidden;
+		}
+		
+		&.visible {
+				opacity: 0.95;
+				visibility: visible;
+		}
 
-	 &.hidden {
-			 opacity: 0;
-			 visibility: hidden;
-			 -webkit-transition: opacity 150ms ease-in;
-			 -moz-transition: opacity 150ms ease-out;
-	 }
+		section#main {
+				.gradient-black;
+				.box-shadow(0, 0, 5px, black);
 
-	 &.visible {
-			 opacity: 0.95;
-			 visibility: visible;
-			 -webkit-transition: opacity 150ms ease-out;
-			 -moz-transition: opacity 150ms ease-in;
-	 }
+				position: relative;
+				width: 700px;
+				height: 500px;
+				padding: 20px;
+				z-index: 2;
 
-	 #closeButton {
-			 position: absolute; 
-			 top: 10px;
-			 right: 10px;
-			 
-			 cursor: pointer;
-	 }
+				color: white;
+				border: 5px solid @blue;
+				border-top-left-radius: 0.9em;
+				border-bottom-right-radius: 0.9em;
 
-	 #customize {
-			 position: relative;
-			 float: left;
-			 width: 50%;
-			 height: 100%;
-	 
-			 h2 {
-					 margin-bottom: 50px;
-			 }
+				font-size: 17px;
+				font-family: sans;
 
-			 #colorWheelBox {
-					 width: 200px;
-					 height: 200px;
-					 position: relative;
-					 margin: auto;
-					 margin-bottom: 5%;
+				img#closeButton {
+						position: absolute;
+						top: 10px;
+						right: 10px;
+						
+						cursor: pointer;
+				}
 
-					 @-webkit-keyframes rotate {
-							 from { -webkit-transform: rotate(0deg); }
-							 to { -webkit-transform: rotate(360deg); }
-					 }
+				section#customize {
+						position: relative;
+						float: left;
+						width: 50%;
+						height: 100%;
+						
+						h2 {
+								margin-bottom: 50px;
 
-					 @-moz-keyframes rotate {
-							 from { -moz-transform: rotate(0deg); }
-							 to { -moz-transform: rotate(360deg); }
-					 }
+								color: white;
+								text-shadow: 0 -2px 1px black;
+						}
 
-					 svg {
-							 -webkit-animation-name: rotate;
-							 -webkit-animation-duration: 15s;
-							 -webkit-animation-iteration-count: infinite;
-							 -webkit-animation-timing-function: linear;
+						div#colorWheelBox {
+								width: 200px;
+								height: 200px;
+								position: relative;
+								margin: auto;
+								margin-bottom: 5%;
 
-							 -moz-animation-name: rotate;
-							 -moz-animation-duration: 15s;
-							 -moz-animation-iteration-count: infinite;
-							 -moz-animation-timing-function: linear;
+								@-webkit-keyframes rotate {
+										from { -webkit-transform: rotate(0deg); }
+										to { -webkit-transform: rotate(360deg); }
+								}
 
-							 width: 100%;
-							 height: 100%;
-					 }
+								@-moz-keyframes rotate {
+										from { -moz-transform: rotate(0deg); }
+										to { -moz-transform: rotate(360deg); }
+								}
 
-					 #colorWheel {
-							 width: 200px;
-							 height: 200px;
-							 position: absolute;
-							 top: 0;
-							 left: 0;
-					 }
+								svg {
+										width: 100%;
+										height: 100%;
 
-					 #colorCursor {
-							 display: none;
-					 }
-			 }
+										-webkit-animation-name: rotate;
+										-webkit-animation-duration: 15s;
+										-webkit-animation-iteration-count: infinite;
+										-webkit-animation-timing-function: linear;
 
-			 #nameForm {
-					 width: 100%;
-					 text-align: center;
-			 }
-			 
-			 #name {
-					 display: block;
-					 width: 100px;
-					 margin: auto;
-					 margin-bottom: 5%;
-					 text-align: center;
-			 }
-			 
-			 #displayNamesBox {
-					 margin-top: 1em;
-					 padding: .5em 1em;
-					 text-align: center;
-			 }
+										-moz-animation-name: rotate;
+										-moz-animation-duration: 15s;
+										-moz-animation-iteration-count: infinite;
+										-moz-animation-timing-function: linear;
+								}
 
-			 input[type="submit"] {
-					 padding: .5em 1em;
-			 }
-	 }
+								#colorWheel {
+										width: 200px;
+										height: 200px;
+										position: absolute;
+										top: 0;
+										left: 0;
 
-	 #scores {
-			 float: right;
-			 width: 50%;
+										border-radius: 100px;
+										.box-shadow(0, 0, 10px, @black)
+								}
 
-			 h2 {
-			 margin-bottom: 50px;
-			 }
+								#colorCursor {
+										display: none;
+								}
+						}
 
-			 table {
-					 width: 100%;
-					 table-layout: fixed;
-					 border-collapse : collapse;
-			 
-					 th {
-							 font-weight: normal;
-							 border-bottom: 1px solid white;
-					 }
+						#nameForm {
+								width: 100%;
+								text-align: center;
+						}
+						
+						#name {
+								display: block;
+								width: 100px;
+								margin: auto;
+								margin-bottom: 5%;
+								text-align: center;
+						}
+						
+						div#optionsBox {
+								position: absolute;
+								bottom: 0;
 
-					 th, td {
-							 width: 10%;
-							 text-align: center;
+								.option {
+										display: block;
+										margin-bottom: 0.5em;
 
-							 &:first-child {
-									 width: 50%;
-									 text-align: left;
-							 }
-					 }
+										font-size: 0.8em;
+								}
+						}
 
-					 li {
-							 list-style-position: inside;
-							 list-style-type: disc;
-					 
-							 span {
-									 color: hsl(0, 0%, 30%);
-							 }
-					 }
-			 }
-	 }
+						input[type="submit"] {
+								.gradient-black;
+								.box-shadow(0, 1px, 3px, @darkgreen);
+
+								display: block;
+								width: 4em;
+								margin: auto;
+								padding: .5em 1em;
+
+								color: white;
+								font-size: 1.1em;
+								border: 1px solid @green;
+								border-radius: 3px;
+
+								&:not(:disabled) {
+										cursor: pointer;
+										.button-behavior;
+								}
+								&:disabled {
+										cursor: default;
+										opacity: .5;
+								}
+						}
+				}
+
+				section#scores {
+						float: right;
+						width: 50%;
+
+						h2 {
+								margin-bottom: 50px;
+
+								color: white;
+								text-shadow: 0 -2px 1px black;
+						}
+
+						table {
+								width: 100%;
+								table-layout: fixed;
+								border-collapse : collapse;
+
+								tr {
+										height: 2em;
+								}
+
+								th {
+										border-bottom: 1px solid @beige;
+								}
+
+								th, td {
+										text-align: center;
+
+										// Player name
+										&:nth-child(2) {
+												width: 60%;
+												text-align: left;
+										}
+								}
+						}
+				}
+		}
+
+		section#time, section#nemesis, section#scapegoat {
+				.gradient-black;
+				.box-shadow(0, 0, 5px, black);
+
+				width: 200px;
+				height: 150px;
+				margin-top: 13px;
+				margin-bottom: 13px;
+				z-index: 1;
+
+				color: white;
+				border-size: 5px;
+				border-style: solid;
+				border-left: none;
+				border-top-right-radius: 0.9em;
+				border-bottom-right-radius: 0.9em;
+
+				h3 {
+						margin: 0.5em;
+						font-size: 1em;
+
+						color: lightgrey;
+						text-shadow: 0 -2px 1px black;
+				}
+		}
+
+		section#time {
+				border-color: darken(@blue, 10%);
+
+				p#timeLeft {
+						width: 100%;
+						margin-top: 25px;
+
+						font-size: 3em;
+						text-align: center;
+				}
+		}
+
+		section#nemesis {
+				border-color: darken(@blue, 20%);
+		}
+
+		section#scapegoat {
+				border-color: darken(@blue, 30%);
+		}
 }
 
 /**

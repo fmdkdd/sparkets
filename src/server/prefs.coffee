@@ -49,7 +49,7 @@ class GamePreferences
 	powerSave: no
 
 	# Duration of the game in minutes.
-	duration: 5
+	duration: 100
 
 	# Size of the real map.
 	mapSize: 2000

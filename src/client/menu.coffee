@@ -1,7 +1,7 @@
 class Menu
 	constructor: (@client) ->
 
-		@menu = $('#menu')
+		@menu = $('table#menu')
 		@closeButton = $('#closeButton')
 
 		# Customization panel.
@@ -180,9 +180,12 @@ class Menu
 		# Sort scores.
 		scores.sort( (a, b) -> b.score - a.score)
 
-		for s in scores
+		for i in [0...scores.length]
+			s = scores[i]
+			cssColor = 'hsl('+s.color[0]+','+s.color[1]+'%,'+s.color[2]+'%)'
 			@scoreTable.append(
-					'<tr><td><ul style="color:hsl(' + s.color[0] + ',' + s.color[1] + '%,' + s.color[2] + '%)"><li><span>' + s.name + '</span></li></ul></td>' +
+					'<tr><td>' + (i+1) + '</td>' +
+					'<td><span style="color:' + cssColor + '">' + s.name + '</span></td>' +
 					'<td>' +	s.deaths + '</td>' +
 					'<td>' +	s.kills + '</td>' +
 					'<td>' + s.score + '</td></tr>')
@@ -203,7 +206,7 @@ class Menu
 		pad = (n) ->
 			if n < 10 then '0'+n else n
 
-		$('#timeLeft').html("#{timeLeft.getMinutes()}:#{pad(timeLeft.getSeconds())} left")
+		$('#timeLeft').html(timeLeft.getMinutes() + ':' + pad(timeLeft.getSeconds()))
 
 # Exports
 window.Menu = Menu

@@ -88,6 +88,7 @@ class Client
 
 	# Setup input callbacks and launch game loop.
 	go: () ->
+		@menu.open()
 		# Show the menu the first time.
 		if not window.localStorage['spacewar.tutorial']?
 			@menu.open()

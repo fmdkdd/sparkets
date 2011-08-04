@@ -27,65 +27,115 @@
   <script src="/js/utils.js"></script>
 </head>
 <body>
+
   <canvas id="canvas">Canvas not supported.</canvas>
 
-	<div id="menu" class="hidden">
+	<table id="menu" class="hidden">
+		<tr>
+			<td rowspan="3">
 
-		<div id="customize">
-			<h2>Customize</h2>
-	      
-			<div id="colorWheelBox">
-			  <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-				  <g transform="translate(100,100) scale(2)">
-					 <circle cx="0" cy="0" r="20%" style="fill: white"/>
-					 <path id="shipPreview"
-							 d="M -7 10 L 0 -10 L 7 10 L 0 6 Z"
-							 style="stroke-width: 3;
-									  stroke: black;
-									  stroke-linejoin: round;
-									  fill: white" >
-						</path>
-					</g>
-				</svg>
+				<section id="main">
 
-				<img id="colorWheel" src="/img/colorWheel.png"/>
+					<section id="customize">
+						<h2>Customize</h2>
+						
+						<div id="colorWheelBox">
+							<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+								<g transform="translate(100,100) scale(2)">
+									<circle cx="0" cy="0" r="20%" style="fill: white"/>
+									<path id="shipPreview"
+												d="M -7 10 L 0 -10 L 7 10 L 0 6 Z"
+												style="stroke-width: 3;
+															 stroke: black;
+															 stroke-linejoin: round;
+															 fill: white" >
+									</path>
+								</g>
+							</svg>
 
-				<img id="colorCursor" src="/img/colorCursor.png"/>
-			</div>
+							<img id="colorWheel" src="/img/colorWheel.png"/>
 
-			<form id="nameForm">
-				<input type="text" id="name" placeholder="Name"/>
-				<input type="submit" value="Save"/>
-			</form>
-			
-			<div id="displayNamesBox">
-				<input type="checkbox" value="false" id="displayNamesCheck"/>
-				Always display players' names
-			</div>
-		</div>
+							<img id="colorCursor" src="/img/colorCursor.png"/>
+						</div>
 
-		<div id="scores">
-			<h2>Scores</h2>
-			<p id="timeLeft"></p>
-			<table>
-				<thead>
-					<tr>
-						<th></th>
-						<th><img src="/img/iconDeath.svg" alt="Deaths" width="30"/></th>
-						<th><img src="/img/iconKill.svg" alt="Kills" width="30"/></th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-				</tbody>
-			</table>
-		</div>
+						<form id="nameForm">
+							<input type="text" id="name" placeholder="Name"/>
+							<input type="submit" value="Save"/>
+						</form>
+						
+						<div id="optionsBox">
+							<span class="option">
+								<input type="checkbox" value="false" id="displayNamesCheck"/>
+								<label for="displayNamesCheck">Always display players' names</label>
+							</span>
 
-		<img id="closeButton" src="/img/iconClose.svg" width="30"/>
-	</div>
+							<span class="option">
+								<input type="checkbox" value="false" id="blackBackgroundCheck"/>
+								<label for="blackBackgroundCheck">Black background</label>
+							</span>
+
+							<span class="option">
+								<input type="checkbox" value="false" id="lowGraphicsCheck"/>
+								<label for="lowGraphicsCheck">Low graphics mode</label>
+							</span>
+						</div>
+
+					</section>
+
+					<section id="scores">
+						<h2>Scores</h2>
+
+						<table>
+							<thead>
+								<tr>
+									<th>#</th>
+									<th></th>
+									<th><img src="/img/iconDeath.svg" alt="Deaths" width="30"/></th>
+									<th><img src="/img/iconKill.svg" alt="Kills" width="30"/></th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+
+					</section>
+
+					<img id="closeButton" src="/img/iconClose.svg" width="30"/>
+
+				</section>
+			</td>
+
+			<td>
+				<section id="time">
+					<h3>Time left</h3>
+					<p id="timeLeft"></p>
+				</section>
+			</td>
+
+		</tr>
+
+		<tr>
+			<td>
+				<section id="nemesis">
+					<h3>Your nemesis</h3>
+				</section>
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<section id="scapegoat">
+					<h3>Your scapegoat</h3>
+				</section>
+			</td>
+		</tr>
+
+	</table>
+
+	<div id="chat"></div>
 
 	<input id="chatInput" class="hidden"/>
 
-	<div id="chat"></div>
 </body>
 </html>
