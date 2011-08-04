@@ -230,6 +230,7 @@ exports.collisions =
 				bullet.state is 'active' and
 				(ship.id isnt bullet.owner.id or
 				bullet.points.length > 3)
+
 			ship.explode(bullet)
 			bullet.explode()
 
@@ -239,6 +240,11 @@ exports.collisions =
 			else
 				ship.addStat('deaths by own bullet', 1)
 			ship.addStat('bullet deaths', 1)
+
+			ship.game.events.push
+				type: 'ship killed'
+				idKilled: ship.id
+				idKiller: bullet.owner.id
 
 			ddebug "bullet ##{bullet.id} killed ship ##{ship.id}"
 
@@ -256,10 +262,19 @@ exports.collisions =
 			ship.addStat('deaths by own mine', 1)
 		ship.addStat('mine deaths', 1)
 
+		ship.game.events.push
+			type: 'ship killed'
+			idKilled: ship.id
+			idKiller: mine.owner.id
+
 		ddebug "mine ##{mine.id} killed ship ##{ship.id}"
 
 	'ship-moon': (ship, moon) ->
 		ship.explode()
+
+		ship.game.events.push
+			type: 'ship crashed'
+			id: ship.id
 
 		ship.addStat('moon crashes', 1)
 
@@ -267,6 +282,10 @@ exports.collisions =
 
 	'ship-planet': (ship, planet) ->
 		ship.explode()
+
+		ship.game.events.push
+			type: 'ship crashed'
+			id: ship.id
 
 		ship.addStat('planet crashes', 1)
 
@@ -284,6 +303,12 @@ exports.collisions =
 			ship1.addStat('kills', 1)
 			ship1.addStat('boost kills', 1)
 			ship2.addStat('boost deaths', 1)
+
+			ship1.game.events.push
+				type: 'ship killed'
+				idKilled: ship2.id
+				idKiller: ship1.id
+
 			ddebug "ship ##{ship1.id} boosted through ship ##{ship2.id}"
 
 		# Ship2 has boost, not ship1.
@@ -293,6 +318,12 @@ exports.collisions =
 			ship2.addStat('kills', 1)
 			ship2.addStat('boost kills', 1)
 			ship1.addStat('boost deaths', 1)
+
+			ship1.game.events.push
+				type: 'ship killed'
+				idKilled: ship1.id
+				idKiller: ship2.id
+
 			ddebug "ship ##{ship2.id} boosted through ship ##{ship1.id}"
 
 		# Both or none have boost.
@@ -302,6 +333,12 @@ exports.collisions =
 
 			ship1.addStat('ship crashes', 1)
 			ship2.addStat('ship crashes', 1)
+
+			ship1.game.events.push
+				type: 'ships both crashed'
+				id1: ship1.id
+				id2: ship2.id
+
 			ddebug "ship ##{ship1.id} and ship ##{ship2.id} crashed"
 
 	'bullet-moon': (bullet, moon) ->
@@ -458,6 +495,11 @@ exports.collisions =
 		else
 			ship.addStat('deaths by own tracker', 1)
 		ship.addStat('tracker deaths', 1)
+
+		ship.game.events.push
+			type: 'ship killed'
+			idKilled: ship.id
+			idKiller: tracker.owner.id
 
 		ddebug "tracker ##{tracker.id} destroyed ship ##{ship.id}"
 

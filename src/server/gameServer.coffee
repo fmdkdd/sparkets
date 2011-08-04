@@ -53,7 +53,10 @@ class GameServer
 				@players[data.playerId].changePrefs(data.name, data.color)
 
 			socket.on 'message', (data) =>
-				@broadcastMessage(socket, data)
+				@events.push
+					type: 'message'
+					id: data.id
+					message: data.message
 
 			socket.on 'disconnect', () =>
 				@clientDisconnect(socket)

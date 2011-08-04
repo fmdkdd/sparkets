@@ -47,32 +47,42 @@ class Chat
 				playerId: @client.playerId
 				message: message
 
-	receiveMessage: (data) ->
-		message = data.message
-		name = @client.ships[data.shipId].name
-		color = @client.ships[data.shipId].color
+	display: (data) ->
+
+		colorize = (text, color) ->
+			'<span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)">'+text+'</span>'
+
+		switch data.type
+			when 'message'
+				name = @client.ships[data.shipId].name
+				color = @client.ships[data.shipId].color
+				img = '<img width="30" src="/img/iconTalk.svg"/>'
+				message = colorize(name, color) + ' ' + img + ' ' + data.message
+
+			when 'ship crashed'
+				name = @client.ships[data.id].name or 'unnamed'
+				color = @client.ships[data.id].color or 'black'
+				img = '<img width="30" src="/img/iconDeath.svg"/>'
+				message = colorize(name, color) + ' ' + img
+
+			when 'ships both crashed'
+				name1 = @client.ships[data.id1].name or 'unnamed'
+				color1 = @client.ships[data.id1].color or 'black'
+				name2 = @client.ships[data.id2].name or 'unnamed'
+				color2 = @client.ships[data.id2].color or 'black'
+				img = '<img width="30" src="/img/iconDeath.svg"/>'
+				message = colorize(name1, color1) + ' + ' + colorize(name2, color2) + ' ' + img
+
+			when 'ship killed'
+				name1 = @client.ships[data.idKiller].name or 'unnamed'
+				color1 = @client.ships[data.idKiller].color or 'black'
+				name2 = @client.ships[data.idKilled].name or 'unnamed'
+				color2 = @client.ships[data.idKilled].color or 'black'
+				img = '<img width="30" src="/img/iconKill.svg"/>'
+				message = colorize(name1, color1) + ' ' + img + ' ' + colorize(name2, color2)
 
 		# Append the message to the chat.
-		@chat.append('<div style="display:none"><span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)">'+name+'</span> '+message+'</div>')
-		line = @chat.find('div:last')
-		line.fadeIn(300)
-		
-		# Program its disappearance.
-		setTimeout( (() =>
-			line.animate({opacity: 'hide', height: 'toggle'}, 300, () -> line.detach())),
-			@displayDuration)
-
-	receiveEvent: (event) ->
-
-		switch event.type
-			when 'ship exploded'
-				name = @client.ships[event.id].name or 'unnamed'
-				color = @client.ships[event.id].color
-				message = 'exploded'
-
-		# Append the message to the chat.
-		@chat.append('<div style="display:none"><span style="color:hsl('+color[0]+','+color[1]+'%,'+color[2]+'%)">'+name+'</span> '+message+'</div>')
-		line = @chat.find('div:last')
+		line = $('<div style="display:none">' + message + '</div>').appendTo(@chat)
 		line.fadeIn(300)
 		
 		# Program its disappearance.

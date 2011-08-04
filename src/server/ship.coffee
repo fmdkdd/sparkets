@@ -352,10 +352,6 @@ class Ship extends ChangingObject
 
 		@addStat('deaths', 1)
 
-		@game.events.push
-			type: 'ship exploded'
-			id: @id
-
 		# If spawned, skip alive state.
 		@setState 'dead'
 

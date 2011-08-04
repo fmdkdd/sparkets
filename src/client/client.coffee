@@ -88,7 +88,7 @@ class Client
 
 	# Setup input callbacks and launch game loop.
 	go: () ->
-		@menu.open()
+
 		# Show the menu the first time.
 		if not window.localStorage['spacewar.tutorial']?
 			@menu.open()
@@ -427,10 +427,22 @@ class Client
 
 	handleEvent: (event) ->
 		switch event.type
-			when 'ship exploded'
+			when 'ship crashed'
 				@gameObjects[event.id].explosionEffect()
 				@gameObjects[event.id].dislocationEffect()
-				@chat.receiveEvent(event)
+				@chat.display(event)
+
+			when 'ships both crashed'
+				@gameObjects[event.id1].explosionEffect()
+				@gameObjects[event.id1].dislocationEffect()
+				@gameObjects[event.id2].explosionEffect()
+				@gameObjects[event.id2].dislocationEffect()
+				@chat.display(event)
+
+			when 'ship killed'
+				@gameObjects[event.idKilled].explosionEffect()
+				@gameObjects[event.idKilled].dislocationEffect()
+				@chat.display(event)
 
 			when 'ship boosted'
 				@gameObjects[event.id].boostEffect()
@@ -460,7 +472,7 @@ class Client
 
 	# When a player sent a chat message.
 	onPlayerMessage: (data)->
-		@chat.receiveMessage(data)
+		@chat.display(data)
 
 	# When another player leaves.
 	onPlayerQuits: (data) ->
