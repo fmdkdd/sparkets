@@ -5,48 +5,48 @@
  */
 
 section#info {
-		.gradient-black;
-		.box-shadow(0, 2px, 3px, @darkblue);
+	.gradient-black;
+	.box-shadow(0, 2px, 3px, @darkblue);
 
-		margin: 2em 6em 0 6em;
-		padding: 1em;
-		-webkit-column-count: 2;
+	margin: 2em 6em 0 6em;
+	padding: 1em;
+	-webkit-column-count: 2;
 
-		color: @darkblue;
-		border-bottom: 2px @blue;
+	color: @darkblue;
+	border-bottom: 2px @blue;
 
-		h3 {
-				color: @blue;
+	h3 {
+		color: @blue;
+	}
+
+	ul {
+		list-style-position: inside;
+		list-style-type: square;
+	}
+
+	section#controls {
+
+		.key {
+			color: @blue;
 		}
 
-		ul {
-				list-style-position: inside;
-				list-style-type: square;
+		#goal {
+			color: @blue;
+			font-style: italic;
 		}
+	}
 
-		section#controls {
+	section#about {
 
-				.key {
-						color: @blue;
-				}
+		a {
+			color: @blue;
+			text-decoration: none;
 
-				#goal {
-						color: @blue;
-						font-style: italic;
-				}
+			&:hover {
+				text-decoration: underline;
+			}
 		}
-
-		section#about {
-
-				a {
-						color: @blue;
-						text-decoration: none;
-
-						&:hover {
-								text-decoration: underline;
-						}
-				}
-		}
+	}
 }
 
 /**
@@ -54,40 +54,40 @@ section#info {
  */
 
 section#join {
-		margin: 2em 6em 0 6em;
+	margin: 2em 6em 0 6em;
 
-		table {
-				width: 100%;
-				border-collapse: collapse;
-				
-				th {
-						.gradient-black;
+	table {
+		width: 100%;
+		border-collapse: collapse;
 
-						padding: 0.3em;
+		th {
+			.gradient-black;
 
-						color: @blue;
-						border-bottom: 2px solid @blue;
-						text-align: left;
-						font-weight: bold;
-				}
+			padding: 0.3em;
 
-				tr {
-						&:nth-child(even) {
-								background-color: hsl(0, 0%, 95%);
-						}
-
-						&:nth-child(odd) {
-								background-color: hsl(0, 0%, 90%);
-						}
-				}
-
-				td {
-						padding: 0.3em;
-				}
-		
-				a {
-						text-decoration: none;
-						color: hsl(-150, 60%, 45%);
-				}
+			color: @blue;
+			border-bottom: 2px solid @blue;
+			text-align: left;
+			font-weight: bold;
 		}
+
+		tr {
+			&:nth-child(even) {
+				background-color: hsl(0, 0%, 95%);
+			}
+
+			&:nth-child(odd) {
+				background-color: hsl(0, 0%, 90%);
+			}
+		}
+
+		td {
+			padding: 0.3em;
+		}
+
+		a {
+			text-decoration: none;
+			color: hsl(-150, 60%, 45%);
+		}
+	}
 }

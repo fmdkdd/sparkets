@@ -16,182 +16,182 @@
 @red: hsl(10, 91%, 50%);
 
 .linear-gradient2 (@start, @stop1, @stop2) {
-		background: -webkit-linear-gradient(@start, @stop1, @stop2);
-		background: -moz-linear-gradient(@start, @stop1, @stop2);
-		background: linear-gradient(@start, @stop1, @stop2);
+	background: -webkit-linear-gradient(@start, @stop1, @stop2);
+	background: -moz-linear-gradient(@start, @stop1, @stop2);
+	background: linear-gradient(@start, @stop1, @stop2);
 }
 
 .linear-gradient3 (@start, @stop1, @stop2, @stop3) {
-		background: -webkit-linear-gradient(@start, @stop1, @stop2, @stop3);
-		background: -moz-linear-gradient(@start, @stop1, @stop2, @stop3);
-		background: linear-gradient(@start, @stop1, @stop2, @stop3);
+	background: -webkit-linear-gradient(@start, @stop1, @stop2, @stop3);
+	background: -moz-linear-gradient(@start, @stop1, @stop2, @stop3);
+	background: linear-gradient(@start, @stop1, @stop2, @stop3);
 }
 
 .gradient-black () {
-		.linear-gradient3(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+	.linear-gradient3(top, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
 }
 
 .gradient-black-reversed () {
-		.linear-gradient3(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
+	.linear-gradient3(bottom, hsl(0, 0%, 24%) 0%, hsl(0, 0%, 14%) 60%, hsl(0, 0%, 8%) 100%);
 }
 
 .gradient-light () {
-    .linear-gradient2(top, hsl(0, 0%, 70%) 0%, hsl(0, 0%, 100%) 40%);
+   .linear-gradient2(top, hsl(0, 0%, 70%) 0%, hsl(0, 0%, 100%) 40%);
 }
 
 .box-shadow (@x, @y, @blur, @color) {
-		box-shadow: @arguments;
-		-webkit-box-shadow: @arguments;
-		-moz-box-shadow: @arguments;
+	box-shadow: @arguments;
+	-webkit-box-shadow: @arguments;
+	-moz-box-shadow: @arguments;
 }
 
 .button-behavior () {
-		-webkit-transition-property: -webkit-box-shadow;
-		-webkit-transition-duration: 150ms;
-		-moz-transition-property: -moz-box-shadow;
-		-moz-transition-duration: 150ms;
-		transition-property: box-shadow;
-		transition-duration: 150ms;
+	-webkit-transition-property: -webkit-box-shadow;
+	-webkit-transition-duration: 150ms;
+	-moz-transition-property: -moz-box-shadow;
+	-moz-transition-duration: 150ms;
+	transition-property: box-shadow;
+	transition-duration: 150ms;
 
-		&:hover {
-				.box-shadow(0, 0, 15px, @black);
-		}
-		&:active {
-				.gradient-black-reversed;
-		}
+	&:hover {
+		.box-shadow(0, 0, 15px, @black);
+	}
+	&:active {
+		.gradient-black-reversed;
+	}
 }
 
 .textfield {
-		.gradient-light;
+	.gradient-light;
 
-		padding: 0.2em;
+	padding: 0.2em;
 
-		border: 1px solid white;
-		border-radius: 0.5em;
+	border: 1px solid white;
+	border-radius: 0.5em;
 }
 
 * {
-		margin: 0;
-		padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 body {
-		color: @beige;
-		font-family: sans;
+	color: @beige;
+	font-family: sans;
 }
 
 a {
-		text-decoration: none;
-		color: @blue;
+	text-decoration: none;
+	color: @blue;
 }
 
 header {
-		.gradient-black;
-		.box-shadow(0, 2px, 3px, @darkblue);
+	.gradient-black;
+	.box-shadow(0, 2px, 3px, @darkblue);
 
-		padding: 0 6em;
-		border-bottom: 4px solid @blue;
+	padding: 0 6em;
+	border-bottom: 4px solid @blue;
 
-		h1 {
-				color: @blue;
-				text-shadow: 0 1px 1px lighten(@blue, 20%);
-				font-family: 'Open Sans';
-				letter-spacing: 0.16em;
+	h1 {
+		color: @blue;
+		text-shadow: 0 1px 1px lighten(@blue, 20%);
+		font-family: 'Open Sans';
+		letter-spacing: 0.16em;
+	}
+	span#account {
+		position: absolute;
+		right: 6em;
+		top: 1em;
+
+		color: @beige;
+
+		#login, #signup {
+			cursor: pointer;
+
+			&:hover {
+				color: white;
+			}
 		}
-		span#account {
-				position: absolute;
-				right: 6em;
-				top: 1em;
-
-				color: @beige;
-
-				#login, #signup {
-						cursor: pointer;
-
-						&:hover {
-								color: white;
-						}
-				}
-		}
+	}
 }
 
 input[type="text"], input[type="email"], input[type="password"] {
-		.textfield;
+	.textfield;
 }
 
 section#accountForm {
-		.gradient-black-reversed;
-		.box-shadow(0, 2px, 3px, @darkblue);
+	.gradient-black-reversed;
+	.box-shadow(0, 2px, 3px, @darkblue);
 
-		display: none;
-		width: 50%;
-		z-index: 10;
+	display: none;
+	width: 50%;
+	z-index: 10;
 
-		border: 3px solid @blue;
-		border-top-left-radius: 1em;
-		border-bottom-right-radius: 1em;
+	border: 3px solid @blue;
+	border-top-left-radius: 1em;
+	border-bottom-right-radius: 1em;
 
-		table {
-				width: 100%;
-				padding: 1em;
+	table {
+		width: 100%;
+		padding: 1em;
 
-				th {
-						width: 50%;
-						height: 3em;
-						vertical-align: top;
+		th {
+			width: 50%;
+			height: 3em;
+			vertical-align: top;
 
-						color: @blue;
-						text-align: left;
-				}
-
-				td {
-						vertical-align: top;
-				}
-
-				span {
-						display: block;
-						margin-bottom: 0.3em;
-
-						color: @blue;
-						font-size: 0.7em;
-				}
-
-				input {
-						display: block;
-						margin-bottom: 2em;
-				}
-
-				input[type="submit"] {
-						.gradient-black;
-						.box-shadow(0, 1px, 3px, @darkpurple);
-
-						padding: .2em .5em;
-
-						color: white;
-						font-size: 14pt;
-						border: 1px solid @purple;
-						border-radius: 3px;
-
-						&:not(:disabled) {
-								cursor: pointer;
-								.button-behavior;
-						}
-						&:disabled {
-								cursor: default;
-								opacity: .5;
-						}
-				}
+			color: @blue;
+			text-align: left;
 		}
+
+		td {
+			vertical-align: top;
+		}
+
+		span {
+			display: block;
+			margin-bottom: 0.3em;
+
+			color: @blue;
+			font-size: 0.7em;
+		}
+
+		input {
+			display: block;
+			margin-bottom: 2em;
+		}
+
+		input[type="submit"] {
+			.gradient-black;
+			.box-shadow(0, 1px, 3px, @darkpurple);
+
+			padding: .2em .5em;
+
+			color: white;
+			font-size: 14pt;
+			border: 1px solid @purple;
+			border-radius: 3px;
+
+			&:not(:disabled) {
+				cursor: pointer;
+				.button-behavior;
+			}
+			&:disabled {
+				cursor: default;
+				opacity: .5;
+			}
+		}
+	}
 }
 
 div#cache {
-		display: none;
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 5;
+	display: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 5;
 
-		background-color: hsla(0, 0%, 0%, 0.8);
+	background-color: hsla(0, 0%, 0%, 0.8);
 }

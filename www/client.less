@@ -5,10 +5,10 @@
  */
 
 canvas#canvas {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		z-index: -1;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
 }
 
 /**
@@ -16,241 +16,241 @@ canvas#canvas {
  */
 
 table#menu {
+	position: relative;
+	top: 50px;
+	margin: auto;
+
+	border-collapse: collapse;
+
+	&.hidden {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	&.visible {
+		opacity: 0.95;
+		visibility: visible;
+	}
+
+	section#main {
+		.gradient-black;
+		.box-shadow(0, 0, 5px, black);
+
 		position: relative;
-		top: 50px;
-		margin: auto;
+		width: 700px;
+		height: 500px;
+		padding: 20px;
+		z-index: 2;
 
-		border-collapse: collapse;
+		color: white;
+		border: 5px solid @blue;
+		border-top-left-radius: 0.9em;
+		border-bottom-right-radius: 0.9em;
 
-		&.hidden {
-				opacity: 0;
-				display: none;
+		font-size: 17px;
+		font-family: sans;
+
+		img#closeButton {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+
+			cursor: pointer;
 		}
-		
-		&.visible {
-				opacity: 0.95;
-				display: block;
-		}
 
-		section#main {
-				.gradient-black;
-				.box-shadow(0, 0, 5px, black);
+		section#customize {
+			position: relative;
+			float: left;
+			width: 50%;
+			height: 100%;
 
-				position: relative;
-				width: 700px;
-				height: 500px;
-				padding: 20px;
-				z-index: 2;
+			h2 {
+				margin-bottom: 50px;
 
 				color: white;
-				border: 5px solid @blue;
-				border-top-left-radius: 0.9em;
-				border-bottom-right-radius: 0.9em;
+				text-shadow: 0 -2px 1px black;
+			}
 
-				font-size: 17px;
-				font-family: sans;
-
-				img#closeButton {
-						position: absolute;
-						top: 10px;
-						right: 10px;
-						
-						cursor: pointer;
-				}
-
-				section#customize {
-						position: relative;
-						float: left;
-						width: 50%;
-						height: 100%;
-						
-						h2 {
-								margin-bottom: 50px;
-
-								color: white;
-								text-shadow: 0 -2px 1px black;
-						}
-
-						div#colorWheelBox {
-								width: 200px;
-								height: 200px;
-								position: relative;
-								margin: auto;
-								margin-bottom: 5%;
-
-								@-webkit-keyframes rotate {
-										from { -webkit-transform: rotate(0deg); }
-										to { -webkit-transform: rotate(360deg); }
-								}
-
-								@-moz-keyframes rotate {
-										from { -moz-transform: rotate(0deg); }
-										to { -moz-transform: rotate(360deg); }
-								}
-
-								svg {
-										width: 100%;
-										height: 100%;
-
-										-webkit-animation-name: rotate;
-										-webkit-animation-duration: 15s;
-										-webkit-animation-iteration-count: infinite;
-										-webkit-animation-timing-function: linear;
-
-										-moz-animation-name: rotate;
-										-moz-animation-duration: 15s;
-										-moz-animation-iteration-count: infinite;
-										-moz-animation-timing-function: linear;
-								}
-
-								#colorWheel {
-										width: 200px;
-										height: 200px;
-										position: absolute;
-										top: 0;
-										left: 0;
-
-										border-radius: 100px;
-										.box-shadow(0, 0, 10px, @black)
-								}
-
-								#colorCursor {
-										display: none;
-								}
-						}
-
-						#nameForm {
-								width: 100%;
-								text-align: center;
-						}
-						
-						#name {
-								display: block;
-								width: 100px;
-								margin: auto;
-								margin-bottom: 5%;
-								text-align: center;
-						}
-						
-						div#optionsBox {
-								position: absolute;
-								bottom: 0;
-
-								.option {
-										display: block;
-										margin-bottom: 0.5em;
-
-										font-size: 0.8em;
-								}
-						}
-
-						input[type="submit"] {
-								.gradient-black;
-								.box-shadow(0, 1px, 3px, @darkgreen);
-
-								display: block;
-								width: 4em;
-								margin: auto;
-								padding: .5em 1em;
-
-								color: white;
-								font-size: 1.1em;
-								border: 1px solid @green;
-								border-radius: 3px;
-
-								&:not(:disabled) {
-										cursor: pointer;
-										.button-behavior;
-								}
-								&:disabled {
-										cursor: default;
-										opacity: .5;
-								}
-						}
-				}
-
-				section#scores {
-						float: right;
-						width: 50%;
-
-						h2 {
-								margin-bottom: 50px;
-
-								color: white;
-								text-shadow: 0 -2px 1px black;
-						}
-
-						table {
-								width: 100%;
-								table-layout: fixed;
-								border-collapse : collapse;
-
-								tr {
-										height: 2em;
-								}
-
-								th {
-										border-bottom: 1px solid @beige;
-								}
-
-								th, td {
-										text-align: center;
-
-										// Player name
-										&:nth-child(2) {
-												width: 60%;
-												text-align: left;
-										}
-								}
-						}
-				}
-		}
-
-		section#time, section#nemesis, section#scapegoat {
-				.gradient-black;
-				.box-shadow(0, 0, 5px, black);
-
+			div#colorWheelBox {
 				width: 200px;
-				height: 150px;
-				margin-top: 13px;
-				margin-bottom: 13px;
-				z-index: 1;
+				height: 200px;
+				position: relative;
+				margin: auto;
+				margin-bottom: 5%;
+
+				@-webkit-keyframes rotate {
+					from { -webkit-transform: rotate(0deg); }
+					to { -webkit-transform: rotate(360deg); }
+				}
+
+				@-moz-keyframes rotate {
+					from { -moz-transform: rotate(0deg); }
+					to { -moz-transform: rotate(360deg); }
+				}
+
+				svg {
+					width: 100%;
+					height: 100%;
+
+					-webkit-animation-name: rotate;
+					-webkit-animation-duration: 15s;
+					-webkit-animation-iteration-count: infinite;
+					-webkit-animation-timing-function: linear;
+
+					-moz-animation-name: rotate;
+					-moz-animation-duration: 15s;
+					-moz-animation-iteration-count: infinite;
+					-moz-animation-timing-function: linear;
+				}
+
+				#colorWheel {
+					width: 200px;
+					height: 200px;
+					position: absolute;
+					top: 0;
+					left: 0;
+
+					border-radius: 100px;
+					.box-shadow(0, 0, 10px, @black)
+				}
+
+				#colorCursor {
+					display: none;
+				}
+			}
+
+			#nameForm {
+				width: 100%;
+				text-align: center;
+			}
+
+			#name {
+				display: block;
+				width: 100px;
+				margin: auto;
+				margin-bottom: 5%;
+				text-align: center;
+			}
+
+			div#optionsBox {
+				position: absolute;
+				bottom: 0;
+
+				.option {
+					display: block;
+					margin-bottom: 0.5em;
+
+					font-size: 0.8em;
+				}
+			}
+
+			input[type="submit"] {
+				.gradient-black;
+				.box-shadow(0, 1px, 3px, @darkgreen);
+
+				display: block;
+				width: 4em;
+				margin: auto;
+				padding: .5em 1em;
 
 				color: white;
-				border-size: 5px;
-				border-style: solid;
-				border-left: none;
-				border-top-right-radius: 0.9em;
-				border-bottom-right-radius: 0.9em;
+				font-size: 1.1em;
+				border: 1px solid @green;
+				border-radius: 3px;
 
-				h3 {
-						margin: 0.5em;
-						font-size: 1em;
-
-						color: lightgrey;
-						text-shadow: 0 -2px 1px black;
+				&:not(:disabled) {
+					cursor: pointer;
+					.button-behavior;
 				}
-		}
-
-		section#time {
-				border-color: darken(@blue, 10%);
-
-				p#timeLeft {
-						width: 100%;
-						margin-top: 25px;
-
-						font-size: 3em;
-						text-align: center;
+				&:disabled {
+					cursor: default;
+					opacity: .5;
 				}
+			}
 		}
 
-		section#nemesis {
-				border-color: darken(@blue, 20%);
-		}
+		section#scores {
+			float: right;
+			width: 50%;
 
-		section#scapegoat {
-				border-color: darken(@blue, 30%);
+			h2 {
+				margin-bottom: 50px;
+
+				color: white;
+				text-shadow: 0 -2px 1px black;
+			}
+
+			table {
+				width: 100%;
+				table-layout: fixed;
+				border-collapse : collapse;
+
+				tr {
+					height: 2em;
+				}
+
+				th {
+					border-bottom: 1px solid @beige;
+				}
+
+				th, td {
+					text-align: center;
+
+					// Player name
+					&:nth-child(2) {
+						width: 60%;
+						text-align: left;
+					}
+				}
+			}
 		}
+	}
+
+	section#time, section#nemesis, section#scapegoat {
+		.gradient-black;
+		.box-shadow(0, 0, 5px, black);
+
+		width: 200px;
+		height: 150px;
+		margin-top: 13px;
+		margin-bottom: 13px;
+		z-index: 1;
+
+		color: white;
+		border-size: 5px;
+		border-style: solid;
+		border-left: none;
+		border-top-right-radius: 0.9em;
+		border-bottom-right-radius: 0.9em;
+
+		h3 {
+			margin: 0.5em;
+			font-size: 1em;
+
+			color: lightgrey;
+			text-shadow: 0 -2px 1px black;
+		}
+	}
+
+	section#time {
+		border-color: darken(@blue, 10%);
+
+		p#timeLeft {
+			width: 100%;
+			margin-top: 25px;
+
+			font-size: 3em;
+			text-align: center;
+		}
+	}
+
+	section#nemesis {
+		border-color: darken(@blue, 20%);
+	}
+
+	section#scapegoat {
+		border-color: darken(@blue, 30%);
+	}
 }
 
 /**
@@ -258,31 +258,31 @@ table#menu {
  */
 
 #chatInput {
-		display: block;
-		margin: auto;
-		width: 15em;
+	display: block;
+	margin: auto;
+	width: 15em;
 
-		&.hidden {
-				opacity: 0;
-				visibility: hidden;
-		}
+	&.hidden {
+		opacity: 0;
+		visibility: hidden;
+	}
 
-		&.visible {
-				opacity: 0.95;
-				visibility: visible;
-		}
+	&.visible {
+		opacity: 0.95;
+		visibility: visible;
+	}
 }
 
 #chat {
-		position: absolute;
-		top: 0.5em;
-		left: 0.5em;
+	position: absolute;
+	top: 0.5em;
+	left: 0.5em;
 
-		div {
-				margin-bottom: 0.2em;
+	div {
+		margin-bottom: 0.2em;
 
-				img {
-						vertical-align: middle;
-				}
+		img {
+			vertical-align: middle;
 		}
+	}
 }
