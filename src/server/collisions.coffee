@@ -368,9 +368,6 @@ exports.collisions =
 		ddebug "shield ##{shield.id} hit bullet ##{bullet.id}"
 
 	'shield-shield': (shield1, shield2) ->
-		# shields cancel each other.
-		shield1.cancel()
-		shield2.cancel()
 
 		shield1.owner.addStat('shield on shield collisions', 1)
 		shield2.owner.addStat('shield on shield collisions', 1)
