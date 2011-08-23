@@ -91,7 +91,7 @@ class Tracker extends ChangingObject
 				id: @id
 
 		if state_old isnt @state and @state is 'dead'
-			for i in [0...3]
+			for i in [0...@game.prefs.tracker.fragmentation]
 				@game.newGameObject (id) =>
 					new MiniTracker(id, @game, @)
 

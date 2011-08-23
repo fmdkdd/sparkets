@@ -321,6 +321,8 @@ class GamePreferences
 		frictionDecay: 0.95
 		turnSpeed: 20
 
+		fragmentation: 3
+
 		states:
 			'deploying':
 				countdown: 700 				# Time (ms) before activation.
