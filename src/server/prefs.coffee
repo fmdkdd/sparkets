@@ -326,8 +326,23 @@ class GamePreferences
 				countdown: 700 				# Time (ms) before activation.
 				next: 'tracking'
 			'tracking':
+				countdown: 100				# Time (ms) before fragmentation.
+				next: 'dead'
+			'dead':
 				countdown: null
-				next: 'exploding'
+				next: null
+
+	miniTracker:
+
+		boundingBoxRadius: 2
+		speed: 0.55
+		frictionDecay: 0.95
+		turnSpeed: 20
+
+		states:
+			'tracking':
+				countdown: 10000					# Time (ms) before explosion.
+				next: 'dead'
 			'dead':
 				countdown: null
 				next: null
@@ -361,7 +376,7 @@ class GamePreferences
 				weight: 1
 			tracker:
 				class: BonusTracker
-				weight: 1
+				weight: 1000
 			boost:
 				class: BonusBoost
 				weight: 1

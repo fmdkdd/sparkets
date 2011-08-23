@@ -342,14 +342,14 @@ class Client
 				new Shield(@, obj)
 			when 'bonus'
 				@bonuses[id] = new Bonus(@, obj)
-			when 'planet'
-				new Planet(@, obj)
-			when 'moon'
+			when 'planet', 'moon'
 				new Planet(@, obj)
 			when 'rope'
 				new Rope(@, obj)
 			when 'tracker'
 				new Tracker(@, obj)
+			when 'mini tracker'
+				new Tracker(@, obj, yes)
 
 	deleteObject: (id) ->
 		type = @gameObjects[id].type

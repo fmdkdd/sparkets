@@ -1,11 +1,11 @@
 class Tracker
-	constructor: (@client, tracker) ->
+	constructor: (@client, tracker, @mini = no) ->
 		@serverUpdate(tracker)
 
 		@color = @client.gameObjects[@ownerId].color
 
 		# Create the sprite.
-		@radius = 5
+		@radius = if @mini then 2 else 5
 		s = 2*@radius + 7
 		color = window.utils.color @color
 		@sprite = @client.spriteManager.get('tracker', s, s, color)

@@ -1,5 +1,6 @@
 utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
+MiniTracker = require('./miniTracker').MiniTracker
 
 class Tracker extends ChangingObject
 	constructor: (@id, @game, @owner, @target, dropPos) ->
@@ -88,6 +89,11 @@ class Tracker extends ChangingObject
 			@game.events.push
 				type: 'tracker activated'
 				id: @id
+
+		if state_old isnt @state and @state is 'dead'
+			for i in [0...3]
+				@game.newGameObject (id) =>
+					new MiniTracker(id, @game, @)
 
 		# Stop tracking when the target dies.
 		if @target? and @target.state is 'dead'
