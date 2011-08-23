@@ -317,9 +317,9 @@ class GamePreferences
 	tracker:
 
 		boundingBoxRadius: 5
-		speed: 0.55
+		speed: 0.3
 		frictionDecay: 0.95
-		turnSpeed: 20
+		turnSpeed: 50
 
 		fragmentation: 3
 
@@ -328,7 +328,7 @@ class GamePreferences
 				countdown: 700 				# Time (ms) before activation.
 				next: 'tracking'
 			'tracking':
-				countdown: 100				# Time (ms) before fragmentation.
+				countdown: 1300				# Time (ms) before fragmentation.
 				next: 'dead'
 			'dead':
 				countdown: null
@@ -337,9 +337,9 @@ class GamePreferences
 	miniTracker:
 
 		boundingBoxRadius: 2
-		speed: 0.55
+		speed: 0.6
 		frictionDecay: 0.95
-		turnSpeed: 20
+		turnSpeed: 25
 
 		states:
 			'tracking':

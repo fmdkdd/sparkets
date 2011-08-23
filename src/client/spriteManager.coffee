@@ -122,10 +122,6 @@ class SpriteManager
 			ctxt.save()
 			ctxt.scale(scalex, scaley)
 
-			ctxt.fillRect(0, 0, 50, 50)
-			ctxt.restore()
-
-			###
 			# Hull.
 			ctxt.beginPath()
 			ctxt.moveTo(0, 10)
@@ -150,7 +146,6 @@ class SpriteManager
 			ctxt.fillRect(0, 23, 25, 4)
 
 			ctxt.restore()
-			###
 
 			return sprite
 
