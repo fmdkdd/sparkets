@@ -8,8 +8,9 @@
 * Ropes acting funny at borders
   Still reproducible when picking up a bonus at the edge of the
   map. My guess is that the chain is not modified to handle the
-  wrapping like it is for bullets. 
+  wrapping like it is for bullets.
 
+* Stealthy ships are given away by the dragged bonuses, and by the shield
 * DONE Menu disappear in Chrome.
   CLOSED: [2011-07-29 Fri 14:45]
   Open/close the menu enough times, and it will never reappear.
@@ -23,7 +24,7 @@
 
   Reproducible in Chromium 13.0.752.0 (83651) but not FF 5.0.
   System: Ubuntu Linux 11.04.
-  
+
   --
 
   Might be tied to the CSS transition applied when changing the menu
