@@ -1,0 +1,33 @@
+{
+	"name": "spacewar",
+	"version": "1.0.0-alpha3",
+	"description": "Multiplayer space shooting game using the HTML canvas and the WebSocket protocol",
+	"keywords": ["multiplayer game", "canvas", "websocket"],
+	"contributors": [
+		"fmdkdd <fmdkdd@gmail.com> (http://fmdkdd.github.com/)",
+		"Merwan Achibet (http://merwanachibet.free.fr/)"
+	],
+
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/fmdkdd/spacewar.git"
+	},
+
+	"scripts": {
+		"start": "node build/server/run.js"
+	},
+
+	"dependencies": {
+		"coffee-script": "1.x",
+		"socket.io": "0.8.x",
+		"webrepl": "0.4.x"
+	},
+
+	"devDependencies": {
+		"vows": "0.5.x"
+	},
+
+	"engines": {
+		"node": "0.4.x"
+	}
+}
