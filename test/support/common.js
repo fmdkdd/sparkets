@@ -189,7 +189,7 @@ function WSClient (port, sid) {
 
   WebSocket.call(
       this
-    , 'ws://localhost:' + port + '/socket.io/' 
+    , 'ws://localhost:' + port + '/socket.io/'
         + io.protocol + '/websocket/' + sid
   );
 };

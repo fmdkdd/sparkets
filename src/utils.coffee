@@ -10,7 +10,7 @@ Array.random = (array) ->
 
 # Return random object property.
 exports.randomObjectElem = (obj) ->
-	obj[ exports.Array.random(Object.keys(obj)) ]
+	obj[ Array.random(Object.keys(obj)) ]
 
 # From jQuery
 exports.isEmptyObject = (obj) ->
