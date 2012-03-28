@@ -217,7 +217,7 @@ exports.handle = (obj1, obj2) ->
 exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'available'
-			ship.holdBonus(bonus)
+ 	 		ship.holdBonus(bonus)
 			ship.useBonus() if bonus.isEvil()
 
 			ship.addStat("#{bonus.type} bonus grabs", 1)
@@ -268,6 +268,25 @@ exports.collisions =
 			idKiller: mine.owner.id
 
 		ddebug "mine ##{mine.id} killed ship ##{ship.id}"
+
+	'ship-grenade': (ship, grenade) ->
+
+		ship.explode()
+		grenade.explode() if grenade.state is 'active'
+
+		if grenade.owner isnt ship
+			grenade.owner.addStat('kills', 1)
+			grenade.owner.addStat('mine kills', 1)
+		else
+			ship.addStat('deaths by own grenade', 1)
+		ship.addStat('grenade deaths', 1)
+
+		ship.game.events.push
+			type: 'ship killed'
+			idKilled: ship.id
+			idKiller: grenade.owner.id
+
+		ddebug "grenade ##{grenade.id} killed ship ##{ship.id}"
 
 	'ship-moon': (ship, moon) ->
 		ship.explode()
@@ -567,3 +586,15 @@ exports.collisions =
 		mine.owner.addStat('trackers destroyed with mines', 1)
 
 		ddebug "mine ##{mine.id} destroyed tracker ##{tracker.id}"
+
+	'grenade-moon': (grenade, moon) ->
+		if grenade.state is 'active'
+			grenade.explode()
+
+		ddebug "grenade ##{grenade.id} hit moon ##{moon.id}"
+
+	'grenade-planet': (grenade, planet) ->
+		if grenade.state is 'active'
+			grenade.explode()
+
+		ddebug "grenade ##{grenade.id} hit planet ##{planet.id}"

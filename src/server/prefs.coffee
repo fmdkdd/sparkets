@@ -2,6 +2,7 @@ utils = require '../utils'
 BonusBoost = require './bonusBoost'
 BonusShield = require './bonusShield'
 BonusMine = require './bonusMine'
+BonusGrenade = require './bonusGrenade'
 BonusTracker = require './bonusTracker'
 BonusStealth = require './bonusStealth'
 BonusEMP = require './bonusEMP'
@@ -314,6 +315,28 @@ class GamePreferences
 				countdown: null
 				next: null
 
+	grenade:
+
+		fragmentationOffset: 150,
+
+		explosionRadius: 50,
+
+		explosionDelayVariation: 400,
+
+		states:
+			'active':
+				countdown: 500
+				next: 'fragmenting'
+			'fragmenting':
+				countdown: 0		  # Length (ms) of explosion.
+				next: 'exploding'
+			'exploding':
+				countdown: 500
+				next: 'dead'
+			'dead':
+				countdown: null
+				next: null
+
 	tracker:
 
 		boundingBoxRadius: 5
@@ -376,9 +399,12 @@ class GamePreferences
 			mine:
 				class: BonusMine
 				weight: 1
+			grenade:
+				class: BonusGrenade
+				weight: 1000
 			tracker:
 				class: BonusTracker
-				weight: 1000
+				weight: 1
 			boost:
 				class: BonusBoost
 				weight: 1

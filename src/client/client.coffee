@@ -338,6 +338,8 @@ class Client
 				new Bullet(@, obj)
 			when 'mine'
 				new Mine(@, obj)
+			when 'grenade'
+				new Grenade(@, obj)
 			when 'shield'
 				new Shield(@, obj)
 			when 'bonus'

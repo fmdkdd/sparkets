@@ -109,6 +109,15 @@ class SpriteManager
 
 			return sprite
 
+		'grenade': (sprite, w, h) ->
+			ctxt = sprite.getContext('2d')
+			ctxt.fillStyle = 'black'
+
+			r = 5
+			ctxt.fillRect(-r, -r, r*2, r*2)
+
+			return sprite
+
 		'tracker': (sprite, w, h) ->
 			ctxt = sprite.getContext('2d')
 			ctxt.fillStyle = 'black'
@@ -163,6 +172,9 @@ class SpriteManager
 
 		'bonusMine': (sprite, w, h) ->
 			@['mine'](sprite, w, h)
+
+		'bonusGrenade': (sprite, w, h) ->
+			@['grenade'](sprite, w, h)
 
 		'bonusTracker': (sprite, w, h) ->
 			ctxt = sprite.getContext('2d')
