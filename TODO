@@ -38,7 +38,7 @@
 *** Paintball mode
 	 Spray other ships with your colors! Rating 2 and up.
 
-*** Mirror image 	 
+*** Mirror image
 	 Copy of the ship that mirror the player, but turn in opposite
 	 directions.  Fires phony bullets, disappear when colliding
 	 something (different explosion visual).
@@ -79,7 +79,7 @@
 		Three teams, each one having a prey team and a hunter team.
 		The team which kills the most preys wins.
 		A ship can only be killed by a member of its hunter team.
-		
+
 *** Death race
 	 All ships spawn at the start line, first to finish wins.
 	 The map is tailored for the race, with planets on either side (or
@@ -110,14 +110,14 @@
 		- Hope nobody saw that : Shot yourself.
 		- Rogue leader : Be at the top of the scoreboard X times.
 		...
-	 
+
 
 * Interface
 ** Web interface for game creation.
 *** TODO Sanitize input
 		- Unique game id.
 		- Out of range values.
-		  
+
 *** TODO More info in game list.
 		- Max players allowed.
 		- Ping.
@@ -160,12 +160,12 @@
    While this is a nice pattern, we need to make sure calling
    listeners is synchronous. If that must be done, use our own
    synchronous EventEmitter.
-   
+
 ** DONE Factorize gravity from planet computations
 	 CLOSED: [2011-07-13 Wed 12:20]
    Consider only surrounding planets, wrt the torus.
 
-** Expire deserted games 
+** Expire deserted games
 
 ** DONE Tune collisions.
 	 CLOSED: [2011-07-22 Fri 16:25]
@@ -175,12 +175,12 @@
    - Don't check collisions between objects that can't collide gameplay-wise.
 
 ** Prevent objects from spawning onto each other.
-   
+
 ** DONE Change planet count to a percentage value relative to map size.
    CLOSED: [2011-08-03 Wed 15:28]
    Could specify between 30-70% planet fill. Avoid locks when trying
-   to fit 50 planets into a 500*500 map. 
-   
+   to fit 50 planets into a 500*500 map.
+
 ** DONE Refactor client clode
 	 CLOSED: [2011-07-22 Fri 16:25]
    What a mess.
@@ -194,3 +194,4 @@
 ** DONE Use sprites for all bonuses
 	 CLOSED: [2011-08-03 Wed 14:37]
 ** Visual clue for number of mines in bonus
+** TODO Use composition instead of inheritance where it makes sense
