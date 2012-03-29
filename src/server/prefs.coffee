@@ -398,10 +398,10 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 1
+				weight: 1000
 			grenade:
 				class: BonusGrenade
-				weight: 1000
+				weight: 1
 			tracker:
 				class: BonusTracker
 				weight: 1

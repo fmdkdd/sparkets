@@ -1,7 +1,11 @@
 ChangingObject = require('./changingObject').ChangingObject
+stateMachineMixin = require('./stateMachine').mixin
 utils = require '../utils'
 
 class Mine extends ChangingObject
+
+	stateMachineMixin.call(@prototype)
+
 	constructor: (@id, @game, @owner, @pos) ->
 		super()
 
@@ -24,16 +28,13 @@ class Mine extends ChangingObject
 		@flagNextUpdate('ownerId')
 
 		# Initial state.
-		@state = 'inactive'
-		@countdown = @game.prefs.mine.states[@state].countdown
-
+		@setState 'inactive'
 		@flagNextUpdate('state')
 
 		# Static position.
 		@pos =
 			x: pos.x
 			y: pos.y
-
 		@flagNextUpdate('pos')
 
 		# Hit box is a circle with static position and varying radius.
@@ -58,53 +59,37 @@ class Mine extends ChangingObject
 	tangible: () ->
 		@state is 'active' or @state is 'exploding'
 
-	nextState: () ->
-		@state = @game.prefs.mine.states[@state].next
-		@countdown = @game.prefs.mine.states[@state].countdown
-
-		@flagNextUpdate('state')
-
-	setState: (state) ->
-		if @game.prefs.mine.states[state]?
-			@flagNextUpdate('state') unless @state is state
-
-			@state = state
-			@countdown = @game.prefs.mine.states[state].countdown
-
 	move: (step) ->
+
 		switch @state
+
 			# The mine is active.
 			when 'active'
 				# FIXME: slower in powersave mode.
 				@radius += @game.prefs.mine.waveSpeed
 				if @radius >= @game.prefs.mine.maxDetectionRadius
 					@radius = @game.prefs.mine.minDetectionRadius
-
 				@flagNextUpdate('radius')
 
 			# The mine is exploding.
 			when 'exploding'
 				@radius = @game.prefs.mine.explosionRadius
-
 				@flagNextUpdate('radius')
 
 		# Update hit box radius.
 		@boundingBox.radius = @hitBox.radius = @radius
-
 		if @game.prefs.debug.sendHitBoxes
 			@flagNextUpdate('boundingBox.radius')
 			@flagNextUpdate('hitBox.radius')
 
 	update: (step) ->
-		if @countdown?
-			@countdown -= @game.prefs.timestep * step
-			@nextState() if @countdown <= 0
+
+		@updateState(step)
 
 		switch @state
 			# The explosion is over.
 			when 'dead'
 				@serverDelete = yes
-
 				@flagNextUpdate('serverDelete')
 
 	explode: () ->
