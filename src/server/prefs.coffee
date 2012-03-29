@@ -357,21 +357,6 @@ class GamePreferences
 				countdown: null
 				next: null
 
-	miniTracker:
-
-		boundingBoxRadius: 2
-		speed: 0.6
-		frictionDecay: 0.95
-		turnSpeed: 25
-
-		states:
-			'tracking':
-				countdown: 10000					# Time (ms) before explosion.
-				next: 'dead'
-			'dead':
-				countdown: null
-				next: null
-
 	bonus:
 		states:
 			'incoming':

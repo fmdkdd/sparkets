@@ -67,14 +67,6 @@ class Tracker extends ChangingObject
 	tangible: () ->
 		@state isnt 'dead'
 
-	update: (step) ->
-
-		@updateState(step)
-
-		# Stop tracking when the target dies.
-		if @state is 'tracking' and @target?.state is 'dead'
-			@target = null
-
 	move: (step) ->
 
 		return if @state isnt 'tracking'
@@ -117,6 +109,26 @@ class Tracker extends ChangingObject
 			@flagNextUpdate('boundingBox.y')
 			@flagNextUpdate('hitBox.x')
 			@flagNextUpdate('hitBox.y')
+
+	update: (step) ->
+
+		oldState = @state
+
+		@updateState(step)
+
+		if @state isnt oldState
+			if @state is 'tracking'
+				@game.events.push
+					type: 'tracker activated'
+					id: @id
+			else if @state is 'dead'
+				@game.events.push
+					type: 'tracker exploded'
+					id: @id
+
+		# Stop tracking when the target dies.
+		if @state is 'tracking' and @target?.state is 'dead'
+			@target = null
 
 	explode: () ->
 		@setState 'dead'
