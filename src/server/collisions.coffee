@@ -426,15 +426,6 @@ exports.collisions =
 
 		ddebug "shield ##{shield.id} hit tracker ##{tracker.id}"
 
-	'shield-mini tracker': (shield, tracker) ->
-		# shields absorb mini trackers.
-		tracker.explode()
-
-		shield.owner.addStat('trackers absorbed with shield', 1)
-		tracker.owner.addStat('trackers lost to shields', 1)
-
-		ddebug "shield ##{shield.id} hit tracker ##{tracker.id}"
-
 	'mine-bullet': (mine, bullet) ->
 		if mine.state is 'active'
 			mine.explode()
@@ -503,13 +494,6 @@ exports.collisions =
 
 		ddebug "tracker ##{tracker.id} crashed on planet ##{planet.id}"
 
-	'mini tracker-planet' : (tracker, planet) ->
-		tracker.explode()
-
-		tracker.owner.addStat('trackers lost to planets', 1)
-
-		ddebug "tracker ##{tracker.id} crashed on planet ##{planet.id}"
-
 	'tracker-moon' : (tracker, moon) ->
 		tracker.explode()
 
@@ -517,32 +501,7 @@ exports.collisions =
 
 		ddebug "tracker ##{tracker.id} crashed on moon ##{moon.id}"
 
-	'mini tracker-moon' : (tracker, moon) ->
-		tracker.explode()
-
-		tracker.owner.addStat('trackers lost to moons', 1)
-
-		ddebug "tracker ##{tracker.id} crashed on moon ##{moon.id}"
-
 	'tracker-ship' : (tracker, ship) ->
-		tracker.explode()
-		ship.explode(tracker)
-
-		if tracker.owner isnt ship
-			tracker.owner.addStat('kills', 1)
-			tracker.owner.addStat('tracker kills', 1)
-		else
-			ship.addStat('deaths by own tracker', 1)
-		ship.addStat('tracker deaths', 1)
-
-		ship.game.events.push
-			type: 'ship killed'
-			idKilled: ship.id
-			idKiller: tracker.owner.id
-
-		ddebug "tracker ##{tracker.id} destroyed ship ##{ship.id}"
-
-	'mini tracker-ship' : (tracker, ship) ->
 		tracker.explode()
 		ship.explode(tracker)
 
@@ -578,23 +537,14 @@ exports.collisions =
 
 		ddebug "mine ##{mine.id} destroyed tracker ##{tracker.id}"
 
-	'mini tracker-mine' : (tracker, mine) ->
-		tracker.explode()
-		mine.explode()
-
-		tracker.owner.addStat('trackers lost to mines', 1)
-		mine.owner.addStat('trackers destroyed with mines', 1)
-
-		ddebug "mine ##{mine.id} destroyed tracker ##{tracker.id}"
-
 	'grenade-moon': (grenade, moon) ->
 		if grenade.state is 'active'
-			grenade.explode()
+			grenade.fragment()
 
 		ddebug "grenade ##{grenade.id} hit moon ##{moon.id}"
 
 	'grenade-planet': (grenade, planet) ->
 		if grenade.state is 'active'
-			grenade.explode()
+			grenade.fragment()
 
 		ddebug "grenade ##{grenade.id} hit planet ##{planet.id}"

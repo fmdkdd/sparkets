@@ -1,8 +1,12 @@
 utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
+stateMachineMixin = require('./stateMachine').mixin
 MiniTracker = require('./miniTracker').MiniTracker
 
 class Tracker extends ChangingObject
+
+	stateMachineMixin.call(@prototype)
+
 	constructor: (@id, @game, @owner, @target, dropPos) ->
 		super()
 
@@ -20,14 +24,12 @@ class Tracker extends ChangingObject
 		@type = 'tracker'
 		@flagNextUpdate('type')
 
-		# Transmit owner id to clients.
+		# Transmit owner's id to clients.
 		@ownerId = @owner.id
 		@flagNextUpdate('ownerId')
 
 		# Initial state.
-		@state = 'deploying'
-		@countdown = @game.prefs.tracker.states[@state].countdown
-
+		@setState 'deploying'
 		@flagNextUpdate('state')
 
 		# Initial position, velocity and direction.
@@ -37,10 +39,10 @@ class Tracker extends ChangingObject
 		@vel =
 			x: 0
 			y: 0
-		@dir = @owner.dir
-
 		@flagNextUpdate('pos')
 		@flagNextUpdate('dir')
+
+		@dir = @owner.dir
 
 		# Bounding box has static radius, following the tracker.
 		radius = @game.prefs.tracker.boundingBoxRadius
@@ -65,41 +67,16 @@ class Tracker extends ChangingObject
 	tangible: () ->
 		@state isnt 'dead'
 
-	nextState: () ->
-		@state = @game.prefs.tracker.states[@state].next
-		@countdown = @game.prefs.tracker.states[@state].countdown
-
-		@flagNextUpdate('state')
-
-	setState: (state) ->
-		if @game.prefs.tracker.states[state]?
-			@flagNextUpdate('state') unless @state is state
-
-			@state = state
-			@countdown = @game.prefs.tracker.states[state].countdown
-
 	update: (step) ->
-		state_old = @state
 
-		if @countdown?
-			@countdown -= @game.prefs.timestep * step
-			@nextState() if @countdown <= 0
-
-		if state_old isnt @state and @state is 'tracking'
-			@game.events.push
-				type: 'tracker activated'
-				id: @id
-
-		if state_old isnt @state and @state is 'dead'
-			for i in [0...@game.prefs.tracker.fragmentation]
-				@game.newGameObject (id) =>
-					new MiniTracker(id, @game, @)
+		@updateState(step)
 
 		# Stop tracking when the target dies.
-		if @target? and @target.state is 'dead'
+		if @state is 'tracking' and @target?.state is 'dead'
 			@target = null
 
 	move: (step) ->
+
 		return if @state isnt 'tracking'
 
 		# Face the target.
@@ -118,7 +95,6 @@ class Tracker extends ChangingObject
 		@vel.y += Math.sin(@dir) * @game.prefs.tracker.speed
 		@pos.x += @vel.x
 		@pos.y += @vel.y
-
 		@flagNextUpdate('pos')
 		@flagNextUpdate('dir')
 
@@ -144,8 +120,8 @@ class Tracker extends ChangingObject
 
 	explode: () ->
 		@setState 'dead'
-		@serverDelete = yes
 
+		@serverDelete = yes
 		@flagNextUpdate('serverDelete')
 
 		@game.events.push

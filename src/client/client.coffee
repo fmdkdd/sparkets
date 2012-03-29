@@ -350,8 +350,6 @@ class Client
 				new Rope(@, obj)
 			when 'tracker'
 				new Tracker(@, obj)
-			when 'mini tracker'
-				new Tracker(@, obj, yes)
 
 	deleteObject: (id) ->
 		type = @gameObjects[id].type

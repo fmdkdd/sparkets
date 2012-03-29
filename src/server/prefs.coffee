@@ -317,18 +317,18 @@ class GamePreferences
 
 	grenade:
 
-		fragmentationOffset: 150,
+		explosionRadius: 50
 
-		explosionRadius: 50,
+		velocity: 3
 
-		explosionDelayVariation: 400,
+		friction: 0.95
 
 		states:
 			'active':
 				countdown: 500
 				next: 'fragmenting'
 			'fragmenting':
-				countdown: 0		  # Length (ms) of explosion.
+				countdown: 0
 				next: 'exploding'
 			'exploding':
 				countdown: 500
@@ -351,7 +351,7 @@ class GamePreferences
 				countdown: 700 				# Time (ms) before activation.
 				next: 'tracking'
 			'tracking':
-				countdown: 1300				# Time (ms) before fragmentation.
+				countdown: 4000				# Time (ms) before fragmentation.
 				next: 'dead'
 			'dead':
 				countdown: null
@@ -398,13 +398,13 @@ class GamePreferences
 		bonusType:
 			mine:
 				class: BonusMine
-				weight: 1000
+				weight: 1
 			grenade:
 				class: BonusGrenade
 				weight: 1
 			tracker:
 				class: BonusTracker
-				weight: 1
+				weight: 100
 			boost:
 				class: BonusBoost
 				weight: 1
