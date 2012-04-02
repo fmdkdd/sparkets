@@ -11,7 +11,7 @@ class BonusGrenade
 		@game.newGameObject (id) =>
 			dropPos = {x: @bonus.pos.x,	y: @bonus.pos.y}
 			velocity = {x: 0, y: 0}
-			@game.grenades[id] = new Grenade(id, @game, @bonus.holder, dropPos, velocity, 3)
+			@game.grenades[id] = new Grenade(id, @game, @bonus.holder, dropPos, velocity, yes)
 
 		# Clean up.
 		@bonus.holder.releaseBonus()

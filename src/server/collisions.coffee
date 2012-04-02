@@ -539,12 +539,15 @@ exports.collisions =
 
 	'grenade-moon': (grenade, moon) ->
 		if grenade.state is 'active'
+			grenade.explode()
 			grenade.fragment()
 
 		ddebug "grenade ##{grenade.id} hit moon ##{moon.id}"
 
 	'grenade-planet': (grenade, planet) ->
+		console.log('boom')
 		if grenade.state is 'active'
+			grenade.explode()
 			grenade.fragment()
 
 		ddebug "grenade ##{grenade.id} hit planet ##{planet.id}"

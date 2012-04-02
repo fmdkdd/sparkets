@@ -5,7 +5,7 @@ class Grenade
 		@color = @client.gameObjects[@ownerId].color
 
 		# Create the sprite.
-		s = 10*Math.sqrt(2) # The size of the sprite equals the diagonal of the squares forming the sprite.
+		s = 10 * Math.sqrt(2)
 		color = window.utils.color @color
 		@sprite = @client.spriteManager.get('grenade', s, s, color)
 
@@ -35,7 +35,7 @@ class Grenade
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
 	explosionEffect: () ->
-		@client.effects.push new FlashEffect(@client, @pos, 40, @color, 500)
+		@client.effects.push new FlashEffect(@client, @pos, 20, @color, 500)
 
 # Exports
 window.Grenade = Grenade

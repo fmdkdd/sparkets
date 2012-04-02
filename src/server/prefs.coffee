@@ -37,7 +37,7 @@ class GamePreferences
 	# Debug-related preferences.
 	debug:
 		# Should send object hit boxes to clients.
-		sendHitBoxes: no
+		sendHitBoxes: yes
 
 	# ms between two server updates. Do not change this.
 	timestep: 20
@@ -317,18 +317,15 @@ class GamePreferences
 
 	grenade:
 
-		explosionRadius: 50
-
-		velocity: 3
-
+		radius: 5
+		explosionRadius: 20
+		velocity: 5
 		friction: 0.95
+		childrenCount: 3
 
 		states:
 			'active':
-				countdown: 500
-				next: 'fragmenting'
-			'fragmenting':
-				countdown: 0
+				countdown: 600
 				next: 'exploding'
 			'exploding':
 				countdown: 500
@@ -351,7 +348,7 @@ class GamePreferences
 				countdown: 700 				# Time (ms) before activation.
 				next: 'tracking'
 			'tracking':
-				countdown: 4000				# Time (ms) before fragmentation.
+				countdown: 4000				# Time (ms) before disappearance.
 				next: 'dead'
 			'dead':
 				countdown: null
@@ -377,31 +374,6 @@ class GamePreferences
 
 		# Number of allowed simultaneous bonuses.
 		maxCount: 10
-
-		# Type and weight of allowed bonuses.
-		# Heavier bonuses spawn more often.
-		bonusType:
-			mine:
-				class: BonusMine
-				weight: 1
-			grenade:
-				class: BonusGrenade
-				weight: 1
-			tracker:
-				class: BonusTracker
-				weight: 100
-			boost:
-				class: BonusBoost
-				weight: 1
-			EMP:
-				class: BonusEMP
-				weight: 1
-			shield:
-				class: BonusShield
-				weight: 1
-			stealth:
-				class: BonusStealth
-				weight: 1
 
 		# Half-width of bounding box.
 		boundingBoxRadius: 10
@@ -432,6 +404,31 @@ class GamePreferences
 		stealth:
 			# Duration of invisiblity in ms.
 			duration: 5000
+
+		# Type and weight of allowed bonuses.
+		# Heavier bonuses spawn more often.
+		bonusType:
+			mine:
+				class: BonusMine
+				weight: 1
+			grenade:
+				class: BonusGrenade
+				weight: 100
+			tracker:
+				class: BonusTracker
+				weight: 1
+			boost:
+				class: BonusBoost
+				weight: 1
+			EMP:
+				class: BonusEMP
+				weight: 1
+			shield:
+				class: BonusShield
+				weight: 1
+			stealth:
+				class: BonusStealth
+				weight: 1
 
 exports.ServerPreferences = ServerPreferences
 exports.GamePreferences = GamePreferences
