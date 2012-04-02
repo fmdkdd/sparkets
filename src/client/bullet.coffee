@@ -55,6 +55,8 @@ class Bullet
 		ctxt.stroke()
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
+		# FIXME: should be the same as hitbox width (or smaller, to
+		# account for visual bias)
 		ctxt.lineWidth = 4
 		ctxt.globalCompositeOperation = 'destination-over'
 

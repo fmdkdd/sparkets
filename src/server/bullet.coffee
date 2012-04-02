@@ -117,7 +117,8 @@ class Bullet extends ChangingObject
 			y: @pos.y
 
 		# Convert the last segment to a polygon for a larger hit box.
-		@hitBox.points = utils.segmentToPoly(A, B, 2)
+		# FIXME: move width to prefs
+		@hitBox.points = utils.segmentToPoly(A, B, 4)
 
 		# Update bounding box to cover the entire last segment.
 		seg = utils.vec.minus(B, A)
