@@ -113,21 +113,24 @@ class GameServer
 		# Add new player to player list.
 		player = @players[id] = new Player(id, @)
 
-		socket.emit 'connected',
-			playerId: id
-			startTime: @startTime
-			serverPrefs:
-				mapSize: @prefs.mapSize
-				duration: @prefs.duration
-				ship:
-					minPower: @prefs.ship.minFirepower
-					maxPower: @prefs.ship.maxFirepower
-					cannonCooldown: @prefs.ship.cannonCooldown
+		msg = @sharedGamePreferences()
+		msg.playerId = id
+		socket.emit 'connected', msg
 
 		@info "player #{socket.id} joined"
 
 		# Human connected, update the game!
 		@thaw() if @frozen
+
+	sharedGamePreferences: () ->
+		startTime: @startTime
+		serverPrefs:
+			mapSize: @prefs.mapSize
+			duration: @prefs.duration
+			ship:
+				minPower: @prefs.ship.minFirepower
+				maxPower: @prefs.ship.maxFirepower
+				cannonCooldown: @prefs.ship.cannonCooldown
 
 	createShip: (socket, data) ->
 		id = data.playerId
