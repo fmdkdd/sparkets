@@ -164,7 +164,7 @@ exports.vec =
 exports.segmentToPoly = (A, B, width) ->
 	# We need four points: translate [A,B] twice.
 	# Once along its normal, once along its normal's opposite.
-	N = exports.vec.times(exports.vec.unit(exports.vec.perp(exports.vec.minus(B, A))), width)
+	N = exports.vec.times(exports.vec.unit(exports.vec.perp(exports.vec.minus(B, A))), width / 2)
 	oN = exports.vec.times(N, -1)
 
 	return [
