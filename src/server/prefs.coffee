@@ -264,6 +264,9 @@ class GamePreferences
 		satellitePullMax: .2
 
 	bullet:
+		# Width of hit rectangle
+		hitWidth: 4
+
 		# Gravity pull factor.
 		gravityPull: 200
 

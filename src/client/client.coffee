@@ -396,6 +396,8 @@ class Client
 		@gameDuration = data.serverPrefs.duration
 		@cannonCooldown = data.serverPrefs.ship.cannonCooldown
 
+		@serverPrefs = data.serverPrefs
+
 		@menu.sendPreferences()
 
 		@socket.emit 'create ship',
