@@ -33,20 +33,16 @@ class BoostEffect
 		not @running or @object.state is 'dead'
 
 	inView: (offset = {x:0, y:0}) ->
-		true
 
 	draw: (ctxt) ->
 		for i in [0...@shadows.length]
 			s = @shadows[i]
 			ctxt.save()
 			ctxt.globalAlpha = s.alpha
-			console.info ctxt.globalAlphe
 			ctxt.translate(s.x, s.y)
 			ctxt.rotate(s.dir)
 			ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
 			ctxt.restore()
-
-		true
 
 # Exports
 window.BoostEffect = BoostEffect

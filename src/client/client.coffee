@@ -471,6 +471,9 @@ class Client
 			when 'EMP released'
 				@gameObjects[event.id].EMPEffect()
 
+			when 'grenade exploded'
+				@gameObjects[event.id].explosionEffect()
+
 	# When a player sent a chat message.
 	onPlayerMessage: (data)->
 		@chat.display(data)

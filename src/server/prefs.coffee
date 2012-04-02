@@ -37,7 +37,7 @@ class GamePreferences
 	# Debug-related preferences.
 	debug:
 		# Should send object hit boxes to clients.
-		sendHitBoxes: yes
+		sendHitBoxes: no
 
 	# ms between two server updates. Do not change this.
 	timestep: 20
