@@ -94,12 +94,10 @@ class Menu
 
 	# Send user preferences to the server.
 	sendPreferences: () ->
-		playerId = @client.playerId
 		color = @currentColor
 		name = @nameField.val() if @nameField.val().length > 0
 
 		@client.socket.emit 'prefs changed',
-			playerId: playerId
 			color: color
 			name: name
 

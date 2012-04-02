@@ -17,7 +17,6 @@ class Client
 		@now = null
 		@sinceLastUpdate = null
 
-		@playerId = null
 		@shipId = null
 		@localShip = null
 
@@ -110,7 +109,6 @@ class Client
 			if not @keys[event.keyCode]? or @keys[event.keyCode] is off
 				@keys[event.keyCode] = on
 				@socket.emit 'key down',
-					playerId: @playerId
 					key: event.keyCode
 
 		$(document).keyup ({keyCode}) =>
@@ -118,7 +116,6 @@ class Client
 
 			@keys[keyCode] = off
 			@socket.emit 'key up',
-				playerId: @playerId
 				key: keyCode
 
 		# Track mouse position.
@@ -386,7 +383,6 @@ class Client
 
 	# When receiving our id from the server.
 	onConnected: (data) ->
-		@playerId = data.playerId
 		@gameStartTime = data.startTime
 
 		# Copy useful game preferences from the server.
@@ -400,8 +396,7 @@ class Client
 
 		@menu.sendPreferences()
 
-		@socket.emit 'create ship',
-			playerId: @playerId
+		@socket.emit 'create ship'
 
 	onShipCreated: (data) ->
 		@shipId = data.shipId

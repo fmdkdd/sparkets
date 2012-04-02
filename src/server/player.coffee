@@ -8,7 +8,7 @@ class Player
 		@ship = null
 
 	createShip: (id) ->
-		@ship = new Ship(id, @game, @id, @name, @color)
+		@ship = new Ship(id, @game, @name, @color)
 
 	keyDown: (key) ->
 		@keysDown[key] = on
@@ -49,7 +49,7 @@ class Player
 		@ship.chargeFire(step) if @keysDown[32] is on or @keysDown[65] is on
 
 	changePrefs: (name, color) ->
-	
+
 		if name?
 			@name = name
 			if @ship?

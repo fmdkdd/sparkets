@@ -42,21 +42,21 @@ class GameServer
 			@clientConnect(socket)
 
 			socket.on 'key down', (data) =>
-				@players[data.playerId].keyDown(data.key)
+				@players[socket.id].keyDown(data.key)
 
 			socket.on 'key up', (data) =>
-				@players[data.playerId].keyUp(data.key)
+				@players[socket.id].keyUp(data.key)
 
 			socket.on 'create ship', (data) =>
 				@createShip(socket, data)
 
 			socket.on 'prefs changed', (data) =>
-				@players[data.playerId].changePrefs(data.name, data.color)
+				@players[socket.id].changePrefs(data.name, data.color)
 
 			socket.on 'message', (data) =>
 				@events.push
 					type: 'message'
-					id: @players[data.id].ship.id
+					id: @players[socket.id].ship.id
 					message: data.message
 
 			socket.on 'disconnect', () =>
@@ -114,7 +114,6 @@ class GameServer
 		player = @players[id] = new Player(id, @)
 
 		msg = @sharedGamePreferences()
-		msg.playerId = id
 		socket.emit 'connected', msg
 
 		@info "player #{socket.id} joined"
@@ -135,7 +134,7 @@ class GameServer
 				hitWidth: @prefs.bullet.hitWidth
 
 	createShip: (socket, data) ->
-		id = data.playerId
+		id = socket.id
 		player = @players[id]
 
 		# Create ship.
@@ -150,7 +149,6 @@ class GameServer
 
 		# Good news!
 		socket.emit 'ship created',
-			playerId: id
 			shipId: player.ship.id
 
 	fullUpdate: (objs) ->
@@ -164,11 +162,10 @@ class GameServer
 
 	broadcastMessage: (socket, data) ->
 		@sockets.emit 'player says',
-			playerId: data.playerId
-			shipId: @players[data.playerId].ship.id
+			shipId: @players[socket.id].ship.id
 			message: data.message
 
-		@info "player #{data.playerId} says: #{data.message}"
+		@info "player #{socket.id} says: #{data.message}"
 
 	clientDisconnect: (socket) ->
 		playerId = socket.id
@@ -176,7 +173,6 @@ class GameServer
 
 		# Tell everyone.
 		@sockets.emit 'player quits',
-			playerId: playerId
 			shipId : shipId
 
 		# Purge objects belonging to client.

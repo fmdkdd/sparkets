@@ -4,7 +4,7 @@ ChangingObject = require('./changingObject').ChangingObject
 Bullet = require('./bullet').Bullet
 
 class Ship extends ChangingObject
-	constructor: (@id, @game, @playerId, name, color) ->
+	constructor: (@id, @game, name, color) ->
 		super()
 
 		# Send these properties to new players.

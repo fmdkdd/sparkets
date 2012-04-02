@@ -44,7 +44,6 @@ class Chat
 
 	send: (message) ->
 		@client.socket.emit 'message',
-				id: @client.playerId
 				message: message
 
 	display: (data) ->
@@ -85,7 +84,7 @@ class Chat
 		# Append the message to the chat.
 		line = $('<div style="display:none">' + message + '</div>').appendTo(@chat)
 		line.fadeIn(300)
-		
+
 		# Program its disappearance.
 		setTimeout( (() =>
 			line.animate({opacity: 'hide', height: 'toggle'}, 300, () -> line.detach())),
