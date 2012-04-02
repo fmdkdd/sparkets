@@ -45,9 +45,22 @@ class Bullet
 
 	drawSegment: (ctxt, x1, y1, x2, y2, alpha1, alpha2) ->
 		gradient = ctxt.createLinearGradient(x1, y1, x2, y2)
+		gradient.addColorStop(0, utils.color(@color, alpha1 / 1.85))
+		gradient.addColorStop(1, utils.color(@color, alpha2 / 1.85))
+
+		ctxt.lineWidth = @client.serverPrefs.bullet.hitWidth - 1
+		ctxt.strokeStyle = gradient
+		ctxt.beginPath()
+		ctxt.moveTo x1, y1
+		ctxt.lineTo x2, y2
+		ctxt.stroke()
+
+	drawActiveSegment: (ctxt, x1, y1, x2, y2, alpha1, alpha2) ->
+		gradient = ctxt.createLinearGradient(x1, y1, x2, y2)
 		gradient.addColorStop(0, utils.color(@color, alpha1))
 		gradient.addColorStop(1, utils.color(@color, alpha2))
 
+		ctxt.lineWidth = @client.serverPrefs.bullet.hitWidth
 		ctxt.strokeStyle = gradient
 		ctxt.beginPath()
 		ctxt.moveTo x1, y1
@@ -55,7 +68,7 @@ class Bullet
 		ctxt.stroke()
 
 	draw: (ctxt, offset = {x:0, y:0}) ->
-		ctxt.lineWidth = @client.serverPrefs.bullet.hitWidth
+
 		ctxt.globalCompositeOperation = 'destination-over'
 
 		p = @clientPoints
@@ -66,12 +79,14 @@ class Bullet
 			x2 = p[i][0]
 			y2 = p[i][1]
 
+			draw = if i is p.length-1 then @drawActiveSegment else @drawSegment
+
 			if not @bulletWarp(x1, y1, x2, y2)
 				if @segmentInView(x1, y1, x2, y2, offset)
-					@drawSegment(ctxt, x1, y1, x2, y2, (i-1)/p.length, i/p.length)
+					draw.call(@, ctxt, x1, y1, x2, y2, (i-1)/p.length, i/p.length)
 			else
 				unwarped = utils.unwarp({x: x1, y: y1}, {x: x2, y: y2}, @client.mapSize)
-				@drawSegment(ctxt, x1, y1, unwarped.x, unwarped.y, (i-1)/p.length, i/p.length)
+				draw.call(@, ctxt, x1, y1, unwarped.x, unwarped.y, (i-1)/p.length, i/p.length)
 
 			x1 = x2
 			y1 = y2
