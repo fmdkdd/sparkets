@@ -131,6 +131,8 @@ class GameServer
 				minPower: @prefs.ship.minFirepower
 				maxPower: @prefs.ship.maxFirepower
 				cannonCooldown: @prefs.ship.cannonCooldown
+			bullet:
+				hitWidth: @prefs.bullet.hitWidth
 
 	createShip: (socket, data) ->
 		id = data.playerId
