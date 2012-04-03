@@ -14,23 +14,6 @@
 	 Gravity affects bullets and ships.
 	 Neat graphical effect required!
 
-*** DONE Shield
-		 CLOSED: [2011-08-03 Wed 14:33]
-	 Deflect bullets. Protect from offensive bonuses.
-
-*** DONE EMP
-		 CLOSED: [2011-08-03 Wed 14:33]
-	 Deactivate near mines and trackers with an electromagnetic blast.
-	 Enemies in the affected area could become drunk.
-
-*** DONE Tracker
-		 CLOSED: [2011-07-22 Fri 16:15]
-	 Mercilessly follow a designated target.
-
-*** DONE Invisible hull
-		 CLOSED: [2011-08-03 Wed 14:33]
-	 Stay invisible while you do not fire or use any other bonus.
-
 *** Big head mode
 	 Easier to shoot at, harder to slip between planets but kills on
 	 contact.
@@ -43,8 +26,13 @@
 	 directions.  Fires phony bullets, disappear when colliding
 	 something (different explosion visual).
 
-*** Blink shield when timeout nearly over
-*** Resolve shield-shield collisions and speedy shielded collision with planet
+
+** Bonuses tweaks
+*** Shield
+	 - Blink when timeout nearly over
+	 - Resolve shield-shield collisions and collision with planet at
+      full speed
+
 ** Environment
 *** Asteroids
 		Blob-like asteroids slowly drifting across the map.
@@ -132,19 +120,8 @@
 	  - Game mode.
 
 ** Game interface
-*** TODO Chat
-		Let players talk.
-		Display major events (death, crash, new player, ...).
-
-** DONE Let the player move the camera around the battlefield after he dies
-	 CLOSED: [2011-07-22 Fri 16:28]
-
 
 * Graphics
-** DONE Current bonus visual clue.
-	 CLOSED: [2011-07-22 Fri 16:24]
-	Bonus dragging behind the ship. The rope can be cut.
-
 ** Leave some ephemeral traces of fight on planets.
    Ships and bullets splatters their colors. À la paintball.
 
@@ -163,37 +140,13 @@
    listeners is synchronous. If that must be done, use our own
    synchronous EventEmitter.
 
-** DONE Factorize gravity from planet computations
-	 CLOSED: [2011-07-13 Wed 12:20]
-   Consider only surrounding planets, wrt the torus.
-
 ** Expire deserted games
-
-** DONE Tune collisions.
-	 CLOSED: [2011-07-22 Fri 16:25]
-   - Properly handle more than circle on circle collisions. Ideally,
-     we should compare hitboxes instead of simple hitradii.
-   - Immobile objects need not to be reinserted in the grid (planets).
-   - Don't check collisions between objects that can't collide gameplay-wise.
-
-** Prevent objects from spawning onto each other.
-
-** DONE Change planet count to a percentage value relative to map size.
-   CLOSED: [2011-08-03 Wed 15:28]
-   Could specify between 30-70% planet fill. Avoid locks when trying
-   to fit 50 planets into a 500*500 map.
-
-** DONE Refactor client clode
-	 CLOSED: [2011-07-22 Fri 16:25]
-   What a mess.
-
+** Prevent objects from spawning onto each other
 ** TODO Rework client drawing.
    Find out why Core2 with puny graphic chipset can handle the client fullscreen
    when beefier hardware can't.
 
 ** Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.
-** DONE Use sprites for all bonuses
-	 CLOSED: [2011-08-03 Wed 14:37]
 ** Visual clue for number of mines in bonus
 ** TODO Use composition instead of inheritance where it makes sense
