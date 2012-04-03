@@ -23,7 +23,6 @@ webFiles = {
 	'/selectionBox.less',
 	'/lib/jquery-1.7.2.min.js',
 	'/lib/less-1.1.3.min.js',
-	'/js/client/accountForm.js',
 	'/js/client/bonus.js',
 	'/js/client/boostEffect.js',
 	'/js/client/bonusBox.js',
