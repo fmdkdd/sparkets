@@ -18,6 +18,7 @@ class Bonus extends ChangingObject
 		@flagFullUpdate('pos')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('bonusType')
+		@flagFullUpdate('holderId')
 		if @game.prefs.debug.sendHitBoxes
 			@flagFullUpdate('boundingBox')
 			@flagFullUpdate('hitBox')

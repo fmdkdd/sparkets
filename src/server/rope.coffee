@@ -10,6 +10,7 @@ class Rope extends ChangingObject
 		@flagFullUpdate('color')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('clientChain')
+		@flagFullUpdate('holderId')
 		if @game.prefs.debug.sendHitBoxes
 			@flagFullUpdate('boundingBox')
 			@flagFullUpdate('hitBox')
