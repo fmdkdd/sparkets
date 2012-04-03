@@ -80,6 +80,7 @@ class Bullet
 			y2 = p[i][1]
 
 			draw = if i is p.length-1 then @drawActiveSegment else @drawSegment
+			draw = @drawSegment if @serverDelete
 
 			if not @bulletWarp(x1, y1, x2, y2)
 				if @segmentInView(x1, y1, x2, y2, offset)
@@ -90,6 +91,12 @@ class Bullet
 
 			x1 = x2
 			y1 = y2
+
+	explosionEffect: () ->
+		pos =
+			x: @lastPoint[0]
+			y: @lastPoint[1]
+		@client.effects.push new ExplosionEffect(@client, pos, @color, 20, 4)
 
 
 # Exports

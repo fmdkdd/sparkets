@@ -140,6 +140,10 @@ class Bullet extends ChangingObject
 	explode: () ->
 		@state = 'dead'
 
+		@game.events.push
+			type: 'bullet died'
+			id: @id
+
 	tangible: ->
 		@state is 'active'
 
