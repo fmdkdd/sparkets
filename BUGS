@@ -5,6 +5,5 @@
   map. My guess is that the chain is not modified to handle the
   wrapping like it is for bullets.
 
-* Stealthy ships are given away by the dragged bonuses, and by the shield
 * Disconnection triggered by accessing the menu during the game
   Upgrade SocketIO?

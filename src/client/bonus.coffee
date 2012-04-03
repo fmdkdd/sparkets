@@ -40,6 +40,16 @@ class Bonus
 	draw: (ctxt) ->
 		return if @state isnt 'available' and @state isnt 'claimed'
 
+		# When the holder is invisible, hide from other ships
+		# and draw a special effect if the client is the holder
+		if @state is 'claimed'
+			holder = @client.ships[@holderId]
+			if holder.invisible
+				if holder is @client.localShip
+					ctxt.globalAlpha = 0.5
+				else
+					return
+
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
 		ctxt.globalCompositeOperation = 'destination-over'

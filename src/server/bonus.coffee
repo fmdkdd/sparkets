@@ -178,6 +178,10 @@ class Bonus extends ChangingObject
 		@holder = ship
 		@setState 'claimed'
 
+		# Transmit holder id to clients.
+		@holderId = @holder.id
+		@flagNextUpdate('holderId')
+
 		# Attach the bonus to the ship with a rope.
 		@game.newGameObject (id) =>
 			@rope = new Rope(@game, id, @holder, @, 30, 4)
