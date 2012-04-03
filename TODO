@@ -1,4 +1,4 @@
--*- mode: org; -*-
+# -*- mode: org; -*-
 
 * Gameplay
 
@@ -104,17 +104,17 @@
 
 * Interface
 ** Web interface for game creation.
-*** TODO Sanitize input
+*** Sanitize input
 		- Unique game id.
 		- Out of range values.
 
-*** TODO More info in game list.
+*** More info in game list.
 		- Max players allowed.
 		- Ping.
     - Password-protected or not.
 		- Game mode.
 
-*** TODO More options in game creation.
+*** More options in game creation.
 		- Password.
     - Number of players allowed.
 	  - Game mode.
@@ -142,11 +142,11 @@
 
 ** Expire deserted games
 ** Prevent objects from spawning onto each other
-** TODO Rework client drawing.
+** Rework client drawing.
    Find out why Core2 with puny graphic chipset can handle the client fullscreen
    when beefier hardware can't.
 
 ** Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.
 ** Visual clue for number of mines in bonus
-** TODO Use composition instead of inheritance where it makes sense
+** Use composition instead of inheritance where it makes sense

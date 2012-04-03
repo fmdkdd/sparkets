@@ -1,4 +1,4 @@
--*- mode: org; -*-
+# -*- mode: org; -*-
 
 * Ropes acting funny at borders
   Still reproducible when picking up a bonus at the edge of the
