@@ -225,12 +225,7 @@ exports.collisions =
 			ddebug "ship ##{ship.id} picked up #{bonus.bonusType} bonus ##{bonus.id}"
 
 	'ship-bullet': (ship, bullet) ->
-		# Immunity to own bullets for a set time.
-		if ship.state is 'alive' and
-				bullet.state is 'active' and
-				(ship.id isnt bullet.owner.id or
-				bullet.points.length > 3)
-
+		if ship.state is 'alive' and bullet.state is 'active'
 			ship.explode(bullet)
 			bullet.explode()
 
