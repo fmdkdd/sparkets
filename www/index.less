@@ -1,60 +1,12 @@
 @import "common.less";
 
 /**
- * Info.
- */
-
-section#info {
-	.gradient-black;
-	.box-shadow(0, 2px, 3px, @darkblue);
-
-	margin: 2em 6em 0 6em;
-	padding: 1em;
-	-webkit-column-count: 2;
-
-	color: @darkblue;
-	border-bottom: 2px @blue;
-
-	h3 {
-		color: @blue;
-	}
-
-	ul {
-		list-style-position: inside;
-		list-style-type: square;
-	}
-
-	section#controls {
-
-		.key {
-			color: @blue;
-		}
-
-		#goal {
-			color: @blue;
-			font-style: italic;
-		}
-	}
-
-	section#about {
-
-		a {
-			color: @blue;
-			text-decoration: none;
-
-			&:hover {
-				text-decoration: underline;
-			}
-		}
-	}
-}
-
-/**
  * Game list.
  */
 
 section#join {
 	margin: 2em 6em 0 6em;
+	border: 1px solid lightgrey;
 
 	table {
 		width: 100%;
@@ -99,7 +51,7 @@ input[value="Create a new game"] {
 	display: block;
 	width: 10em; // Necessary for centering in Chrome
 	padding: .2em .5em;
-	margin: 1em auto;
+	margin: 2em auto;
 
 	color: white;
 	font-size: 14pt;
@@ -109,4 +61,50 @@ input[value="Create a new game"] {
 	cursor: pointer;
 
 	.button-behavior;
+}
+
+/**
+ * Info.
+ */
+
+footer {
+	.gradient-black;
+	.box-shadow(0, -2px, 3px, @darkblue);
+
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding-top: 1em;
+	padding-bottom: 1em;
+
+	color: @darkblue;
+	border-top: 4px solid @blue;
+
+	-webkit-column-count: 2;
+	-moz-column-count: 2;
+
+	font-size: 90%;
+
+	div {
+		margin: auto;
+		width: 80%;
+	}
+
+	section {
+		-webkit-column-break-before : always;
+		-moz-column-break-before : always;
+
+		width: 60%;
+		padding: 1em;
+		margin: 0 auto;
+
+		h3 {
+			color: @blue;
+		}
+
+		ul {
+			list-style-position: inside;
+			list-style-type: square;
+		}
+	}
 }
