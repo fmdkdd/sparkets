@@ -413,6 +413,11 @@ exports.collisions =
 			shield.owner.addStat('shield kills', 1)
 			ship.addStat('shield deaths', 1)
 
+			ship.game.events.push
+				type: 'ship killed'
+				idKilled: ship.id
+				idKiller: shield.owner.id
+
 		ddebug "shield ##{shield.id} hit ship ##{ship.id}"
 
 	'shield-tracker': (shield, tracker) ->
