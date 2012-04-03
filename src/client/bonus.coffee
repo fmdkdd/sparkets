@@ -105,8 +105,8 @@ class Bonus
 				x: @pos.x + positions[i][0]
 				y: @pos.y + positions[i][1]
 				r: Math.PI/2 * i
-				vx: positions[i][0] * 0.1
-				vy: positions[i][1] * 0.1
+				vx: positions[i][0] * 0.05 * Math.random()
+				vy: positions[i][1] * 0.05 * Math.random()
 				vr: (Math.random()*2-1) * 0.05
 				size: 20
 		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)
