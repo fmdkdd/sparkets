@@ -33,6 +33,7 @@ class BoostEffect
 		not @running or @object.state is 'dead'
 
 	inView: (offset = {x:0, y:0}) ->
+		true
 
 	draw: (ctxt) ->
 		for i in [0...@shadows.length]
