@@ -48,7 +48,7 @@ class Bullet
 		gradient.addColorStop(0, utils.color(@color, alpha1 / 1.85))
 		gradient.addColorStop(1, utils.color(@color, alpha2 / 1.85))
 
-		ctxt.lineWidth = @client.serverPrefs.bullet.hitWidth - 1
+		ctxt.lineWidth = @client.serverPrefs.bullet.hitWidth - 1 / alpha2
 		ctxt.strokeStyle = gradient
 		ctxt.beginPath()
 		ctxt.moveTo x1, y1

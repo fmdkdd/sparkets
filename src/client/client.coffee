@@ -32,7 +32,7 @@ class Client
 		@displayNames = no
 
 		# Game logic
-		@maxBulletLength = 15
+		@maxBulletLength = 30
 
 		# Debugging
 		@showHitBoxes = no
