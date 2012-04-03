@@ -121,6 +121,7 @@ class Ship extends ChangingObject
 		@boostDecay = 0
 		@inverseTurn = no
 		@invisible = no
+		@shield = null
 
 		@flagNextUpdate('boost')
 		@flagNextUpdate('invisible')
@@ -160,7 +161,7 @@ class Ship extends ChangingObject
 		@ddebug "stop engine"
 
 	chargeFire: (step) ->
-		return if @cannonHeat > 0 or @state isnt 'alive'
+		return if @cannonHeat > 0 or @state isnt 'alive' or @shield
 
 		inc = @game.prefs.ship.firepowerInc * step
 		@firePower = Math.min(@firePower + inc, @game.prefs.ship.maxFirepower)
@@ -230,6 +231,10 @@ class Ship extends ChangingObject
 				return utils.distance(obj.pos.x, obj.pos.y, @pos.x, @pos.y) <
 					@game.prefs.shield.shipAffectDistance
 
+			if @shield and obj.type in ['planet', 'moon']
+				return utils.distance(obj.pos.x, obj.pos.y, @pos.x, @pos.y) <
+					obj.force + @game.prefs.shield.planetAffectDistance
+
 			# Planet and moon gravity only if enabled.
 			if @game.prefs.ship.enableGravity
 				return obj.type in ['planet', 'moon']
@@ -241,7 +246,10 @@ class Ship extends ChangingObject
 			if obj.type is 'shield'
 				@game.prefs.shield.shipPush * obj.force
 			else
-				@game.prefs.ship.gravityPull * obj.force
+				if @shield
+					@game.prefs.shield.planetPush * obj.force
+				else
+					@game.prefs.ship.gravityPull * obj.force
 
 		return @game.gravityFieldAround(@pos, filter, force)
 
@@ -326,7 +334,7 @@ class Ship extends ChangingObject
 					@flagNextUpdate('boost')
 
 	fire : () ->
-		return if @state isnt 'alive' or @cannonHeat > 0
+		return if @state isnt 'alive' or @cannonHeat > 0 or @shield
 
 		bullet = @game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"

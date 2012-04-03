@@ -43,6 +43,8 @@
 	 directions.  Fires phony bullets, disappear when colliding
 	 something (different explosion visual).
 
+*** Blink shield when timeout nearly over
+*** Resolve shield-shield collisions and speedy shielded collision with planet
 ** Environment
 *** Asteroids
 		Blob-like asteroids slowly drifting across the map.

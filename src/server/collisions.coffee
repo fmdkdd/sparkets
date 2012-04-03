@@ -377,7 +377,7 @@ exports.collisions =
 
 	'shield-bullet': (shield, bullet) ->
 		# shields absorb all bullets, except from the user!
-		if bullet.state is 'active' and bullet.owner isnt shield.owner
+		if bullet.state is 'active'
 			bullet.explode()
 
 			shield.owner.addStat('bullets absorbed with shield', 1)

@@ -283,6 +283,13 @@ class GamePreferences
 		# Distance at which ships are affected by the gravity push.
 		shipAffectDistance: 40
 
+		# Gravity push factor for planets and moons.
+		planetPush: -200
+
+		# Distance at which ships are affected by the gravity push from
+		# planets and moons.
+		planetAffectDistance: 35
+
 		states:
 			'active':
 				countdown: 5000

@@ -48,6 +48,7 @@ class Shield extends ChangingObject
 			@flagNextUpdate('hitBox')
 
 	cancel: () ->
+		@owner.shield = null
 		@serverDelete = yes
 
 		@flagNextUpdate('serverDelete')
@@ -91,8 +92,6 @@ class Shield extends ChangingObject
 				@nextState() if @countdown <= 0
 
 			when 'dead'
-				@serverDelete = yes
-
-				@flagNextUpdate('serverDelete')
+				@cancel()
 
 exports.Shield = Shield
