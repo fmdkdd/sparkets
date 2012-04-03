@@ -6,14 +6,14 @@ $(document).ready () ->
 	window.selectionBoxes = []
 	window.bonusBoxes = []
 
-	# Setup tabbed panels.	
+	# Setup tabbed panels.
 	$('#form .tab').click (event) ->
 
 		# Do not follow the clicked link.
 		event.preventDefault()
 
 		oldTab = $('#form .tab.selected')
-		if oldTab.length > 0	
+		if oldTab.length > 0
 
 			# Unselect the current tab.
 			oldTab.removeClass('selected')
@@ -27,7 +27,7 @@ $(document).ready () ->
 		# Display the new panel.
 		$('#panel' + @.id.substr(@.id.length-1, 1)).show()
 
-	# 
+	#
 	window.presets =
 		mapSize:
 			'tiny': 1000
@@ -105,6 +105,9 @@ $(document).ready () ->
 
 	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.stealth.weight', 'bonusStealth')
 	new Tooltip(bonus(6), 'Stealth blablablaaa')
+
+	window.bonusBoxes.push new BonusBox(cell, 'bonus.bonusType.grenade.weight', 'bonusGrenade')
+	new Tooltip(bonus(7), 'Grenade blablablaaa')
 
 	new Range(entry('#panel3 > table', 'Drop wait'),
 		'bonus.waitTime', 1000, 10000, 1000, 5000, ' milliseconds')
