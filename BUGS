@@ -4,6 +4,3 @@
   Still reproducible when picking up a bonus at the edge of the
   map. My guess is that the chain is not modified to handle the
   wrapping like it is for bullets.
-
-* Disconnection triggered by accessing the menu during the game
-  Upgrade SocketIO?
