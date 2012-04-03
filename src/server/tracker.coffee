@@ -1,7 +1,6 @@
 utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
 stateMachineMixin = require('./stateMachine').mixin
-MiniTracker = require('./miniTracker').MiniTracker
 
 class Tracker extends ChangingObject
 
