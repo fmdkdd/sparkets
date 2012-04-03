@@ -17,6 +17,10 @@ class Bullet extends ChangingObject
 		@type = 'bullet'
 		@flagNextUpdate('type')
 
+		# Keep count of elapsed move calls since bullet emission
+		# Needed to provide immunity to a ship own bullets at launch
+		@elapsedMoves = 0
+
 		# Transmit owner id to clients.
 		@ownerId = @owner.id
 		@flagNextUpdate('ownerId')
@@ -117,7 +121,6 @@ class Bullet extends ChangingObject
 			y: @pos.y
 
 		# Convert the last segment to a polygon for a larger hit box.
-		# FIXME: move width to prefs
 		@hitBox.points = utils.segmentToPoly(A, B, @game.prefs.bullet.hitWidth)
 
 		# Update bounding box to cover the entire last segment.
@@ -130,6 +133,8 @@ class Bullet extends ChangingObject
 		if @game.prefs.debug.sendHitBoxes
 			@flagNextUpdate('boundingBox')
 			@flagNextUpdate('hitBox.points')
+
+		++@elapsedMoves
 
 	update: (step) ->
 		if @state is 'dead'

@@ -225,7 +225,11 @@ exports.collisions =
 			ddebug "ship ##{ship.id} picked up #{bonus.bonusType} bonus ##{bonus.id}"
 
 	'ship-bullet': (ship, bullet) ->
-		if ship.state is 'alive' and bullet.state is 'active'
+		if ship.state is 'alive' and
+				bullet.state is 'active' and
+				(ship.id isnt bullet.owner.id or
+				bullet.elapsedMoves > 3)
+
 			ship.explode(bullet)
 			bullet.explode()
 

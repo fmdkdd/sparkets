@@ -169,13 +169,13 @@ class Ship
 		else
 			speed = nvel
 
-		# Ensure decent fireworks.
-		Math.max(speed, 3)
+		# Ensure decent but reasonable fireworks.
+		Math.min Math.max(speed, 3), 5
 
 	explosionEffect: () ->
 		speed = @killingSpeed()
 
-		@client.effects.push new ExplosionEffect(@client, @pos, @color, 200, 10, speed)
+		@client.effects.push new ExplosionEffect(@client, @pos, @color, 100, 10, speed)
 
 	dislocationEffect: () ->
 		points = [
@@ -186,7 +186,7 @@ class Ship
 
 		edges = []
 
-		speed = @killingSpeed()
+		speed = @killingSpeed() / 2
 
 		# Rotate points according to the direction of the ship.
 		for p in points
