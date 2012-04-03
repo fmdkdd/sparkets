@@ -330,7 +330,7 @@ class Ship extends ChangingObject
 
 		bullet = @game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"
-			return @game.bullets[id] = new Bullet(@id, @game, @)
+			return @game.bullets[id] = new Bullet(id, @game, @)
 
 		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = @game.prefs.ship.cannonCooldown
