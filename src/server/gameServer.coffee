@@ -132,6 +132,9 @@ class GameServer
 				cannonCooldown: @prefs.ship.cannonCooldown
 			bullet:
 				hitWidth: @prefs.bullet.hitWidth
+			bonus:
+				boost:
+					boostDuration: @prefs.bonus.boost.boostDuration
 
 	createShip: (socket, data) ->
 		id = socket.id
