@@ -459,6 +459,15 @@ exports.collisions =
 
 		ddebug "mine ##{mine.id} destroyed bonus ##{bonus.id}"
 
+	'bullet-bullet': (bullet1, bullet2) ->
+		bullet1.explode()
+		bullet2.explode()
+
+		bullet1.owner.addStat('bullets collisions', 1)
+		bullet2.owner.addStat('bullets collisions', 1)
+
+		ddebug "bullet ##{bullet1.id} and bullet ##{bullet2.id} collided"
+
 	'bullet-bonus': (bullet, bonus) ->
 		bonus.explode()
 		bullet.explode()
