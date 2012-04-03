@@ -386,6 +386,9 @@ exports.collisions =
 		ddebug "shield ##{shield.id} hit bullet ##{bullet.id}"
 
 	'shield-shield': (shield1, shield2) ->
+		# Bump off the ships using the law of reflection
+		shield1.owner.vel = utils.vec.reflect shield1.owner.vel
+		shield2.owner.vel = utils.vec.reflect shield2.owner.vel
 
 		shield1.owner.addStat('shield on shield collisions', 1)
 		shield2.owner.addStat('shield on shield collisions', 1)
@@ -401,7 +404,13 @@ exports.collisions =
 
 		ddebug "shield ##{shield.id} hit mine ##{mine.id}"
 
-	# shields do not save ships from moons or planets ...
+	'shield-planet': (shield, planet) ->
+		# Bump off the planet using the law of reflection
+		shield.owner.vel = utils.vec.reflect shield.owner.vel
+
+	'shield-moon': (shield, moon) ->
+		# Bump off the moon using the law of reflection
+		shield.owner.vel = utils.vec.reflect shield.owner.vel
 
 	'shield-ship': (shield, ship) ->
 		# shields can't take more than one ship.
