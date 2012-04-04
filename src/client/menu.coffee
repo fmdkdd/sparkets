@@ -1,7 +1,7 @@
 class Menu
 	constructor: (@client) ->
 
-		@menu = $('table#menu')
+		@menu = $('section#menu')
 		@closeButton = $('#closeButton')
 
 		# Customization panel.
