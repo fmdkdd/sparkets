@@ -29,6 +29,29 @@ $(document).ready () ->
 				<td>' + minutesLeft(game.startTime, game.duration * 60 * 1000) + ' min</td>
 				</tr>')
 
+	# Expand SPARKETS' name.
+	$('header h1').hover (event) ->
+
+		# It's a one time thing!
+		$(this).unbind('hover')
+
+		fragments = []
+		fragments.push $(e) for e in $('*', $(this))
+
+		leftPos = fragments[0].position().left
+		for i in [1...fragments.length]
+
+			f = fragments[i]
+			id = f.attr('id')
+			num = id.substr(id.length-1)
+
+			leftPos += fragments[i-1].width()
+
+			f.animate({
+				left: if f.css('position') is 'absolute' then leftPos+'px' else (leftPos-f.position().left)+'px'
+				opacity: if num is '2' or num is '4' then 0.3 else 1
+			},	500)
+
 	# Setup log in and sign up forms.
 	$('#login, #signup').click (event) =>
 		return if window.accountForm?
