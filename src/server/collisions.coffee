@@ -359,6 +359,18 @@ exports.collisions =
 
 			ddebug "ship ##{ship1.id} and ship ##{ship2.id} crashed"
 
+	'ship-rope': (ship, rope) ->
+		# Boosted ships steal the bonus if not already carrying one
+		if rope.holder? and
+				rope.holder isnt ship and
+				ship.boost > 1 and
+				not ship.bonus?
+			bonus = rope.holdee
+			rope.holder.releaseBonus()
+			ship.holdBonus(bonus)
+
+			ship.addStat('bonuses stolen under boost', 1)
+
 	'bullet-moon': (bullet, moon) ->
 		if bullet.state is 'active'
 			bullet.explode()
