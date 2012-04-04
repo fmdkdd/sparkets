@@ -425,7 +425,7 @@ class GameServer
 
 		x = obj.pos.x
 		y = obj.pos.y
-		r = @prefs.shield.radius
+		r = @prefs.shield.planetAffectDistance
 
 		for id, planet of @planets
 			return true if collidesWith(planet)
