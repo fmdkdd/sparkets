@@ -8,7 +8,8 @@ class Shield
 		@pos = @owner.pos
 
 		# Create the sprite.
-		s = 2 * @client.serverPrefs.shield.radius
+		@radius = @client.serverPrefs.shield.radius
+		s = 2 * @radius
 		color = utils.color @color
 		@sprite = @client.spriteManager.get('shield', s, s, color)
 
@@ -19,7 +20,7 @@ class Shield
 		@clientDelete = @serverDelete
 
 	inView: (offset = {x: 0, y: 0}) ->
-		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @force)
+		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
 	drawHitbox: (ctxt) ->
 		return if not @hitBox?
