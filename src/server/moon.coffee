@@ -41,14 +41,18 @@ class Moon extends Planet
 		# Update bounding box position.
 		@boundingBox.x = @pos.x
 		@boundingBox.y = @pos.y
-		@flagNextUpdate('boundingBox.x')
-		@flagNextUpdate('boundingBox.y')
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox.x')
+			@flagNextUpdate('boundingBox.y')
 
 		# Update hitbox
 		@hitBox.x = @pos.x
 		@hitBox.y = @pos.y
-		@flagNextUpdate('hitBox.x')
-		@flagNextUpdate('hitBox.y')
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('hitBox.x')
+			@flagNextUpdate('hitBox.y')
 
 	update: (step) ->
 		# FIXME: slower in power save.
