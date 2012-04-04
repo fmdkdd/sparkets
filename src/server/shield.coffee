@@ -29,7 +29,6 @@ class Shield extends ChangingObject
 
 		# FIXME: uncouple bounding radius and force, same as planet.
 		@force = @game.prefs.shield.radius
-		@flagNextUpdate('force')
 
 		# Hit box is a circle of fixed radius centered on the ship.
 		@boundingBox =

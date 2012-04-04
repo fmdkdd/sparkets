@@ -135,6 +135,8 @@ class GameServer
 			bonus:
 				boost:
 					boostDuration: @prefs.bonus.boost.boostDuration
+			shield:
+				radius: @prefs.shield.radius
 
 	createShip: (socket, data) ->
 		id = socket.id

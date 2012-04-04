@@ -8,7 +8,7 @@ class Shield
 		@pos = @owner.pos
 
 		# Create the sprite.
-		s = 2*@force
+		s = 2 * @client.serverPrefs.shield.radius
 		color = utils.color @color
 		@sprite = @client.spriteManager.get('shield', s, s, color)
 
