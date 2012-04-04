@@ -60,12 +60,10 @@ class Menu
 				@close()
 				event.stopPropagation()
 
-		# Toggle the menu when Escape or M is pressed.
+		# Toggle the menu when M is pressed.
 		$(document).keyup ({keyCode}) =>
 			return if @client.chat.isOpen()
 
-			if keyCode is 27
-				@toggle()
 			# Check that we are not typing the letter M in the name field.
 			else if keyCode is 77 and $('#customize input:focus').length is 0
 				@toggle()
@@ -103,17 +101,17 @@ class Menu
 
 	# Store user preferences in the browser local storage.
 	saveLocalPreferences: () ->
-		window.localStorage['spacewar.color'] = @currentColor if @currentColor?
-		window.localStorage['spacewar.name'] = @nameField.val() if @nameField.val().length > 0
+		window.localStorage['sparkets.color'] = @currentColor if @currentColor?
+		window.localStorage['sparkets.name'] = @nameField.val() if @nameField.val().length > 0
 
 		console.info 'Preferences saved.'
 
 	# Restores user preferences from browser local storage.
 	restoreLocalPreferences: () ->
-		if window.localStorage['spacewar.color']?
-			@currentColor = window.localStorage['spacewar.color'].split(',')
-		if window.localStorage['spacewar.name']
-			@nameField.val(window.localStorage['spacewar.name'])
+		if window.localStorage['sparkets.color']?
+			@currentColor = window.localStorage['sparkets.color'].split(',')
+		if window.localStorage['sparkets.name']
+			@nameField.val(window.localStorage['sparkets.name'])
 
 		console.info 'Preferences restored.'
 

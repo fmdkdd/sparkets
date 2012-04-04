@@ -160,6 +160,25 @@ exports.vec =
 		sin = Math.sin(a)
 		{x: v.x*cos - v.y*sin, y: v.x*sin + v.y*cos}
 
+	fromPolar: (theta, l) ->
+		v = exports.vec.vector(0, 0, 1, 0)
+		v = exports.vec.rotate(v, theta)
+		v = exports.vec.times(v, l)
+
+	reflect: (v) ->
+		# Incident angle
+		if v.x is 0
+			alpha = 0
+		else
+			alpha = Math.tan(v.y / v.x)
+
+		# Reflected angle
+		alpha = Math.PI - alpha
+		length = exports.vec.length v
+
+		# Reflected vector
+		exports.vec.fromPolar(alpha, length)
+
 # Transform a zero-width [A,B] segment to a polygon with given width.
 exports.segmentToPoly = (A, B, width) ->
 	# We need four points: translate [A,B] twice.

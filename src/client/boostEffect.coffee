@@ -27,12 +27,13 @@ class BoostEffect
 		@shadows[0].dir = @object.dir
 
 	isAlive: () ->
-		@object.state in ['alive', 'spawned']
+		@object.state is 'alive'
 
 	deletable: () ->
 		not @running or @object.state is 'dead'
 
 	inView: (offset = {x:0, y:0}) ->
+		true
 
 	draw: (ctxt) ->
 		for i in [0...@shadows.length]

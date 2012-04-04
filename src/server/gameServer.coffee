@@ -132,6 +132,11 @@ class GameServer
 				cannonCooldown: @prefs.ship.cannonCooldown
 			bullet:
 				hitWidth: @prefs.bullet.hitWidth
+			bonus:
+				boost:
+					boostDuration: @prefs.bonus.boost.boostDuration
+			shield:
+				radius: @prefs.shield.radius
 
 	createShip: (socket, data) ->
 		id = socket.id
@@ -412,7 +417,7 @@ class GameServer
 
 		x = obj.pos.x
 		y = obj.pos.y
-		r = obj.boundingBox.radius
+		r = @prefs.shield.radius
 
 		for id, planet of @planets
 			return true if collidesWith(planet)
@@ -558,6 +563,9 @@ class GameServer
 
 	botCount: () ->
 		@prefs.bot.count
+
+	playerCount: () ->
+		Object.keys(@players).length
 
 	noHuman: () ->
 		@humanCount() is 0

@@ -10,6 +10,7 @@ class Rope extends ChangingObject
 		@flagFullUpdate('color')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('clientChain')
+		@flagFullUpdate('holderId')
 		if @game.prefs.debug.sendHitBoxes
 			@flagFullUpdate('boundingBox')
 			@flagFullUpdate('hitBox')
@@ -20,6 +21,10 @@ class Rope extends ChangingObject
 		# Take color of holder, holdee, or default black.
 		@color = @holder.color or @holdee.color or 'black'
 		@flagNextUpdate('color')
+
+		# Transmit holder id to clients.
+		@holderId = @holder.id
+		@flagNextUpdate('holderId')
 
 		# The chain contains each object at its ends plus the articulation
 		# points inbetween them.

@@ -40,6 +40,16 @@ class Bonus
 	draw: (ctxt) ->
 		return if @state isnt 'available' and @state isnt 'claimed'
 
+		# When the holder is invisible, hide from other ships
+		# and draw a special effect if the client is the holder
+		if @state is 'claimed'
+			holder = @client.ships[@holderId]
+			if holder.invisible
+				if holder is @client.localShip
+					ctxt.globalAlpha = 0.5
+				else
+					return
+
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
 		ctxt.globalCompositeOperation = 'destination-over'
@@ -105,8 +115,8 @@ class Bonus
 				x: @pos.x + positions[i][0]
 				y: @pos.y + positions[i][1]
 				r: Math.PI/2 * i
-				vx: positions[i][0] * 0.1
-				vy: positions[i][1] * 0.1
+				vx: positions[i][0] * 0.05 * Math.random()
+				vy: positions[i][1] * 0.05 * Math.random()
 				vr: (Math.random()*2-1) * 0.05
 				size: 20
 		@client.effects.push new DislocateEffect(@client, edges, @color, 1000)

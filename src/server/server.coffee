@@ -97,7 +97,7 @@ class Server
 
 		for id, game of @gameList
 			msg[id] =
-				players: game.humanCount() + game.botCount()
+				players: game.playerCount()
 				startTime: game.startTime
 				duration: game.prefs.duration
 

@@ -23,7 +23,7 @@ class ServerPreferences
 	# Socket.io options.
 	io:
 		# Allowed transports.
-		# Only WebSocket and FlashSocket are fast and stable enough for Spacewar.
+		# Only WebSocket and FlashSocket are fast and stable enough for Sparkets.
 		transports: ['websocket', 'flashsocket']
 
 		# Detail of log output: error (0), warn, info, debug (3)
@@ -64,17 +64,17 @@ class GamePreferences
 	ship:
 		states:
 			'ready':
-				next: 'spawned'
-				countdown: null
-			'spawned':
 				next: 'alive'
-				countdown: 1000
+				countdown: null
 			'alive':
 				next: 'dead'
 				countdown: null
 			'dead':
 				next: 'ready'
 				countdown: 1000
+
+		# Duration of immunity at spawn (ms)
+		spawnImmunity: 1000
 
 		# Half-width of bounding box.
 		boundingBoxRadius: 13
@@ -278,10 +278,17 @@ class GamePreferences
 		radius: 25
 
 		# Gravity push factor for ships.
-		shipPush: -200
+		shipPush: -400
 
 		# Distance at which ships are affected by the gravity push.
 		shipAffectDistance: 40
+
+		# Gravity push factor for planets and moons.
+		planetPush: -400
+
+		# Distance at which ships are affected by the gravity push from
+		# planets and moons.
+		planetAffectDistance: 30
 
 		states:
 			'active':
@@ -291,6 +298,10 @@ class GamePreferences
 			'dead':
 				countdown: null
 				next: null
+
+		# Signal client the shield is nearly over when this much time
+		# remains (ms).
+		blinkStart: 1000
 
 	mine:
 

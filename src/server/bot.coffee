@@ -58,8 +58,7 @@ class Bot extends Player
 			utils.distance(x, y, @ship.pos.x, @ship.pos.y) < dist
 
 		allowed = (ship) ->
-			(ship.state is 'spawned' or ship.state is 'alive') and
-				not ship.invisible
+			ship.state is 'alive' and not ship.invisible
 
 		fireSight = if @ship.invisible then @prefs.fireSightStealthed else @prefs.fireSight
 

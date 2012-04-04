@@ -2,6 +2,7 @@ utils = require '../utils'
 logger = require('../logger').static
 ChangingObject = require('./changingObject').ChangingObject
 Bullet = require('./bullet').Bullet
+Shield = require('./shield').Shield
 
 class Ship extends ChangingObject
 	constructor: (@id, @game, name, color) ->
@@ -100,7 +101,7 @@ class Ship extends ChangingObject
 			y: 0
 
 		# Initial state.
-		@state = 'spawned'
+		@state = 'alive'
 		@countdown = @game.prefs.ship.states[@state].countdown
 
 		@flagNextUpdate('state')
@@ -121,6 +122,12 @@ class Ship extends ChangingObject
 		@boostDecay = 0
 		@inverseTurn = no
 		@invisible = no
+
+		# Spawn with a shield
+		@game.newGameObject (id) =>
+			@shield = @game.shields[id] = new Shield(id, @game, @)
+			@shield.countdown = @game.prefs.ship.spawnImmunity
+			@shield
 
 		@flagNextUpdate('boost')
 		@flagNextUpdate('invisible')
@@ -160,7 +167,7 @@ class Ship extends ChangingObject
 		@ddebug "stop engine"
 
 	chargeFire: (step) ->
-		return if @cannonHeat > 0 or @state isnt 'alive'
+		return if @cannonHeat > 0 or @state isnt 'alive' or @shield
 
 		inc = @game.prefs.ship.firepowerInc * step
 		@firePower = Math.min(@firePower + inc, @game.prefs.ship.maxFirepower)
@@ -230,6 +237,10 @@ class Ship extends ChangingObject
 				return utils.distance(obj.pos.x, obj.pos.y, @pos.x, @pos.y) <
 					@game.prefs.shield.shipAffectDistance
 
+			if @shield and obj.type in ['planet', 'moon']
+				return utils.distance(obj.pos.x, obj.pos.y, @pos.x, @pos.y) <
+					obj.force + @game.prefs.shield.planetAffectDistance
+
 			# Planet and moon gravity only if enabled.
 			if @game.prefs.ship.enableGravity
 				return obj.type in ['planet', 'moon']
@@ -241,7 +252,10 @@ class Ship extends ChangingObject
 			if obj.type is 'shield'
 				@game.prefs.shield.shipPush * obj.force
 			else
-				@game.prefs.ship.gravityPull * obj.force
+				if @shield
+					@game.prefs.shield.planetPush * obj.force
+				else
+					@game.prefs.ship.gravityPull * obj.force
 
 		return @game.gravityFieldAround(@pos, filter, force)
 
@@ -281,7 +295,7 @@ class Ship extends ChangingObject
 		@updateHitbox()
 
 	tangible: () ->
-		@state is 'spawned' or @state is 'alive'
+		@state is 'alive'
 
 	nextState: () ->
 		@state = @game.prefs.ship.states[@state].next
@@ -326,7 +340,7 @@ class Ship extends ChangingObject
 					@flagNextUpdate('boost')
 
 	fire : () ->
-		return if @state isnt 'alive' or @cannonHeat > 0
+		return if @state isnt 'alive' or @cannonHeat > 0 or @shield
 
 		bullet = @game.newGameObject (id) =>
 			@ddebug "fire bullet ##{id}"

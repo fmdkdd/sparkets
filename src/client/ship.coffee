@@ -54,9 +54,6 @@ class Ship
 	draw: (ctxt) ->
 		return if @state is 'dead' or @state is 'ready'
 
-		# Blink when the ship just spawned.
-		return if @state is 'spawned' and @client.now % 200 < 100
-
 		if @invisible and @ isnt @client.localShip
 			# Maybe draw a stealthy effect instead of the ship.
 			return
@@ -154,7 +151,7 @@ class Ship
 		return true
 
 	boostEffect: () ->
-		@client.effects.push new BoostEffect(@client, @, 5, 1500)
+		@client.effects.push new BoostEffect(@client, @, 5, @client.serverPrefs.bonus.boost.boostDuration)
 
 	killingSpeed: () ->
 		# Initial particle speed is derived from ship speed at death

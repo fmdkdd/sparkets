@@ -1,5 +1,5 @@
 {
-	"name": "spacewar",
+	"name": "sparkets",
 	"version": "1.0.0-alpha3",
 	"description": "Multiplayer space shooting game using the HTML canvas and the WebSocket protocol",
 	"keywords": ["multiplayer game", "canvas", "websocket"],
@@ -10,7 +10,7 @@
 
 	"repository": {
 		"type": "git",
-		"url": "http://github.com/fmdkdd/spacewar.git"
+		"url": "http://github.com/fmdkdd/sparkets.git"
 	},
 
 	"scripts": {

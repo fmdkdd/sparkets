@@ -9,6 +9,7 @@ Ship = require('../build/server/ship').Ship
 class MockGame
 	constructor: () ->
 		@bullets = {}
+		@shields = {}
 
 		@events =
 			push: () ->
@@ -18,14 +19,14 @@ class MockGame
 
 			ship:
 				states:
-					'spawned':
+					'ready':
 						next: 'alive'
-						countdown: 1500
+						countdown: null
 					'alive':
 						next: 'dead'
 						countdown: null
 					'dead':
-						next: 'spawned'
+						next: 'ready'
 						countdown: null
 
 				boundingRadius: 9
@@ -43,6 +44,15 @@ class MockGame
 
 			shield:
 				shipPush: -200
+
+				states:
+					'active':
+						countdown: 5000
+						next: 'dead'
+
+					'dead':
+						countdown: null
+						next: null
 
 			debug:
 				sendHitBoxes: no
@@ -66,10 +76,14 @@ exports.suite.addBatch
 			ship.spawn()
 			return ship
 
-		'should move to `spawned` state': (err, ship) ->
+		'should move to `alive` state': (err, ship) ->
 			assert.isNull(err)
 			assert.isObject(ship)
-			assert.strictEqual(ship.state, 'spawned')
+			assert.strictEqual(ship.state, 'alive')
+
+		'should have a shield': (err, ship) ->
+			assert.isObject(ship.shield)
+			assert.strictEqual(ship.shield.type, 'shield')
 
 	'ship exploding':
 		topic: () ->

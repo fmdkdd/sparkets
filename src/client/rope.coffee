@@ -28,6 +28,15 @@ class Rope
 
 		return if @clientChain.length is 0
 
+		# When the holder is invisible, hide from other ships
+		# and draw a special effect if the client is the holder
+		holder = @client.ships[@holderId]
+		if holder.invisible
+			if holder is @client.localShip
+				ctxt.globalAlpha = 0.5
+			else
+				return
+
 		# Check for map warping.
 		for i in [1...@clientChain.length]
 			@clientChain[i] = @client.closestGhost(@clientChain[0], @clientChain[i])

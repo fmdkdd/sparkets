@@ -18,6 +18,7 @@ class Bonus extends ChangingObject
 		@flagFullUpdate('pos')
 		@flagFullUpdate('serverDelete')
 		@flagFullUpdate('bonusType')
+		@flagFullUpdate('holderId')
 		if @game.prefs.debug.sendHitBoxes
 			@flagFullUpdate('boundingBox')
 			@flagFullUpdate('hitBox')
@@ -177,6 +178,10 @@ class Bonus extends ChangingObject
 	attach: (ship) ->
 		@holder = ship
 		@setState 'claimed'
+
+		# Transmit holder id to clients.
+		@holderId = @holder.id
+		@flagNextUpdate('holderId')
 
 		# Attach the bonus to the ship with a rope.
 		@game.newGameObject (id) =>

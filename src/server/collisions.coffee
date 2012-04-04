@@ -359,6 +359,18 @@ exports.collisions =
 
 			ddebug "ship ##{ship1.id} and ship ##{ship2.id} crashed"
 
+	'ship-rope': (ship, rope) ->
+		# Boosted ships steal the bonus if not already carrying one
+		if rope.holder? and
+				rope.holder isnt ship and
+				ship.boost > 1 and
+				not ship.bonus?
+			bonus = rope.holdee
+			rope.holder.releaseBonus()
+			ship.holdBonus(bonus)
+
+			ship.addStat('bonuses stolen under boost', 1)
+
 	'bullet-moon': (bullet, moon) ->
 		if bullet.state is 'active'
 			bullet.explode()
@@ -377,7 +389,7 @@ exports.collisions =
 
 	'shield-bullet': (shield, bullet) ->
 		# shields absorb all bullets, except from the user!
-		if bullet.state is 'active' and bullet.owner isnt shield.owner
+		if bullet.state is 'active'
 			bullet.explode()
 
 			shield.owner.addStat('bullets absorbed with shield', 1)
@@ -386,7 +398,6 @@ exports.collisions =
 		ddebug "shield ##{shield.id} hit bullet ##{bullet.id}"
 
 	'shield-shield': (shield1, shield2) ->
-
 		shield1.owner.addStat('shield on shield collisions', 1)
 		shield2.owner.addStat('shield on shield collisions', 1)
 
@@ -401,8 +412,6 @@ exports.collisions =
 
 		ddebug "shield ##{shield.id} hit mine ##{mine.id}"
 
-	# shields do not save ships from moons or planets ...
-
 	'shield-ship': (shield, ship) ->
 		# shields can't take more than one ship.
 		if shield.owner isnt ship
@@ -412,6 +421,11 @@ exports.collisions =
 			shield.owner.addStat('kills', 1)
 			shield.owner.addStat('shield kills', 1)
 			ship.addStat('shield deaths', 1)
+
+			ship.game.events.push
+				type: 'ship killed'
+				idKilled: ship.id
+				idKiller: shield.owner.id
 
 		ddebug "shield ##{shield.id} hit ship ##{ship.id}"
 
@@ -458,6 +472,15 @@ exports.collisions =
 		mine.owner.addStat('bonuses destroyed with mines', 1)
 
 		ddebug "mine ##{mine.id} destroyed bonus ##{bonus.id}"
+
+	'bullet-bullet': (bullet1, bullet2) ->
+		bullet1.explode()
+		bullet2.explode()
+
+		bullet1.owner.addStat('bullets collisions', 1)
+		bullet2.owner.addStat('bullets collisions', 1)
+
+		ddebug "bullet ##{bullet1.id} and bullet ##{bullet2.id} collided"
 
 	'bullet-bonus': (bullet, bonus) ->
 		bonus.explode()

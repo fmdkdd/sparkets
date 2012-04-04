@@ -29,7 +29,6 @@ class Shield extends ChangingObject
 
 		# FIXME: uncouple bounding radius and force, same as planet.
 		@force = @game.prefs.shield.radius
-		@flagNextUpdate('force')
 
 		# Hit box is a circle of fixed radius centered on the ship.
 		@boundingBox =
@@ -48,6 +47,7 @@ class Shield extends ChangingObject
 			@flagNextUpdate('hitBox')
 
 	cancel: () ->
+		@owner.shield = null
 		@serverDelete = yes
 
 		@flagNextUpdate('serverDelete')
@@ -90,9 +90,11 @@ class Shield extends ChangingObject
 				# Expire shield after a set amount of time.
 				@nextState() if @countdown <= 0
 
-			when 'dead'
-				@serverDelete = yes
+				if @countdown <= @game.prefs.shield.blinkStart
+					@blink = yes
+					@flagNextUpdate('blink')
 
-				@flagNextUpdate('serverDelete')
+			when 'dead'
+				@cancel()
 
 exports.Shield = Shield

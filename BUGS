@@ -1,56 +1,6 @@
--*- mode: org; -*-
-
-* DONE Visual boost effect still active on respawning when dying before its end.
-	 CLOSED: [2011-07-26 Tue 14:40]
-  That reminds me of a song ... http://www.youtube.com/watch?v=JhBw80Y54gg
-  Oh wait, it's "boots" -- nevermind!
+# -*- mode: org; -*-
 
 * Ropes acting funny at borders
   Still reproducible when picking up a bonus at the edge of the
   map. My guess is that the chain is not modified to handle the
   wrapping like it is for bullets.
-
-* Stealthy ships are given away by the dragged bonuses, and by the shield
-* DONE Menu disappear in Chrome.
-  CLOSED: [2011-07-29 Fri 14:45]
-  Open/close the menu enough times, and it will never reappear.
-
-  Pressing Escape, M, and clicking do change the menu class (from
-  hidden to visible and back), but no menu is visible and the canvas
-  is frozen.
-
-  Pressing again Escape or M or clicking outside the menu (invisible)
-  area will unfreeze the game.
-
-  Reproducible in Chromium 13.0.752.0 (83651) but not FF 5.0.
-  System: Ubuntu Linux 11.04.
-
-  --
-
-  Might be tied to the CSS transition applied when changing the menu
-  visibility.  Or changing the visiblity property itself. We hide the
-  menu to stop the CSS animation from being processed and eating CPU
-  while the menu is only fully transparent.  Maybe we could just stop
-  the CSS animation, and only change the menu opacity, if that will
-  prevent the menu from disappearing.
-
-  --
-
-  Not reproducible on Chromium 14.0.803.0 (90483). Instead, when
-  opening and closing the menu rapidly with M, the colorwheel SVG
-  image is replaced by a screenshot of the menu, and recursively for a
-  nice Escher effect.
-
-  Zooming out changes the SVG to other graphics: the close button, and
-  icons, until a black rectangle fill the colorwheel box. It stays
-  that way after that, and no amount of opening/closing the menu or
-  zooming in or out seem to affect the black rectangle.
-
-  I'll assume this was a Chromium 13 beta bug, and attribute the strange
-  behavior with the colorwheel SVG to the dev build.
-
-  On another note, it definitely looks like Chromium 14 antialiases the
-  canvas. Not quite like FF, as the satellite borders are still acting
-  funny, but it's on good track. The FPS counter clocks at 130 now
-  ... even though VSync is enabled. Spacewar reports a solid 63, which
-  is more likely and also very good.
