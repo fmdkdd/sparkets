@@ -2,6 +2,7 @@ utils = require '../utils'
 logger = require('../logger').static
 ChangingObject = require('./changingObject').ChangingObject
 Bullet = require('./bullet').Bullet
+Shield = require('./shield').Shield
 
 class Ship extends ChangingObject
 	constructor: (@id, @game, name, color) ->
@@ -100,7 +101,7 @@ class Ship extends ChangingObject
 			y: 0
 
 		# Initial state.
-		@state = 'spawned'
+		@state = 'alive'
 		@countdown = @game.prefs.ship.states[@state].countdown
 
 		@flagNextUpdate('state')
@@ -121,7 +122,12 @@ class Ship extends ChangingObject
 		@boostDecay = 0
 		@inverseTurn = no
 		@invisible = no
-		@shield = null
+
+		# Spawn with a shield
+		@game.newGameObject (id) =>
+			@shield = @game.shields[id] = new Shield(id, @game, @)
+			@shield.countdown = @game.prefs.ship.spawnImmunity
+			@shield
 
 		@flagNextUpdate('boost')
 		@flagNextUpdate('invisible')

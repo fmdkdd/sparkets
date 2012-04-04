@@ -76,6 +76,9 @@ class GamePreferences
 				next: 'ready'
 				countdown: 1000
 
+		# Duration of immunity at spawn (ms)
+		spawnImmunity: 1000
+
 		# Half-width of bounding box.
 		boundingBoxRadius: 13
 
