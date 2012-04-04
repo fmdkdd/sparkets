@@ -562,6 +562,9 @@ class GameServer
 	botCount: () ->
 		@prefs.bot.count
 
+	playerCount: () ->
+		Object.keys(@players).length
+
 	noHuman: () ->
 		@humanCount() is 0
 
