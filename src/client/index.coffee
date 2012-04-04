@@ -32,35 +32,27 @@ $(document).ready () ->
 	# Expand SPARKETS' name.
 	$('header h1').hover (event) ->
 
-		# It's a one time thing!
+		# It's a one time thing.
 		$(this).unbind('hover')
 
+		# Store each title fragment (SPA|ceships |R|umble using Websoc|KETS).
 		fragments = []
 		fragments.push $(e) for e in $('*', $(this))
 
-		leftPos = fragments[0].position().left
+		leftPos = [fragments[0].position().left]
 		for i in [1...fragments.length]
 
 			f = fragments[i]
 			id = f.attr('id')
-			num = id.substr(id.length-1)
+			num = parseInt(id.substr(id.length-1))
 
-			leftPos += fragments[i-1].width()
+			# Compute the x position of each fragment for when the title is expanded.
+			leftPos.push leftPos[i-1] + fragments[i-1].width()
 
-			f.animate({
-				left: if f.css('position') is 'absolute' then leftPos+'px' else (leftPos-f.position().left)+'px'
-				opacity: if num is '2' or num is '4' then 0.3 else 1
-			},	500)
-
-	# Setup log in and sign up forms.
-	$('#login, #signup').click (event) =>
-		return if window.accountForm?
-
-		# Popup the forms.
-		new AccountForm()
-
-		# Focus on the appropriate field.
-		if event.target.id is 'login'
-			window.accountForm.formLogin.find('input[name="username"]').focus()
-		else
-			window.accountForm.formSignup.find('input[name="username"]').focus()
+			# Slide the SPA|R|KETS fragments to the right.
+			if num % 2 is 1
+				f.animate({left: (leftPos[i]-f.position().left)+'px'}, 300, 'swing')
+			# Place the other fragments and make them appear.
+			else
+				f.css('left', leftPos[i])
+				f.animate({opacity: 0.3}, 500)
