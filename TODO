@@ -28,10 +28,7 @@
 
 
 ** Bonuses tweaks
-*** Shield
-	 - Blink when timeout nearly over
-	 - Resolve shield-shield collisions and collision with planet at
-      full speed
+
 
 ** Environment
 *** Asteroids
