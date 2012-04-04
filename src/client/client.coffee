@@ -422,8 +422,6 @@ class Client
 				@handleEvent(e)
 
 	handleEvent: (event) ->
-		return unless @gameObjects[event.id]?
-
 		switch event.type
 			when 'message'
 				@chat.display(event)
@@ -462,6 +460,7 @@ class Client
 				@gameObjects[event.id].explosionEffect()
 
 			when 'rope exploded'
+				return unless @gameObjects[event.id]?
 				@gameObjects[event.id].explosionEffect()
 
 			when 'tracker activated'
