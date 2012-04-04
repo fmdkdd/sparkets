@@ -89,9 +89,9 @@ class Client
 	go: () ->
 
 		# Show the menu the first time.
-		if not window.localStorage['spacewar.tutorial']?
+		if not window.localStorage['sparkets.tutorial']?
 			@menu.open()
-			window.localStorage['spacewar.tutorial'] = true
+			window.localStorage['sparkets.tutorial'] = true
 
 		# Use the game event handler.
 		@setInputHandlers()

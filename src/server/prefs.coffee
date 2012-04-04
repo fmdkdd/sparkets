@@ -23,7 +23,7 @@ class ServerPreferences
 	# Socket.io options.
 	io:
 		# Allowed transports.
-		# Only WebSocket and FlashSocket are fast and stable enough for Spacewar.
+		# Only WebSocket and FlashSocket are fast and stable enough for Sparkets.
 		transports: ['websocket', 'flashsocket']
 
 		# Detail of log output: error (0), warn, info, debug (3)

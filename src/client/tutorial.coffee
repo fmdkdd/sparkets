@@ -26,7 +26,7 @@ class Tutorial
 			$('#slide' + @current).fadeIn(@fadeDuration, () => @pause())
 		# Mark the tutorial as passed.
 		else
-			window.localStorage['spacewar.tutorial'] = true
+			window.localStorage['sparkets.tutorial'] = true
 
 
 	pause: () ->
