@@ -99,18 +99,31 @@ header {
 		letter-spacing: 0.16em;
 		display: inline;
 
-		span {
-			position: relative;
-		}
+		&:first-child {
+			span {
+				position: relative;
+			}
 
-		#name2, #name4 {
-			position: absolute;
-			left: -10000px;
-			top: 0.23em;
-			font-size: smaller;
+			#name2, #name4 {
+				position: absolute;
+				left: -10000px;
+				top: 0.23em;
+				font-size: smaller;
+				color: transparent;
+				opacity: 0;
+				text-shadow: 0 0 1px white;
+			}
+		}
+		&:nth-child(2) {
+			float: right;
 			color: transparent;
-			opacity: 0;
+			opacity: 0.3;
 			text-shadow: 0 0 1px white;
+
+			&:hover {
+				cursor: pointer;
+				opacity: 0.5;
+			}
 		}
 	}
 }

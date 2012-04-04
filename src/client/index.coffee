@@ -33,15 +33,18 @@ $(document).ready () ->
 	$('button#createGame').click () ->
 		window.location = '/create'
 
-	# Expand SPARKETS' name.
-	$('header h1').hover (event) ->
+	# Expand SPARKETS' name when the ? is clicked.
+	$('header h1:nth-child(2)').click (event) ->
 
 		# It's a one time thing.
 		$(this).unbind('hover')
+		$(this).fadeOut(300, () =>
+			$(this).remove()
+		)
 
 		# Store each title fragment (SPA|ceships |R|umble using Websoc|KETS).
 		fragments = []
-		fragments.push $(e) for e in $('*', $(this))
+		fragments.push $(e) for e in $('*', $('header h1:first-child'))
 
 		leftPos = [fragments[0].position().left]
 		for i in [1...fragments.length]
