@@ -415,7 +415,7 @@ class GameServer
 
 		x = obj.pos.x
 		y = obj.pos.y
-		r = obj.boundingBox.radius
+		r = @prefs.shield.radius
 
 		for id, planet of @planets
 			return true if collidesWith(planet)
