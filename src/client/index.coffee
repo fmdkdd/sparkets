@@ -29,6 +29,10 @@ $(document).ready () ->
 				<td>' + minutesLeft(game.startTime, game.duration * 60 * 1000) + ' min</td>
 				</tr>')
 
+	# Clicking on the "Create a new game" button redirects to the creation page.
+	$('button#createGame').click () ->
+		window.location = '/create'
+
 	# Expand SPARKETS' name.
 	$('header h1').hover (event) ->
 
