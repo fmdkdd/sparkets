@@ -160,10 +160,16 @@ class SpriteManager
 
 		'shield': (sprite, w, h) ->
 			ctxt = sprite.getContext('2d')
-			ctxt.strokeStyle = 'black'
-			ctxt.lineWidth = 3
 
+			ctxt.lineWidth = 6
 			r = sprite.width/2
+
+			gradient = ctxt.createRadialGradient(r, r, r - ctxt.lineWidth,
+				r, r, r + ctxt.lineWidth)
+			gradient.addColorStop(0, 'rgba(0,0,0,0')
+			gradient.addColorStop(1, 'rgba(0,0,0,1)')
+			ctxt.strokeStyle = gradient
+
 			ctxt.beginPath()
 			ctxt.arc(r, r, r - ctxt.lineWidth/2, 0, 2*Math.PI, false)
 			ctxt.stroke()
