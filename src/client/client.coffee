@@ -412,7 +412,8 @@ class Client
 	onObjectsUpdate: (data) ->
 		for id, obj of data.objects
 			if not @gameObjects[id]?
-				@gameObjects[id] = @newObject(id, obj.type, obj)
+				if obj.type?
+					@gameObjects[id] = @newObject(id, obj.type, obj)
 			else
 				@gameObjects[id].serverUpdate(obj)
 
@@ -421,6 +422,8 @@ class Client
 				@handleEvent(e)
 
 	handleEvent: (event) ->
+		return unless @gameObjects[event.id]?
+
 		switch event.type
 			when 'message'
 				@chat.display(event)
@@ -480,7 +483,7 @@ class Client
 
 	# When another player leaves.
 	onPlayerQuits: (data) ->
-		@deleteObject data.shipId
+
 
 	onGameEnd: () ->
 		@gameEnded = yes

@@ -181,7 +181,15 @@ class GameServer
 			shipId : shipId
 
 		# Purge objects belonging to client.
-		@deleteObject(shipId)
+		ship = @gameObjects[shipId]
+		if ship.shield?
+			ship.shield.cancel()
+		ship.explode()
+
+		# Flag for deletion explicitely since the player has left
+		ship.serverDelete = yes
+		ship.flagNextUpdate('serverDelete')
+
 		delete @players[playerId]
 
 		@info "player #{socket.id} left"

@@ -21,6 +21,8 @@ class Ship
 		if @thrust isnt thrust_old
 			@engineAnimFor = @engineAnimDelay
 
+		@clientDelete = @serverDelete
+
 	initSprite: () ->
 		w = 20+5 # +5 to make way for the line width and the line rounding.
 		h = 14+5
