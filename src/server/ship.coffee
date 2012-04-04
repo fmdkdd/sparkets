@@ -295,7 +295,7 @@ class Ship extends ChangingObject
 		@updateHitbox()
 
 	tangible: () ->
-		@state is 'spawned' or @state is 'alive'
+		@state is 'alive'
 
 	nextState: () ->
 		@state = @game.prefs.ship.states[@state].next

@@ -64,11 +64,8 @@ class GamePreferences
 	ship:
 		states:
 			'ready':
-				next: 'spawned'
-				countdown: null
-			'spawned':
 				next: 'alive'
-				countdown: 1000
+				countdown: null
 			'alive':
 				next: 'dead'
 				countdown: null

@@ -27,7 +27,7 @@ class BoostEffect
 		@shadows[0].dir = @object.dir
 
 	isAlive: () ->
-		@object.state in ['alive', 'spawned']
+		@object.state is 'alive'
 
 	deletable: () ->
 		not @running or @object.state is 'dead'

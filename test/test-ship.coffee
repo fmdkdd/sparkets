@@ -19,14 +19,14 @@ class MockGame
 
 			ship:
 				states:
-					'spawned':
+					'ready':
 						next: 'alive'
-						countdown: 1500
+						countdown: null
 					'alive':
 						next: 'dead'
 						countdown: null
 					'dead':
-						next: 'spawned'
+						next: 'ready'
 						countdown: null
 
 				boundingRadius: 9

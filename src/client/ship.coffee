@@ -54,9 +54,6 @@ class Ship
 	draw: (ctxt) ->
 		return if @state is 'dead' or @state is 'ready'
 
-		# Blink when the ship just spawned.
-		return if @state is 'spawned' and @client.now % 200 < 100
-
 		if @invisible and @ isnt @client.localShip
 			# Maybe draw a stealthy effect instead of the ship.
 			return
