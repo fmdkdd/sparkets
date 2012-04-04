@@ -29,11 +29,17 @@ class Shield
 		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	draw: (ctxt) ->
+		if @blink and
+				@owner is @client.localShip and
+				@client.now % 400 < 200
+			ctxt.globalAlpha = 0.3
+
 		# When the holder is invisible, hide from other ships
 		# and draw a special effect if the client is the holder
 		if @owner.invisible
 			if @owner is @client.localShip
-				ctxt.globalAlpha = 0.5
+				# Preserve blinking alpha
+				ctxt.globalAlpha = Math.min ctxt.globalAlpha, 0.5
 			else
 				return
 

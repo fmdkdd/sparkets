@@ -91,6 +91,10 @@ class Shield extends ChangingObject
 				# Expire shield after a set amount of time.
 				@nextState() if @countdown <= 0
 
+				if @countdown <= @game.prefs.shield.blinkStart
+					@blink = yes
+					@flagNextUpdate('blink')
+
 			when 'dead'
 				@cancel()
 

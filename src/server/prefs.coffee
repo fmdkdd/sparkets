@@ -299,6 +299,10 @@ class GamePreferences
 				countdown: null
 				next: null
 
+		# Signal client the shield is nearly over when this much time
+		# remains (ms).
+		blinkStart: 1000
+
 	mine:
 
 		# Sensibility radius.
