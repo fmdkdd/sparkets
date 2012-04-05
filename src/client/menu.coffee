@@ -68,6 +68,14 @@ class Menu
 			else if keyCode is 77 and $('#customize input:focus').length is 0
 				@toggle()
 
+		#
+		$('#resumeButton').click () =>
+			@close()
+
+		$('#quitButton').click () =>
+			window.location = '/'
+			# XXX: let the server know, maybe...
+
 	toggle: () ->
 		if @isOpen() then @close() else @open()
 
