@@ -29,7 +29,6 @@ class Mine extends ChangingObject
 
 		# Initial state.
 		@setState 'inactive'
-		@flagNextUpdate('state')
 
 		# Static position.
 		@pos =
