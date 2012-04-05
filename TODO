@@ -1,7 +1,6 @@
 # -*- mode: org; -*-
 
 * Gameplay
-
 ** New weapons & items
 *** Machine gun
 	 Rapid-fire weapon but takes longer to kill ships. Go against the
@@ -26,9 +25,11 @@
 	 directions.  Fires phony bullets, disappear when colliding
 	 something (different explosion visual).
 
+*** Poisoned mushroom
+	 Shrink or enlarge the ship's size.
 
 ** Bonuses tweaks
-
+*** Visual clue for number of mines in bonus
 
 ** Environment
 *** Asteroids
@@ -98,7 +99,6 @@
 		- Rogue leader : Be at the top of the scoreboard X times.
 		...
 
-
 * Interface
 ** Web interface for game creation.
 *** Sanitize input
@@ -122,9 +122,7 @@
 ** Leave some ephemeral traces of fight on planets.
    Ships and bullets splatters their colors. À la paintball.
 
-
 * Core
-
 ** Use an event model where needed.
    Ships could emit 'fire', 'death', 'explosion' events, bonus
    can register them and act safely upon it instead of relying on
@@ -145,5 +143,6 @@
 
 ** Send full game update to reconnecting / out of sync clients.
    Client should clean everything and start anew from this update.
-** Visual clue for number of mines in bonus
 ** Use composition instead of inheritance where it makes sense
+** Filter updates sent to clients
+	Don't send update position for an invisible ship.
