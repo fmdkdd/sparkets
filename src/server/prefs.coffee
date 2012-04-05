@@ -358,28 +358,28 @@ class GamePreferences
 		fragmentation: 3
 
 		states:
-			'deploying':
+			deploying:
 				countdown: 700 				# Time (ms) before activation.
 				next: 'tracking'
-			'tracking':
+			tracking:
 				countdown: 4000				# Time (ms) before disappearance.
 				next: 'dead'
-			'dead':
+			dead:
 				countdown: null
 				next: null
 
 	bonus:
 		states:
-			'incoming':
+			incoming:
 				countdown: 2000
 				next: 'available'
-			'available':
+			available:
 				countdown: null
 				next: 'claimed'
-			'claimed':
+			claimed:
 				countdown: null
 				next: null
-			'dead':
+			dead:
 				countdown: null
 				next: null
 
