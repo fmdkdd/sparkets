@@ -85,6 +85,30 @@ class Client
 			@canvasSize.h = document.getElementById('canvas').height = window.innerHeight
 		$(window).resize()
 
+		# Hide the cursor when the mouse is inactive.
+
+		# WARNING: hiding and showing the cursor triggers a mousemove
+		# event, @phonyMouseMovePassed let us detect and ignore that
+		# unwanted effect.
+		@phonyMouseMovePassed = yes
+
+		@hideCursor()
+		$(document).mousemove () =>
+
+			if @phonyMouseMovePassed
+				clearTimeout(@hideCursorTimeout) if @hideCursorTimeout?
+				@hideCursorTimeout = setTimeout((() => @hideCursor()), 1000)
+				@showCursor()
+
+			@phonyMouseMovePassed = yes
+
+	showCursor: () ->
+		$('*').css({cursor: 'default'})
+
+	hideCursor: () ->
+		$('*').css({cursor: 'none'})
+		@phonyMouseMovePassed = no
+
 	# Setup input callbacks and launch game loop.
 	go: () ->
 
