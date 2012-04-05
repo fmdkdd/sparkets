@@ -429,19 +429,16 @@ class Client
 			when 'ship crashed'
 				@gameObjects[event.id].explosionEffect()
 				@gameObjects[event.id].dislocationEffect()
-				@chat.display(event)
 
 			when 'ships both crashed'
 				@gameObjects[event.id1].explosionEffect()
 				@gameObjects[event.id1].dislocationEffect()
 				@gameObjects[event.id2].explosionEffect()
 				@gameObjects[event.id2].dislocationEffect()
-				@chat.display(event)
 
 			when 'ship killed'
 				@gameObjects[event.idKilled].explosionEffect()
 				@gameObjects[event.idKilled].dislocationEffect()
-				@chat.display(event)
 
 			when 'ship boosted'
 				@gameObjects[event.id].boostEffect()
