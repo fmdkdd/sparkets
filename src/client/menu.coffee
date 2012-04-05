@@ -86,6 +86,10 @@ class Menu
 		@clockInterval = setInterval( (() =>
 			@updateTime()), 1000)
 
+		# Make the cursor constantly visible when
+		# the menu is open.
+		@client.staticCursorMode()
+
 		@menu.removeClass('hidden')
 		@menu.addClass('visible')
 
@@ -94,6 +98,10 @@ class Menu
 		@menu.addClass('hidden')
 
 		clearInterval(@clockInterval)
+
+		# The cursor disappears after some time
+		# when the menu is closed.
+		@client.disappearingCursorMode()
 
 	isOpen: () ->
 		@menu.hasClass('visible')

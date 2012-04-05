@@ -84,7 +84,11 @@ class Client
 			@canvasSize.h = document.getElementById('canvas').height = window.innerHeight
 		$(window).resize()
 
-		# Hide the cursor when the mouse is inactive.
+		@disappearingCursorMode()
+		@hideCursor()
+
+	# Hide the cursor when the mouse is inactive.
+	disappearingCursorMode: () ->
 
 		# WARNING: hiding and showing the cursor triggers a mousemove
 		# event, @phonyMouseMovePassed let us detect and ignore that
@@ -100,6 +104,11 @@ class Client
 				@showCursor()
 
 			@phonyMouseMovePassed = yes
+
+	staticCursorMode: () ->
+		clearTimeout(@hideCursorTimeout) if @hideCursorTimeout?
+		$(document).unbind('mousemove')
+		@showCursor()
 
 	showCursor: () ->
 		$('*').css({cursor: 'default'})
