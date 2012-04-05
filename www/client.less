@@ -65,7 +65,7 @@ section#menu {
 
 	section#scores {
 
-		margin-top: 2em;
+		margin-top: 4em;
 
 		h2 {
 			margin-bottom: 50px;
@@ -79,23 +79,44 @@ section#menu {
 			table-layout: fixed;
 			border-collapse : collapse;
 
+			border-bottom: 1px solid @beige;
+
 			tr {
 				height: 2em;
 			}
 
 			th {
 				border-bottom: 1px solid @beige;
+
+				color: @beige;
+				font-size: 1.6em;
+				text-align: center;
 			}
 
-			th, td {
+			td {
 				text-align: center;
+				border-bottom: 1px solid fadeout(@beige, 85%);
+			}
 
-				// Player name
+			// Player name column
+			td, th {
 				&:nth-child(2) {
-					width: 60%;
+					width: 50%;
 					text-align: left;
+
+					span.colorBullet {
+						display: block;
+						float: left;
+						width: 0.6em;
+						height: 0.6em;
+						margin-right: 0.5em;
+						margin-top: 0.3em;
+
+						border-radius: 0.3em;
+					}
 				}
 			}
+
 		}
 	}
 

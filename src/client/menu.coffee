@@ -181,7 +181,7 @@ class Menu
 			cssColor = 'hsl('+s.color[0]+','+s.color[1]+'%,'+s.color[2]+'%)'
 			@scoreTable.append(
 					'<tr><td>' + (i+1) + '</td>' +
-					'<td><span style="color:' + cssColor + '">' + s.name + '</span></td>' +
+					'<td><span class="colorBullet" style="background-color: ' + cssColor + '">&nbsp;</span>' + s.name + '</span></td>' +
 					'<td>' +	s.deaths + '</td>' +
 					'<td>' +	s.kills + '</td>' +
 					'<td>' + s.score + '</td></tr>')
