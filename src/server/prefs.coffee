@@ -271,14 +271,14 @@ class GamePreferences
 		gravityPull: 200
 
 		# Shield repulsive force.
-		shieldPull: -500
+		shieldPull: -600
 
 	shield:
 		# Size of shield around ship.
 		radius: 25
 
 		# Gravity push factor for ships.
-		shipPush: -400
+		shipPush: -500
 
 		# Distance at which ships are affected by the gravity push.
 		shipAffectDistance: 40
