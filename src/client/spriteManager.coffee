@@ -166,8 +166,8 @@ class SpriteManager
 
 			gradient = ctxt.createRadialGradient(r, r, r - ctxt.lineWidth,
 				r, r, r + ctxt.lineWidth)
-			gradient.addColorStop(0, 'rgba(0,0,0,0)')
-			gradient.addColorStop(1, 'rgba(0,0,0,1)')
+			gradient.addColorStop(0, 'rgba(0,0,0,0.2)')
+			gradient.addColorStop(1, 'rgba(0,0,0,0.9)')
 			ctxt.strokeStyle = gradient
 
 			ctxt.beginPath()
