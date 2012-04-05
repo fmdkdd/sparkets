@@ -9,7 +9,6 @@ class Client
 		@canvasSize = {w: 0, h: 0}
 		@mapSize = null
 		@view = {x: 0, y: 0}
-		@mouse = {x: 0, y: 0}
 
 		@spriteManager = new SpriteManager()
 
@@ -141,32 +140,6 @@ class Client
 			@keys[keyCode] = off
 			@socket.emit 'key up',
 				key: keyCode
-
-		# Track mouse position.
-		$(document).mousemove ({pageX, pageY}) =>
-			@mouse.x = pageX
-			@mouse.y = pageY
-
-		# Let the player move the camera around when his ship died.
-		$(document).mousedown () =>
-			if @localShip.state in ['dead', 'ready']
-				recenter = () =>
-					# Move the camera towards the position of the mouse.
-					center = {x: @canvasSize.w/2, y: @canvasSize.h/2}
-					@view.x += (@mouse.x-center.x)/50
-					@view.y += (@mouse.y-center.y)/50
-
-					# Warp the camera.
-					s = @mapSize
-					if @view.x < 0 then @view.x = s
-					if @view.x > s then @view.x = 0
-					if @view.y < 0 then @view.y = s
-					if @view.y > s then @view.y = 0
-
-				@mouseDownInterval = setInterval(recenter, 5)
-
-		$(document).mouseup () =>
-			clearInterval(@mouseDownInterval)
 
 	renderLoop: (showFPS) ->
 
