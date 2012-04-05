@@ -30,7 +30,16 @@
 
 ** Bonuses tweaks
 *** Visual clue for number of mines in bonus
-
+*** Charging shield push power
+	 - Reuse firing key to charge a shield and send push gravity force
+** Gameplay tweaks
+*** Constrain maximum ship / bullet velocity
+	 The gravity field of shields sometimes sends ships flying to the
+	 other side of the map.  But, we need this field to be strong
+	 enough to repel nearby ships.
+*** Use down arrow
+	 - Slow down the ship with additional little engines
+	 - Or quick half-turn
 ** Environment
 *** Asteroids
 		Blob-like asteroids slowly drifting across the map.
@@ -117,7 +126,10 @@
 	  - Game mode.
 
 ** Game interface
-
+** Scoring
+*** Account for assist kills
+	 - Shield push
+	 - Ships under EMP effect
 * Graphics
 ** Leave some ephemeral traces of fight on planets.
    Ships and bullets splatters their colors. À la paintball.
