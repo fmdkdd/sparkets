@@ -9,8 +9,8 @@ class Grenade
 		color = window.utils.color @color
 		@sprite = @client.spriteManager.get('grenade', s, s, color)
 
-	serverUpdate: (mine) ->
-		utils.deepMerge(mine, @)
+	serverUpdate: (grenade) ->
+		utils.deepMerge(grenade, @)
 
 	update: () ->
 		@clientDelete = @serverDelete
