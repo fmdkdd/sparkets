@@ -400,7 +400,7 @@ class GamePreferences
 				next: null
 
 		# ms before a bonus drop.
-		waitTime: 1000
+		waitTime: 3000
 
 		# Number of allowed simultaneous bonuses.
 		maxCount: 10
@@ -446,7 +446,7 @@ class GamePreferences
 				weight: 1
 			EMP:
 				class: BonusEMP
-				weight: 100
+				weight: 1
 			shield:
 				class: BonusShield
 				weight: 1

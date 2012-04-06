@@ -80,12 +80,12 @@ class Bonus
 			scale = Math.max(.5, distRatio)
 
 			# The radar is blinking.
-			if @countdown % 500 < 250
+			if @client.now % 500 < 250
 				@drawRadarSymbol(ctxt, @client.canvasSize.w/2 + rx,
 					@client.canvasSize.h/2 + ry, scale)
 
 		# Draw the X on the future bonus position if it lies within the screen.
-		else if @countdown % 500 < 250
+		else if @client.now % 500 < 250
 			rx = -@client.canvasSize.w/2 + bestPos.x - @client.view.x
 			ry = -@client.canvasSize.h/2 + bestPos.y - @client.view.y
 

@@ -1,12 +1,12 @@
 utils = require '../utils'
 ChangingObject = require('./changingObject').ChangingObject
-BonusMine = require './bonusMine'
-BonusGrenade = require './bonusGrenade'
-BonusBoost = require './bonusBoost'
-BonusShield = require './bonusShield'
+stateMachineMixin = require('./stateMachine').mixin
 Rope = require('./rope').Rope
 
 class Bonus extends ChangingObject
+
+	stateMachineMixin.call(@prototype)
+
 	constructor: (@id, @game, bonusType) ->
 		super()
 
@@ -29,7 +29,6 @@ class Bonus extends ChangingObject
 		# Bounding box is the same as the hit box.
 		@boundingBox =
 			radius: @game.prefs.bonus.boundingBoxRadius
-
 		@hitBox =
 			type: 'polygon'
 			points: [
@@ -37,7 +36,6 @@ class Bonus extends ChangingObject
 				{x: 0, y: 0},
 				{x: 0, y: 0},
 				{x: 0, y: 0}]
-
 		if @game.prefs.debug.sendHitBoxes
 			@flagNextUpdate('boundingBox')
 			@flagNextUpdate('hitBox')
@@ -45,10 +43,10 @@ class Bonus extends ChangingObject
 		@spawn(bonusType)
 
 	spawn: (bonusType) ->
+
 		@pos =
 			x: Math.random() * @game.prefs.mapSize
 			y: Math.random() * @game.prefs.mapSize
-
 		@updateBoxes()
 
 		# Find a safe drop location.
@@ -56,24 +54,18 @@ class Bonus extends ChangingObject
 			@pos.x = Math.random() * @game.prefs.mapSize
 			@pos.y = Math.random() * @game.prefs.mapSize
 			@updateBoxes()
+		@flagNextUpdate('pos')
 
 		# Set our initial velocity.
 		@vel =
 			x: 0
 			y: 0
 
-		@flagNextUpdate('pos')
-
-		# Initial state.
-		@state = 'incoming'
-		@countdown = @game.prefs.bonus.states[@state].countdown
-
-		@flagNextUpdate('state')
-		@flagNextUpdate('countdown')
+		# Switch to the 'incoming' state.
+		@setState 'incoming'
 
 		# Nice skittles color.
 		@color = utils.randomColor()
-
 		@flagNextUpdate('color')
 
 		# Randomly choose bonus type if unspecified.
@@ -85,7 +77,6 @@ class Bonus extends ChangingObject
 		# Set bonus effect and type.
 		@effect = new bonusClass.constructor(@game, @)
 		@bonusType = bonusClass.type
-
 		@flagNextUpdate('bonusType')
 
 	hitBoxPoints: [
@@ -117,24 +108,10 @@ class Bonus extends ChangingObject
 		return Array.random(roulette)
 
 	tangible: () ->
-		@state isnt 'incoming' and @state isnt 'dead'
-
-	nextState: () ->
-		@state = @game.prefs.bonus.states[@state].next
-		@countdown = @game.prefs.bonus.states[@state].countdown
-
-		@flagNextUpdate('state')
-		@flagNextUpdate('countdown')
-
-	setState: (state) ->
-		if @game.prefs.bonus.states[state]?
-			@flagNextUpdate('state') unless @state is state
-			@flagNextUpdate('countdown')
-
-			@state = state
-			@countdown = @game.prefs.bonus.states[state].countdown
+		@state is 'available' or @state is 'claimed'
 
 	move: (step) ->
+
 		# Update position and hitbox according to velocity.
 		unless @vel.x is 0
 			@pos.x += @vel.x
@@ -155,14 +132,11 @@ class Bonus extends ChangingObject
 		@vel.y *= @game.prefs.bonus.frictionDecay
 
 	update: (step) ->
-		if @countdown?
-			@countdown -= @game.prefs.timestep * step
-			# DELETEME: client should only receive the countdown once.
-			@flagNextUpdate('countdown')
 
-			@nextState() if @countdown <= 0
+		@updateState(step)
 
 		switch @state
+
 			# The bonus is of no more use.
 			when 'dead'
 				@serverDelete = yes
