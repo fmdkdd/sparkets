@@ -110,6 +110,7 @@ class Ship extends ChangingObject
 		@thrust = false
 		@firePower = @game.prefs.ship.minFirepower
 		@cannonHeat = 0
+		@ongoingTurn = 0
 
 		@flagNextUpdate('thrust')
 		@flagNextUpdate('firePower')
@@ -134,8 +135,31 @@ class Ship extends ChangingObject
 
 		@debug "spawned"
 
+	stopTurnAccel: () ->
+		@ongoingTurn = 0
+
+	accelBezier: utils.cubicBezier(
+		utils.vec.point(0, 0.07),
+		utils.vec.point(1, 0.2),
+		utils.vec.point(0.69, 0.1),
+		utils.vec.point(0.81, 0.2))
+
+	turnAcceleration: (turn) ->
+		if @game.prefs.ship.bezierAccel
+			# Map accumulated turn to [0, pi[
+			turn = utils.mod(turn, Math.PI)
+			# Symmetric in ]pi/2, pi]
+			turn = Math.PI - turn if turn > Math.PI/2
+			# Map [0, pi/2] to [0,1]
+			turn /= Math.PI/2
+			return @accelBezier(turn).y
+		else
+			return @game.prefs.ship.dirInc
+
 	turnLeft: (step) ->
-		inc = if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
+		inc = @turnAcceleration @ongoingTurn
+		@ongoingTurn += inc * step
+		inc = -inc if @inverseTurn
 		@dir -= inc * step
 
 		@flagNextUpdate('dir')
@@ -143,7 +167,9 @@ class Ship extends ChangingObject
 		@ddebug "turn left"
 
 	turnRight: (step) ->
-		inc = if @inverseTurn then -@game.prefs.ship.dirInc else @game.prefs.ship.dirInc
+		inc = @turnAcceleration @ongoingTurn
+		@ongoingTurn += inc * step
+		inc = -inc if @inverseTurn
 		@dir += inc * step
 
 		@flagNextUpdate('dir')

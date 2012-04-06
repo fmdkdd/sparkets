@@ -82,6 +82,13 @@ class GamePreferences
 		# Rotation increase at input update.
 		dirInc: 0.12
 
+		# Whether to use a bézier curve to rotate the ship.  The ship
+		# will rotate slowly for a short time after beginning a
+		# rotation, and again after a half-turn; in-between it rotates
+		# faster.
+		# If this is false, a linear rotation speed is used.
+		bezierAccel: yes
+
 		# Velocity increase at input update
 		speed: 0.3
 

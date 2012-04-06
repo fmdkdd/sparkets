@@ -125,6 +125,10 @@ exports.vec =
 	vector: (x1, y1, x2, y2) ->
 		{x: x2-x1, y: y2-y1}
 
+	# Give a vector going from [0,0] to [x,y].
+	point: (x, y) ->
+		exports.vec.vector(0, 0, x, y)
+
 	# Give the length of v.
 	length: (v) ->
 		exports.distance(0, 0, v.x, v.y)
@@ -222,6 +226,23 @@ exports.relativeAngle = (a) ->
 		a + 2*Math.PI
 	else
 		a
+
+# Cubic Bézier curves going from a to b with control points c and d.
+# Returns a function of time in [0,1] giving a vector.
+exports.cubicBezier = (a, b, c, d) ->
+	return (t) ->
+		u = (1 - t)
+		u2 = u * u
+		u3 = u2 * u
+		t2 = t * t
+		t3 = t2 * t
+
+		r = exports.vec.times(a, u3)
+		r = exports.vec.plus(r, exports.vec.times(c, 3 * u2 * t))
+		r = exports.vec.plus(r, exports.vec.times(d, 3 * u * t2))
+		r = exports.vec.plus(r, exports.vec.times(b, t3))
+
+		return r
 
 # Return acceleration vector from all gravity-emitting `objects',
 # having center `source' and force `force'.

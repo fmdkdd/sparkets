@@ -28,6 +28,9 @@ class Player
 		if @keysUp[38]
 			@ship.stopEngine()
 
+		if @keysUp[37] or @keysUp[39]
+			@ship.stopTurnAccel()
+
 		# Z : use bonus.
 		if @keysUp[90]
 			@ship.useBonus()
