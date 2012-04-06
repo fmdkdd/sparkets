@@ -218,7 +218,6 @@ exports.collisions =
 	'ship-bonus': (ship, bonus) ->
 		if bonus.state is 'available'
  	 		ship.holdBonus(bonus)
-			ship.useBonus() if bonus.isEvil()
 
 			ship.addStat("#{bonus.type} bonus grabs", 1)
 

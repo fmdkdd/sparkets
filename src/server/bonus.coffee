@@ -204,7 +204,4 @@ class Bonus extends ChangingObject
 			type: 'bonus exploded'
 			id: @id
 
-	isEvil: () ->
-		@effect.evil?
-
 exports.Bonus = Bonus
