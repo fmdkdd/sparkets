@@ -63,13 +63,13 @@ class GamePreferences
 
 	ship:
 		states:
-			'ready':
+			ready:
 				next: 'alive'
 				countdown: null
-			'alive':
+			alive:
 				next: 'dead'
 				countdown: null
-			'dead':
+			dead:
 				next: 'ready'
 				countdown: 1000
 
@@ -291,11 +291,11 @@ class GamePreferences
 		planetAffectDistance: 30
 
 		states:
-			'active':
+			active:
 				countdown: 5000
 				next: 'dead'
 
-			'dead':
+			dead:
 				countdown: null
 				next: null
 
@@ -316,16 +316,16 @@ class GamePreferences
 		explosionRadius: 80
 
 		states:
-			'inactive':
+			inactive:
 				countdown: 100			  # Time (ms) before activation.
 				next: 'active'
-			'active':
+			active:
 				countdown: null
 				next: 'exploding'
-			'exploding':
+			exploding:
 				countdown: 500			  # Length (ms) of explosion.
 				next: 'dead'
-			'dead':
+			dead:
 				countdown: null
 				next: null
 
@@ -338,13 +338,29 @@ class GamePreferences
 		childrenCount: 3
 
 		states:
-			'active':
+			active:
 				countdown: 600
 				next: 'exploding'
-			'exploding':
+			exploding:
 				countdown: 500
 				next: 'dead'
-			'dead':
+			dead:
+				countdown: null
+				next: null
+
+	EMP:
+
+		effectRadius: 300
+		effectDuration: 3000           # Duration of drunk side effect in ms.
+
+		states:
+			charging:
+				countdown: 2500
+				next: 'exploding'
+			exploding:
+				countdown: 500
+				next: 'dead'
+			dead:
 				countdown: null
 				next: null
 
@@ -384,7 +400,7 @@ class GamePreferences
 				next: null
 
 		# ms before a bonus drop.
-		waitTime: 5000
+		waitTime: 1000
 
 		# Number of allowed simultaneous bonuses.
 		maxCount: 10
@@ -409,12 +425,6 @@ class GamePreferences
 			# Decrease boost factor in decay state.
 			boostDecay: 0.02
 
-		EMP:
-			effectRadius: 500
-
-			# Duration of drunk side effect in ms.
-			drunkDuration: 3000
-
 		stealth:
 			# Duration of invisiblity in ms.
 			duration: 5000
@@ -436,7 +446,7 @@ class GamePreferences
 				weight: 1
 			EMP:
 				class: BonusEMP
-				weight: 1
+				weight: 100
 			shield:
 				class: BonusShield
 				weight: 1

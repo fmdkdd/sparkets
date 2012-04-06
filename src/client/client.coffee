@@ -343,6 +343,8 @@ class Client
 				new Mine(@, obj)
 			when 'grenade'
 				new Grenade(@, obj)
+			when 'EMP'
+				new EMP(@, obj)
 			when 'shield'
 				new Shield(@, obj)
 			when 'bonus'
@@ -473,11 +475,14 @@ class Client
 			when 'tracker exploded'
 				@gameObjects[event.id].explosionEffect()
 
-			when 'EMP released'
-				@gameObjects[event.id].EMPEffect()
-
 			when 'grenade exploded'
 				@gameObjects[event.id].explosionEffect()
+
+			when 'EMP charging'
+				@gameObjects[event.id].chargingEffect()
+
+			when 'EMP exploded'
+				@gameObjects[event.id].wavesEffect()
 
 	# When a player sent a chat message.
 	onPlayerMessage: (data)->

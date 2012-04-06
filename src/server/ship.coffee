@@ -378,6 +378,15 @@ class Ship extends ChangingObject
 			@killingAccel = killer.vel
 			@flagNextUpdate('killingAccel')
 
+	drunkEffect: () ->
+		@inverseTurn = yes
+
+		# Setup and overwrite previous drunk timeout.
+		@bonusTimeouts.drunkEffect =
+			duration: @game.prefs.EMP.effectDuration
+			onTimeout: (ship) ->
+				ship.inverseTurn = no
+
 	addStat: (field, increment) ->
 		@stats[field] += increment
 

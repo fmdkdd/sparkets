@@ -550,9 +550,40 @@ exports.collisions =
 		ddebug "grenade ##{grenade.id} hit moon ##{moon.id}"
 
 	'grenade-planet': (grenade, planet) ->
-		console.log('boom')
 		if grenade.state is 'active'
 			grenade.explode()
 			grenade.fragment()
 
 		ddebug "grenade ##{grenade.id} hit planet ##{planet.id}"
+
+	'EMP-ship': (emp, ship) ->
+
+		return if emp.owner.id is ship.id
+
+		ship.drunkEffect()
+
+		if ship.invisible
+			ship.invisible = no
+			ship.flagNextUpdate('invisible')
+
+		ddebug "EMP ##{emp.id} hit ship ##{ship.id}"
+
+	'EMP-bullet': (emp, bullet) ->
+		bullet.explode()
+
+		ddebug "EMP ##{emp.id} destroyed bullet ##{bullet.id}"
+
+	'EMP-mine': (emp, mine) ->
+		mine.explode()
+
+		ddebug "EMP ##{emp.id} destroyed mine ##{mine.id}"
+
+	'EMP-tracker': (emp, tracker) ->
+		tracker.explode()
+
+		ddebug "EMP ##{emp.id} destroyed tracker ##{tracker.id}"
+
+	'EMP-shield': (emp, shield) ->
+		shield.cancel()
+
+		ddebug "EMP ##{emp.id} cancelled shield ##{shield.id}"
