@@ -1,3 +1,7 @@
+logger = require('../logger').static
+
+warn = (msg) -> logger.warn msg
+
 exports.mixin = () ->
 
 	@updateState = (step) ->
@@ -15,9 +19,11 @@ exports.mixin = () ->
 	@setState = (state) ->
 
 		if @game.prefs[@type].states[state]?
-			@flagNextUpdate('state') unless @state is state
-
-			@state = state
-			@countdown = @game.prefs[@type].states[state].countdown
+			unless @state is state
+				@state = state
+				@countdown = @game.prefs[@type].states[state].countdown
+				@flagNextUpdate('state')
+		else
+			warn "#{@type} tried to switch to invalid state \"#{state}\""
 
 	@
