@@ -11,8 +11,15 @@ class FlashEffect
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
+	animationCurve: utils.cubicBezier(
+		utils.vec.point(1,0),
+		utils.vec.point(0,0),
+		utils.vec.point(1,1),
+		utils.vec.point(0,1))
+
 	draw: (ctxt, offset = {x:0, y:0}) ->
-		ctxt.fillStyle = utils.color(@color, 1-(@client.now-@start)/@duration)
+		t = @animationCurve((@client.now - @start) / @duration).y
+		ctxt.fillStyle = utils.color(@color, t)
 		ctxt.beginPath()
 		ctxt.arc(@pos.x, @pos.y, @radius, 0, 2*Math.PI, false)
 		ctxt.fill()
