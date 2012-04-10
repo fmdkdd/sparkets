@@ -1,8 +1,8 @@
-hitBoxedMixin = window.HitBoxed
+boxedMixin = window.Boxed
 
 class Bullet
 
-	hitBoxedMixin.call(@prototype)
+	boxedMixin.call(@prototype)
 
 	constructor: (@client, bullet) ->
 		@clientPoints = []

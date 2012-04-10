@@ -1,8 +1,8 @@
-hitBoxedMixin = window.HitBoxed
+boxedMixin = window.Boxed
 
 class EMP
 
-	hitBoxedMixin.call(@prototype)
+	boxedMixin.call(@prototype)
 
 	constructor: (@client, emp) ->
 		@serverUpdate(emp)

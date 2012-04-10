@@ -1,8 +1,8 @@
-hitBoxedMixin = window.HitBoxed
+boxedMixin = window.Boxed
 
 class Shield
 
-	hitBoxedMixin.call(@prototype)
+	boxedMixin.call(@prototype)
 
 	constructor: (@client, shield) ->
 		@serverUpdate(shield)

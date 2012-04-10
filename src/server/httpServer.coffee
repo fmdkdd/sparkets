@@ -36,7 +36,7 @@ webFiles = {
 	'/js/client/explosionEffect.js',
 	'/js/client/flashEffect.js',
 	'/js/client/grenade.js',
-	'/js/client/hitBoxed.js',
+	'/js/client/boxed.js',
 	'/js/client/index.js',
 	'/js/client/menu.js',
 	'/js/client/mine.js',

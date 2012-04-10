@@ -4,7 +4,7 @@ mixin = () ->
 
 		return if not @hitBox?
 
-		ctxt.strokeStyle = 'green'
+		ctxt.strokeStyle = 'red'
 		ctxt.lineWidth = 2
 
 		switch @hitBox.type
@@ -25,6 +25,16 @@ mixin = () ->
 
 				ctxt.stroke()
 
+	@drawBoundingBox = (ctxt) ->
+
+		return if not @boundingBox?
+
+		ctxt.strokeStyle = 'blue'
+		ctxt.lineWidth = 2.5
+
+		r = @boundingBox.radius
+		ctxt.strokeRect(@boundingBox.x - r, @boundingBox.y - r, 2*r, 2*r)
+
 	return @
 
-window.HitBoxed = mixin
+window.Boxed = mixin

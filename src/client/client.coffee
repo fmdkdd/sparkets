@@ -34,7 +34,7 @@ class Client
 		@maxBulletLength = 30
 
 		# Debugging
-		@showHitBoxes = no
+		@showHitBoxes = yes
 		@showMapBounds = no
 		@showFPS = no
 
@@ -263,12 +263,8 @@ class Client
 		ctxt.restore()
 		if @showHitBoxes
 			ctxt.save()
+			obj.drawBoundingBox(ctxt)
 			obj.drawHitbox(ctxt)
-
-			# Draw bounding box
-			ctxt.strokeStyle = 'blue'
-			r = obj.boundingBox.radius
-			ctxt.strokeRect(obj.boundingBox.x - r, obj.boundingBox.y - r, 2*r, 2*r)
 			ctxt.restore()
 
 	drawMapBounds: (ctxt) ->
