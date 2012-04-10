@@ -4,7 +4,7 @@ mixin = () ->
 
 		return if not @hitBox?
 
-		ctxt.strokeStyle = 'red'
+		ctxt.strokeStyle = 'green'
 		ctxt.lineWidth = 2
 
 		switch @hitBox.type

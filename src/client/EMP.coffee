@@ -1,4 +1,9 @@
+hitBoxedMixin = window.HitBoxed
+
 class EMP
+
+	hitBoxedMixin.call(@prototype)
+
 	constructor: (@client, emp) ->
 		@serverUpdate(emp)
 
@@ -7,13 +12,6 @@ class EMP
 
 	update: () ->
 		@clientDelete = @serverDelete
-
-	drawHitbox: (ctxt) ->
-		return if not @hitBox?
-
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	draw: (ctxt) ->
 		return if not @waves?

@@ -1,4 +1,9 @@
+hitBoxedMixin = window.HitBoxed
+
 class Bullet
+
+	hitBoxedMixin.call(@prototype)
+
 	constructor: (@client, bullet) ->
 		@clientPoints = []
 
@@ -19,21 +24,6 @@ class Bullet
 		# Bullets are culled from view on a segment basis
 		# in @draw.
 		true
-
-	drawHitbox: (ctxt) ->
-		return if not @hitBox?
-
-		points = @hitBox.points
-		return if points.length < 2
-
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		ctxt.beginPath()
-		ctxt.moveTo(points[0].x, points[0].y)
-		for i in [1...points.length]
-			ctxt.lineTo(points[i].x, points[i].y)
-		ctxt.closePath()
-		ctxt.stroke()
 
 	bulletWarp: (x1, y1, x2, y2) ->
 		Math.abs(x1 - x2) > 50 or

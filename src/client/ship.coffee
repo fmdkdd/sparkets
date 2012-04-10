@@ -1,4 +1,9 @@
+hitBoxedMixin = window.HitBoxed
+
 class Ship
+
+	hitBoxedMixin.call(@prototype)
+
 	constructor: (@client, ship) ->
 		@serverUpdate(ship)
 
@@ -37,21 +42,6 @@ class Ship
 
 	inView: (offset = {x:0, y:0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, 20)
-
-	drawHitbox: (ctxt) ->
-		return if not @hitBox?
-
-		points = @hitBox.points
-		return if points.length < 2
-
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		ctxt.beginPath()
-		ctxt.moveTo(points[0].x, points[0].y)
-		for i in [1...points.length]
-			ctxt.lineTo(points[i].x, points[i].y)
-		ctxt.closePath()
-		ctxt.stroke()
 
 	draw: (ctxt) ->
 		return if @state is 'dead' or @state is 'ready'

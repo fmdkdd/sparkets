@@ -1,4 +1,9 @@
+hitBoxedMixin = window.HitBoxed
+
 class Shield
+
+	hitBoxedMixin.call(@prototype)
+
 	constructor: (@client, shield) ->
 		@serverUpdate(shield)
 
@@ -21,13 +26,6 @@ class Shield
 
 	inView: (offset = {x: 0, y: 0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
-
-	drawHitbox: (ctxt) ->
-		return if not @hitBox?
-
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	draw: (ctxt) ->
 		if @blink and

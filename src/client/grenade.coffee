@@ -1,4 +1,9 @@
+hitBoxedMixin = window.HitBoxed
+
 class Grenade
+
+	hitBoxedMixin.call(@prototype)
+
 	constructor: (@client, grenade) ->
 		@serverUpdate(grenade)
 
@@ -14,13 +19,6 @@ class Grenade
 
 	update: () ->
 		@clientDelete = @serverDelete
-
-	drawHitbox: (ctxt) ->
-		return if not @hitBox?
-
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	draw: (ctxt) ->
 		return if @state is 'exploding' or @state is 'dead'

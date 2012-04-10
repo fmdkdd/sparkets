@@ -1,4 +1,9 @@
+hitBoxedMixin = window.HitBoxed
+
 class Planet
+
+	hitBoxedMixin.call(@prototype)
+
 	constructor: (@client, planet) ->
 		@serverUpdate(planet)
 
@@ -17,17 +22,6 @@ class Planet
 
 	inView: (offset = {x: 0, y: 0}) ->
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @force)
-
-	drawHitbox: (ctxt) ->
-		return if not @hitBox?
-
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
-
-		ctxt.fillStyle = 'black'
-		ctxt.font = '15px sans'
-		ctxt.fillText(@id, @pos.x - ctxt.measureText(@id).width/2, @pos.y)
 
 	draw: (ctxt) ->
 		ctxt.save()

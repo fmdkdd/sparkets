@@ -1,4 +1,9 @@
+hitBoxedMixin = window.HitBoxed
+
 class Tracker
+
+	hitBoxedMixin.call(@prototype)
+
 	constructor: (@client, tracker) ->
 		@serverUpdate(tracker)
 
@@ -15,13 +20,6 @@ class Tracker
 
 	update: () ->
 		@clientDelete = @serverDelete
-
-	drawHitbox: (ctxt) ->
-		return if not @hitBox?
-
-		ctxt.strokeStyle = 'red'
-		ctxt.lineWidth = 1.1
-		utils.strokeCircle(ctxt, @hitBox.x, @hitBox.y, @hitBox.radius)
 
 	draw: (ctxt) ->
 		return if @state is 'dead'
