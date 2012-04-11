@@ -37,7 +37,7 @@ class GamePreferences
 	# Debug-related preferences.
 	debug:
 		# Should send object hit boxes to clients.
-		sendHitBoxes: yes
+		sendHitBoxes: no
 
 	# ms between two server updates. Do not change this.
 	timestep: 20
@@ -444,7 +444,7 @@ class GamePreferences
 				weight: 1
 			grenade:
 				class: BonusGrenade
-				weight: 1
+				weight: 100
 			tracker:
 				class: BonusTracker
 				weight: 1
