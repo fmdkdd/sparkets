@@ -113,8 +113,7 @@ class SpriteManager
 			ctxt = sprite.getContext('2d')
 			ctxt.fillStyle = 'black'
 
-			r = 5
-			ctxt.fillRect(-r, -r, r*2, r*2)
+			utils.strokeCircle(ctxt, w/2, h/2, w/2)
 
 			return sprite
 

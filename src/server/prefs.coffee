@@ -338,7 +338,7 @@ class GamePreferences
 
 	grenade:
 
-		radius: 5
+		radius: 4
 		explosionRadius: 20
 		velocity: 5
 		friction: 0.95

@@ -139,6 +139,9 @@ class GameServer
 			shield:
 				radius: @prefs.shield.radius
 
+			grenade:
+				radius: @prefs.grenade.radius
+
 	createShip: (socket, data) ->
 		id = socket.id
 		player = @players[id]

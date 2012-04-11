@@ -10,9 +10,9 @@ class Grenade
 		@color = @client.gameObjects[@ownerId].color
 
 		# Create the sprite.
-		s = 10 * Math.sqrt(2)
+		r = @client.serverPrefs.grenade.radius
 		color = window.utils.color @color
-		@sprite = @client.spriteManager.get('grenade', s, s, color)
+		@sprite = @client.spriteManager.get('grenade', r, r, color)
 
 	serverUpdate: (grenade) ->
 		utils.deepMerge(grenade, @)
@@ -23,7 +23,6 @@ class Grenade
 	draw: (ctxt) ->
 		return if @state is 'exploding' or @state is 'dead'
 
-		# Draw the body of the mine.
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
 		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
