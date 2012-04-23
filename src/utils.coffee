@@ -1,4 +1,4 @@
-exports ?= window.utils = {}
+utils = {}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Array and object utils.
@@ -9,11 +9,11 @@ Array.random = (array) ->
 	array[Math.floor(Math.random() * array.length)]
 
 # Return random object property.
-exports.randomObjectElem = (obj) ->
+utils.randomObjectElem = (obj) ->
 	obj[ Array.random(Object.keys(obj)) ]
 
 # From jQuery
-exports.isEmptyObject = (obj) ->
+utils.isEmptyObject = (obj) ->
 	for p of obj
 		return false
 	return true
@@ -22,13 +22,13 @@ exports.isEmptyObject = (obj) ->
 # XXX: Only copies object and array properties deeply. Strings are
 # immutable but other types might not be while not being flagged as
 # 'object' by typeof.
-exports.deepCopy = (obj, src = {}) ->
+utils.deepCopy = (obj, src = {}) ->
 	copy = src
 	for name, prop of obj
 		if typeof prop is 'object' and not Array.isArray(prop)
-			copy[name] = exports.deepCopy(prop, {})
+			copy[name] = utils.deepCopy(prop, {})
 		else if Array.isArray(prop)
-			copy[name] = exports.deepCopy(prop, [])
+			copy[name] = utils.deepCopy(prop, [])
 		else
 			copy[name] = prop
 
@@ -36,14 +36,14 @@ exports.deepCopy = (obj, src = {}) ->
 
 # Merge `source' properties with `target' existing properties.
 # No new property is created in `target'.
-exports.safeDeepMerge = (source, target) ->
+utils.safeDeepMerge = (source, target) ->
 	for name, val of source
 		# Only merge existing properties.
 		if target[name]?
 
 			# Recurse for object properties.
 			if typeof target[name] is 'object' and not Array.isArray(target[name])
-				exports.safeDeepMerge(source[name], target[name])
+				utils.safeDeepMerge(source[name], target[name])
 			else
 				target[name] = val
 
@@ -51,12 +51,12 @@ exports.safeDeepMerge = (source, target) ->
 
 # Put all `source' properties within `target', overwriting properties
 # with the same name, and recursively calls deepMerge for object properties.
-exports.deepMerge = (source, target) ->
+utils.deepMerge = (source, target) ->
 	for name, val of source
 		# Recurse for objects properties.
 		if typeof source[name] is 'object' and not Array.isArray(source[name])
 			target[name] = {} unless target[name]?
-			exports.deepMerge(source[name], target[name])
+			utils.deepMerge(source[name], target[name])
 		else
 			target[name] = source[name]
 
@@ -68,31 +68,31 @@ exports.deepMerge = (source, target) ->
 
 
 # Stroke circle.
-exports.strokeCircle = (ctxt, x, y, r) ->
+utils.strokeCircle = (ctxt, x, y, r) ->
 	ctxt.beginPath()
 	ctxt.arc(x, y, r, 2*Math.PI, false)
 	ctxt.stroke()
 
 # Color utils.
 
-exports.color = (hsl, alpha = 1.0) ->
+utils.color = (hsl, alpha = 1.0) ->
 	'hsla(' + hsl[0] + ',' + hsl[1] + '%,' + hsl[2] + '%,' + alpha + ')'
 
-exports.randomColor = () ->
+utils.randomColor = () ->
 	[Math.round(Math.random()*360), Math.round(40 + Math.random()*30), Math.round(20 + Math.random()*50)]
 
 # Capitalize word.
-exports.capitalize = (word) ->
+utils.capitalize = (word) ->
 	word[0].toUpperCase() + word.substring(1)
 
 # Downcase word.
-exports.downcase = (word) ->
+utils.downcase = (word) ->
 	word[0].toLowerCase() + word.substring(1)
 
 # Inexact floats have to be pretty-printed. The plan is to
 # convert them using toFixed(2) for 2 decimal places.
 # Integers stay as they are.
-exports.prettyNumber = (str) ->
+utils.prettyNumber = (str) ->
 	isInt = (string) ->
 		parseInt(string) == parseFloat(string)
 
@@ -107,19 +107,19 @@ exports.prettyNumber = (str) ->
 
 
 # Stupid % operator.
-exports.mod = (x, n) ->
+utils.mod = (x, n) ->
 	if isNaN(x)
 		x
 	else if x >= 0
 		x%n
-	else exports.mod(x+n, n)
+	else utils.mod(x+n, n)
 
 # Euclidean distance between two points.
-exports.distance = (x1, y1, x2, y2) ->
+utils.distance = (x1, y1, x2, y2) ->
 	Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2))
 
 # Vector utils.
-exports.vec =
+utils.vec =
 
 	# Give a vector from [x1,y1] to [x2,y2].
 	vector: (x1, y1, x2, y2) ->
@@ -127,15 +127,15 @@ exports.vec =
 
 	# Give a vector going from [0,0] to [x,y].
 	point: (x, y) ->
-		exports.vec.vector(0, 0, x, y)
+		utils.vec.vector(0, 0, x, y)
 
 	# Give the length of v.
 	length: (v) ->
-		exports.distance(0, 0, v.x, v.y)
+		utils.distance(0, 0, v.x, v.y)
 
 	# Give the unit vector of v.
 	unit: (v) ->
-		l = exports.vec.length(v)
+		l = utils.vec.length(v)
 		{x: v.x/l, y: v.y/l}
 
 	# Give the dot product of u and v.
@@ -165,9 +165,9 @@ exports.vec =
 		{x: v.x*cos - v.y*sin, y: v.x*sin + v.y*cos}
 
 	fromPolar: (theta, l) ->
-		v = exports.vec.vector(0, 0, 1, 0)
-		v = exports.vec.rotate(v, theta)
-		v = exports.vec.times(v, l)
+		v = utils.vec.vector(0, 0, 1, 0)
+		v = utils.vec.rotate(v, theta)
+		v = utils.vec.times(v, l)
 
 	reflect: (v) ->
 		# Incident angle
@@ -178,33 +178,33 @@ exports.vec =
 
 		# Reflected angle
 		alpha = Math.PI - alpha
-		length = exports.vec.length v
+		length = utils.vec.length v
 
 		# Reflected vector
-		exports.vec.fromPolar(alpha, length)
+		utils.vec.fromPolar(alpha, length)
 
 # Transform a zero-width [A,B] segment to a polygon with given width.
-exports.segmentToPoly = (A, B, width) ->
+utils.segmentToPoly = (A, B, width) ->
 	# We need four points: translate [A,B] twice.
 	# Once along its normal, once along its normal's opposite.
-	N = exports.vec.times(exports.vec.unit(exports.vec.perp(exports.vec.minus(B, A))), width / 2)
-	oN = exports.vec.times(N, -1)
+	N = utils.vec.times(utils.vec.unit(utils.vec.perp(utils.vec.minus(B, A))), width / 2)
+	oN = utils.vec.times(N, -1)
 
 	return [
-		exports.vec.plus(A, N),
-		exports.vec.plus(B, N),
-		exports.vec.plus(B, oN),
-		exports.vec.plus(A, oN) ]
+		utils.vec.plus(A, N),
+		utils.vec.plus(B, N),
+		utils.vec.plus(B, oN),
+		utils.vec.plus(A, oN) ]
 
 # Ensure 0 <= pos.{x,y} < s.
-exports.warp = (pos, s) ->
-	pos.x = exports.mod(pos.x, s)
-	pos.y = exports.mod(pos.y, s)
+utils.warp = (pos, s) ->
+	pos.x = utils.mod(pos.x, s)
+	pos.y = utils.mod(pos.y, s)
 	return pos
 
 # Transform `pos2` so that it lies in the same frame of reference as
 # `pos1`.
-exports.unwarp = (pos1, pos2, s) ->
+utils.unwarp = (pos1, pos2, s) ->
 	hs = s/2
 	dx = pos2.x - pos1.x
 	dy = pos2.y - pos1.y
@@ -217,8 +217,8 @@ exports.unwarp = (pos1, pos2, s) ->
 	return pos2
 
 # Normalize angle between -pi and +pi.
-exports.relativeAngle = (a) ->
-	a = exports.mod(a, 2*Math.PI)
+utils.relativeAngle = (a) ->
+	a = utils.mod(a, 2*Math.PI)
 
 	if a > Math.PI
 		a - 2*Math.PI
@@ -229,7 +229,7 @@ exports.relativeAngle = (a) ->
 
 # Cubic Bézier curves going from a to b with control points c and d.
 # Returns a function of time in [0,1] giving a vector.
-exports.cubicBezier = (a, b, c, d) ->
+utils.cubicBezier = (a, b, c, d) ->
 	return (t) ->
 		u = (1 - t)
 		u2 = u * u
@@ -237,16 +237,16 @@ exports.cubicBezier = (a, b, c, d) ->
 		t2 = t * t
 		t3 = t2 * t
 
-		r = exports.vec.times(a, u3)
-		r = exports.vec.plus(r, exports.vec.times(c, 3 * u2 * t))
-		r = exports.vec.plus(r, exports.vec.times(d, 3 * u * t2))
-		r = exports.vec.plus(r, exports.vec.times(b, t3))
+		r = utils.vec.times(a, u3)
+		r = utils.vec.plus(r, utils.vec.times(c, 3 * u2 * t))
+		r = utils.vec.plus(r, utils.vec.times(d, 3 * u * t2))
+		r = utils.vec.plus(r, utils.vec.times(b, t3))
 
 		return r
 
 # Return acceleration vector from all gravity-emitting `objects',
 # having center `source' and force `force'.
-exports.gravityField = (pos, objects, source, force) ->
+utils.gravityField = (pos, objects, source, force) ->
 	{x: x1, y: y1} = pos
 
 	# Apply gravity formula.
@@ -270,3 +270,6 @@ exports.gravityField = (pos, objects, source, force) ->
 			vy += pull.y
 
 	return {x: vx, y: vy}
+
+module?.exports = utils
+window?.utils = utils

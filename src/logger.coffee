@@ -1,4 +1,4 @@
-exports ?= window.logger = {}
+logger = {}
 
 ## Logger with ANSI colors
 # Borrowed from Socket.IO logger
@@ -40,7 +40,7 @@ class Logger
 		type = if levels[type]? then type else 'info'
 		if @show[type]
 			levels[type].call(
-				'   \033[' + levels[type].color + 'm' + pad(type) + ' -\033[39m ' + msg)
+				'   \x1b[' + levels[type].color + 'm' + pad(type) + ' -\x1b[39m ' + msg)
 
 	error: (msg) -> @log('error', msg)
 	warn: (msg) -> @log('warn', msg)
@@ -51,12 +51,15 @@ class Logger
 	disable: (type) -> @show[type] = no
 
 # For new logger instances.
-exports.create = Logger.constructor
+logger.create = Logger.constructor
 
 # The shared logger.
-singleton = exports.static = new Logger()
+singleton = logger.static = new Logger()
 
-exports.set = (enable) ->
+logger.set = (enable) ->
 	singleton.show = {}
 	singleton.enable(type) for type in enable
 	return singleton
+
+module?.exports = logger
+window?.logger = logger
