@@ -35,6 +35,7 @@ class Server
 		# Start listening!
 		@httpServer.listen @prefs.port, () =>
 			@logger.info "Global server started on port #{@prefs.port}"
+			@logger.info "Browse to http://localhost:#{@prefs.port} to play!"
 
 			callback()
 
