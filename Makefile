@@ -3,16 +3,19 @@ CLIENT_JS := $(subst src, build, $(patsubst %.coffee, %.js, $(CLIENT_COFFEE)))
 SERVER_COFFEE := $(wildcard src/server/*.coffee) $(wildcard src/*.coffee)
 SERVER_JS := $(subst src, build, $(patsubst %.coffee, %.js, $(SERVER_COFFEE)))
 
+COFFEE_CMD := ./node_modules/coffee-script/bin/coffee
+VOWS_CMD := ./node_modules/vows/bin/vows
+
 all: $(CLIENT_JS) $(SERVER_JS)
 
 build/%.js: src/%.coffee
-	coffee -o $(dir $@) -c $<
+	$(COFFEE_CMD) -o $(dir $@) -c $<
 
 test/build/%.js: test/src/%.coffee
-	coffee -bo $(dir $@) -c $<
+	$(COFFEE_CMD) -bo $(dir $@) -c $<
 
 test: all
-	vows test/*.coffee
+	$(VOWS_CMD) test/*.coffee
 
 clean:
 	rm -f build/*.js
