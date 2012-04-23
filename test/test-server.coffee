@@ -140,98 +140,98 @@ exports.suite.addBatch
 		teardown: () ->
 			@server.stop()
 
-exports.suite.addBatch
-	'':
-		topic: () ->
-			@server = createServer(port, replPort)
-			@server.start(@callback)
-			return
+# exports.suite.addBatch
+# 	'':
+# 		topic: () ->
+# 			@server = createServer(port, replPort)
+# 			@server.start(@callback)
+# 			return
 
-		'on `create game` event':
-			topic: () ->
-				openSocket port, (ws) =>
-					ok = waiter(@callback)
-					ws.on 'message', (packet) ->
-						ok(packet) if packet.type is 'event'
+# 		'on `create game` event':
+# 			topic: () ->
+# 				openSocket port, (ws) =>
+# 					ok = waiter(@callback)
+# 					ws.on 'message', (packet) ->
+# 						ok(packet) if packet.type is 'event'
 
-					ws.event 'create game',
-						id: 'bar'
-				return
+# 					ws.event 'create game',
+# 						id: 'bar'
+# 				return
 
-			'should broadcast the game list': (err, packet) ->
-				assert.isNull(err)
-				if packet.name is 'game list'
-					assert.ok(packet.name)
+# 			'should broadcast the game list': (err, packet) ->
+# 				assert.isNull(err)
+# 				if packet.name is 'game list'
+# 					assert.ok(packet.name)
 
-			'should return `game created` event': (err, packet) ->
-				assert.isNull(err)
-				if packet.name is 'game created'
-					assert.ok(packet.name)
+# 			'should return `game created` event': (err, packet) ->
+# 				assert.isNull(err)
+# 				if packet.name is 'game created'
+# 					assert.ok(packet.name)
 
-			'should create requested game': (err, packet) ->
-				assert.isNull(err)
-				if packet.name is 'game list'
-					assert.include(packet.args[0], 'bar')
-				if packet.name is 'game created'
-					assert.deepEqual(packet.args[0], {id: 'bar'})
+# 			'should create requested game': (err, packet) ->
+# 				assert.isNull(err)
+# 				if packet.name is 'game list'
+# 					assert.include(packet.args[0], 'bar')
+# 				if packet.name is 'game created'
+# 					assert.deepEqual(packet.args[0], {id: 'bar'})
 
-		teardown: () ->
-			@server.stop()
+# 		teardown: () ->
+# 			@server.stop()
 
-exports.suite.addBatch
-	'':
-		topic: () ->
-			@server = createServer(port, replPort)
-			@server.start(@callback)
-			return
+# exports.suite.addBatch
+# 	'':
+# 		topic: () ->
+# 			@server = createServer(port, replPort)
+# 			@server.start(@callback)
+# 			return
 
-		'on `get game list` event':
-			topic: () ->
-				openSocket port, (ws) =>
-					ok = waiter(@callback)
-					ws.on 'message', (packet) ->
-						ok(packet) if packet.type is 'event'
+# 		'on `get game list` event':
+# 			topic: () ->
+# 				openSocket port, (ws) =>
+# 					ok = waiter(@callback)
+# 					ws.on 'message', (packet) ->
+# 						ok(packet) if packet.type is 'event'
 
-					ws.event 'get game list'
-				return
+# 					ws.event 'get game list'
+# 				return
 
-			'should return the game list': (err, packet) ->
-				assert.isNull(err)
-				assert.strictEqual(packet.name, 'game list')
+# 			'should return the game list': (err, packet) ->
+# 				assert.isNull(err)
+# 				assert.strictEqual(packet.name, 'game list')
 
-		teardown: () ->
-			@server.stop()
+# 		teardown: () ->
+# 			@server.stop()
 
-exports.suite.addBatch
-	'':
-		topic: () ->
-			@server = createServer(port, replPort)
-			@server.start(@callback)
-			return
+# exports.suite.addBatch
+# 	'':
+# 		topic: () ->
+# 			@server = createServer(port, replPort)
+# 			@server.start(@callback)
+# 			return
 
-		'created game':
-			topic: () ->
-				openSocket port, (ws) =>
-					ok = waiter(@callback)
-					msg = 0
-					ws.on 'message', (packet) =>
-						if packet.type is 'event' and packet.name is 'game list'
-							++msg
-							ok(packet) if msg is 2
+# 		'created game':
+# 			topic: () ->
+# 				openSocket port, (ws) =>
+# 					ok = waiter(@callback)
+# 					msg = 0
+# 					ws.on 'message', (packet) =>
+# 						if packet.type is 'event' and packet.name is 'game list'
+# 							++msg
+# 							ok(packet) if msg is 2
 
-					ws.event 'create game',
-						id: 'bar'
-						prefs: {duration: 0}
-				return
+# 					ws.event 'create game',
+# 						id: 'bar'
+# 						prefs: {duration: 0}
+# 				return
 
-			'should send the game list twice': (err, packet) ->
-				assert.isNull(err)
-				assert.isTrue(packet?)
+# 			'should send the game list twice': (err, packet) ->
+# 				assert.isNull(err)
+# 				assert.isTrue(packet?)
 
-			'should expire': (err, packet) ->
-				assert.isNull(err)
-				assert.isTrue(packet?)
-				assert.isEmpty(packet.args[0])
+# 			'should expire': (err, packet) ->
+# 				assert.isNull(err)
+# 				assert.isTrue(packet?)
+# 				assert.isEmpty(packet.args[0])
 
-		teardown: () ->
-			@server.stop()
+# 		teardown: () ->
+# 			@server.stop()

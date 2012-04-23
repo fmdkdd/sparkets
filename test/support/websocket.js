@@ -5,7 +5,7 @@ var events = require('events');
 var http = require('http');
 var net = require('net');
 var urllib = require('url');
-var sys = require('sys');
+var util = require('util');
 
 var FRAME_NO = 0;
 var FRAME_LO = 1;
@@ -19,7 +19,7 @@ var CLOSED = 3;
 
 var debugLevel = parseInt(process.env.NODE_DEBUG, 16);
 var debug = (debugLevel & 0x4) ?
-    function() { sys.error.apply(this, arguments); } :
+    function() { util.error.apply(this, arguments); } :
     function() { };
 
 // Generate a Sec-WebSocket-* value
@@ -40,7 +40,7 @@ var createSecretKey = function() {
     // [0x21, 0x2f] (14 characters) and [0x3a, 0x7e] (68 characters)
     var numChars = 1 + Math.floor(Math.random() * 12);
     assert.ok(1 <= numChars && numChars <= 12);
-    
+
     for (var i = 0; i < numChars; i++) {
         var pos = Math.floor(Math.random() * s.length + 1);
 
@@ -69,7 +69,7 @@ var createSecretKey = function() {
 
 // Generate a challenge sequence
 var createChallenge = function() {
-    var c = ''; 
+    var c = '';
     for (var i = 0; i < 8; i++) {
         c += String.fromCharCode(Math.floor(Math.random() * 255));
     }
@@ -87,7 +87,7 @@ var secretKeyValue = function(sk) {
 
     for (var i = 0; i < sk.length; i++) {
         var cc = sk.charCodeAt(i);
-        
+
         if (cc == 0x20) {
             ns++;
         } else if (0x30 <= cc && cc <= 0x39) {
@@ -104,7 +104,7 @@ var secretKeyValue = function(sk) {
 // byte string
 var secretKeyHashValue = function(sk) {
     var skv = secretKeyValue(sk);
-   
+
     var hv = '';
     hv += String.fromCharCode((skv >> 24) & 0xff);
     hv += String.fromCharCode((skv >> 16) & 0xff);
@@ -116,7 +116,7 @@ var secretKeyHashValue = function(sk) {
 
 // Compute the secret key signature based on two secret key strings and some
 // handshaking data.
-var computeSecretKeySignature = function(s1, s2, hs) { 
+var computeSecretKeySignature = function(s1, s2, hs) {
     assert.equal(hs.length, 8);
 
     var hash = crypto.createHash('md5');
@@ -131,7 +131,7 @@ var computeSecretKeySignature = function(s1, s2, hs) {
 // Return a hex representation of the given binary string; used for debugging
 var str2hex = function(str) {
     var hexChars = [
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         'a', 'b', 'c', 'd', 'e', 'f'
     ];
 
@@ -223,7 +223,7 @@ var WebSocket = function(url, proto, opts) {
 
         // FRAME_LO
         function(buf, off) {
-            debug('frame_lo(' + sys.inspect(buf) + ', ' + off + ')');
+            debug('frame_lo(' + util.inspect(buf) + ', ' + off + ')');
 
             // Find the first instance of 0xff, our terminating byte
             for (var i = off; i < buf.length && buf[i] != 0xff; i++)
@@ -283,7 +283,7 @@ var WebSocket = function(url, proto, opts) {
 
         // FRAME_HI
         function(buf, off) {
-            debug('frame_hi(' + sys.inspect(buf) + ', ' + off + ')');
+            debug('frame_hi(' + util.inspect(buf) + ', ' + off + ')');
 
             if (buf[off] !== 0) {
                 throw new Error('High-byte framing not supported.');
@@ -300,7 +300,7 @@ var WebSocket = function(url, proto, opts) {
             return;
         }
 
-        debug('dataListener(' + sys.inspect(buf) + ')');
+        debug('dataListener(' + util.inspect(buf) + ')');
 
         var off = 0;
         var consumed = 0;
@@ -320,7 +320,7 @@ var WebSocket = function(url, proto, opts) {
         if (serverClosed) {
             serverCloseHandler();
         }
-        
+
         if (consumed == 0) {
             bufs.push(buf.slice(off, buf.length));
             bufsBytes += buf.length - off;
@@ -431,7 +431,7 @@ var WebSocket = function(url, proto, opts) {
 
     // Connect and perform handshaking with the server
     (function() {
-        // Parse constructor arguments 
+        // Parse constructor arguments
         if (!url) {
             throw new Error('Url and must be specified.');
         }
@@ -587,7 +587,7 @@ var WebSocket = function(url, proto, opts) {
         httpReq.end();
     })();
 };
-sys.inherits(WebSocket, events.EventEmitter);
+util.inherits(WebSocket, events.EventEmitter);
 exports.WebSocket = WebSocket;
 
 // Add some constants to the WebSocket object
