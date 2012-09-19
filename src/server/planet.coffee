@@ -45,9 +45,7 @@ class Planet extends ChangingObject
 			@flagNextUpdate('boundingBox')
 			@flagNextUpdate('hitBox')
 
-		# Same color for all planets.
-		@color = @game.prefs.planet.color
-
+		@color = [90 + 180*Math.random(), 10 + Math.random()*30, 61]
 		@flagNextUpdate('color')
 
 	update: (step) ->

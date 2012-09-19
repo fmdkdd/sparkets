@@ -55,13 +55,26 @@ class SpriteManager
 	draw:
 		'planet': (sprite, w, h) ->
 			ctxt = sprite.getContext('2d')
-			ctxt.strokeStyle = 'black'
-			ctxt.lineWidth = 4
 
 			r = sprite.width/2
+
+			# Inflate the planet sprite a little to compensate for the
+			# "atmosphere" graphic effect.  Ships should not collide with
+			# empty space.  Value proportional to radius, and chosen to
+			# fit inside the sprite dimensions while staying true to the
+			# collision radius.
+			pad = r/14
+
+			gradient = ctxt.createRadialGradient(r, r, 0, r, r, r + pad)
+			gradient.addColorStop(0, 'hsla(0,0%,0%,.4)')
+			gradient.addColorStop(.85, 'hsla(0,0%,0%,.3)')
+			gradient.addColorStop(.9, 'hsla(0,0%,100%,.9)')
+			gradient.addColorStop(.95, 'hsla(0,0%,100%,0)')
+			ctxt.fillStyle = gradient
+
 			ctxt.beginPath()
-			ctxt.arc(r, r, r - ctxt.lineWidth/2, 0, 2*Math.PI, false)
-			ctxt.stroke()
+			ctxt.arc(r, r, r + pad, 0, 2*Math.PI, false)
+			ctxt.fill()
 
 			return sprite
 

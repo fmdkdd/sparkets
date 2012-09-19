@@ -9,7 +9,7 @@ class Moon extends Planet
 		@type = 'moon'
 		@flagNextUpdate('type')
 
-		@color = @game.prefs.planet.moonColor
+		@color = [90 + 180*Math.random(), 60 + Math.random()*30, 50]
 		@flagNextUpdate('color')
 
 		# Polar coordinates
