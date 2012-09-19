@@ -10,7 +10,7 @@ The multiplayer is supported by [socket.io](http://socket.io "socket.io website"
 
 ## Prerequisites
 
-You'll need [node.js][http://nodejs.org] and [npm][http://npmjs.org] installed.
+You'll need [node.js](http://nodejs.org) and [npm](http://npmjs.org) installed.
 
 ## Building the server
 
@@ -25,4 +25,4 @@ You can run the tests with `make test`.  To start the server, use npm: `npm star
 
 ## Running the client
 
-Use [Firefox][http://www.mozilla.org/firefox] or [Chrome][http://www.google.com/chrome] and browse to `http://SERVER-IP:PORT` where SERVER-IP is the server IP address, and PORT is the HTTP port of the server (default 12345).
+Use [Firefox](http://www.mozilla.org/firefox) or [Chrome](http://www.google.com/chrome) and browse to `http://SERVER-IP:PORT` where SERVER-IP is the server IP address, and PORT is the HTTP port of the server (default 12345).
