@@ -78,11 +78,41 @@ class Client
 			@socket.on 'disconnect', (data) =>
 				@onDisconnect(data)
 
-		# Setup window resizing event.
+		# Resize canvas and surrounding margins.
+		#
+		# The canvas stays at aspect ratio 16:10, with max resolution at
+		# 960:600.  Resizing the window will eat into the empty space
+		# surrounding the canvas first, then the canvas will shrink
+		# while keeping its aspect ratio.
 		$(window).resize (event) =>
-			@canvasSize.w = document.getElementById('canvas').width = window.innerWidth
-			@canvasSize.h = document.getElementById('canvas').height = window.innerHeight
+			canvasWidth = Math.min(window.innerWidth, 960)
+			canvasHeight = Math.min(window.innerHeight, 600)
+
+			# Keep aspect ratio
+			ratio = canvasWidth / canvasHeight
+			if ratio < 1.6
+				canvasHeight = 10/16 * canvasWidth
+			else if ratio > 1.6
+				canvasWidth = 16/10 * canvasHeight
+
+			# The canvas MUST be resized using the width/height
+			# attributes, and not merely with CSS, to avoid scaling.
+			@canvasSize.w = document.getElementById('canvas').width = canvasWidth
+			@canvasSize.h = document.getElementById('canvas').height = canvasHeight
+
+			# Center canvas horizontally if there is enough space
+			horizSpace = Math.max(window.innerWidth - canvasWidth, 0)
+			$('#canvas').css
+				'margin-left': horizSpace/2
+				'margin-right': horizSpace/2
+
+			# Add top margin if there is enough space
+			vertSpace = Math.max(window.innerHeight - canvasHeight, 0)
+			$('#canvas').css('margin-top': vertSpace/3)
+
+		# Manually trigger a resize event to set everything in place
 		$(window).resize()
+
 
 		@disappearingCursorMode()
 		@hideCursor()
