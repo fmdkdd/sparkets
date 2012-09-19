@@ -1,5 +1,3 @@
-# -*- mode: org; -*-
-
 * Gameplay
 ** New weapons & items
 *** Machine gun
@@ -40,6 +38,12 @@
 *** Use down arrow
 	 - Slow down the ship with additional little engines
 	 - Or quick half-turn
+*** Eliminate "shot by a bullet from miles away" syndrome
+	 Bullets only die when hitting an obstacle.  Getting killed by a
+	 bullet sent from an off-screen ship is not fun, nor is it fun for
+	 the killer who can't see its victim explode.
+
+	 Find a way to alleviate this problem.
 ** Environment
 *** Asteroids
 		Blob-like asteroids slowly drifting across the map.
