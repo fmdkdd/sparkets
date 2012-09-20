@@ -30,6 +30,11 @@
 *** Visual clue for number of mines in bonus
 *** Charging shield push power
 	 - Reuse firing key to charge a shield and send push gravity force
+*** Upgrade tracker
+	 Faster.  Better.  Stronger.
+
+	 Explode when hit by a bullet or hitting a ship, with such an
+	 impact that it projects ships and bonuses around.
 ** Gameplay tweaks
 *** Constrain maximum ship / bullet velocity
 	 The gravity field of shields sometimes sends ships flying to the
@@ -38,12 +43,22 @@
 *** Use down arrow
 	 - Slow down the ship with additional little engines
 	 - Or quick half-turn
-*** Eliminate "shot by a bullet from miles away" syndrome
-	 Bullets only die when hitting an obstacle.  Getting killed by a
-	 bullet sent from an off-screen ship is not fun, nor is it fun for
-	 the killer who can't see its victim explode.
+*** More feedback for kills
+	 We should feel stronger by getting kills.  As it stands now,
+	 hiding in a hole is a viable game strategy.  Let the others kill
+	 themselves, and you might just win.
 
-	 Find a way to alleviate this problem.
+	 We should reward kills, and not just penalize death.  It should be
+	 much more satisfying to kill a ship than letting it crash into a
+	 planet.  "I /wanted/ that kill damnit!".
+
+	 Aside from tuning explosion effects (again), we could add a damage
+	 bonus whenever a kill is made, or something.
+
+	 Also, I'd like to see a tally of kills made, by type, at the end
+	 of the match.  If I killed 3 ships with bullets and 2 with mines,
+	 I will see 3 ship icons and two mines.  Maybe even use color to
+	 signal who I killed.
 ** Environment
 *** Asteroids
 		Blob-like asteroids slowly drifting across the map.
