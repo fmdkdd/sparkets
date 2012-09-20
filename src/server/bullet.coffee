@@ -137,10 +137,16 @@ class Bullet extends ChangingObject
 		++@elapsedMoves
 
 	update: (step) ->
-		if @state is 'dead'
-			@serverDelete = yes
+		switch @state
 
-			@flagNextUpdate('serverDelete')
+			when 'active'
+				if @game.prefs.bullet.expire and @elapsedMoves > @game.prefs.bullet.expireSteps
+					@state = 'dead'
+
+			when 'dead'
+				@serverDelete = yes
+
+				@flagNextUpdate('serverDelete')
 
 	explode: () ->
 		@state = 'dead'

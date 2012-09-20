@@ -280,6 +280,12 @@ class GamePreferences
 		# Shield repulsive force.
 		shieldPull: -600
 
+		# Should bullets expire?
+		expire: true
+
+		# Allowed chunks of bullet before expiration.
+		expireSteps: 20
+
 	shield:
 		# Size of shield around ship.
 		radius: 25
