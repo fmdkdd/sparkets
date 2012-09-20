@@ -45,7 +45,7 @@ class Planet extends ChangingObject
 			@flagNextUpdate('boundingBox')
 			@flagNextUpdate('hitBox')
 
-		@color = [90 + 180*Math.random(), 10 + Math.random()*30, 61]
+		@color = [360*Math.random(), 10 + Math.random()*30, 61]
 		@flagNextUpdate('color')
 
 	update: (step) ->
