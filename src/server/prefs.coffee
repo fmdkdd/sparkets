@@ -284,7 +284,7 @@ class GamePreferences
 		expire: true
 
 		# Allowed chunks of bullet before expiration.
-		expireSteps: 20
+		expireSteps: 12
 
 	shield:
 		# Size of shield around ship.
