@@ -444,7 +444,7 @@ class GamePreferences
 				weight: 1
 			grenade:
 				class: BonusGrenade
-				weight: 100
+				weight: 1
 			tracker:
 				class: BonusTracker
 				weight: 1
@@ -460,6 +460,16 @@ class GamePreferences
 			stealth:
 				class: BonusStealth
 				weight: 1
+
+		colors:
+			bonusMine: [0, 65, 60]
+			bonusGrenade: [0, 0, 60]
+			bonusTracker: [300, 65, 60]
+			bonusBoost: [58, 75, 40]
+			bonusEMP: [40, 75, 60]
+			bonusShield: [200, 65, 60]
+			bonusStealth: [250, 65, 60]
+
 
 exports.ServerPreferences = ServerPreferences
 exports.GamePreferences = GamePreferences

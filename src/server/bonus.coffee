@@ -64,15 +64,14 @@ class Bonus extends ChangingObject
 		# Switch to the 'incoming' state.
 		@setState 'incoming'
 
-		# Nice skittles color.
-		@color = utils.randomColor()
-		@flagNextUpdate('color')
-
 		# Randomly choose bonus type if unspecified.
 		if bonusType?
 			bonusClass = @game.prefs.bonus.bonusType[bonusType].class
 		else
 			bonusClass = @randomBonus()
+
+		@color = @game.prefs.bonus.colors[bonusClass.type]
+		@flagNextUpdate('color')
 
 		# Set bonus effect and type.
 		@effect = new bonusClass.constructor(@game, @)
