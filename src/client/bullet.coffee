@@ -57,6 +57,21 @@ class Bullet
 		ctxt.lineTo x2, y2
 		ctxt.stroke()
 
+		# Let there be light!
+
+		ctxt.globalCompositeOperation = 'source-atop'
+		r = @power * 40
+		x = (x1 + x2) / 2
+		y = (y1 + y2) / 2
+		gradient = ctxt.createRadialGradient(x, y, 0, x, y, r)
+
+		gradient.addColorStop(0.3, "hsla(#{ @color[0] }, #{ @color[1] }%, 60%,.8)")
+		gradient.addColorStop(1, "hsla(#{ @color[0] },70%,100%,0)")
+		ctxt.fillStyle = gradient
+		ctxt.beginPath()
+		ctxt.arc(x, y, r, 0, Math.PI*2)
+		ctxt.fill()
+
 	draw: (ctxt, offset = {x:0, y:0}) ->
 
 		ctxt.globalCompositeOperation = 'destination-over'

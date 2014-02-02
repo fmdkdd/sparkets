@@ -36,6 +36,7 @@ class Bullet extends ChangingObject
 		@vel =
 			x: @owner.vel.x + @power*xdir
 			y: @owner.vel.y + @power*ydir
+		@flagNextUpdate('power')
 
 		# Keep track of the last computed position to notify clients.
 		@lastPoint = [@pos.x, @pos.y]
