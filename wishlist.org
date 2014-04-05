@@ -166,6 +166,13 @@
    listeners is synchronous. If that must be done, use our own
    synchronous EventEmitter.
 
+** Separate state transitions from updates
+	Get rid of oldState = @state mumbo jumbo.
+	Each transition should have one associated function.
+	When going from 'alive' to 'dead', stuff that should be done only
+	once will go into this transition function.  Stuff that needs to be
+	done at each game update when in the 'alive' or 'dead' state will
+	stay into the the update function.
 ** Expire deserted games
 ** Prevent objects from spawning onto each other
 ** Rework client drawing.
