@@ -412,7 +412,7 @@ exports.collisions =
 
 	'shield-tracker': (shield, tracker) ->
 		# shields absorb one tracker.
-		tracker.explode()
+		tracker.explode() if tracker.state isnt 'exploding'
 		shield.cancel()
 
 		shield.owner.addStat('trackers absorbed with shield', 1)
@@ -491,21 +491,21 @@ exports.collisions =
 		ddebug "bonus ##{bonus.id} crashed on moon ##{moon.id}"
 
 	'tracker-planet' : (tracker, planet) ->
-		tracker.explode()
+		tracker.explode() if tracker.state isnt 'exploding'
 
 		tracker.owner.addStat('trackers lost to planets', 1)
 
 		ddebug "tracker ##{tracker.id} crashed on planet ##{planet.id}"
 
 	'tracker-moon' : (tracker, moon) ->
-		tracker.explode()
+		tracker.explode() if tracker.state isnt 'exploding'
 
 		tracker.owner.addStat('trackers lost to moons', 1)
 
 		ddebug "tracker ##{tracker.id} crashed on moon ##{moon.id}"
 
 	'tracker-ship' : (tracker, ship) ->
-		tracker.explode()
+		tracker.explode() if tracker.state isnt 'exploding'
 		ship.explode(tracker)
 
 		if tracker.owner isnt ship
@@ -523,7 +523,7 @@ exports.collisions =
 		ddebug "tracker ##{tracker.id} destroyed ship ##{ship.id}"
 
 	'tracker-bullet' : (tracker, bullet) ->
-		tracker.explode()
+		tracker.explode() if tracker.state isnt 'exploding'
 		bullet.explode()
 
 		tracker.owner.addStat('trackers lost to bullets', 1)
@@ -532,7 +532,7 @@ exports.collisions =
 		ddebug "bullet ##{bullet.id} destroyed tracker ##{tracker.id}"
 
 	'tracker-mine' : (tracker, mine) ->
-		tracker.explode()
+		tracker.explode() if tracker.state isnt 'exploding'
 		mine.explode()
 
 		tracker.owner.addStat('trackers lost to mines', 1)
@@ -577,7 +577,7 @@ exports.collisions =
 		ddebug "EMP ##{emp.id} destroyed mine ##{mine.id}"
 
 	'EMP-tracker': (emp, tracker) ->
-		tracker.explode()
+		tracker.explode() if tracker.state isnt 'exploding'
 
 		ddebug "EMP ##{emp.id} destroyed tracker ##{tracker.id}"
 

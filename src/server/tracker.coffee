@@ -120,20 +120,26 @@ class Tracker extends ChangingObject
 				@game.events.push
 					type: 'tracker activated'
 					id: @id
+
+			else if @state is 'exploding'
+				@explode()
+
 			else if @state is 'dead'
-				@game.events.push
-					type: 'tracker exploded'
-					id: @id
+				@serverDelete = yes
+				@flagNextUpdate('serverDelete')
 
 		# Stop tracking when the target dies.
 		if @state is 'tracking' and @target?.state is 'dead'
 			@target = null
 
 	explode: () ->
-		@setState 'dead'
+		@setState 'exploding'
 
-		@serverDelete = yes
-		@flagNextUpdate('serverDelete')
+		@boundingBox.radius = @hitBox.radius = @game.prefs.tracker.explosionRadius
+
+		if @game.prefs.debug.sendHitBoxes
+			@flagNextUpdate('boundingBox.radius')
+			@flagNextUpdate('hitBox.radius')
 
 		@game.events.push
 			type: 'tracker exploded'

@@ -384,7 +384,7 @@ class GamePreferences
 		frictionDecay: 0.95
 		turnSpeed: 50
 
-		fragmentation: 3
+		explosionRadius: 120
 
 		states:
 			deploying:
@@ -392,6 +392,9 @@ class GamePreferences
 				next: 'tracking'
 			tracking:
 				countdown: 4000				# Time (ms) before disappearance.
+				next: 'exploding'
+			exploding:
+				countdown: 750
 				next: 'dead'
 			dead:
 				countdown: null
@@ -453,7 +456,7 @@ class GamePreferences
 				weight: 1
 			tracker:
 				class: BonusTracker
-				weight: 1
+				weight: 100
 			boost:
 				class: BonusBoost
 				weight: 1

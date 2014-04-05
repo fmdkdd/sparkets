@@ -22,7 +22,7 @@ class Tracker
 		@clientDelete = @serverDelete
 
 	draw: (ctxt) ->
-		return if @state is 'dead'
+		return if @state in ['dead', 'exploding']
 
 		ctxt.save()
 		ctxt.translate(@pos.x, @pos.y)
@@ -34,7 +34,7 @@ class Tracker
 		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
 	explosionEffect: () ->
-		@client.effects.push new ExplosionEffect(@client, @pos, @color, 100, 5, 0.2)
+		@client.effects.push new FlashEffect(@client, @pos, 120, @color, 800)
 
 	trailEffect: () ->
 		@client.effects.push new TrailEffect(@client, @, 2, 30, 3)
