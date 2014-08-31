@@ -1,3 +1,77 @@
+* Release
+** Trim the fat: cut non-needed, advanced features in order to have a
+  finished package.
+- Cut multi-games per server
+- Cut ‘eco’ mode
+
+** Add tests and squash the bugs
+- Extract and test vector/collision tools
+
+** Make the game more intense, more fun
+- Scoring has little meaning: mostly negative scores since deaths >
+  kills.  Towerfall scoring might make more sense?  Also more intense?
+
+- Needs more choices, more actions
+  Towerfall has:
+  + adjustable jump
+  + dodge (mid-air or floor)
+  + super jump
+  + wall jump
+  + wall hug
+  + crouch
+  + fall / super fall
+  + fire arrow (360º)
+  + open chest
+  + interact with map-specific items
+
+  Sparkets has:
+  + power-adjustable bullets (in the direction the ship is facing)
+  + turn left/right
+  + thrust engine
+  + grab bonus
+  + use bonus
+  + crash on planet/satellite
+
+- Instant death is tiring if you have to few choices (dodge, shield,
+  run away ...)
+- The shield is too long?
+- The mines are too easy to avoid (map too large?)
+- Too easy to hide in a corner and let things play out (radar? smaller
+  map?)
+- Map scaling issues with number of players: too large (no
+  encounters) or too small (chaos)
+- More ways to interact with environment (Towerfall has: wall jump,
+  wall hug, torches, map-specific behaviors; Sparkets has: bullet
+  gravity from planets, crash on planet)
+
+- When two ships are heading for one another, there is no way to
+  avoid the crash.  No mini-boost or side jet to feint the enemy, do
+  a barrel roll and fill its tail with bullets.
+
+- Tune the risk vs. reward.  Going near a ship is riskier, but you
+  should have more chances to take it down, thus score a kill.  From
+  a distance, you are safer, but it’s also harder to hit others.
+
+- Find a mechanism to avoid stand stills.  Street Fighter timeout?
+  Bomberman “fill the screen with blocks”?  Should make sense in a
+  space setting.
+
+** Variety
+- Modes: death matches, teams, rule variants
+- Maps obstacles and scenery.  We have planets, but no suns.  Or
+  black holes, comets, asteroid belts.  A sun could cast shadows on
+  planets and hide ships.  A sun could throw up erupting matter when
+  hit by a bullet ...
+
+** Eye candy
+- Try a camera that does not center on the ship but follows it when
+  it leaves the center (with small inertia)
+- Screen shake on death?
+- Sound! Pew pew pew
+- Needs more things on the screen, especially in the background or on
+  planets.
+- Planets lack volume.
+
 * Gameplay
 ** New weapons & items
 *** Machine gun
