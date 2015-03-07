@@ -5,176 +5,176 @@ Rope = require('./rope').Rope
 
 class Bonus extends ChangingObject
 
-	stateMachineMixin.call(@prototype)
+  stateMachineMixin.call(@prototype)
 
-	constructor: (@id, @game, bonusType) ->
-		super()
+  constructor: (@id, @game, bonusType) ->
+    super()
 
-		# Send these properties to new players.
-		@flagFullUpdate('type')
-		@flagFullUpdate('state')
-		@flagFullUpdate('countdown')
-		@flagFullUpdate('color')
-		@flagFullUpdate('pos')
-		@flagFullUpdate('serverDelete')
-		@flagFullUpdate('bonusType')
-		@flagFullUpdate('holderId')
-		if @game.prefs.debug.sendHitBoxes
-			@flagFullUpdate('boundingBox')
-			@flagFullUpdate('hitBox')
+    # Send these properties to new players.
+    @flagFullUpdate('type')
+    @flagFullUpdate('state')
+    @flagFullUpdate('countdown')
+    @flagFullUpdate('color')
+    @flagFullUpdate('pos')
+    @flagFullUpdate('serverDelete')
+    @flagFullUpdate('bonusType')
+    @flagFullUpdate('holderId')
+    if @game.prefs.debug.sendHitBoxes
+      @flagFullUpdate('boundingBox')
+      @flagFullUpdate('hitBox')
 
-		@type = 'bonus'
-		@flagNextUpdate('type')
+    @type = 'bonus'
+    @flagNextUpdate('type')
 
-		# Bounding box is the same as the hit box.
-		@boundingBox =
-			radius: @game.prefs.bonus.boundingBoxRadius
-		@hitBox =
-			type: 'polygon'
-			points: [
-				{x: 0, y: 0},
-				{x: 0, y: 0},
-				{x: 0, y: 0},
-				{x: 0, y: 0}]
-		if @game.prefs.debug.sendHitBoxes
-			@flagNextUpdate('boundingBox')
-			@flagNextUpdate('hitBox')
+    # Bounding box is the same as the hit box.
+    @boundingBox =
+      radius: @game.prefs.bonus.boundingBoxRadius
+    @hitBox =
+      type: 'polygon'
+      points: [
+        {x: 0, y: 0},
+        {x: 0, y: 0},
+        {x: 0, y: 0},
+        {x: 0, y: 0}]
+    if @game.prefs.debug.sendHitBoxes
+      @flagNextUpdate('boundingBox')
+      @flagNextUpdate('hitBox')
 
-		@spawn(bonusType)
+    @spawn(bonusType)
 
-	spawn: (bonusType) ->
+  spawn: (bonusType) ->
 
-		@pos =
-			x: Math.random() * @game.prefs.mapSize
-			y: Math.random() * @game.prefs.mapSize
-		@updateBoxes()
+    @pos =
+      x: Math.random() * @game.prefs.mapSize
+      y: Math.random() * @game.prefs.mapSize
+    @updateBoxes()
 
-		# Find a safe drop location.
-		while @game.collidesWithPlanet(@)
-			@pos.x = Math.random() * @game.prefs.mapSize
-			@pos.y = Math.random() * @game.prefs.mapSize
-			@updateBoxes()
-		@flagNextUpdate('pos')
+    # Find a safe drop location.
+    while @game.collidesWithPlanet(@)
+      @pos.x = Math.random() * @game.prefs.mapSize
+      @pos.y = Math.random() * @game.prefs.mapSize
+      @updateBoxes()
+    @flagNextUpdate('pos')
 
-		# Set our initial velocity.
-		@vel =
-			x: 0
-			y: 0
+    # Set our initial velocity.
+    @vel =
+      x: 0
+      y: 0
 
-		# Switch to the 'incoming' state.
-		@setState 'incoming'
+    # Switch to the 'incoming' state.
+    @setState 'incoming'
 
-		# Randomly choose bonus type if unspecified.
-		if bonusType?
-			bonusClass = @game.prefs.bonus.bonusType[bonusType].class
-		else
-			bonusClass = @randomBonus()
+    # Randomly choose bonus type if unspecified.
+    if bonusType?
+      bonusClass = @game.prefs.bonus.bonusType[bonusType].class
+    else
+      bonusClass = @randomBonus()
 
-		@color = @game.prefs.bonus.colors[bonusClass.type]
-		@flagNextUpdate('color')
+    @color = @game.prefs.bonus.colors[bonusClass.type]
+    @flagNextUpdate('color')
 
-		# Set bonus effect and type.
-		@effect = new bonusClass.constructor(@game, @)
-		@bonusType = bonusClass.type
-		@flagNextUpdate('bonusType')
+    # Set bonus effect and type.
+    @effect = new bonusClass.constructor(@game, @)
+    @bonusType = bonusClass.type
+    @flagNextUpdate('bonusType')
 
-	hitBoxPoints: [
-		{x: -10, y: -10},
-		{x: +10, y: -10},
-		{x: +10, y: +10},
-		{x: -10, y: +10}]
+  hitBoxPoints: [
+    {x: -10, y: -10},
+    {x: +10, y: -10},
+    {x: +10, y: +10},
+    {x: -10, y: +10}]
 
-	updateBoxes: () ->
-		for i in [0...@hitBox.points.length]
-			@hitBox.points[i].x = @pos.x + @hitBoxPoints[i].x
-			@hitBox.points[i].y = @pos.y + @hitBoxPoints[i].y
+  updateBoxes: () ->
+    for i in [0...@hitBox.points.length]
+      @hitBox.points[i].x = @pos.x + @hitBoxPoints[i].x
+      @hitBox.points[i].y = @pos.y + @hitBoxPoints[i].y
 
-		@boundingBox.x = @pos.x
-		@boundingBox.y = @pos.y
+    @boundingBox.x = @pos.x
+    @boundingBox.y = @pos.y
 
-		if @game.prefs.debug.sendHitBoxes
-			@flagNextUpdate('boundingBox.x')
-			@flagNextUpdate('boundingBox.y')
-			@flagNextUpdate('hitBox.points')
+    if @game.prefs.debug.sendHitBoxes
+      @flagNextUpdate('boundingBox.x')
+      @flagNextUpdate('boundingBox.y')
+      @flagNextUpdate('hitBox.points')
 
-	randomBonus: () ->
-		roulette = []
-		for type, bonus of @game.prefs.bonus.bonusType
-			i = 0
-			while i < bonus.weight
-				roulette.push(bonus.class)
-				++i;
-		return Array.random(roulette)
+  randomBonus: () ->
+    roulette = []
+    for type, bonus of @game.prefs.bonus.bonusType
+      i = 0
+      while i < bonus.weight
+        roulette.push(bonus.class)
+        ++i;
+    return Array.random(roulette)
 
-	tangible: () ->
-		@state is 'available' or @state is 'claimed'
+  tangible: () ->
+    @state is 'available' or @state is 'claimed'
 
-	move: (step) ->
+  move: (step) ->
 
-		# Update position and hitbox according to velocity.
-		unless @vel.x is 0
-			@pos.x += @vel.x
-			@flagNextUpdate('pos.x')
+    # Update position and hitbox according to velocity.
+    unless @vel.x is 0
+      @pos.x += @vel.x
+      @flagNextUpdate('pos.x')
 
-		unless @vel.y is 0
-			@pos.y += @vel.y
-			@flagNextUpdate('pos.y')
+    unless @vel.y is 0
+      @pos.y += @vel.y
+      @flagNextUpdate('pos.y')
 
-		# Warp around the borders.
-		utils.warp(@pos, @game.prefs.mapSize)
+    # Warp around the borders.
+    utils.warp(@pos, @game.prefs.mapSize)
 
-		# Update bounding and hit boxes.
-		@updateBoxes() unless @vel.x is 0 and @vel.y is 0
+    # Update bounding and hit boxes.
+    @updateBoxes() unless @vel.x is 0 and @vel.y is 0
 
-		# Decay velocity.
-		@vel.x *= @game.prefs.bonus.frictionDecay
-		@vel.y *= @game.prefs.bonus.frictionDecay
+    # Decay velocity.
+    @vel.x *= @game.prefs.bonus.frictionDecay
+    @vel.y *= @game.prefs.bonus.frictionDecay
 
-	update: (step) ->
+  update: (step) ->
 
-		@updateState(step)
+    @updateState(step)
 
-		switch @state
+    switch @state
 
-			# The bonus is of no more use.
-			when 'dead'
-				@serverDelete = yes
-				@flagNextUpdate('serverDelete')
+      # The bonus is of no more use.
+      when 'dead'
+        @serverDelete = yes
+        @flagNextUpdate('serverDelete')
 
-	use: () ->
-		@effect.use()
+  use: () ->
+    @effect.use()
 
-		@game.events.push
-			type: 'bonus used'
-			id: @id
+    @game.events.push
+      type: 'bonus used'
+      id: @id
 
-	attach: (ship) ->
-		@holder = ship
-		@setState 'claimed'
+  attach: (ship) ->
+    @holder = ship
+    @setState 'claimed'
 
-		# Transmit holder id to clients.
-		@holderId = @holder.id
-		@flagNextUpdate('holderId')
+    # Transmit holder id to clients.
+    @holderId = @holder.id
+    @flagNextUpdate('holderId')
 
-		# Attach the bonus to the ship with a rope.
-		@game.newGameObject (id) =>
-			@rope = new Rope(@game, id, @holder, @, 30, 4)
+    # Attach the bonus to the ship with a rope.
+    @game.newGameObject (id) =>
+      @rope = new Rope(@game, id, @holder, @, 30, 4)
 
-	release: () ->
-		@holder = null
-		@setState 'available'
+  release: () ->
+    @holder = null
+    @setState 'available'
 
-		# We don't need the rope anymore.
-		if @rope?
-			@rope.detach()
-			@rope = null
+    # We don't need the rope anymore.
+    if @rope?
+      @rope.detach()
+      @rope = null
 
-	explode: () ->
-		@holder.releaseBonus() if @state is 'claimed'
-		@setState 'dead'
+  explode: () ->
+    @holder.releaseBonus() if @state is 'claimed'
+    @setState 'dead'
 
-		@game.events.push
-			type: 'bonus exploded'
-			id: @id
+    @game.events.push
+      type: 'bonus exploded'
+      id: @id
 
 exports.Bonus = Bonus

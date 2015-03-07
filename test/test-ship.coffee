@@ -7,94 +7,94 @@ Ship = require('../build/server/ship').Ship
 
 # Mock-up game class.
 class MockGame
-	constructor: () ->
-		@bullets = {}
-		@shields = {}
+  constructor: () ->
+    @bullets = {}
+    @shields = {}
 
-		@events =
-			push: () ->
+    @events =
+      push: () ->
 
-		@prefs =
-			mapSize: 2000
+    @prefs =
+      mapSize: 2000
 
-			ship:
-				states:
-					'ready':
-						next: 'alive'
-						countdown: null
-					'alive':
-						next: 'dead'
-						countdown: null
-					'dead':
-						next: 'ready'
-						countdown: null
+      ship:
+        states:
+          'ready':
+            next: 'alive'
+            countdown: null
+          'alive':
+            next: 'dead'
+            countdown: null
+          'dead':
+            next: 'ready'
+            countdown: null
 
-				boundingRadius: 9
-				dirInc: 0.12
-				speed: 0.3
-				frictionDecay: 0.97
-				minFirepower: 1.3
-				firepowerInc: 0.1
-				maxFirepower: 3
-				cannonCooldown: 20
-				enableGravity: false
+        boundingRadius: 9
+        dirInc: 0.12
+        speed: 0.3
+        frictionDecay: 0.97
+        minFirepower: 1.3
+        firepowerInc: 0.1
+        maxFirepower: 3
+        cannonCooldown: 20
+        enableGravity: false
 
-			bullet:
-				boundingRadius: 2
+      bullet:
+        boundingRadius: 2
 
-			shield:
-				shipPush: -200
+      shield:
+        shipPush: -200
 
-				states:
-					'active':
-						countdown: 5000
-						next: 'dead'
+        states:
+          'active':
+            countdown: 5000
+            next: 'dead'
 
-					'dead':
-						countdown: null
-						next: null
+          'dead':
+            countdown: null
+            next: null
 
-			debug:
-				sendHitBoxes: no
+      debug:
+        sendHitBoxes: no
 
-	newGameObject: (fun) ->
-		fun(0)
+  newGameObject: (fun) ->
+    fun(0)
 
-	collidesWithPlanet: (ship) ->
-		no
+  collidesWithPlanet: (ship) ->
+    no
 
 exports.suite = vows.describe('Server ship')
 
 events = require('events')
 
 exports.suite.addBatch
-	'ship spawning':
-		topic: () ->
-			game = new MockGame()
-			ship = new Ship(0, game, 0)
+  'ship spawning':
+    topic: () ->
+      game = new MockGame()
+      ship = new Ship(0, game, 0)
 
-			ship.spawn()
-			return ship
+      ship.spawn()
+      return ship
 
-		'should move to `alive` state': (err, ship) ->
-			assert.isNull(err)
-			assert.isObject(ship)
-			assert.strictEqual(ship.state, 'alive')
+    'should move to `alive` state': (err, ship) ->
+      assert.isNull(err)
+      assert.isObject(ship)
+      assert.strictEqual(ship.state, 'alive')
 
-		'should have a shield': (err, ship) ->
-			assert.isObject(ship.shield)
-			assert.strictEqual(ship.shield.type, 'shield')
+    'should have a shield': (err, ship) ->
+      assert.isObject(ship.shield)
+      assert.strictEqual(ship.shield.type, 'shield')
 
-	'ship exploding':
-		topic: () ->
-			game = new MockGame()
-			ship = new Ship(0, game, 0)
+  'ship exploding':
+    topic: () ->
+      game = new MockGame()
+      ship = new Ship(0, game, 0)
 
-			ship.spawn()
-			ship.explode()
-			return ship
+      ship.spawn()
+      ship.explode()
+      return ship
 
-		'should move to `dead` state': (err, ship) ->
-			assert.isNull(err)
-			assert.isObject(ship)
-			assert.strictEqual(ship.state, 'dead')
+    'should move to `dead` state': (err, ship) ->
+      assert.isNull(err)
+      assert.isObject(ship)
+      assert.strictEqual(ship.state, 'dead')

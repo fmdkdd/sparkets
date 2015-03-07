@@ -1,41 +1,41 @@
 class Tutorial
-	constructor: () ->
+  constructor: () ->
 
-		@startDelay = 2000
-		@fadeDuration = 1000
-		@expositionDuration = 10000
+    @startDelay = 2000
+    @fadeDuration = 1000
+    @expositionDuration = 10000
 
-		@current = 0
-		@slides = ['/img/tutorialMove.svg', '/img/tutorialShoot.svg']
+    @current = 0
+    @slides = ['/img/tutorialMove.svg', '/img/tutorialShoot.svg']
 
-		@load()
+    @load()
 
-		setTimeout((() => @start()), @startDelay)
+    setTimeout((() => @start()), @startDelay)
 
-	load: () ->
-		for i, s of @slides
-			$('body').append('<img id="slide' + i + '" class="slide" src="' + s + '"/>')
-		$('.slide').hide()
+  load: () ->
+    for i, s of @slides
+      $('body').append('<img id="slide' + i + '" class="slide" src="' + s + '"/>')
+    $('.slide').hide()
 
-	start: () ->
-		@fadeIn()
+  start: () ->
+    @fadeIn()
 
-	fadeIn: () ->
-		# Fade-in the current slide
-		if @current < @slides.length
-			$('#slide' + @current).fadeIn(@fadeDuration, () => @pause())
-		# Mark the tutorial as passed.
-		else
-			window.localStorage['sparkets.tutorial'] = true
+  fadeIn: () ->
+    # Fade-in the current slide
+    if @current < @slides.length
+      $('#slide' + @current).fadeIn(@fadeDuration, () => @pause())
+    # Mark the tutorial as passed.
+    else
+      window.localStorage['sparkets.tutorial'] = true
 
 
-	pause: () ->
-		setTimeout((() => @fadeOut()), @expositionDuration)
+  pause: () ->
+    setTimeout((() => @fadeOut()), @expositionDuration)
 
-	fadeOut: () ->
-		# Fade-out the current slide.
-		$('#slide' + @current).fadeOut(@fadeDuration, () => @fadeIn())
-		++@current
+  fadeOut: () ->
+    # Fade-out the current slide.
+    $('#slide' + @current).fadeOut(@fadeDuration, () => @fadeIn())
+    ++@current
 
 # Exports
 window.Tutorial = Tutorial

@@ -5,7 +5,7 @@
  */
 
 body {
-	background-color: #666;
+  background-color: #666;
 }
 
 /**
@@ -13,10 +13,10 @@ body {
  */
 
 canvas#canvas {
-	position: absolute;
-	z-index: -1;
+  position: absolute;
+  z-index: -1;
 
-	background-color: white;
+  background-color: white;
 }
 
 /**
@@ -25,227 +25,227 @@ canvas#canvas {
 
 section#menu {
 
-	&.hidden {
-		opacity: 0;
-		visibility: hidden;
-	}
+  &.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
 
-	&.visible {
-		opacity: 0.95;
-		visibility: visible;
-	}
+  &.visible {
+    opacity: 0.95;
+    visibility: visible;
+  }
 
-	.gradient-black;
+  .gradient-black;
 
-	position: absolute;
-	left: 20%;
-	margin: auto;
-	width: 60%;
-	min-height: 100%;
+  position: absolute;
+  left: 20%;
+  margin: auto;
+  width: 60%;
+  min-height: 100%;
 
-	border-left: 5px solid @blue;
-	border-right: 5px solid @blue;
+  border-left: 5px solid @blue;
+  border-right: 5px solid @blue;
 
-	color: white;
-	font-size: 17px;
-	font-family: sans;
+  color: white;
+  font-size: 17px;
+  font-family: sans;
 
-	h1 {
-		margin-top: 0.5em;
-		text-align: center;
+  h1 {
+    margin-top: 0.5em;
+    text-align: center;
 
-		font-size: 3em;
-		color: @blue;
-		text-shadow: 0 1px 1px lighten(@blue, 20%);
-		font-family: 'Open Sans';
-		letter-spacing: 0.16em;
-	}
+    font-size: 3em;
+    color: @blue;
+    text-shadow: 0 1px 1px lighten(@blue, 20%);
+    font-family: 'Open Sans';
+    letter-spacing: 0.16em;
+  }
 
-	section#timeLeft {
-		text-align: center;
+  section#timeLeft {
+    text-align: center;
 
-		font-size: 2.7em;
-		color: white;
-		text-shadow: 0 0 3px white;
-		font-family: 'Open Sans';
-		letter-spacing: 0.16em;
-	}
+    font-size: 2.7em;
+    color: white;
+    text-shadow: 0 0 3px white;
+    font-family: 'Open Sans';
+    letter-spacing: 0.16em;
+  }
 
-	section#scores {
+  section#scores {
 
-		margin-top: 4em;
+    margin-top: 4em;
 
-		h2 {
-			margin-bottom: 50px;
+    h2 {
+      margin-bottom: 50px;
 
-			color: white;
-			text-shadow: 0 -2px 1px black;
-		}
+      color: white;
+      text-shadow: 0 -2px 1px black;
+    }
 
-		table {
-			width: 100%;
-			table-layout: fixed;
-			border-collapse : collapse;
+    table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse : collapse;
 
-			border-bottom: 1px solid @beige;
+      border-bottom: 1px solid @beige;
 
-			tr {
-				height: 2em;
-			}
+      tr {
+        height: 2em;
+      }
 
-			th {
-				border-bottom: 1px solid @beige;
+      th {
+        border-bottom: 1px solid @beige;
 
-				color: @beige;
-				font-size: 1.6em;
-				text-align: center;
-			}
+        color: @beige;
+        font-size: 1.6em;
+        text-align: center;
+      }
 
-			td {
-				text-align: center;
-				border-bottom: 1px solid fadeout(@beige, 85%);
-			}
+      td {
+        text-align: center;
+        border-bottom: 1px solid fadeout(@beige, 85%);
+      }
 
-			// Player name column
-			td, th {
-				&:nth-child(2) {
-					width: 50%;
-					text-align: left;
+      // Player name column
+      td, th {
+        &:nth-child(2) {
+          width: 50%;
+          text-align: left;
 
-					span.colorBullet {
-						display: block;
-						float: left;
-						width: 0.6em;
-						height: 0.6em;
-						margin-right: 0.5em;
-						margin-top: 0.3em;
+          span.colorBullet {
+            display: block;
+            float: left;
+            width: 0.6em;
+            height: 0.6em;
+            margin-right: 0.5em;
+            margin-top: 0.3em;
 
-						border-radius: 0.3em;
-					}
-				}
-			}
-		}
-	}
+            border-radius: 0.3em;
+          }
+        }
+      }
+    }
+  }
 
-	section#buttons button{
+  section#buttons button{
 
-		.gradient-black;
-		.button-behavior;
+    .gradient-black;
+    .button-behavior;
 
-		display: block;
-		width: 10em;
-		padding: .2em .5em;
-		margin: 1em auto;
+    display: block;
+    width: 10em;
+    padding: .2em .5em;
+    margin: 1em auto;
 
-		color: white;
-		font-size: 14pt;
-		border-radius: 3px;
-		.box-shadow(0, 1px, 3px, @darkblue);
-		border: 1px solid @blue;
-	}
+    color: white;
+    font-size: 14pt;
+    border-radius: 3px;
+    .box-shadow(0, 1px, 3px, @darkblue);
+    border: 1px solid @blue;
+  }
 
-	section#customize {
+  section#customize {
 
-		h2 {
-			margin-bottom: 50px;
+    h2 {
+      margin-bottom: 50px;
 
-			color: white;
-			text-shadow: 0 -2px 1px black;
-		}
+      color: white;
+      text-shadow: 0 -2px 1px black;
+    }
 
-		div#colorWheelBox {
-			width: 200px;
-			height: 200px;
-			position: relative;
-			margin: auto;
-			margin-bottom: 5%;
+    div#colorWheelBox {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      margin: auto;
+      margin-bottom: 5%;
 
-			@-webkit-keyframes rotate {
-				from { -webkit-transform: rotate(0deg); }
-				to { -webkit-transform: rotate(360deg); }
-			}
+      @-webkit-keyframes rotate {
+        from { -webkit-transform: rotate(0deg); }
+        to { -webkit-transform: rotate(360deg); }
+      }
 
-			@-moz-keyframes rotate {
-				from { -moz-transform: rotate(0deg); }
-				to { -moz-transform: rotate(360deg); }
-			}
+      @-moz-keyframes rotate {
+        from { -moz-transform: rotate(0deg); }
+        to { -moz-transform: rotate(360deg); }
+      }
 
-			svg {
-				width: 100%;
-				height: 100%;
+      svg {
+        width: 100%;
+        height: 100%;
 
-				-webkit-animation-name: rotate;
-				-webkit-animation-duration: 15s;
-				-webkit-animation-iteration-count: infinite;
-				-webkit-animation-timing-function: linear;
+        -webkit-animation-name: rotate;
+        -webkit-animation-duration: 15s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-timing-function: linear;
 
-				-moz-animation-name: rotate;
-				-moz-animation-duration: 15s;
-				-moz-animation-iteration-count: infinite;
-				-moz-animation-timing-function: linear;
-			}
+        -moz-animation-name: rotate;
+        -moz-animation-duration: 15s;
+        -moz-animation-iteration-count: infinite;
+        -moz-animation-timing-function: linear;
+      }
 
-			#colorWheel {
-				width: 200px;
-				height: 200px;
-				position: absolute;
-				top: 0;
-				left: 0;
+      #colorWheel {
+        width: 200px;
+        height: 200px;
+        position: absolute;
+        top: 0;
+        left: 0;
 
-				border-radius: 100px;
-				.box-shadow(0, 0, 10px, @black)
-			}
+        border-radius: 100px;
+        .box-shadow(0, 0, 10px, @black)
+      }
 
-			#colorCursor {
-				display: none;
-			}
-		}
+      #colorCursor {
+        display: none;
+      }
+    }
 
-		#nameForm {
-			width: 100%;
-			text-align: center;
-		}
+    #nameForm {
+      width: 100%;
+      text-align: center;
+    }
 
-		#name {
-			display: block;
-			width: 100px;
-			margin: auto;
-			margin-bottom: 5%;
-			text-align: center;
-		}
+    #name {
+      display: block;
+      width: 100px;
+      margin: auto;
+      margin-bottom: 5%;
+      text-align: center;
+    }
 
-		div#optionsBox {
+    div#optionsBox {
 
-			.option {
-				display: block;
-				margin-bottom: 0.5em;
+      .option {
+        display: block;
+        margin-bottom: 0.5em;
 
-				font-size: 0.8em;
-			}
-		}
+        font-size: 0.8em;
+      }
+    }
 
-		input[type="submit"] {
-			.gradient-black;
-			.box-shadow(0, 1px, 3px, @darkgreen);
+    input[type="submit"] {
+      .gradient-black;
+      .box-shadow(0, 1px, 3px, @darkgreen);
 
-			display: block;
-			width: 4em;
-			margin: auto;
-			padding: .5em 1em;
+      display: block;
+      width: 4em;
+      margin: auto;
+      padding: .5em 1em;
 
-			color: white;
-			font-size: 1.1em;
-			border: 1px solid @green;
-			border-radius: 3px;
+      color: white;
+      font-size: 1.1em;
+      border: 1px solid @green;
+      border-radius: 3px;
 
-			&:not(:disabled) {
-				.button-behavior;
-			}
-			&:disabled {
-				opacity: .5;
-			}
-		}
-	}
+      &:not(:disabled) {
+        .button-behavior;
+      }
+      &:disabled {
+        opacity: .5;
+      }
+    }
+  }
 }
 
 /**
@@ -253,31 +253,31 @@ section#menu {
  */
 
 #chatInput {
-	display: block;
-	margin: auto;
-	width: 15em;
+  display: block;
+  margin: auto;
+  width: 15em;
 
-	&.hidden {
-		opacity: 0;
-		visibility: hidden;
-	}
+  &.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
 
-	&.visible {
-		opacity: 0.95;
-		visibility: visible;
-	}
+  &.visible {
+    opacity: 0.95;
+    visibility: visible;
+  }
 }
 
 #chat {
-	position: absolute;
-	top: 0.5em;
-	left: 0.5em;
+  position: absolute;
+  top: 0.5em;
+  left: 0.5em;
 
-	div {
-		margin-bottom: 0.2em;
+  div {
+    margin-bottom: 0.2em;
 
-		img {
-			vertical-align: middle;
-		}
-	}
+    img {
+      vertical-align: middle;
+    }
+  }
 }

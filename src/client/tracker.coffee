@@ -2,45 +2,45 @@ boxedMixin = window.Boxed
 
 class Tracker
 
-	boxedMixin.call(@prototype)
+  boxedMixin.call(@prototype)
 
-	constructor: (@client, tracker) ->
-		@serverUpdate(tracker)
+  constructor: (@client, tracker) ->
+    @serverUpdate(tracker)
 
-		@color = @client.gameObjects[@ownerId].color
+    @color = @client.gameObjects[@ownerId].color
 
-		# Create the sprite.
-		@radius = 5
-		s = 2*@radius + 7
-		color = window.utils.color @color
-		@sprite = @client.spriteManager.get('tracker', s, s, color)
+    # Create the sprite.
+    @radius = 5
+    s = 2*@radius + 7
+    color = window.utils.color @color
+    @sprite = @client.spriteManager.get('tracker', s, s, color)
 
-	serverUpdate: (tracker) ->
-		utils.deepMerge(tracker, @)
+  serverUpdate: (tracker) ->
+    utils.deepMerge(tracker, @)
 
-	update: () ->
-		@clientDelete = @serverDelete
+  update: () ->
+    @clientDelete = @serverDelete
 
-	draw: (ctxt) ->
-		return if @state in ['dead', 'exploding']
+  draw: (ctxt) ->
+    return if @state in ['dead', 'exploding']
 
-		ctxt.save()
-		ctxt.translate(@pos.x, @pos.y)
-		ctxt.rotate(@dir)
-		ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
-		ctxt.restore()
+    ctxt.save()
+    ctxt.translate(@pos.x, @pos.y)
+    ctxt.rotate(@dir)
+    ctxt.drawImage(@sprite, -@sprite.width/2, -@sprite.height/2)
+    ctxt.restore()
 
-	inView: (offset = {x:0, y:0}) ->
-		@client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
+  inView: (offset = {x:0, y:0}) ->
+    @client.boxInView(@pos.x + offset.x, @pos.y + offset.y, @radius)
 
-	explosionEffect: () ->
-		@client.effects.push new FlashEffect(@client, @pos, 120, @color, 800)
+  explosionEffect: () ->
+    @client.effects.push new FlashEffect(@client, @pos, 120, @color, 800)
 
-	trailEffect: () ->
-		@client.effects.push new TrailEffect(@client, @, 2, 30, 3)
+  trailEffect: () ->
+    @client.effects.push new TrailEffect(@client, @, 2, 30, 3)
 
-	boostEffect: () ->
-		@client.effects.push new BoostEffect(@client, @, 3, 600)
+  boostEffect: () ->
+    @client.effects.push new BoostEffect(@client, @, 3, 600)
 
 # Exports
 window.Tracker = Tracker

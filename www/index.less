@@ -5,43 +5,43 @@
  */
 
 section#join {
-	margin: 2em 6em 0 6em;
-	border: 1px solid lightgrey;
+  margin: 2em 6em 0 6em;
+  border: 1px solid lightgrey;
 
-	table {
-		width: 100%;
-		border-collapse: collapse;
+  table {
+    width: 100%;
+    border-collapse: collapse;
 
-		th {
-			.gradient-black;
+    th {
+      .gradient-black;
 
-			padding: 0.3em;
+      padding: 0.3em;
 
-			color: @blue;
-			border-bottom: 2px solid @blue;
-			text-align: left;
-			font-weight: bold;
-		}
+      color: @blue;
+      border-bottom: 2px solid @blue;
+      text-align: left;
+      font-weight: bold;
+    }
 
-		tr {
-			&:nth-child(even) {
-				background-color: hsl(0, 0%, 95%);
-			}
+    tr {
+      &:nth-child(even) {
+        background-color: hsl(0, 0%, 95%);
+      }
 
-			&:nth-child(odd) {
-				background-color: hsl(0, 0%, 90%);
-			}
-		}
+      &:nth-child(odd) {
+        background-color: hsl(0, 0%, 90%);
+      }
+    }
 
-		td {
-			padding: 0.3em;
-		}
+    td {
+      padding: 0.3em;
+    }
 
-		a {
-			text-decoration: none;
-			color: hsl(-150, 60%, 45%);
-		}
-	}
+    a {
+      text-decoration: none;
+      color: hsl(-150, 60%, 45%);
+    }
+  }
 }
 
 /**
@@ -49,19 +49,19 @@ section#join {
  */
 
 button#createGame {
-	.gradient-black;
-	.button-behavior;
-	.box-shadow(0, 1px, 3px, @darkblue);
+  .gradient-black;
+  .button-behavior;
+  .box-shadow(0, 1px, 3px, @darkblue);
 
-	display: block;
-	width: 14em;
-	padding: .2em .5em;
-	margin: 2em auto;
+  display: block;
+  width: 14em;
+  padding: .2em .5em;
+  margin: 2em auto;
 
-	color: white;
-	font-size: 14pt;
-	border: 1px solid @blue;
-	border-radius: 3px;
+  color: white;
+  font-size: 14pt;
+  border: 1px solid @blue;
+  border-radius: 3px;
 }
 
 /**
@@ -69,43 +69,43 @@ button#createGame {
  */
 
 footer {
-	.gradient-black;
-	.box-shadow(0, -2px, 3px, @darkblue);
+  .gradient-black;
+  .box-shadow(0, -2px, 3px, @darkblue);
 
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	padding-top: 1em;
-	padding-bottom: 1em;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding-top: 1em;
+  padding-bottom: 1em;
 
-	color: @darkblue;
-	border-top: 4px solid @blue;
+  color: @darkblue;
+  border-top: 4px solid @blue;
 
-	-webkit-column-count: 2;
-	-moz-column-count: 2;
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
 
-	font-size: 90%;
+  font-size: 90%;
 
-	div {
-		margin: auto;
-		width: 80%;
-	}
+  div {
+    margin: auto;
+    width: 80%;
+  }
 
-	section {
-		-webkit-column-break-before : always;
-		-moz-column-break-before : always;
+  section {
+    -webkit-column-break-before : always;
+    -moz-column-break-before : always;
 
-		width: 60%;
-		padding: 1em;
-		margin: 0 auto;
+    width: 60%;
+    padding: 1em;
+    margin: 0 auto;
 
-		h3 {
-			color: @blue;
-		}
+    h3 {
+      color: @blue;
+    }
 
-		ul {
-			list-style-position: inside;
-			list-style-type: square;
-		}
-	}
+    ul {
+      list-style-position: inside;
+      list-style-type: square;
+    }
+  }
 }

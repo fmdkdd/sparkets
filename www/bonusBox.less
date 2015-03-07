@@ -1,85 +1,85 @@
 @import "common.less";
 
 div.bonusBox {
-	float: left;
-	margin: 0.5em;
+  float: left;
+  margin: 0.5em;
 
-	cursor: pointer;
+  cursor: pointer;
 
-	// Necesary to avoid white corners masking the blur.
-	border-top-left-radius: 0.4em;
-	border-bottom-left-radius: 0.4em;
-	border-bottom-right-radius: 0.4em;
+  // Necesary to avoid white corners masking the blur.
+  border-top-left-radius: 0.4em;
+  border-bottom-left-radius: 0.4em;
+  border-bottom-right-radius: 0.4em;
 
-	.box-shadow(0, 0, 10px, @black);
+  .box-shadow(0, 0, 10px, @black);
 
-	// Tabs.
-	ul {
-		list-style-type: none;
+  // Tabs.
+  ul {
+    list-style-type: none;
 
-		li {
-			float: left;
+    li {
+      float: left;
 
-			&:nth-child(1) {
-				.linear-gradient2(top, lighten(@grey, 15%) 0%, @grey 70%);
+      &:nth-child(1) {
+        .linear-gradient2(top, lighten(@grey, 15%) 0%, @grey 70%);
 
-				border-top-left-radius: 0.4em;
+        border-top-left-radius: 0.4em;
 
-				&:hover {
-					.linear-gradient2(top, lighten(@grey, 30%) 0%, @grey 70%);
-				}
-			}
-			&:nth-child(2) {
-				.linear-gradient3(top, @yellow 0%, @yellow 70%, black 100%);
+        &:hover {
+          .linear-gradient2(top, lighten(@grey, 30%) 0%, @grey 70%);
+        }
+      }
+      &:nth-child(2) {
+        .linear-gradient3(top, @yellow 0%, @yellow 70%, black 100%);
 
-				&:hover {
-					.linear-gradient3(top, lighten(@yellow, 15%) 0%, @yellow 70%, black 100%);
-				}
-			}
-			&:nth-child(3) {
-				.linear-gradient3(top, @orange 0%, @orange 70%, black 100%);
+        &:hover {
+          .linear-gradient3(top, lighten(@yellow, 15%) 0%, @yellow 70%, black 100%);
+        }
+      }
+      &:nth-child(3) {
+        .linear-gradient3(top, @orange 0%, @orange 70%, black 100%);
 
-				&:hover {
-					.linear-gradient3(top, lighten(@orange, 15%) 0%, @orange 70%, black 100%);
-				}
-			}
-			&:nth-child(4) {
-				.linear-gradient3(top, @red 0%, @red 70%, black 100%);
+        &:hover {
+          .linear-gradient3(top, lighten(@orange, 15%) 0%, @orange 70%, black 100%);
+        }
+      }
+      &:nth-child(4) {
+        .linear-gradient3(top, @red 0%, @red 70%, black 100%);
 
-				&:hover {
-					.linear-gradient3(top, lighten(@red, 15%) 0%, @red 70%, black 100%);
-				}
-			}
-		}
-	}
+        &:hover {
+          .linear-gradient3(top, lighten(@red, 15%) 0%, @red 70%, black 100%);
+        }
+      }
+    }
+  }
 
-	// Content: bonus + label.
-	div {
-		.gradient-black-reversed;
+  // Content: bonus + label.
+  div {
+    .gradient-black-reversed;
 
-		border-bottom-left-radius: 0.4em;
-		border-bottom-right-radius: 0.4em;
+    border-bottom-left-radius: 0.4em;
+    border-bottom-right-radius: 0.4em;
 
-		canvas {
-			width: 60px;
-			margin: 0.5em 0.5em 0 0.5em;
-			padding: 0.5em;
+    canvas {
+      width: 60px;
+      margin: 0.5em 0.5em 0 0.5em;
+      padding: 0.5em;
 
-			background: white;
-		}
+      background: white;
+    }
 
-		span.label {
-			display: block;
-			padding-bottom: 0.5em;
+    span.label {
+      display: block;
+      padding-bottom: 0.5em;
 
-			text-align: center;
+      text-align: center;
 
-			color: white;
-			font-size: 1.2em;
-			font-family: Arial;
+      color: white;
+      font-size: 1.2em;
+      font-family: Arial;
 
 
-			letter-spacing: 0.1em;
-		}
-	}
+      letter-spacing: 0.1em;
+    }
+  }
 }

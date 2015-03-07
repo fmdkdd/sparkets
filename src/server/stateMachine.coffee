@@ -4,26 +4,26 @@ warn = (msg) -> logger.warn msg
 
 exports.mixin = () ->
 
-	@updateState = (step) ->
+  @updateState = (step) ->
 
-		if @countdown?
-			@countdown -= @game.prefs.timestep * step
-			@nextState() if @countdown <= 0
+    if @countdown?
+      @countdown -= @game.prefs.timestep * step
+      @nextState() if @countdown <= 0
 
-	@nextState = () ->
+  @nextState = () ->
 
-		@state = @game.prefs[@type].states[@state].next
-		@countdown = @game.prefs[@type].states[@state].countdown
-		@flagNextUpdate('state')
+    @state = @game.prefs[@type].states[@state].next
+    @countdown = @game.prefs[@type].states[@state].countdown
+    @flagNextUpdate('state')
 
-	@setState = (state) ->
+  @setState = (state) ->
 
-		if @game.prefs[@type].states[state]?
-			unless @state is state
-				@state = state
-				@countdown = @game.prefs[@type].states[state].countdown
-				@flagNextUpdate('state')
-		else
-			warn "#{@type} tried to switch to invalid state \"#{state}\""
+    if @game.prefs[@type].states[state]?
+      unless @state is state
+        @state = state
+        @countdown = @game.prefs[@type].states[state].countdown
+        @flagNextUpdate('state')
+    else
+      warn "#{@type} tried to switch to invalid state \"#{state}\""
 
-	@
+  @

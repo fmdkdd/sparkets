@@ -1,33 +1,33 @@
 {
-	"name": "sparkets",
-	"version": "1.0.0-alpha3",
-	"description": "Multiplayer space shooting game using the HTML canvas and the WebSocket protocol",
-	"keywords": ["multiplayer game", "canvas", "websocket"],
-	"contributors": [
-		"fmdkdd <fmdkdd@gmail.com> (http://fmdkdd.github.com/)",
-		"Merwan Achibet (http://merwanachibet.free.fr/)"
-	],
+  "name": "sparkets",
+  "version": "1.0.0-alpha3",
+  "description": "Multiplayer space shooting game using the HTML canvas and the WebSocket protocol",
+  "keywords": ["multiplayer game", "canvas", "websocket"],
+  "contributors": [
+    "fmdkdd <fmdkdd@gmail.com> (http://fmdkdd.github.com/)",
+    "Merwan Achibet (http://merwanachibet.free.fr/)"
+  ],
 
-	"repository": {
-		"type": "git",
-		"url": "http://github.com/fmdkdd/sparkets.git"
-	},
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/fmdkdd/sparkets.git"
+  },
 
-	"scripts": {
-		"start": "node build/server/run.js"
-	},
+  "scripts": {
+    "start": "node build/server/run.js"
+  },
 
-	"dependencies": {
-		"coffee-script": "1.x",
-		"socket.io": "0.9.x",
-		"webrepl": "0.4.x"
-	},
+  "dependencies": {
+    "coffee-script": "1.x",
+    "socket.io": "0.9.x",
+    "webrepl": "0.4.x"
+  },
 
-	"devDependencies": {
-		"vows": "0.6.x"
-	},
+  "devDependencies": {
+    "vows": "0.6.x"
+  },
 
-	"engines": {
-		"node": "0.6.x"
-	}
+  "engines": {
+    "node": "0.6.x"
+  }
 }

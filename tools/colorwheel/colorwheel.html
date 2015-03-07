@@ -3,52 +3,50 @@
 <head>
   <title>Color wheel generator</title>
   <script src="../../build/utils.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-	<script type="text/javascript">
-		$(document).ready(function() {
-				var ctxt = document.getElementById('canvas').getContext('2d');
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    var ctxt = document.getElementById('canvas').getContext('2d');
 
-				var size = $('#canvas').width();
-				var maxRadius = size/2;
-				var minRadius = size/2*0.5;
-				var maxLum = 80;
-				var minLum = 30;
+    var size = $('#canvas').width();
+    var maxRadius = size/2;
+    var minRadius = size/2*0.5;
+    var maxLum = 80;
+    var minLum = 30;
 
-				for(var i = 0; i < size; ++i)
-					for(var j = 0; j < size; ++j)
-					{
-						var d = distance(i, j, size/2, size/2);
+    for(var i = 0; i < size; ++i)
+      for(var j = 0; j < size; ++j) {
+      var d = distance(i, j, size/2, size/2);
 
-						if(d < maxRadius && d > minRadius)
-						{
-							var dx = size/2 - j;
-							var dy = size/2 - i; 
+      if(d < maxRadius && d > minRadius) {
+        var dx = size/2 - j;
+        var dy = size/2 - i;
 
-							// Hue.
-							var h = Math.atan2(dx, dy);
-							h = h > 0 ? h : h + 2*Math.PI;
-							h *=  180/Math.PI;
-							h = Math.floor(h);
+        // Hue.
+        var h = Math.atan2(dx, dy);
+        h = h > 0 ? h : h + 2*Math.PI;
+        h *=  180/Math.PI;
+        h = Math.floor(h);
 
-							// Saturation.
-							var s = 60;
+        // Saturation.
+        var s = 60;
 
-							// Luminance.
-							var l = minLum + (maxRadius-d)/(maxRadius-minRadius)*(maxLum-minLum);
+        // Luminance.
+        var l = minLum + (maxRadius-d)/(maxRadius-minRadius)*(maxLum-minLum);
 
-							ctxt.fillStyle = 'hsl('+h+','+s+'%,'+l+'%)';
-							ctxt.fillRect(j, i, 1, 1);
-						}
-					}
+        ctxt.fillStyle = 'hsl('+h+','+s+'%,'+l+'%)';
+        ctxt.fillRect(j, i, 1, 1);
+      }
+    }
 
-				var img = canvas.toDataURL('image/png');
-				document.write('<img src="'+img+'"/>');
-		});
-	</script>
+    var img = canvas.toDataURL('image/png');
+    document.write('<img src="'+img+'"/>');
+  });
+  </script>
   <style>
-	* {
-			margin : 0;
-			padding : 0; }
+    * {
+    margin : 0;
+    padding : 0; }
   </style>
 </head>
 <body>

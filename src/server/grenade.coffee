@@ -4,131 +4,131 @@ utils = require '../utils'
 
 class Grenade extends ChangingObject
 
-	stateMachineMixin.call(@prototype)
+  stateMachineMixin.call(@prototype)
 
-	constructor: (@id, @game, @owner, @pos, @vel, @willFragment) ->
-		super()
+  constructor: (@id, @game, @owner, @pos, @vel, @willFragment) ->
+    super()
 
-		# Send these properties to new players.
-		@flagFullUpdate('type')
-		@flagFullUpdate('ownerId')
-		@flagFullUpdate('pos')
-		@flagFullUpdate('radius')
-		@flagFullUpdate('state')
-		@flagFullUpdate('serverDelete')
-		if @game.prefs.debug.sendHitBoxes
-			@flagFullUpdate('boundingBox')
-			@flagFullUpdate('hitBox')
+    # Send these properties to new players.
+    @flagFullUpdate('type')
+    @flagFullUpdate('ownerId')
+    @flagFullUpdate('pos')
+    @flagFullUpdate('radius')
+    @flagFullUpdate('state')
+    @flagFullUpdate('serverDelete')
+    if @game.prefs.debug.sendHitBoxes
+      @flagFullUpdate('boundingBox')
+      @flagFullUpdate('hitBox')
 
-		@type = 'grenade'
-		@flagNextUpdate('type')
+    @type = 'grenade'
+    @flagNextUpdate('type')
 
-		# Transmit owner's id to colients.
-		@ownerId = @owner.id
-		@flagNextUpdate('ownerId')
+    # Transmit owner's id to colients.
+    @ownerId = @owner.id
+    @flagNextUpdate('ownerId')
 
-		# Initial state.
-		@setState 'active'
+    # Initial state.
+    @setState 'active'
 
-		@pos =
-			x: pos.x
-			y: pos.y
-		@flagNextUpdate('pos')
+    @pos =
+      x: pos.x
+      y: pos.y
+    @flagNextUpdate('pos')
 
-		@initialVel =
-			x: @vel.x
-			y: @vel.y
+    @initialVel =
+      x: @vel.x
+      y: @vel.y
 
-		@radius = @game.prefs.grenade.radius
-		@flagNextUpdate('radius')
+    @radius = @game.prefs.grenade.radius
+    @flagNextUpdate('radius')
 
-		@boundingBox =
-			x: @pos.x
-			y: @pos.y
-			radius: @radius
+    @boundingBox =
+      x: @pos.x
+      y: @pos.y
+      radius: @radius
 
-		@hitBox =
-			type: 'circle'
-			x: @pos.x
-			y: @pos.y
-			radius: @radius
+    @hitBox =
+      type: 'circle'
+      x: @pos.x
+      y: @pos.y
+      radius: @radius
 
-		if @game.prefs.debug.sendHitBoxes
-			@flagNextUpdate('boundingBox')
-			@flagNextUpdate('hitBox')
+    if @game.prefs.debug.sendHitBoxes
+      @flagNextUpdate('boundingBox')
+      @flagNextUpdate('hitBox')
 
-	tangible: () ->
-		@state is 'active' or @state is 'fragmenting' or @state is 'exploding'
+  tangible: () ->
+    @state is 'active' or @state is 'fragmenting' or @state is 'exploding'
 
-	move: (step) ->
+  move: (step) ->
 
-		if @vel.x isnt 0 and @vel.y isnt 0
+    if @vel.x isnt 0 and @vel.y isnt 0
 
-			@pos.x += @vel.x
-			@pos.y += @vel.y
-			@flagNextUpdate('pos')
+      @pos.x += @vel.x
+      @pos.y += @vel.y
+      @flagNextUpdate('pos')
 
-			@boundingBox.x = @hitBox.x = @pos.x
-			@boundingBox.y = @hitBox.y = @pos.y
-			if @game.prefs.debug.sendHitBoxes
-				@flagNextUpdate('boundingBox')
-				@flagNextUpdate('hitBox')
+      @boundingBox.x = @hitBox.x = @pos.x
+      @boundingBox.y = @hitBox.y = @pos.y
+      if @game.prefs.debug.sendHitBoxes
+        @flagNextUpdate('boundingBox')
+        @flagNextUpdate('hitBox')
 
-		@vel = utils.vec.times(@vel, @game.prefs.grenade.friction)
+    @vel = utils.vec.times(@vel, @game.prefs.grenade.friction)
 
-	update: (step) ->
+  update: (step) ->
 
-		oldState = @state
+    oldState = @state
 
-		@updateState(step)
+    @updateState(step)
 
-		if @state isnt oldState
-			switch @state
-				when 'exploding'
-					@explode()
-					@fragment() if @willFragment
-				when 'dead'
-					@serverDelete = yes
-					@flagNextUpdate('serverDelete')
+    if @state isnt oldState
+      switch @state
+        when 'exploding'
+          @explode()
+          @fragment() if @willFragment
+        when 'dead'
+          @serverDelete = yes
+          @flagNextUpdate('serverDelete')
 
-	fragment: () ->
+  fragment: () ->
 
-		return if not @willFragment
+    return if not @willFragment
 
-		childrenCount = @game.prefs.grenade.childrenCount
-		splitAngle = 2 * Math.PI / childrenCount
+    childrenCount = @game.prefs.grenade.childrenCount
+    splitAngle = 2 * Math.PI / childrenCount
 
-		for i in [0...childrenCount]
+    for i in [0...childrenCount]
 
-			@game.newGameObject (id) =>
+      @game.newGameObject (id) =>
 
-				pos =
-					x: @pos.x
-					y: @pos.y
+        pos =
+          x: @pos.x
+          y: @pos.y
 
-				vel =
-					x: Math.cos(i * splitAngle + splitAngle / 2)
-					y: Math.sin(i * splitAngle + splitAngle / 2)
-				vel = utils.vec.times(utils.vec.unit(vel), @game.prefs.grenade.velocity)
+        vel =
+          x: Math.cos(i * splitAngle + splitAngle / 2)
+          y: Math.sin(i * splitAngle + splitAngle / 2)
+        vel = utils.vec.times(utils.vec.unit(vel), @game.prefs.grenade.velocity)
 
-				@game.grenades[id] = new Grenade(id, @game, @owner, pos, vel, no)
+        @game.grenades[id] = new Grenade(id, @game, @owner, pos, vel, no)
 
-	explode: () ->
+  explode: () ->
 
-		@setState 'exploding'
+    @setState 'exploding'
 
-		# Increase radius.
-		@radius = @game.prefs.grenade.explosionRadius
-		@flagNextUpdate('radius')
+    # Increase radius.
+    @radius = @game.prefs.grenade.explosionRadius
+    @flagNextUpdate('radius')
 
-		# Update hit box radius.
-		@boundingBox.radius = @hitBox.radius = @radius
-		if @game.prefs.debug.sendHitBoxes
-			@flagNextUpdate('boundingBox.radius')
-			@flagNextUpdate('hitBox.radius')
+    # Update hit box radius.
+    @boundingBox.radius = @hitBox.radius = @radius
+    if @game.prefs.debug.sendHitBoxes
+      @flagNextUpdate('boundingBox.radius')
+      @flagNextUpdate('hitBox.radius')
 
-		@game.events.push
-			type: 'grenade exploded'
-			id: @id
+    @game.events.push
+      type: 'grenade exploded'
+      id: @id
 
 exports.Grenade = Grenade
