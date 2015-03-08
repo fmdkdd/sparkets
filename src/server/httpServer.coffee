@@ -51,6 +51,7 @@ webFiles = {
   '/js/client/tracker.js',
   '/js/client/trailEffect.js',
   '/js/utils.js',
+  '/js/message.js',
   '/favicon.ico',
   '/img/colorWheel.png',
   '/img/colorCursor.png',

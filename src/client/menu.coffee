@@ -111,9 +111,9 @@ class Menu
     color = @currentColor
     name = @nameField.val() if @nameField.val().length > 0
 
-    @client.socket.emit 'prefs changed',
+    message.send(@client.socket, message.PREFERENCES_CHANGED, {
       color: color
-      name: name
+      name: name })
 
   # Store user preferences in the browser local storage.
   saveLocalPreferences: () ->

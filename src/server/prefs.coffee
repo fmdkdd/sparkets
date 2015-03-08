@@ -12,22 +12,15 @@ class ServerPreferences
     # Override default values by those provided in `prefs'.
     utils.safeDeepMerge(prefs, @)
 
-  # HTTP server port.
-  port: 12345
+  httpPort: 12345
+
+  # FIXME: This is hardcoded in client/client.coffee
+  webSocketPort: 12346
 
   # Port of the web REPL.
   replPort: 54321
 
   log: ['error', 'warn', 'info', 'debug']
-
-  # Socket.io options.
-  io:
-    # Allowed transports.
-    # Only WebSocket and FlashSocket are fast and stable enough for Sparkets.
-    transports: ['websocket', 'flashsocket']
-
-    # Detail of log output: error (0), warn, info, debug (3)
-    logLevel: 2
 
 class GamePreferences
   constructor: (prefs = {}) ->

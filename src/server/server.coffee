@@ -2,7 +2,7 @@ logger = require('../logger')
 ServerPreferences = require('./prefs').ServerPreferences
 GameServer = require('./gameServer').GameServer
 
-io = require('socket.io')
+WebSocketServer = require('ws').Server
 httpServer = require('./httpServer')
 repl = require('webrepl')
 
@@ -22,93 +22,31 @@ class Server
     @httpServer = httpServer.create()
 
     # Bind websocket
-    @io = io.listen(@httpServer)
-    @io.configure () =>
-      # XXX: Log level can be set only when called first.
-      @io.set('log level', @prefs.io.logLevel)
-      @io.set('transports', @prefs.io.transports)
-
-    # Bind global namespace.
-    @globalSockets = @io.of('')
-    @setupCallbacks()
+    @wsServer = new WebSocketServer {port: @prefs.webSocketPort}
+    @wsServer.broadcast = (data) =>
+      client.send data for client in @wsServer.clients
 
     # Start listening!
-    @httpServer.listen @prefs.port, () =>
-      @logger.info "Global server started on port #{@prefs.port}"
-      @logger.info "Browse to http://localhost:#{@prefs.port} to play!"
+    @httpServer.listen @prefs.httpPort, () =>
+      @logger.info "Global server started on port #{@prefs.httpPort}"
+      @logger.info "Browse to http://localhost:#{@prefs.httpPort} to play!"
 
       callback()
 
   stop: () ->
     @httpServer.close()
 
-  setupCallbacks: () ->
-    @globalSockets.on 'connection', (socket) =>
-      @logger.info "Player #{socket.id} joined global server"
-
-      socket.on 'disconnect', () =>
-        @logger.info "Player #{socket.id} left global server"
-
-      socket.on 'get game list', () =>
-        @logger.info "game list requested"
-        @sendGameList(socket)
-
-      socket.on 'create game', (data) =>
-        @logger.info "game creation requested"
-        if @gameList[data.id]?
-          socket.emit 'game already exists'
-        else
-          @createGame(data.id, data.prefs)
-          socket.emit 'game created',
-            id: data.id
-
-  createGame: (id, gamePrefs) ->
-    valid = (str) ->
-      str.match(/^[A-Za-z0-9]+$/)
-
-    # Sanitize input!
-    if not valid(id)
-      throw "invalid game id: '#{id}'"
-
-    # Game with ID already exists, don't create.
-    return @gameList[id] if @gameList[id]?
-
-    @gameList[id] = game = new GameServer(@io.of(id), gamePrefs)
+  createGame: (gamePrefs) ->
+    game = new GameServer(@wsServer, gamePrefs)
     game.launch()
 
-    @logger.info "Game #{id} started"
-
-    # Prepare game expiration.
-    setTimeout( (() =>
-      @endGame(id)), game.prefs.duration * 60 * 1000)
-
-    @sendGameList(@globalSockets)
-
     return game
-
-  endGame: (id) ->
-    if @gameList[id]?
-      @gameList[id].end()
-      delete @gameList[id]
-
-      @sendGameList(@globalSockets)
-
-  sendGameList: (socket) ->
-    msg = {}
-
-    for id, game of @gameList
-      msg[id] =
-        players: game.playerCount()
-        startTime: game.startTime
-        duration: game.prefs.duration
-
-    socket.emit('game list', msg)
 
   startRepl: () ->
     # Start the admin REPL and expose some utilities.
     @replServ = repl.start(@prefs.replPort)
     @replServ.context.createGame = @createGame
-    @replServ.context.gameList = @gameList
+    @replServ.context.message = require('../message')
     @replServ.context.stop = () =>
       @stop()
 

@@ -1,5 +1,6 @@
 utils = require '../utils'
 logger = require('../logger').static
+message = require '../message'
 collisions = require('./collisions')
 Bot = require('./bot').Bot
 Bonus = require('./bonus').Bonus
@@ -13,6 +14,7 @@ class GameServer
     @now = 0
 
     @players = {}
+    @playerIdCounter = 0
 
     @bullets = {}
     @mines = {}
@@ -42,25 +44,29 @@ class GameServer
     @sockets.on 'connection', (socket) =>
       @clientConnect(socket)
 
-      socket.on 'key down', (data) =>
-        @players[socket.id].keyDown(data.key)
-
-      socket.on 'key up', (data) =>
-        @players[socket.id].keyUp(data.key)
-
-      socket.on 'create ship', (data) =>
-        @createShip(socket, data)
-
-      socket.on 'prefs changed', (data) =>
-        @players[socket.id].changePrefs(data.name, data.color)
-
       socket.on 'message', (data) =>
-        @events.push
-          type: 'message'
-          id: @players[socket.id].ship.id
-          message: data.message
+        msg = message.decode(data)
 
-      socket.on 'disconnect', () =>
+        switch msg.type
+          when message.KEY_DOWN
+            @players[socket.id].keyDown(msg.content)
+
+          when message.KEY_UP
+            @players[socket.id].keyUp(msg.content)
+
+          when message.CREATE_SHIP
+            @createShip(socket, msg.content)
+
+          when message.PREFERENCES_CHANGED
+            @players[socket.id].changePrefs(msg.content.name, msg.content.color)
+
+          when message.CHAT_MESSAGE
+            @events.push
+              type: 'message'
+              id: @players[socket.id].ship.id
+              message: msg.content
+
+      socket.on 'close', () =>
         @clientDisconnect(socket)
 
     # Setup space grid
@@ -86,10 +92,9 @@ class GameServer
     @info 'ended'
 
     # Notify players.
-    @sockets.emit 'game end'
+    message.broadcast(@sockets, message.GAME_END)
 
-    # Unbind listener for this namespace in case another game with
-    # the same id is created.
+    # Cleanup listener for the next game
     @sockets.removeAllListeners('connection')
 
   freeze: () ->
@@ -109,13 +114,13 @@ class GameServer
     @update()
 
   clientConnect: (socket) ->
-    id = socket.id
+    id = socket.id = @playerIdCounter++
 
     # Add new player to player list.
-    player = @players[id] = new Player(id, @)
+    @players[id] = new Player(id, @)
 
-    msg = @sharedGamePreferences()
-    socket.emit 'connected', msg
+    prefs = @sharedGamePreferences()
+    message.send(socket, message.CONNECTED, prefs)
 
     @info "player #{socket.id} joined"
 
@@ -153,12 +158,11 @@ class GameServer
     # Send game objects.
     objs = @fullUpdate(@gameObjects)
     unless utils.isEmptyObject(objs)
-      socket.emit 'objects update',
-        objects: objs
+      message.send(socket, message.OBJECTS_UPDATE, {
+        objects: objs })
 
     # Good news!
-    socket.emit 'ship created',
-      shipId: player.ship.id
+    message.send(socket, message.SHIP_CREATED, player.ship.id)
 
   fullUpdate: (objs) ->
     allFull = {}
@@ -169,10 +173,11 @@ class GameServer
 
     return allFull
 
+  # FIXME: is probably never called
   broadcastMessage: (socket, data) ->
-    @sockets.emit 'player says',
+    message.broadcast(@sockets, message.PLAYER_SAYS, {
       shipId: @players[socket.id].ship.id
-      message: data.message
+      message: data.message })
 
     @info "player #{socket.id} says: #{data.message}"
 
@@ -181,8 +186,7 @@ class GameServer
     shipId = @players[playerId].ship?.id
 
     # Tell everyone.
-    @sockets.emit 'player quits',
-      shipId : shipId
+    message.broadcast(@sockets, message.PLAYER_QUITS, shipId)
 
     # Purge objects belonging to client.
     ship = @gameObjects[shipId]
@@ -408,9 +412,9 @@ class GameServer
 
     # Broadcast update and events to all players.
     unless utils.isEmptyObject(clientUpdate)
-      @sockets.emit 'objects update',
+      message.broadcast(@sockets, message.OBJECTS_UPDATE, {
         objects: clientUpdate
-        events: @events
+        events: @events })
 
     # Clear all events
     @events = []

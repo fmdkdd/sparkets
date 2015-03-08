@@ -4,7 +4,7 @@ Sparkets is a multiplayer space rumble game inspired by [Spacewar!](http://en.wi
 
 ![Screenshot](https://raw.githubusercontent.com/fmdkdd/sparkets/next/screen.png)
 
-The multiplayer is supported by [socket.io](http://socket.io "socket.io website") running on a [node.js](http://nodejs.org "node.js website") server.
+The multiplayer is supported by [ws](http://einaros.github.io/ws/ "ws website") running on a [node.js](http://nodejs.org "node.js website") server.
 
 # Installation
 

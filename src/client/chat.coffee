@@ -1,3 +1,5 @@
+
+
 class Chat
   constructor: (@client) ->
 
@@ -43,8 +45,7 @@ class Chat
     @input.hasClass('visible')
 
   send: (message) ->
-    @client.socket.emit 'message',
-        message: message
+    message.send(@client.socket, message.CHAT_MESSAGE, message)
 
   display: (data) ->
 

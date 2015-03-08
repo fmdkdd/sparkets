@@ -44,8 +44,8 @@ class Client
     @chat = new Chat(@)
 
     # Connect to server and set callbacks.
-    @socket = io.connect()
-    @socket = @socket.socket.of(window.location.hash.substring(1))
+    # FIXME: websocket port number is hardcoded
+    @socket = new WebSocket('ws:' + window.location.hostname + ':12346')
 
     # Setup a connexion timeout to redirect to homepage in case of
     # nonexistent games.
@@ -54,29 +54,36 @@ class Client
       window.location.replace(url)), 1500)
 
     # Bind socket events.
-    @socket.on 'connect', () =>
+    @socket.addEventListener 'open', () =>
       @onConnect()
 
-      @socket.on 'connected', (data) =>
-        @onConnected(data)
+    @socket.addEventListener 'close', () =>
+      @onDisconnect()
 
-      @socket.on 'objects update', (data) =>
-        @onObjectsUpdate(data)
+    @socket.addEventListener 'message', (raw) =>
+      msg = message.decode(raw.data)
 
-      @socket.on 'ship created', (data) =>
-        @onShipCreated(data)
+      switch msg.type
+        when message.CONNECTED
+          console.log('received connected', msg.content)
+          @onConnected msg.content
 
-      @socket.on 'player says', (data) =>
-        @onPlayerMessage(data)
+        when message.OBJECTS_UPDATE
+          @onObjectsUpdate msg.content
 
-      @socket.on 'player quits', (data) =>
-        @onPlayerQuits(data)
+        when message.SHIP_CREATED
+          console.log('received connected', msg.content)
+          @onShipCreated msg.content
 
-      @socket.on 'game end', (data) =>
-        @onGameEnd(data)
+        when message.PLAYER_SAYS
+          console.log('received PLAYER_SAYS', msg.content)
+          @onPlayerMessage msg.content
 
-      @socket.on 'disconnect', (data) =>
-        @onDisconnect(data)
+        when message.PLAYER_QUITS
+          @onPlayerQuits msg.content
+
+        when message.GAME_END
+          @onGameEnd msg.content
 
     # Resize canvas and surrounding margins.
     #
@@ -170,15 +177,13 @@ class Client
 
       if not @keys[event.keyCode]? or @keys[event.keyCode] is off
         @keys[event.keyCode] = on
-        @socket.emit 'key down',
-          key: event.keyCode
+        message.send(@socket, message.KEY_DOWN, event.keyCode)
 
     $(document).keyup ({keyCode}) =>
       return unless keyCode in processedKeys
 
       @keys[keyCode] = off
-      @socket.emit 'key up',
-        key: keyCode
+      message.send(@socket, message.KEY_UP, keyCode)
 
   renderLoop: (showFPS) ->
 
@@ -409,7 +414,7 @@ class Client
     return bestPos
 
   onConnect: () ->
-    console.info "Connected to server."
+    console.info "Connected to WebSocket server."
     clearTimeout(@connectionTimeout)
 
   onDisconnect: () ->
@@ -430,10 +435,10 @@ class Client
 
     @menu.sendPreferences()
 
-    @socket.emit 'create ship'
+    message.send(@socket, message.CREATE_SHIP)
 
-  onShipCreated: (data) ->
-    @shipId = data.shipId
+  onShipCreated: (shipId) ->
+    @shipId = shipId
     @localShip = @gameObjects[@shipId]
 
     # Set the color of the ship preview in menu to our ship color.
