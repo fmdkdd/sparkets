@@ -2,7 +2,6 @@ vows = require('vows')
 assert = require('assert')
 
 # Setup
-require('./support/common')
 Ship = require('../build/server/ship').Ship
 
 # Mock-up game class.

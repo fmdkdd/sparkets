@@ -3,7 +3,6 @@ assert = require('assert')
 
 # Setup
 http = require('http')
-require('./support/common')
 Server = require('../build/server/server').Server
 
 port = 15100

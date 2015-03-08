@@ -24,10 +24,10 @@
   },
 
   "devDependencies": {
-    "vows": "0.6.x"
+    "vows": "0.8.x"
   },
 
   "engines": {
-    "node": "0.6.x"
+    "node": ">= 1.x"
   }
 }

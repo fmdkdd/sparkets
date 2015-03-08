@@ -2,7 +2,6 @@ vows = require('vows')
 assert = require('assert')
 
 # Setup
-require('./support/common')
 collisions = require '../build/server/collisions'
 
 # Hitboxes constructors.
