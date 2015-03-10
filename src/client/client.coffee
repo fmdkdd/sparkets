@@ -65,18 +65,15 @@ class Client
 
       switch msg.type
         when message.CONNECTED
-          console.log('received connected', msg.content)
           @onConnected msg.content
 
         when message.OBJECTS_UPDATE
           @onObjectsUpdate msg.content
 
         when message.SHIP_CREATED
-          console.log('received connected', msg.content)
           @onShipCreated msg.content
 
         when message.PLAYER_SAYS
-          console.log('received PLAYER_SAYS', msg.content)
           @onPlayerMessage msg.content
 
         when message.PLAYER_QUITS
