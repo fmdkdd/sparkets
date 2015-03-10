@@ -26,53 +26,11 @@ message.broadcast = (socketServer, type, content) ->
   socketServer.broadcast(message.encode(type, content))
 
 message.encode = (type, content) ->
-  #console.log('encoding', type, content)
-
-  switch type
-    when message.PLAYER_SAYS
-      msg = [type, [
-        content.shipId,
-        content.message ]]
-
-    when message.OBJECTS_UPDATE
-      msg = [type, [content.objects]]
-      msg[1].push(content.events) if content.events?
-
-    when message.CREATE_SHIP, message.GAME_END, message.HELLO
-      msg = [type]
-
-    else msg = [type, content]
-
-  m = JSON.stringify msg
-  #console.log('encoded message', m)
-  m
+  JSON.stringify([type, content])
 
 message.decode = (data) ->
-  [type, content] = JSON.parse data
-
-  switch type
-    when message.PLAYER_SAYS
-      msg = {
-        type: type
-        content: {
-          shipId: content[0]
-          message: content[1] }}
-
-    when message.OBJECTS_UPDATE
-      msg = {
-        type: type
-        content: {
-          objects: content[0]
-          events: content[1] }}
-
-    when message.CREATE_SHIP, message.GAME_END, message.HELLO
-      msg = {type: type}
-
-    else msg = {type: type, content: content}
-
-  #console.log('decoded message', msg)
-
-  msg
+  [type, content] = JSON.parse(data)
+  {type: type, content: content}
 
 module?.exports = message
 window?.message = message
