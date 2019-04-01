@@ -19,7 +19,7 @@
     "start": "node build/server/run.js"
   },
   "dependencies": {
-    "coffeescript": "1.x",
+    "coffeescript": "2.x",
     "ws": "6.2.x",
     "webrepl": "0.4.x"
   },
