@@ -31,9 +31,6 @@ class Mine extends ChangingObject
     @setState 'inactive'
 
     # Static position.
-    @pos =
-      x: pos.x
-      y: pos.y
     @flagNextUpdate('pos')
 
     # Hit box is a circle with static position and varying radius.

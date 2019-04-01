@@ -30,9 +30,6 @@ class Grenade extends ChangingObject
     # Initial state.
     @setState 'active'
 
-    @pos =
-      x: pos.x
-      y: pos.y
     @flagNextUpdate('pos')
 
     @initialVel =
