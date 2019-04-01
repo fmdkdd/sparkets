@@ -45,7 +45,7 @@ class Client
 
     # Connect to server and set callbacks.
     # FIXME: websocket port number is hardcoded
-    @socket = new WebSocket('ws:' + window.location.hostname + ':12346')
+    @socket = new WebSocket('ws:' + window.location.hostname + ':' + window.location.port)
 
     # Setup a connexion timeout to redirect to homepage in case of
     # nonexistent games.

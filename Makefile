@@ -3,7 +3,7 @@ CLIENT_JS := $(subst src, build, $(patsubst %.coffee, %.js, $(CLIENT_COFFEE)))
 SERVER_COFFEE := $(wildcard src/server/*.coffee) $(wildcard src/*.coffee)
 SERVER_JS := $(subst src, build, $(patsubst %.coffee, %.js, $(SERVER_COFFEE)))
 
-COFFEE_CMD := ./node_modules/coffee-script/bin/coffee
+COFFEE_CMD := ./node_modules/coffeescript/bin/coffee
 VOWS_CMD := ./node_modules/vows/bin/vows
 
 all: $(CLIENT_JS) $(SERVER_JS)

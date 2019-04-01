@@ -2,24 +2,25 @@
   "name": "sparkets",
   "version": "1.0.0-alpha3",
   "description": "Multiplayer space shooting game using the HTML canvas and the WebSocket protocol",
-  "keywords": ["multiplayer game", "canvas", "websocket"],
+  "keywords": [
+    "multiplayer game",
+    "canvas",
+    "websocket"
+  ],
   "contributors": [
-    "fmdkdd <fmdkdd@gmail.com> (http://fmdkdd.github.com/)",
+    "fmdkdd <fmdkdd@0xc0de.fr> (https://0xc0de.fr/)",
     "Merwan Achibet (http://merwanachibet.free.fr/)"
   ],
-
   "repository": {
     "type": "git",
     "url": "http://github.com/fmdkdd/sparkets.git"
   },
-
   "scripts": {
     "start": "node build/server/run.js"
   },
-
   "dependencies": {
-    "coffee-script": "1.x",
-    "ws": "0.x",
+    "coffeescript": "1.x",
+    "ws": "6.2.x",
     "webrepl": "0.4.x"
   },
 

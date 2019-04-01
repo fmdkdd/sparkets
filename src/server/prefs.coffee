@@ -114,7 +114,7 @@ class GamePreferences
 
   bot:
     # Number of bots on server.
-    count: 0
+    count: 3
 
     # Default parameters for bots.
     defaultPersona:
@@ -449,7 +449,7 @@ class GamePreferences
         weight: 1
       tracker:
         class: BonusTracker
-        weight: 100
+        weight: 1
       boost:
         class: BonusBoost
         weight: 1

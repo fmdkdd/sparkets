@@ -5,9 +5,10 @@ fs = require 'fs'
 mime = (path) ->
   return 'text/javascript' if path.match(/js$/)
   return 'text/html' if path.match(/html$/)
-  return 'text/css' if path.match(/css$/)
+  return 'text/css' if path.match(/css$/) or path.match(/less$/)
   return 'image/png' if path.match(/png$/)
   return 'image/svg+xml' if path.match(/svg$/)
+  return 'image/vnd.microsoft.com' if path.match(/ico$/)
 
 webFiles = {
   '/' : '/index.html',

@@ -22,14 +22,14 @@ class Server
     @httpServer = httpServer.create()
 
     # Bind websocket
-    @wsServer = new WebSocketServer {port: @prefs.webSocketPort}
+    @wsServer = new WebSocketServer {server: @httpServer, clientTracking: true}
     @wsServer.broadcast = (data) =>
-      client.send data for client in @wsServer.clients
+      client.send data for client in Array.from(@wsServer.clients)
 
     # Start listening!
     @httpServer.listen @prefs.httpPort, () =>
       @logger.info "Global server started on port #{@prefs.httpPort}"
-      @logger.info "Browse to http://localhost:#{@prefs.httpPort} to play!"
+      @logger.info "Browse to http://localhost:#{@prefs.httpPort}/play/#1 to play!"
 
       callback()
 
